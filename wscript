@@ -143,7 +143,7 @@ def build(bld):
 	obj.source = 'patchage.desktop.in'
 	obj.target = 'patchage.desktop'
 	obj.dict = {
-		'BINDIR'           : bld.env()['BINDIR'],
+		'BINDIR'           : os.path.normpath(bld.env()['BINDIR']),
 		'APP_INSTALL_NAME' : bld.env()['APP_INSTALL_NAME'],
 		'APP_HUMAN_NAME'   : bld.env()['APP_HUMAN_NAME'],
 	}
