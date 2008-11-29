@@ -20,10 +20,12 @@ blddir = 'build'
 
 def set_options(opt):
 	autowaf.set_options(opt)
-	opt.add_option('--install-name', type='string', default=APPNAME, dest='app_install_name',
-			help="Install name. [Default: '" + APPNAME + "']")
-	opt.add_option('--app-human-name', type='string', default=APP_HUMAN_NAME, dest='app_human_name',
-			help="Human name for app. [Default: '" + APP_HUMAN_NAME + "']")
+	opt.add_option('--patchage-install-name', type='string', default=APPNAME,
+			dest='patchage_install_name',
+			help="Patchage install name. [Default: '" + APPNAME + "']")
+	opt.add_option('--patchage-human-name', type='string', default=APP_HUMAN_NAME,
+			dest='patchage_human_name',
+			help="Patchage human name [Default: '" + APP_HUMAN_NAME + "']")
 	opt.add_option('--jack-dbus', action='store_true', default=False, dest='jack_dbus',
 			help="Use Jack via D-Bus [Default: False (use libjack)]")
 	opt.add_option('--no-lash', action='store_true', default=False, dest='no_lash',
@@ -76,8 +78,8 @@ def configure(conf):
 	
 	conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
-	conf.env['APP_INSTALL_NAME'] = Options.options.app_install_name
-	conf.env['APP_HUMAN_NAME'] = Options.options.app_human_name
+	conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
+	conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
 	if conf.env['BUNDLE']:
 		conf.define('PATCHAGE_DATA_DIR', os.path.normpath(
 				conf.env['DATADIRNAME'] + conf.env['APP_INSTALL_NAME']))
