@@ -19,7 +19,7 @@
 #define PATCHAGE_PATCHAGEEVENT_HPP
 
 #include <cstring>
-#ifdef HAVE_JACK
+#ifdef USE_LIBJACK
 #include <jack/jack.h>
 #endif
 #include "config.h"

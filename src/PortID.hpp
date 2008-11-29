@@ -21,7 +21,7 @@
 #include "config.h"
 
 #include <cstring>
-#ifdef HAVE_JACK
+#ifdef USE_LIBJACK
 #include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA
@@ -35,7 +35,7 @@ struct PortID {
 	
 	enum { NULL_PORT_ID, JACK_ID, ALSA_ADDR } type;
 
-#ifdef HAVE_JACK
+#ifdef USE_LIBJACK
 	PortID(jack_port_id_t jack_id, bool ign=false)
 		: type(JACK_ID) { id.jack_id = jack_id; }
 #endif
@@ -48,7 +48,7 @@ struct PortID {
 #endif
 
 	union {
-#ifdef HAVE_JACK
+#ifdef USE_LIBJACK
 		jack_port_id_t jack_id;
 #endif
 #ifdef HAVE_ALSA

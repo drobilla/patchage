@@ -3,8 +3,8 @@
 # Copyright (C) 2008 Dave Robillard
 # Copyright (C) 2008 Nedko Arnaudov
 import os
-import Params
 import autowaf
+import Options
 
 # Version of this package (even if built as a child)
 PATCHAGE_VERSION = '0.4.2'
@@ -45,7 +45,7 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'raul', destvar='RAUL', vnum='0.5.1', mandatory=True)
 	
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
-	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and Params.g_options.jack_dbus
+	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and Options.options.jack_dbus
 
 	if conf.env['HAVE_JACK_DBUS']:
 		conf.define('HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
@@ -56,11 +56,13 @@ def configure(conf):
 	conf.define('HAVE_JACK_MIDI', conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1)
 
 	# Use Alsa if present unless --no-alsa
-	if not Params.g_options.no_alsa and conf.env['HAVE_ALSA'] != 1:
-		conf.check_pkg('alsa', destvar='ALSA', mandatory=False)
+	if not Options.options.no_alsa and conf.env['HAVE_ALSA'] != 1:
+		autowaf.check_pkg(conf, 'alsa', destvar='ALSA', mandatory=False)
+		if conf.env['HAVE_ALSA']:
+			conf.define('HAVE_ALSA', 1)
 	
 	# Use LASH if we have DBUS unless --no-lash
-	if not Params.g_options.no_lash and conf.env['HAVE_DBUS_GLIB']:
+	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
 		conf.env['HAVE_LASH'] = 1
 		conf.define('HAVE_LASH', 1)
 	else:
@@ -69,13 +71,13 @@ def configure(conf):
 	conf.check_tool('misc') # subst tool
 	
 	# Boost headers (e.g. libboost-dev)
-	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
-	autowaf.check_header(conf, 'boost/weak_ptr.hpp', mandatory=True)
+	autowaf.check_header(conf, 'boost/shared_ptr.hpp', '', mandatory=True)
+	autowaf.check_header(conf, 'boost/weak_ptr.hpp', '', mandatory=True)
 	
 	conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
-	conf.env['APP_INSTALL_NAME'] = Params.g_options.app_install_name
-	conf.env['APP_HUMAN_NAME'] = Params.g_options.app_human_name
+	conf.env['APP_INSTALL_NAME'] = Options.options.app_install_name
+	conf.env['APP_HUMAN_NAME'] = Options.options.app_human_name
 	if conf.env['BUNDLE']:
 		conf.define('PATCHAGE_DATA_DIR', os.path.normpath(
 				conf.env['DATADIRNAME'] + conf.env['APP_INSTALL_NAME']))
@@ -87,20 +89,20 @@ def configure(conf):
 	
 	autowaf.print_summary(conf)
 	autowaf.display_header('Patchage Configuration')
-	autowaf.display_msg("Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
-	autowaf.display_msg("App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
-	autowaf.display_msg("Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']), 'YELLOW')
-	autowaf.display_msg("LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1), 'YELLOW')
-	autowaf.display_msg("Jack (libjack)", str(conf.env['USE_LIBJACK']), 'YELLOW')
-	autowaf.display_msg("Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1), 'YELLOW')
+	autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
+	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
+	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
+	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
+	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['USE_LIBJACK']))
+	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
 	print
 
 def build(bld):
 	# Program
-	prog = bld.create_obj('cpp', 'program')
+	prog = bld.new_task_gen('cxx', 'program')
 	prog.includes = 'src' # make waf dependency tracking work
-	prog.target = bld.env()['APP_INSTALL_NAME']
-	prog.inst_dir = bld.env()['BINDIRNAME']
+	prog.target = bld.env['APP_INSTALL_NAME']
+	prog.install_path = '${BINDIR}'
 	autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS GLADEMM DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
 	prog.source = '''
 		src/LashClient.cpp
@@ -110,11 +112,11 @@ def build(bld):
 		src/StateManager.cpp
 		src/main.cpp
 	'''
-	if bld.env()['HAVE_JACK_DBUS']:
+	if bld.env['HAVE_JACK_DBUS']:
 		prog.source += '''
 			src/JackDbusDriver.cpp
 		'''
-	if bld.env()['HAVE_LASH']:
+	if bld.env['HAVE_LASH']:
 		prog.source += '''
 			src/LashProxy.cpp
 			src/LoadProjectDialog.cpp
@@ -123,12 +125,12 @@ def build(bld):
 			src/ProjectPropertiesDialog.cpp
 			src/Session.cpp
 		'''
-	if bld.env()['HAVE_LASH'] or bld.env()['HAVE_JACK_DBUS']:
+	if bld.env['HAVE_LASH'] or bld.env['HAVE_JACK_DBUS']:
 		prog.source += ' src/DBus.cpp '
-	if bld.env()['USE_LIBJACK']:
+	if bld.env['USE_LIBJACK']:
 		prog.source += ' src/JackDriver.cpp '
 		prog.uselib += ' JACK '
-	if bld.env()['HAVE_ALSA'] == 1:
+	if bld.env['HAVE_ALSA'] == 1:
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
 	
@@ -136,19 +138,18 @@ def build(bld):
 	autowaf.build_wrapper(bld, 'patchage.in', prog)
 
 	# Glade UI definitions (XML)
-	install_files('DATADIR', bld.env()['APP_INSTALL_NAME'], 'src/patchage.glade')
+	bld.install_files('${DATADIR}/' + bld.env['APP_INSTALL_NAME'], 'src/patchage.glade')
 	
 	# 'Desktop' file (menu entry, icon, etc)
-	obj = bld.create_obj('subst')
+	obj = bld.new_task_gen('subst')
 	obj.source = 'patchage.desktop.in'
 	obj.target = 'patchage.desktop'
 	obj.dict = {
-		'BINDIR'           : os.path.normpath(bld.env()['BINDIR']),
-		'APP_INSTALL_NAME' : bld.env()['APP_INSTALL_NAME'],
-		'APP_HUMAN_NAME'   : bld.env()['APP_HUMAN_NAME'],
+		'BINDIR'           : os.path.normpath(bld.env['BINDIR']),
+		'APP_INSTALL_NAME' : bld.env['APP_INSTALL_NAME'],
+		'APP_HUMAN_NAME'   : bld.env['APP_HUMAN_NAME'],
 	}
-	obj.inst_var = 'PREFIX'
-	obj.inst_dir = bld.env()['DATADIRNAME'] + 'applications'
+	obj.install_path = '${DATADIR}/applications'
 	
 	# Icons
 	#
@@ -167,9 +168,9 @@ def build(bld):
 	# gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
 	icon_sizes = ['16x16', '22x22', '24x24', '32x32', '48x48']
 	for s in icon_sizes:
-		install_as(
-			os.path.normpath(bld.env()['DATADIR'] + '/icons/hicolor/' + s + '/apps/'),
-			bld.env()['APP_INSTALL_NAME'] + '.png',
+		bld.install_as(
+			os.path.normpath(bld.env['DATADIR'] + '/icons/hicolor/' + s + '/apps/'
+				+ bld.env['APP_INSTALL_NAME'] + '.png'),
 			'icons/' + s + '/patchage.png')
 
 def shutdown():
