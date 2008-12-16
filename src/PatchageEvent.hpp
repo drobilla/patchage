@@ -18,11 +18,11 @@
 #ifndef PATCHAGE_PATCHAGEEVENT_HPP
 #define PATCHAGE_PATCHAGEEVENT_HPP
 
+#include "config.h"
 #include <cstring>
 #ifdef USE_LIBJACK
 #include <jack/jack.h>
 #endif
-#include "config.h"
 #ifdef HAVE_ALSA
 #include <alsa/asoundlib.h>
 #endif
