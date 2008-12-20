@@ -227,15 +227,20 @@ StateManager::save(const string& filename)
 	os << "zoom_level " << _zoom << std::endl;
 
 
-	for (map<string, ModuleSettings>::iterator i = _module_settings.begin(); i != _module_settings.end(); ++i) {
+	for (map<string, ModuleSettings>::iterator i = _module_settings.begin();
+			i != _module_settings.end(); ++i) {
 		const ModuleSettings& settings = (*i).second;
 		const string& name = (*i).first;
 
 		if (settings.split) {
-			write_module_settings_entry(os, name, "input", *settings.input_location);
-			write_module_settings_entry(os, name, "output", *settings.output_location);
+			if (settings.input_location && settings.output_location) {
+				write_module_settings_entry(os, name, "input", *settings.input_location);
+				write_module_settings_entry(os, name, "output", *settings.output_location);
+			}
 		} else {
-			write_module_settings_entry(os, name, "inputoutput", *settings.inout_location);
+			if (settings.input_location && settings.inout_location) {
+				write_module_settings_entry(os, name, "inputoutput", *settings.inout_location);
+			}
 		}
 	}
 
