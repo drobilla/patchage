@@ -20,7 +20,7 @@
 #include <string>
 #include <set>
 #include <iostream>
-#include "config.h"
+#include "wafconfig.h"
 #include <jack/jack.h>
 #include <jack/statistics.h>
 #include <jack/thread.h>

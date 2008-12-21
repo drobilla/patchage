@@ -18,7 +18,7 @@
 #ifndef PATCHAGE_PATCHAGECANVAS_HPP
 #define PATCHAGE_PATCHAGECANVAS_HPP
 
-#include "config.h"
+#include "wafconfig.h"
 #include <string>
 #ifdef HAVE_ALSA
 #include <alsa/asoundlib.h>

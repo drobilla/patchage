@@ -18,7 +18,7 @@
 #ifndef PATCHAGE_PATCHAGEPORT_HPP
 #define PATCHAGE_PATCHAGEPORT_HPP
 
-#include "config.h"
+#include "wafconfig.h"
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include "flowcanvas/Port.hpp"
