@@ -71,7 +71,7 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (driver) {
 			if ( ! driver->create_port_view(patchage, _port_1))
-				cerr << "Unable to create port view (already exists?" << endl;
+				cerr << "Unable to create port view" << endl;
 		} else {
 			cerr << "ERROR: Create port with unknown port type" << endl;
 		}

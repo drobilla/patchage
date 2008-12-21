@@ -149,13 +149,18 @@ JackDriver::create_port_view(Patchage*     patchage,
 	if (id.type == PortID::JACK_ID)
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
 	
+	if (jack_port == NULL)
+		return boost::shared_ptr<PatchagePort>();
+
+	const int jack_flags = jack_port_flags(jack_port);
+
 	string module_name, port_name;
 	port_names(id, module_name, port_name);
 
 	ModuleType type = InputOutput;
 	if (_app->state_manager()->get_module_split(module_name,
-			(jack_port_flags(jack_port) & JackPortIsTerminal))) {
-		if (jack_port_flags(jack_port) & JackPortIsInput) {
+			(jack_flags & JackPortIsTerminal))) {
+		if (jack_flags & JackPortIsInput) {
 			type = Input;
 		} else {
 			type = Output;
@@ -191,6 +196,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 boost::shared_ptr<PatchagePort>
 JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* port)
 {
+	assert(port);
 	const char* const type_str = jack_port_type(port);
 	PortType port_type;
 

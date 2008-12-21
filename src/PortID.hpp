@@ -49,7 +49,10 @@ struct PortID {
 
 	union {
 #ifdef USE_LIBJACK
-		jack_port_id_t jack_id;
+		struct {
+			jack_port_id_t jack_id;
+			int            jack_flags;
+		};
 #endif
 #ifdef HAVE_ALSA
 		snd_seq_addr_t alsa_addr;
