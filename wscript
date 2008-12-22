@@ -53,9 +53,9 @@ def configure(conf):
 		conf.define('HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
 	else:
 		autowaf.check_pkg(conf, 'jack', destvar='JACK', vnum='0.107.0', mandatory=False)
-		conf.define('USE_LIBJACK', conf.env['HAVE_JACK'] == 1)
+		conf.define('USE_LIBJACK', int(conf.env['HAVE_JACK'] == 1))
 	
-	conf.define('HAVE_JACK_MIDI', conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1)
+	conf.define('HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
 	# Use Alsa if present unless --no-alsa
 	if not Options.options.no_alsa and conf.env['HAVE_ALSA'] != 1:
@@ -95,7 +95,7 @@ def configure(conf):
 	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
 	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
-	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['USE_LIBJACK']))
+	autowaf.display_msg(conf, "Jack (libjack)", str(bool(conf.env['USE_LIBJACK'])))
 	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
 	print
 
