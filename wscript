@@ -72,9 +72,9 @@ def configure(conf):
 	
 	conf.check_tool('misc') # subst tool
 	
-	# Boost headers (e.g. libboost-dev)
-	autowaf.check_header(conf, 'boost/shared_ptr.hpp', '', mandatory=True)
-	autowaf.check_header(conf, 'boost/weak_ptr.hpp', '', mandatory=True)
+	# Boost headers
+	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
+	autowaf.check_header(conf, 'boost/weak_ptr.hpp', mandatory=True)
 	
 	conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
