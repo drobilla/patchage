@@ -81,10 +81,10 @@ def configure(conf):
 	conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
 	conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
 	if conf.env['BUNDLE']:
-		conf.define('PATCHAGE_DATA_DIR', os.path.normpath(
-				conf.env['DATADIRNAME'] + conf.env['APP_INSTALL_NAME']))
+		conf.define('PATCHAGE_DATA_DIR', os.path.join(
+				conf.env['DATADIR'] + conf.env['APP_INSTALL_NAME']))
 	else:
-		conf.define('PATCHAGE_DATA_DIR', os.path.normpath(
+		conf.define('PATCHAGE_DATA_DIR', os.path.join(
 				conf.env['DATADIR'] + conf.env['APP_INSTALL_NAME']))
 	
 	conf.write_config_header('wafconfig.h')
