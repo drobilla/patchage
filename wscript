@@ -82,10 +82,10 @@ def configure(conf):
 	conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
 	if conf.env['BUNDLE']:
 		conf.define('PATCHAGE_DATA_DIR', os.path.join(
-				conf.env['DATADIR'] + conf.env['APP_INSTALL_NAME']))
+				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 	else:
 		conf.define('PATCHAGE_DATA_DIR', os.path.join(
-				conf.env['DATADIR'] + conf.env['APP_INSTALL_NAME']))
+				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 	
 	conf.write_config_header('wafconfig.h')
 	
@@ -168,8 +168,8 @@ def build(bld):
 	icon_sizes = ['16x16', '22x22', '24x24', '32x32', '48x48']
 	for s in icon_sizes:
 		bld.install_as(
-			os.path.normpath(bld.env['DATADIR'] + '/icons/hicolor/' + s + '/apps/'
-				+ bld.env['APP_INSTALL_NAME'] + '.png'),
+			os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', s, 'apps',
+					bld.env['APP_INSTALL_NAME'], '.png'),
 			'icons/' + s + '/patchage.png')
 
 def shutdown():
