@@ -87,7 +87,7 @@ def configure(conf):
 		conf.define('PATCHAGE_DATA_DIR', os.path.join(
 				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 	
-	conf.write_config_header('wafconfig.h')
+	conf.write_config_header('patchage-config.h')
 	
 	autowaf.print_summary(conf)
 	autowaf.display_header('Patchage Configuration')
@@ -102,7 +102,7 @@ def configure(conf):
 def build(bld):
 	# Program
 	prog = bld.new_task_gen('cxx', 'program')
-	prog.includes = 'src' # make waf dependency tracking work
+	prog.includes = ['.', 'src']
 	prog.target = bld.env['APP_INSTALL_NAME']
 	prog.install_path = '${BINDIR}'
 	autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS GLADEMM DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')

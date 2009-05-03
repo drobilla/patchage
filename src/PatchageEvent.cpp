@@ -15,7 +15,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "wafconfig.h"
+#include "patchage-config.h"
 #include "raul/SharedPtr.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"

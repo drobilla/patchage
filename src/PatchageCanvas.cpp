@@ -16,7 +16,7 @@
  */
 
 #include "raul/SharedPtr.hpp"
-#include "wafconfig.h"
+#include "patchage-config.h"
 #include "PatchageCanvas.hpp"
 #include "Patchage.hpp"
 #if defined(HAVE_JACK_DBUS)

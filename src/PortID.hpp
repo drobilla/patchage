@@ -18,7 +18,7 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
-#include "wafconfig.h"
+#include "patchage-config.h"
 
 #include <cstring>
 #ifdef USE_LIBJACK

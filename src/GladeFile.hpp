@@ -23,7 +23,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <libglademm/xml.h>
-#include "wafconfig.h"
+#include "patchage-config.h"
 #include "binary_location.h"
 
 class GladeFile {

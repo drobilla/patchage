@@ -18,7 +18,7 @@
 #ifndef PATCHAGE_PATCHAGEMODULE_HPP
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
-#include "wafconfig.h"
+#include "patchage-config.h"
 #include <string>
 #include <libgnomecanvasmm.h>
 #ifdef HAVE_ALSA

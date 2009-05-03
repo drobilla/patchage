@@ -22,7 +22,7 @@
 #include <set>
 #include <iostream>
 
-#include "wafconfig.h"
+#include "patchage-config.h"
 
 #include <glib.h>
 #include <dbus/dbus.h>

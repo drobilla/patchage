@@ -24,7 +24,7 @@
 #include <gtk/gtkwindow.h>
 #include "raul/SharedPtr.hpp"
 
-#include "wafconfig.h"
+#include "patchage-config.h"
 #include "GladeFile.hpp"
 #if defined(HAVE_JACK_DBUS)
 #include "JackDbusDriver.hpp"
