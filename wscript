@@ -45,7 +45,7 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD', atleast_version='2.14.0', mandatory=True)
 	autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM', atleast_version='2.11.12', mandatory=True)
 	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL', atleast_version='0.5.1', mandatory=True)
-	
+
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
 	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and Options.options.jack_dbus
 
@@ -54,7 +54,7 @@ def configure(conf):
 	else:
 		autowaf.check_pkg(conf, 'jack', uselib_store='JACK', atleast_version='0.107.0', mandatory=False)
 		conf.define('USE_LIBJACK', int(conf.env['HAVE_JACK'] == 1))
-	
+
 	conf.define('HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
 	# Use Alsa if present unless --no-alsa
@@ -62,20 +62,20 @@ def configure(conf):
 		autowaf.check_pkg(conf, 'alsa', uselib_store='ALSA', mandatory=False)
 		if conf.env['HAVE_ALSA']:
 			conf.define('HAVE_ALSA', 1)
-	
+
 	# Use LASH if we have DBUS unless --no-lash
 	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
 		conf.env['HAVE_LASH'] = 1
 		conf.define('HAVE_LASH', 1)
 	else:
 		conf.env['HAVE_LASH'] = False
-	
+
 	conf.check_tool('misc') # subst tool
-	
+
 	# Boost headers
 	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
 	autowaf.check_header(conf, 'boost/weak_ptr.hpp', mandatory=True)
-	
+
 	conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
 	conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
@@ -86,9 +86,9 @@ def configure(conf):
 	else:
 		conf.define('PATCHAGE_DATA_DIR', os.path.join(
 				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
-	
+
 	conf.write_config_header('patchage-config.h')
-	
+
 	autowaf.print_summary(conf)
 	autowaf.display_header('Patchage Configuration')
 	autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
@@ -135,10 +135,10 @@ def build(bld):
 	if bld.env['HAVE_ALSA'] == 1:
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
-	
+
 	# Glade UI definitions (XML)
 	bld.install_files('${DATADIR}/' + bld.env['APP_INSTALL_NAME'], 'src/patchage.glade')
-	
+
 	# 'Desktop' file (menu entry, icon, etc)
 	obj = bld.new_task_gen('subst')
 	obj.source = 'patchage.desktop.in'
@@ -149,7 +149,7 @@ def build(bld):
 		'APP_HUMAN_NAME'   : bld.env['APP_HUMAN_NAME'],
 	}
 	obj.install_path = '${DATADIR}/applications'
-	
+
 	# Icons
 	#
 	# Installation layout (with /usr prefix)
