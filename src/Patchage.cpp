@@ -352,8 +352,11 @@ void
 Patchage::update_toolbar()
 {
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_enable_refresh && _jack_driver->is_attached())
+	if (_enable_refresh && _jack_driver->is_attached()) {
+		_enable_refresh = false;
 		_buffer_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
+		_enable_refresh = true;
+	}
 #endif
 }
 
