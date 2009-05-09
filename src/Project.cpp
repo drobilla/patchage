@@ -121,8 +121,8 @@ Project::on_client_removed(const string& id)
 		client = *iter;
 
 		if (client->get_id() == id) {
-			_impl->clients.erase(iter);
 			_signal_client_removed.emit(client);
+			_impl->clients.erase(iter);
 			return;
 		}
 	}

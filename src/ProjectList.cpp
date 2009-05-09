@@ -65,7 +65,7 @@ struct ProjectListImpl : public sigc::trackable {
 
 ProjectList::ProjectList(
     Patchage* app,
-    Session* session)
+    Session*  session)
 {
 	_impl = new ProjectListImpl(app->xml(), app);
 	session->_signal_project_added.connect(mem_fun(_impl, &ProjectListImpl::project_added));
@@ -216,10 +216,14 @@ ProjectListImpl::project_added(
 	row[_columns.name] = project_name;
 	row[_columns.project] = project;
 
-	project->_signal_renamed.connect(bind(mem_fun(this, &ProjectListImpl::project_renamed), iter));
-	project->_signal_modified_status_changed.connect(bind(mem_fun(this, &ProjectListImpl::project_renamed), iter));
-	project->_signal_client_added.connect(bind(mem_fun(this, &ProjectListImpl::client_added), iter));
-	project->_signal_client_removed.connect(bind(mem_fun(this, &ProjectListImpl::client_removed), iter));
+	project->_signal_renamed.connect(
+			bind(mem_fun(this, &ProjectListImpl::project_renamed), iter));
+	project->_signal_modified_status_changed.connect(
+			bind(mem_fun(this, &ProjectListImpl::project_renamed), iter));
+	project->_signal_client_added.connect(
+			bind(mem_fun(this, &ProjectListImpl::client_added), iter));
+	project->_signal_client_removed.connect(
+			bind(mem_fun(this, &ProjectListImpl::client_removed), iter));
 }
 
 void
@@ -263,7 +267,7 @@ ProjectListImpl::project_renamed(
 
 void
 ProjectListImpl::client_added(
-    shared_ptr<LashClient> client,
+    shared_ptr<LashClient>   client,
     Gtk::TreeModel::iterator iter)
 {
 	Gtk::TreeModel::Path path = _model->get_path(iter);
@@ -278,15 +282,18 @@ ProjectListImpl::client_added(
 
 void
 ProjectListImpl::client_removed(
-    shared_ptr<LashClient> client,
+    shared_ptr<LashClient>   client,
     Gtk::TreeModel::iterator iter)
 {
+	if (!iter)
+		return;
+
 	Gtk::TreeModel::Path path = _model->get_path(iter);
 	Gtk::TreeModel::Row row = *iter;
 
 	Gtk::TreeNodeChildren childs = row.children();
 
-	for (Gtk::TreeModel::iterator child_iter = childs.begin(); iter != childs.end(); child_iter++) {
+	for (Gtk::TreeModel::iterator child_iter = childs.begin(); child_iter; child_iter++) {
 		row = *child_iter;
 
 		if (row[_columns.name] == client->get_name()) {
