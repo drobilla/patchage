@@ -68,9 +68,11 @@ PatchageEvent::execute(Patchage* patchage)
 #endif
 		}
 
-
 		if (driver) {
-			if ( ! driver->create_port_view(patchage, _port_1))
+			SharedPtr<PatchagePort> port = driver->create_port_view(patchage, _port_1);
+			if (port)
+				patchage->enqueue_resize(port->module().lock());
+			else
 				cerr << "Unable to create port view" << endl;
 		} else {
 			cerr << "ERROR: Create port with unknown port type" << endl;
@@ -85,6 +87,7 @@ PatchageEvent::execute(Patchage* patchage)
 			assert(module);
 
 			module->remove_port(port);
+			patchage->enqueue_resize(module);
 			port.reset();
 			
 			// No empty modules (for now)
@@ -92,7 +95,7 @@ PatchageEvent::execute(Patchage* patchage)
 				patchage->canvas()->remove_item(module);
 				module.reset();
 			} else {
-				module->resize();
+				patchage->enqueue_resize(module);
 			}
 
 		} else {

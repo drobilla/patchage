@@ -135,7 +135,7 @@ JackDriver::destroy_all_ports()
 		if (module->ports().empty())
 			_app->canvas()->remove_item(module);
 		else
-			module->resize();
+			_app->enqueue_resize(module);
 	}
 }
 	
@@ -170,26 +170,31 @@ JackDriver::create_port_view(Patchage*     patchage,
 	boost::shared_ptr<PatchageModule> parent
 		= _app->canvas()->find_module(module_name, type);
 	
+	bool resize = false;
+
 	if (!parent) {
 		parent = boost::shared_ptr<PatchageModule>(
 				new PatchageModule(patchage, module_name, type));
 		parent->load_location();
 		patchage->canvas()->add_item(parent);
 		parent->show();
+		resize = true;
 	}
 
 	boost::shared_ptr<PatchagePort> port
 			= boost::dynamic_pointer_cast<PatchagePort>(parent->get_port(port_name));
 
-	if (port) {
-		return port;
-	} else {
+	if (!port) {
 		port = create_port(parent, jack_port);
 		port->show();
 		parent->add_port(port);
-		parent->resize();
-		return port;
+		resize = true;
 	}
+	
+	if (resize)
+		_app->enqueue_resize(parent);
+	
+	return port;
 }
 
 
@@ -300,9 +305,10 @@ JackDriver::refresh()
 			continue;
 		}
 
-		if (!m->get_port(jack_port_short_name(port))) {
+		if (!m->get_port(jack_port_short_name(port)))
 			m->add_port(create_port(m, port));
-		}
+
+		_app->enqueue_resize(m);
 	}
 	
 	// Add all connections
@@ -436,7 +442,6 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 
 	jack_reset_max_delayed_usecs(me->_client);
 
-	// FIXME: This sucks, not realtime :(
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_CREATION, name));
 	} else {
@@ -452,9 +457,6 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 	
-	//jack_port_t* const port = jack_port_by_id(me->_client, port_id);
-	//const string full_name = jack_port_name(port);
-
 	jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {

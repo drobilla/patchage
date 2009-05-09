@@ -19,21 +19,24 @@
 #define PATCHAGE_PATCHAGE_HPP
 
 #include <string>
+#include <set>
 #include <boost/shared_ptr.hpp>
 #include <libgnomecanvasmm.h>
 #include <libglademm/xml.h>
 #include "patchage-config.h"
 #include "Widget.hpp"
 
-class PatchageCanvas;
-class JackDriver;
 class AlsaDriver;
-class LashProxy;
-class StateManager;
-class JackSettingsDialog;
-class Session;
 class DBus;
+class JackDriver;
+class JackSettingsDialog;
+class LashProxy;
+class PatchageCanvas;
 class ProjectList;
+class Session;
+class StateManager;
+
+namespace FlowCanvas { class Module; }
 
 class Patchage {
 public:
@@ -73,7 +76,9 @@ public:
 	void status_msg(const std::string& msg);
 	void update_state();
 	void store_window_location();
-	
+
+	void enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module);
+	void flush_resize();
 
 protected:
 	void connect_widgets();
@@ -117,6 +122,8 @@ protected:
 #endif
 
 	boost::shared_ptr<PatchageCanvas> _canvas;
+
+	std::set< boost::shared_ptr<FlowCanvas::Module> > _pending_resize;
 
 	JackDriver*   _jack_driver;
 	StateManager* _state_manager;

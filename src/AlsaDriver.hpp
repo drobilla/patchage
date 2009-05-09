@@ -63,6 +63,19 @@ private:
 	bool          create_refresh_port();
 	static void* refresh_main(void* me);
 	void         _refresh_main();
+
+	boost::shared_ptr<PatchageModule>
+	find_or_create_module(
+			Patchage*          patchage,
+			const std::string& client_name,
+			ModuleType         type);
+	
+	void
+	create_port_view_internal(
+			Patchage*                          patchage,
+			snd_seq_addr_t                     addr,
+			boost::shared_ptr<PatchageModule>& parent,
+			boost::shared_ptr<PatchagePort>&   port);
 	
 	boost::shared_ptr<PatchagePort> create_port(
 		boost::shared_ptr<PatchageModule> parent,

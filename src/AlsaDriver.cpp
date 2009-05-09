@@ -101,12 +101,130 @@ AlsaDriver::refresh()
 	refresh_connections();
 }
 
-	
+
 boost::shared_ptr<PatchagePort>
 AlsaDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
 {
-	return boost::shared_ptr<PatchagePort>();
+	boost::shared_ptr<PatchageModule> parent;
+	boost::shared_ptr<PatchagePort>   port;
+	create_port_view_internal(patchage, id.id.alsa_addr, parent, port);
+	return port;
+}
+
+
+boost::shared_ptr<PatchageModule>
+AlsaDriver::find_or_create_module(
+		Patchage*          patchage,
+		const std::string& client_name,
+		ModuleType         type)
+{
+	boost::shared_ptr<PatchageModule> m = _app->canvas()->find_module(client_name, type);
+	if (!m) {
+		m = boost::shared_ptr<PatchageModule>(new PatchageModule(patchage, client_name, type));
+		m->load_location();
+		_app->canvas()->add_item(m);
+		_app->enqueue_resize(m);
+	}
+	return m;
+}
+
+
+void
+AlsaDriver::create_port_view_internal(
+		Patchage*                          patchage,
+		snd_seq_addr_t                     addr,
+		boost::shared_ptr<PatchageModule>& m,
+		boost::shared_ptr<PatchagePort>&   port)
+{
+	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_alloca(&cinfo);
+	snd_seq_client_info_set_client(cinfo, addr.client);
+	snd_seq_get_any_client_info(_seq, addr.client, cinfo);
+
+	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_alloca(&pinfo);
+	snd_seq_port_info_set_client(pinfo, addr.client);
+	snd_seq_port_info_set_port(pinfo, addr.port);
+	snd_seq_get_any_port_info(_seq, addr.client, addr.port, pinfo);
+
+	const string client_name = snd_seq_client_info_get_name(cinfo);
+	const string port_name = snd_seq_port_info_get_name(pinfo);
+	bool is_input       = false;
+	bool is_duplex      = false;
+	bool is_application = true;
+	bool need_refresh   = false;
+
+	int caps = snd_seq_port_info_get_capability(pinfo);
+	int type = snd_seq_port_info_get_type(pinfo);
+
+	// Skip ports we shouldn't show
+	if (caps & SND_SEQ_PORT_CAP_NO_EXPORT)
+		return;
+	else if ( !( (caps & SND_SEQ_PORT_CAP_READ)
+				|| (caps & SND_SEQ_PORT_CAP_WRITE)
+				|| (caps & SND_SEQ_PORT_CAP_DUPLEX)))
+		return;
+	else if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT)
+			&& ((type == SND_SEQ_PORT_SYSTEM_TIMER
+					|| type == SND_SEQ_PORT_SYSTEM_ANNOUNCE)))
+		return;
+
+	// Figure out direction
+	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE))
+		is_duplex = true;
+	else if (caps & SND_SEQ_PORT_CAP_READ)
+		is_input = false;
+	else if (caps & SND_SEQ_PORT_CAP_WRITE)
+		is_input = true;
+
+	is_application = (type & SND_SEQ_PORT_TYPE_APPLICATION);
+
+	// Because there would be name conflicts, we must force a split if (stupid)
+	// alsa duplex ports are present on the client
+	bool split = false;
+	if (is_duplex) {
+		split = true;
+		if (!_app->state_manager()->get_module_split(client_name, !is_application)) {
+			need_refresh = true;
+			_app->state_manager()->set_module_split(client_name, true);
+		}
+	} else {
+		split = _app->state_manager()->get_module_split(client_name, !is_application);
+	}
+
+	/*cout << "ALSA PORT: " << client_name << " : " << port_name
+		<< " is_application = " << is_application
+		<< " is_duplex = " << is_duplex
+		<< " split = " << split << endl;*/
+
+	if (!split) {
+		m = find_or_create_module(_app, client_name, InputOutput);
+		if (!m->get_port(port_name)) {
+			port = create_port(m, port_name, is_input, addr);
+			port->show();
+			m->add_port(port);
+		}
+
+	} else { // split
+		ModuleType type = ((is_input) ? Input : Output);
+		m = find_or_create_module(_app, client_name, type);
+		if (!m->get_port(port_name)) {
+			port = create_port(m, port_name, is_input, addr);
+			port->show();
+			m->add_port(port);
+		}
+
+		if (is_duplex) {
+			type = ((!is_input) ? Input : Output);
+			m = find_or_create_module(_app, client_name, type);
+			if (!m->get_port(port_name)) {
+				port = create_port(m, port_name, !is_input, addr);
+				port->show();
+				m->add_port(port);
+			}
+		}
+	}
 }
 
 
@@ -129,7 +247,7 @@ AlsaDriver::refresh_ports()
 {
 	assert(is_attached());
 	assert(_seq);
-	
+
 	snd_seq_client_info_t* cinfo;
 	snd_seq_client_info_alloca(&cinfo);
 	snd_seq_client_info_set_client(cinfo, -1);
@@ -137,161 +255,18 @@ AlsaDriver::refresh_ports()
 	snd_seq_port_info_t* pinfo;
 	snd_seq_port_info_alloca(&pinfo);
 	
-	string client_name;
-	string port_name;
-	bool is_input       = false;
-	bool is_duplex      = false;
-	bool is_application = true;
-	bool need_refresh   = false;
+	boost::shared_ptr<PatchageModule> parent;
+	boost::shared_ptr<PatchagePort>   port;
 
 	set< boost::shared_ptr<PatchageModule> > to_resize;
 
 	while (snd_seq_query_next_client (_seq, cinfo) >= 0) {
 		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
 		snd_seq_port_info_set_port(pinfo, -1);
-
-		client_name = snd_seq_client_info_get_name(cinfo);
-
 		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
-			int caps = snd_seq_port_info_get_capability(pinfo);
-			int type = snd_seq_port_info_get_type(pinfo);
-			
-			// Skip ports we shouldn't show
-			if (caps & SND_SEQ_PORT_CAP_NO_EXPORT)
-				continue;
-			else if ( !( (caps & SND_SEQ_PORT_CAP_READ)
-						|| (caps & SND_SEQ_PORT_CAP_WRITE)
-						|| (caps & SND_SEQ_PORT_CAP_DUPLEX)))
-				continue;
-			else if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT)
-					&& ((type == SND_SEQ_PORT_SYSTEM_TIMER
-						|| type == SND_SEQ_PORT_SYSTEM_ANNOUNCE)))
-				continue;
-			
-			const snd_seq_addr_t addr = *snd_seq_port_info_get_addr(pinfo);
-			
-			is_duplex = false;
-
-			// FIXME: Should be CAP_SUBS_READ etc?
-			if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE))
-				is_duplex = true;
-			else if (caps & SND_SEQ_PORT_CAP_READ)
-				is_input = false;
-			else if (caps & SND_SEQ_PORT_CAP_WRITE)
-				is_input = true;
-
-			is_application = (type & SND_SEQ_PORT_TYPE_APPLICATION);
-			port_name = snd_seq_port_info_get_name(pinfo);
-			boost::shared_ptr<PatchageModule> m;
-
-			bool split = false;
-
-			// Because there would be name conflicts, we must force a split if (stupid)
-			// alsa duplex ports are present on the client
-			if (is_duplex) {
-				split = true;
-				if (!_app->state_manager()->get_module_split(client_name, !is_application)) {
-					need_refresh = true;
-					_app->state_manager()->set_module_split(client_name, true);
-				}
-			} else {
-				split = _app->state_manager()->get_module_split(client_name, !is_application);
-			}
-			
-			/*cout << "SHOW: " << client_name << " : " << port_name
-				<< " is_application = " << is_application
-				<< " is_duplex = " << is_duplex
-				<< ", split = " << split << endl;*/
-			
-			// Application input/output ports go on the same module
-			if (!split) {
-				m = _app->canvas()->find_module(client_name, InputOutput);
-				if (!m) {
-					m = boost::shared_ptr<PatchageModule>(
-							new PatchageModule(_app, client_name, InputOutput));
-					m->load_location();
-					_app->canvas()->add_item(m);
-				}
-				
-				if (!m->get_port(port_name)) {
-					if (!is_duplex) {
-						m->add_port(create_port(m, port_name, is_input, addr));
-					} else {
-						m->add_port(create_port(m, port_name, true, addr));
-						m->add_port(create_port(m, port_name, false, addr));
-					}
-					to_resize.insert(m);
-				}
-
-			} else { // non-application input/output ports (hw interface, etc) go on separate modules
-				ModuleType type = InputOutput;
-				
-				// The 'application' hint isn't always set by clients, so this bit
-				// is pretty nasty...
-
-				if (!is_duplex) {  // just one port to add
-
-					type = ((is_input) ? Input : Output);
-					
-					m = _app->canvas()->find_module(client_name, type);
-				
-					if (!m) {
-						m = boost::shared_ptr<PatchageModule>(
-							new PatchageModule(_app, client_name, type));
-						m->load_location();
-						_app->canvas()->add_item(m);
-					}
-					
-					if (!m->get_port(port_name)) {
-						m->add_port(create_port(m, port_name, is_input, addr));
-						to_resize.insert(m);
-					}
-
-				} else {  // two ports to add
-					type = Input;
-					
-					m = _app->canvas()->find_module(client_name, type);
-
-					if (!m) {
-						m = boost::shared_ptr<PatchageModule>(
-							new PatchageModule(_app, client_name, type));
-						m->load_location();
-						_app->canvas()->add_item(m);
-					}
-
-					assert(m);
-
-					if (!m->get_port(port_name)) {
-						m->add_port(create_port(m, port_name, true, addr));
-						to_resize.insert(m);
-					}
-
-					type = Output;
-					
-					m = _app->canvas()->find_module(client_name, type);
-
-					if (!m) {
-						m = boost::shared_ptr<PatchageModule>(
-							new PatchageModule(_app, client_name, type));
-						m->load_location();
-						_app->canvas()->add_item(m);
-					}
-
-					if (!m->get_port(port_name)) {
-						m->add_port(create_port(m, port_name, false, addr));
-						to_resize.insert(m);
-					}
-				}
-			}
-		}
-	}
-
-	if (need_refresh) {
-		_app->refresh();
-	} else {
-		for (set< boost::shared_ptr<PatchageModule> >::iterator i = to_resize.begin();
-				i != to_resize.end(); ++i) {
-			(*i)->resize();
+			create_port_view_internal(_app, *snd_seq_port_info_get_addr(pinfo), parent, port);
+			if (parent)
+				_app->enqueue_resize(parent);
 		}
 	}
 }
@@ -496,15 +471,12 @@ AlsaDriver::refresh_main(void* me)
 void
 AlsaDriver::_refresh_main()
 {
-	// "Heavily influenced" from alsa-patch-bay
-	// (C) 2002 Robert Ham, released under GPL
-	
 	if (!create_refresh_port()) {
 		cerr << "Could not create Alsa listen port.  Auto refreshing will not work." << endl;
 		return;
 	}
 
-	int             ret;
+	int             ret     = 0;
 	int             nfds    = snd_seq_poll_descriptors_count(_seq, POLLIN);
 	struct pollfd*  pfds    = new struct pollfd[nfds];
 	unsigned short* revents = new unsigned short[nfds];
@@ -528,12 +500,15 @@ AlsaDriver::_refresh_main()
 			continue;
 		}
 
+		snd_seq_port_info_t* pinfo;
+		snd_seq_port_info_alloca(&pinfo);
+		int caps = 0;
+
 		for (int i = 0; i < nfds; ++i) {
 			if (revents[i] > 0) {
 				snd_seq_event_t* ev;
 				snd_seq_event_input(_seq, &ev);
-
-				if (ev == NULL)
+				if (!ev)
 					continue;
 
 				switch (ev->type) {
@@ -546,15 +521,26 @@ AlsaDriver::_refresh_main()
 								ev->data.connect.sender, ev->data.connect.dest));
 					break;
 				case SND_SEQ_EVENT_PORT_START:
+					snd_seq_port_info_set_client(pinfo, ev->data.addr.client);
+					caps = snd_seq_port_info_get_capability(pinfo);
+					_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,
+								PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+					break;
 				case SND_SEQ_EVENT_PORT_EXIT:
+					snd_seq_port_info_set_client(pinfo, ev->data.addr.client);
+					caps = snd_seq_port_info_get_capability(pinfo);
+					_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
+								PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+					break;
+				// TODO: What should happen for these?
 				case SND_SEQ_EVENT_PORT_CHANGE:
 				case SND_SEQ_EVENT_CLIENT_START:
 				case SND_SEQ_EVENT_CLIENT_EXIT:
 				case SND_SEQ_EVENT_CLIENT_CHANGE:
 				case SND_SEQ_EVENT_RESET:
 				default:
-					// FIXME: Ultra slow kludge, use proper find-grained events
-					_events.push(PatchageEvent(PatchageEvent::REFRESH));
+					//_events.push(PatchageEvent(PatchageEvent::REFRESH));
+					break;
 				}
 			}
 		}
@@ -564,9 +550,3 @@ AlsaDriver::_refresh_main()
 	delete[] revents;
 }
 
-
-void
-AlsaDriver::print_addr(snd_seq_addr_t addr)
-{
-	cout << (int)addr.client << ":" << (int)addr.port << endl;
-}

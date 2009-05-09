@@ -111,7 +111,7 @@ JackDriver::destroy_all_ports()
 		if (module->ports().empty())
 			_app->canvas()->remove_item(module);
 		else
-			module->resize();
+			_app->enqueue_resize();
 	}
 }
 
@@ -555,7 +555,7 @@ JackDriver::add_port(
 				is_input,
 				_app->state_manager()->get_port_color(type))));
 
-	module->resize();
+	_app->enqueue_resize(module);
 }
 
 
@@ -620,7 +620,7 @@ JackDriver::remove_port(
 		_app->canvas()->remove_item(module);
 		module.reset();
 	} else {
-		module->resize();
+		_app->enqueue_resize(module);
 	}
 
 	if (_app->canvas()->items().empty()) {

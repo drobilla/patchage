@@ -23,6 +23,7 @@
 #include <libglademm/xml.h>
 #include <gtk/gtkwindow.h>
 #include "raul/SharedPtr.hpp"
+#include "flowcanvas/Module.hpp"
 
 #include "patchage-config.h"
 #include "GladeFile.hpp"
@@ -342,6 +343,7 @@ Patchage::idle_callback()
 		_refresh = false;
 	}
 
+	flush_resize();
 	update_load();
 
 	return true;
@@ -414,9 +416,7 @@ Patchage::refresh()
 			_alsa_driver->refresh();
 #endif
 	
-		for (ItemList::iterator i = _canvas->items().begin(); i != _canvas->items().end(); ++i) {
-			(*i)->resize();
-		}
+		flush_resize();
 	}
 }
 
@@ -690,5 +690,25 @@ Patchage::buffer_size_changed()
 			update_toolbar(); // reset combo box to actual value
 	}
 #endif
+}
+
+
+void
+Patchage::enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module)
+{
+	if (module)
+		_pending_resize.insert(module);
+}
+
+
+void
+Patchage::flush_resize()
+{
+	for (set< boost::shared_ptr<FlowCanvas::Module> >::iterator i = _pending_resize.begin();
+			i != _pending_resize.end(); ++i) {
+		(*i)->resize();
+	}
+
+	_pending_resize.clear();
 }
 

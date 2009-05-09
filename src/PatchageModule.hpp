@@ -40,7 +40,6 @@ public:
 		, _app(app)
 		, _type(type)
 	{
-
 	}
 
 	virtual ~PatchageModule() { delete _menu; _menu = NULL; }
