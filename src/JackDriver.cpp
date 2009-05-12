@@ -105,11 +105,11 @@ JackDriver::detach()
 		_shutdown_mutex.lock();
 		_client = NULL;
 		_shutdown_mutex.unlock();
-		destroy_all_ports();
-		_is_activated = false;
-		signal_detached.emit();
-		_app->status_msg("[JACK] Detached");
 	}
+	destroy_all_ports();
+	_is_activated = false;
+	signal_detached.emit();
+	_app->status_msg("[JACK] Detached");
 }
 
 
@@ -532,22 +532,22 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
+	cerr << "[JACK] Shutdown" << endl;
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
-
-	jack_reset_max_delayed_usecs(me->_client);
-
 	me->_shutdown_mutex.lock();
 	me->_client = NULL;
 	me->_shutdown_mutex.unlock();
+	me->destroy_all_ports();
+	me->_is_activated = false;
+	me->signal_detached.emit();
 }
 
 
 void
 JackDriver::error_cb(const char* msg)
 {
-	cerr << "JACK ERROR: " << msg << endl;
+	cerr << "[JACK] ERROR: " << msg << endl;
 }
 
 
