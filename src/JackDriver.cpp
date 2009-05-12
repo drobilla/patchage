@@ -99,14 +99,12 @@ JackDriver::attach(bool launch_daemon)
 void
 JackDriver::detach() 
 {
+	Glib::Mutex::Lock lock(_shutdown_mutex);
 	if (_client) {
 		jack_deactivate(_client);
 		jack_client_close(_client);
-		_shutdown_mutex.lock();
 		_client = NULL;
-		_shutdown_mutex.unlock();
 	}
-	destroy_all_ports();
 	_is_activated = false;
 	signal_detached.emit();
 	_app->status_msg("[JACK] Detached");
@@ -116,7 +114,7 @@ JackDriver::detach()
 /** Destroy all JACK (canvas) ports.
  */
 void
-JackDriver::destroy_all_ports()
+JackDriver::destroy_all()
 {
 	ItemList modules = _app->canvas()->items(); // copy
 	for (ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
@@ -228,7 +226,6 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 void
 JackDriver::shutdown()
 {
-	destroy_all_ports();
 	signal_detached.emit();
 }
 
@@ -245,10 +242,9 @@ JackDriver::refresh()
 	// Jack can take _client away from us at any time throughout here :/
 	// Shortest locks possible is the best solution I can figure out
 	
-	_shutdown_mutex.lock();
+	Glib::Mutex::Lock lock(_shutdown_mutex);
 	
 	if (_client == NULL) {
-		_shutdown_mutex.unlock();
 		shutdown();
 		return;
 	}
@@ -256,7 +252,6 @@ JackDriver::refresh()
 	ports = jack_get_ports(_client, NULL, NULL, 0); // get all existing ports
 
 	if (!ports) {
-		_shutdown_mutex.unlock();
 		return;
 	}
 
@@ -356,8 +351,6 @@ JackDriver::refresh()
 		}
 	}
 	
-	_shutdown_mutex.unlock();
-
 	free(ports);
 }
 
@@ -535,10 +528,8 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	cerr << "[JACK] Shutdown" << endl;
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
-	me->_shutdown_mutex.lock();
+	Glib::Mutex::Lock lock(me->_shutdown_mutex);
 	me->_client = NULL;
-	me->_shutdown_mutex.unlock();
-	me->destroy_all_ports();
 	me->_is_activated = false;
 	me->signal_detached.emit();
 }

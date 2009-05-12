@@ -43,7 +43,8 @@ public:
 	virtual void detach()                   = 0;
 	virtual bool is_attached() const        = 0;
 
-	virtual void refresh() = 0;
+	virtual void refresh()     = 0;
+	virtual void destroy_all() {}
 	
 	virtual boost::shared_ptr<PatchagePort> create_port_view(
 			Patchage*     patchage,

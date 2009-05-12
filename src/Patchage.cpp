@@ -102,6 +102,7 @@ Patchage::Patchage(int argc, char** argv)
 	, _jack_driver(NULL)
 	, _state_manager(NULL)
 	, _attach(true)
+	, _driver_detached(false)
 	, _refresh(false)
 	, _enable_refresh(true)
 	, INIT_WIDGET(_about_win)
@@ -239,7 +240,7 @@ Patchage::Patchage(int argc, char** argv)
 	
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver = new JackDriver(this);
-	_jack_driver->signal_detached.connect(sigc::mem_fun(this, &Patchage::queue_refresh));
+	_jack_driver->signal_detached.connect(sigc::mem_fun(this, &Patchage::driver_detached));
 	
 	_menu_jack_connect->signal_activate().connect(sigc::bind(
 			sigc::mem_fun(_jack_driver, &JackDriver::attach), true));
@@ -340,8 +341,15 @@ Patchage::idle_callback()
 	// Do a full refresh (ie user clicked refresh)
 	if (_refresh) {
 		refresh();
-		_refresh = false;
+	} else if (_driver_detached) {
+		if (_jack_driver && !_jack_driver->is_attached())
+			_jack_driver->destroy_all();
+		if (_alsa_driver && !_alsa_driver->is_attached())
+			_alsa_driver->destroy_all();
 	}
+	
+	_refresh         = false;
+	_driver_detached = false;
 
 	flush_resize();
 	update_load();

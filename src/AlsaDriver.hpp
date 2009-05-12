@@ -60,7 +60,7 @@ private:
 	
 	void add_connections(boost::shared_ptr<PatchagePort> port);
 	
-	bool          create_refresh_port();
+	bool         create_refresh_port();
 	static void* refresh_main(void* me);
 	void         _refresh_main();
 

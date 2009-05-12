@@ -49,6 +49,7 @@ public:
 	bool is_realtime() const { return _client && jack_is_realtime(_client); }
 	
 	void refresh();
+	void destroy_all();
 
 	bool port_names(const PortID& id,
 	                std::string&  module_name,
@@ -96,7 +97,6 @@ private:
 
 	static void error_cb(const char* msg);
 
-	void destroy_all_ports();
 	void shutdown();
 
 	static void jack_client_registration_cb(const char* name, int registered, void* me);

@@ -68,7 +68,8 @@ public:
 	void quit() { _main_win->hide(); }
 	
 	void        refresh();
-	inline void queue_refresh() { _refresh = true; }
+	inline void queue_refresh()   { _refresh = true; }
+	inline void driver_detached() { _driver_detached = true; }
 
 	void clear_load();
 	void info_msg(const std::string& msg);
@@ -132,6 +133,7 @@ protected:
 
 	std::string _settings_filename;
 	bool        _attach;
+	bool        _driver_detached;
 	bool        _refresh;
 	bool        _enable_refresh;
 	
