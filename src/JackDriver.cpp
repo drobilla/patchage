@@ -1,15 +1,15 @@
 /* This file is part of Patchage.
  * Copyright (C) 2007 Dave Robillard <http://drobilla.net>
- * 
+ *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * Patchage is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
@@ -48,7 +48,7 @@ JackDriver::JackDriver(Patchage* app)
 }
 
 
-JackDriver::~JackDriver() 
+JackDriver::~JackDriver()
 {
 	detach();
 }
@@ -57,12 +57,12 @@ JackDriver::~JackDriver()
 /** Connect to Jack.
  */
 void
-JackDriver::attach(bool launch_daemon) 
+JackDriver::attach(bool launch_daemon)
 {
 	// Already connected
 	if (_client)
 		return;
-	
+
 	jack_set_error_function(error_cb);
 
 	jack_options_t options = (!launch_daemon) ? JackNoStartServer : JackNullOption;
@@ -81,7 +81,7 @@ JackDriver::attach(bool launch_daemon)
 		jack_set_graph_order_callback(client, jack_graph_order_cb, this);
 		jack_set_buffer_size_callback(client, jack_buffer_size_cb, this);
 		jack_set_xrun_callback(client, jack_xrun_cb, this);
-	
+
 		_buffer_size = jack_get_buffer_size(client);
 
 		if (!jack_activate(client)) {
@@ -97,7 +97,7 @@ JackDriver::attach(bool launch_daemon)
 
 
 void
-JackDriver::detach() 
+JackDriver::detach()
 {
 	Glib::Mutex::Lock lock(_shutdown_mutex);
 	if (_client) {
@@ -136,7 +136,7 @@ JackDriver::destroy_all()
 			_app->enqueue_resize(module);
 	}
 }
-	
+
 
 boost::shared_ptr<PatchagePort>
 JackDriver::create_port_view(Patchage*     patchage,
@@ -146,7 +146,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 	if (id.type == PortID::JACK_ID)
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
-	
+
 	if (jack_port == NULL)
 		return boost::shared_ptr<PatchagePort>();
 
@@ -167,7 +167,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 	boost::shared_ptr<PatchageModule> parent
 		= _app->canvas()->find_module(module_name, type);
-	
+
 	bool resize = false;
 
 	if (!parent) {
@@ -188,10 +188,10 @@ JackDriver::create_port_view(Patchage*     patchage,
 		parent->add_port(port);
 		resize = true;
 	}
-	
+
 	if (resize)
 		_app->enqueue_resize(parent);
-	
+
 	return port;
 }
 
@@ -213,7 +213,7 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 		cerr << "WARNING: " << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
 		return boost::shared_ptr<PatchagePort>();
 	}
-	
+
 	boost::shared_ptr<PatchagePort> ret(
 		new PatchagePort(parent, port_type, jack_port_short_name(port),
 			(jack_port_flags(port) & JackPortIsInput),
@@ -234,16 +234,16 @@ JackDriver::shutdown()
  * To be called from GTK thread only.
  */
 void
-JackDriver::refresh() 
+JackDriver::refresh()
 {
 	const char** ports;
 	jack_port_t* port;
 
 	// Jack can take _client away from us at any time throughout here :/
 	// Shortest locks possible is the best solution I can figure out
-	
+
 	Glib::Mutex::Lock lock(_shutdown_mutex);
-	
+
 	if (_client == NULL) {
 		shutdown();
 		return;
@@ -259,7 +259,7 @@ JackDriver::refresh()
 	string port1_name;
 	string client2_name;
 	string port2_name;
-	
+
 	// Add all ports
 	for (int i=0; ports[i]; ++i) {
 		port = jack_port_by_name(_client, ports[i]);
@@ -305,13 +305,13 @@ JackDriver::refresh()
 
 		_app->enqueue_resize(m);
 	}
-	
+
 	// Add all connections
 	for (int i=0; ports[i]; ++i) {
 
 		port = jack_port_by_name(_client, ports[i]);
 		const char** connected_ports = jack_port_get_all_connections(_client, port);
-		
+
 		if (connected_ports) {
 			for (int j=0; connected_ports[j]; ++j) {
 				client1_name = ports[i];
@@ -346,11 +346,11 @@ JackDriver::refresh()
 				if (src && dst && !src->is_connected_to(dst))
 					_app->canvas()->add_connection(src, dst, port1->color() + 0x22222200);
 			}
-			
+
 			free(connected_ports);
 		}
 	}
-	
+
 	free(ports);
 }
 
@@ -389,16 +389,16 @@ JackDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 {
 	if (_client == NULL)
 		return false;
-	
+
 	int result = jack_connect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
-	
+
 	if (result == 0)
 		_app->status_msg(string("[JACK] Connected ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
 	else
 		_app->status_msg(string("[JACK] Unable to connect ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
-	
+
 	return (!result);
 }
 
@@ -414,20 +414,20 @@ JackDriver::disconnect(boost::shared_ptr<PatchagePort> const src_port, boost::sh
 		return false;
 
 	int result = jack_disconnect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
-	
+
 	if (result == 0)
 		_app->status_msg(string("[JACK] Disconnected ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
 	else
 		_app->status_msg(string("[JACK] Unable to disconnect ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
-	
+
 	return (!result);
 }
 
 
 void
-JackDriver::jack_client_registration_cb(const char* name, int registered, void* jack_driver) 
+JackDriver::jack_client_registration_cb(const char* name, int registered, void* jack_driver)
 {
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
@@ -444,12 +444,12 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 
 
 void
-JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, void* jack_driver) 
+JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, void* jack_driver)
 {
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-	
+
 	jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {
@@ -461,7 +461,7 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 
 
 void
-JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* jack_driver) 
+JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* jack_driver)
 {
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
@@ -478,25 +478,25 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int con
 
 
 int
-JackDriver::jack_graph_order_cb(void* jack_driver) 
+JackDriver::jack_graph_order_cb(void* jack_driver)
 {
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-	
+
 	jack_reset_max_delayed_usecs(me->_client);
-	
+
 	return 0;
 }
 
 
 int
-JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver) 
+JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
 {
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-	
+
 	jack_reset_max_delayed_usecs(me->_client);
 
 	me->_buffer_size = buffer_size;
@@ -517,7 +517,7 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 	me->_xruns++;
 	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
 	jack_reset_max_delayed_usecs(me->_client);
-	
+
 	return 0;
 }
 
@@ -571,7 +571,7 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 		_buffer_size = size;
 		return true;
 	}
-	
+
 	if (jack_set_buffer_size(_client, size)) {
 		_app->status_msg("[JACK] ERROR: Unable to set buffer size");
 		return false;
@@ -591,8 +591,8 @@ JackDriver::get_max_dsp_load()
 
 	const float rate = sample_rate();
 	const float size = buffer_size();
-	const float period = size / rate * 1000000; // usec 
-		
+	const float period = size / rate * 1000000; // usec
+
 	if (max_delay > period) {
 		max_load = 1.0;
 		jack_reset_max_delayed_usecs(_client);

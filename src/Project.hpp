@@ -36,7 +36,7 @@ public:
 	~Project();
 
 	void clear();
-	
+
 	typedef std::list< boost::shared_ptr<LashClient> > Clients;
 
 	const std::string& get_name() const;

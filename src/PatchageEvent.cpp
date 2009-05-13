@@ -1,15 +1,15 @@
 /* This file is part of Patchage.
  * Copyright (C) 2007 Dave Robillard <http://drobilla.net>
- * 
+ *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * Patchage is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
@@ -56,7 +56,7 @@ PatchageEvent::execute(Patchage* patchage)
 		_str = NULL;
 
 	} else if (_type == PORT_CREATION) {
-		
+
 		Driver* driver = NULL;
 		if (_port_1.type == PortID::JACK_ID) {
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -89,7 +89,7 @@ PatchageEvent::execute(Patchage* patchage)
 			module->remove_port(port);
 			patchage->enqueue_resize(module);
 			port.reset();
-			
+
 			// No empty modules (for now)
 			if (module->num_ports() == 0) {
 				patchage->canvas()->remove_item(module);
@@ -103,17 +103,17 @@ PatchageEvent::execute(Patchage* patchage)
 		}
 
 	} else if (_type == CONNECTION) {
-		
+
 		SharedPtr<PatchagePort> port_1 = patchage->canvas()->find_port(_port_1);
 		SharedPtr<PatchagePort> port_2 = patchage->canvas()->find_port(_port_2);
-		
+
 		if (port_1 && port_2)
 			patchage->canvas()->add_connection(port_1, port_2, port_1->color() + 0x22222200);
 		else
 			cerr << "Unable to find port to connect" << endl;
 
 	} else if (_type == DISCONNECTION) {
-		
+
 		SharedPtr<PatchagePort> port_1 = patchage->canvas()->find_port(_port_1);
 		SharedPtr<PatchagePort> port_2 = patchage->canvas()->find_port(_port_2);
 

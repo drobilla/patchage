@@ -131,7 +131,7 @@ ProjectListImpl::on_button_press_event(GdkEventButton* event)
 				            sigc::mem_fun(*this,
 				                &ProjectListImpl::on_menu_popup_save_project),
 				            project)));
-				
+
 				menulist.push_back(Gtk::Menu_Helpers::MenuElem(
 				        (string)"_Close project '" + name + "'",
 				        sigc::bind(

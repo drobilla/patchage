@@ -624,7 +624,7 @@ LashProxy::close_project(const string& project_name)
 {
 	DBusMessage* reply_ptr;
 	const char* const project_name_cstr = project_name.c_str();
-	
+
 	if (!_impl->call(true, LASH_IFACE_CONTROL, "ProjectClose", &reply_ptr, DBUS_TYPE_STRING, &project_name_cstr, DBUS_TYPE_INVALID)) {
 		return;
 	}
@@ -680,9 +680,9 @@ LashProxy::get_loaded_project_properties(
 	const char* value_type;
 	dbus_bool_t value_bool;
 	const char* value_string;
-	
+
 	const char* const project_name_cstr = name.c_str();
-	
+
 	if (!_impl->call(
 	            true,
 	            LASH_IFACE_CONTROL,

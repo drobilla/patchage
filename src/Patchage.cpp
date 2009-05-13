@@ -1,15 +1,15 @@
 /* This file is part of Patchage.
  * Copyright (C) 2007 Dave Robillard <http://drobilla.net>
- * 
+ *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * Patchage is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
@@ -62,7 +62,7 @@ gtkmm_get_ink_pixel_size (Glib::RefPtr<Pango::Layout> layout,
 			       int& height)
 {
 	Pango::Rectangle ink_rect = layout->get_ink_extents ();
-	
+
 	width = (ink_rect.get_width() + PANGO_SCALE / 2) / PANGO_SCALE;
 	height = (ink_rect.get_height() + PANGO_SCALE / 2) / PANGO_SCALE;
 }
@@ -70,14 +70,14 @@ gtkmm_get_ink_pixel_size (Glib::RefPtr<Pango::Layout> layout,
 static void
 gtkmm_set_width_for_given_text (Gtk::Widget &w, const gchar *text,
 						   gint hpadding/*, gint vpadding*/)
-	
+
 {
 	int old_width, old_height;
 	w.get_size_request(old_width, old_height);
 
 	int width, height;
 	w.ensure_style ();
-	
+
 	gtkmm_get_ink_pixel_size (w.create_pango_layout (text), width, height);
 	w.set_size_request(width + hpadding, old_height);//height + vpadding);
 }
@@ -157,7 +157,7 @@ Patchage::Patchage(int argc, char** argv)
 	_about_win->property_program_name() = "Patchage";
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
-	
+
 	gtkmm_set_width_for_given_text(*_buffer_size_combo, "4096 frames", 40);
 
 	_main_scrolledwin->add(*_canvas);
@@ -198,7 +198,7 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_alsa_connect->set_sensitive(false);
 	_menu_alsa_disconnect->set_sensitive(false);
 #endif
-	
+
 	_menu_store_positions->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_store_positions));
 	_menu_file_quit->signal_activate().connect(
@@ -215,7 +215,7 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_show_projects));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
-	
+
 	_messages_clear_but->signal_clicked().connect(
 			sigc::mem_fun(this, &Patchage::on_messages_clear));
 	_messages_close_but->signal_clicked().connect(
@@ -225,9 +225,9 @@ Patchage::Patchage(int argc, char** argv)
 
 	_canvas->show();
 	_main_win->present();
-	
+
 	_state_manager->load(_settings_filename);
-	
+
 	_main_win->resize(
 		static_cast<int>(_state_manager->get_window_size().x),
 		static_cast<int>(_state_manager->get_window_size().y));
@@ -235,13 +235,13 @@ Patchage::Patchage(int argc, char** argv)
 	_main_win->move(
 		static_cast<int>(_state_manager->get_window_location().x),
 		static_cast<int>(_state_manager->get_window_location().y));
-	
+
 	_about_win->set_transient_for(*_main_win);
-	
+
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver = new JackDriver(this);
 	_jack_driver->signal_detached.connect(sigc::mem_fun(this, &Patchage::driver_detached));
-	
+
 	_menu_jack_connect->signal_activate().connect(sigc::bind(
 			sigc::mem_fun(_jack_driver, &JackDriver::attach), true));
 	_menu_jack_disconnect->signal_activate().connect(
@@ -260,7 +260,7 @@ Patchage::Patchage(int argc, char** argv)
 #else
 	_project_list_viewport->hide();
 #endif
-	
+
 	connect_widgets();
 	update_state();
 
@@ -272,7 +272,7 @@ Patchage::Patchage(int argc, char** argv)
 }
 
 
-Patchage::~Patchage() 
+Patchage::~Patchage()
 {
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
@@ -284,7 +284,7 @@ Patchage::~Patchage()
 	delete _lash_proxy;
 #endif
 	delete _state_manager;
-	
+
 	_about_win.destroy();
 	_messages_win.destroy();
 	//_main_win.destroy();
@@ -313,10 +313,10 @@ Patchage::attach()
 
 	//m_status_bar->push("Connected to JACK server");
 }
-	
+
 
 bool
-Patchage::idle_callback() 
+Patchage::idle_callback()
 {
 	// Initial run, attach
 	if (_attach) {
@@ -330,7 +330,7 @@ Patchage::idle_callback()
 		_jack_driver->process_events(this);
 	}
 #endif
-	
+
 	// Process any ALSA events
 #ifdef HAVE_ALSA
 	if (_alsa_driver) {
@@ -347,7 +347,7 @@ Patchage::idle_callback()
 		if (_alsa_driver && !_alsa_driver->is_attached())
 			_alsa_driver->destroy_all();
 	}
-	
+
 	_refresh         = false;
 	_driver_detached = false;
 
@@ -392,7 +392,7 @@ Patchage::update_load()
 		last_max_dsp_load = max_dsp_load;
 	}
 #endif
-	
+
 	return true;
 }
 
@@ -406,12 +406,12 @@ Patchage::zoom(double z)
 
 
 void
-Patchage::refresh() 
+Patchage::refresh()
 {
 	assert(_canvas);
 
 	if (_enable_refresh) {
-	
+
 		_canvas->destroy();
 
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -423,7 +423,7 @@ Patchage::refresh()
 		if (_alsa_driver)
 			_alsa_driver->refresh();
 #endif
-	
+
 		flush_resize();
 	}
 }
@@ -484,7 +484,7 @@ Patchage::info_msg(const std::string& msg)
 
 
 void
-Patchage::status_msg(const string& msg) 
+Patchage::status_msg(const string& msg)
 {
 	if (_status_text->get_buffer()->size() > 0)
 		_status_text->get_buffer()->insert(_status_text->get_buffer()->end(), "\n");
@@ -499,7 +499,7 @@ Patchage::update_state()
 {
 	for (ItemList::iterator i = _canvas->items().begin(); i != _canvas->items().end(); ++i) {
 		SharedPtr<Module> module = PtrCast<Module>(*i);
-		if (module) 
+		if (module)
 			module->load_location();
 	}
 }
@@ -521,19 +521,19 @@ Patchage::connect_widgets()
 			sigc::mem_fun(this, &Patchage::refresh));
 	_jack_driver->signal_attached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive), true));
-	
+
 	_jack_driver->signal_detached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive), true));
 	_jack_driver->signal_detached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive), false));
 #endif
 
-#ifdef HAVE_ALSA	
+#ifdef HAVE_ALSA
 	_alsa_driver->signal_attached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive), false));
 	_alsa_driver->signal_attached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive), true));
-	
+
 	_alsa_driver->signal_detached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive), true));
 	_alsa_driver->signal_detached.connect(sigc::bind(
@@ -547,7 +547,7 @@ Patchage::show_load_project_dialog()
 {
 	std::list<ProjectInfo> projects;
 	_lash_proxy->get_available_projects(projects);
-	
+
 	LoadProjectDialog dialog(this);
 	dialog.run(projects);
 }
@@ -567,7 +567,7 @@ Patchage::set_lash_available(bool available)
 
 #ifdef HAVE_ALSA
 void
-Patchage::menu_alsa_connect() 
+Patchage::menu_alsa_connect()
 {
 	_alsa_driver->attach(false);
 	_alsa_driver->refresh();
@@ -575,7 +575,7 @@ Patchage::menu_alsa_connect()
 
 
 void
-Patchage::menu_alsa_disconnect() 
+Patchage::menu_alsa_disconnect()
 {
 	_alsa_driver->detach();
 	refresh();
@@ -584,16 +584,16 @@ Patchage::menu_alsa_disconnect()
 
 
 void
-Patchage::on_arrange() 
+Patchage::on_arrange()
 {
 	assert(_canvas);
-	
+
 	_canvas->arrange();
 }
 
-	
+
 void
-Patchage::on_help_about() 
+Patchage::on_help_about()
 {
 	_about_win->run();
 	_about_win->hide();
@@ -608,16 +608,16 @@ Patchage::on_messages_clear()
 			_status_text->get_buffer()->end());
 }
 
-	
+
 void
-Patchage::on_messages_close() 
+Patchage::on_messages_close()
 {
 	_menu_view_messages->set_active(false);
 }
 
-	
+
 bool
-Patchage::on_messages_delete(GdkEventAny*) 
+Patchage::on_messages_delete(GdkEventAny*)
 {
 	_menu_view_messages->set_active(false);
 	return true;
@@ -625,7 +625,7 @@ Patchage::on_messages_delete(GdkEventAny*)
 
 
 void
-Patchage::on_quit() 
+Patchage::on_quit()
 {
 #ifdef HAVE_ALSA
 	_alsa_driver->detach();
@@ -656,9 +656,9 @@ Patchage::on_show_projects()
 		_project_list_viewport->hide();
 }
 
-	
+
 void
-Patchage::on_store_positions() 
+Patchage::on_store_positions()
 {
 	store_window_location();
 	_state_manager->save(_settings_filename);
@@ -666,7 +666,7 @@ Patchage::on_store_positions()
 
 
 void
-Patchage::on_view_toolbar() 
+Patchage::on_view_toolbar()
 {
 	if (_menu_view_toolbar->get_active())
 		_toolbar->show();
@@ -674,9 +674,9 @@ Patchage::on_view_toolbar()
 		_toolbar->hide();
 }
 
-	
+
 bool
-Patchage::on_scroll(GdkEventScroll* ev) 
+Patchage::on_scroll(GdkEventScroll* ev)
 {
 	cout << "ON SCROLL" << endl;
 	return false;
@@ -693,7 +693,7 @@ Patchage::buffer_size_changed()
 		update_toolbar();
 	} else {
 		jack_nframes_t buffer_size = 1 << (selected+5);
-	
+
 		if ( ! _jack_driver->set_buffer_size(buffer_size))
 			update_toolbar(); // reset combo box to actual value
 	}

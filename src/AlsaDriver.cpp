@@ -1,15 +1,15 @@
 /* This file is part of Patchage.
  * Copyright (C) 2007 Dave Robillard <http://drobilla.net>
- * 
+ *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * Patchage is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
@@ -37,7 +37,7 @@ AlsaDriver::AlsaDriver(Patchage* app)
 }
 
 
-AlsaDriver::~AlsaDriver() 
+AlsaDriver::~AlsaDriver()
 {
 	detach();
 }
@@ -59,7 +59,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 		_app->status_msg("[ALSA] Attached");
 
 		snd_seq_set_client_name(_seq, "Patchage");
-	
+
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
 		pthread_attr_setstacksize(&attr, 50000);
@@ -67,14 +67,14 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 		ret = pthread_create(&_refresh_thread, &attr, &AlsaDriver::refresh_main, this);
 		if (ret)
 			cerr << "Couldn't start refresh thread" << endl;
-		
+
 		signal_attached.emit();
 	}
 }
 
 
 void
-AlsaDriver::detach() 
+AlsaDriver::detach()
 {
 	if (_seq) {
 		pthread_cancel(_refresh_thread);
@@ -96,7 +96,7 @@ AlsaDriver::refresh()
 		return;
 
 	assert(_seq);
-	
+
 	refresh_ports();
 	refresh_connections();
 }
@@ -240,7 +240,7 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 }
 
 
-/** Refresh all Alsa Midi ports. 
+/** Refresh all Alsa Midi ports.
  */
 void
 AlsaDriver::refresh_ports()
@@ -254,7 +254,7 @@ AlsaDriver::refresh_ports()
 
 	snd_seq_port_info_t* pinfo;
 	snd_seq_port_info_alloca(&pinfo);
-	
+
 	boost::shared_ptr<PatchageModule> parent;
 	boost::shared_ptr<PatchagePort>   port;
 
@@ -279,10 +279,10 @@ AlsaDriver::refresh_connections()
 {
 	assert(is_attached());
 	assert(_seq);
-	
+
 	boost::shared_ptr<PatchageModule> m;
 	boost::shared_ptr<PatchagePort>   p;
-	
+
 	for (ItemList::iterator i = _app->canvas()->items().begin();
 			i != _app->canvas()->items().end(); ++i) {
 		m = boost::dynamic_pointer_cast<PatchageModule>(*i);
@@ -304,25 +304,25 @@ AlsaDriver::add_connections(boost::shared_ptr<PatchagePort> port)
 {
 	assert(is_attached());
 	assert(_seq);
-	
+
 	const snd_seq_addr_t* addr = port->alsa_addr();
 	boost::shared_ptr<PatchagePort> connected_port;
-	
+
 	// Fix a problem with duplex->duplex connections (would show up twice)
 	// No sense doing them all twice anyway..
 	if (port->is_input())
 		return;
-	
+
 	snd_seq_query_subscribe_t* subsinfo;
 	snd_seq_query_subscribe_alloca(&subsinfo);
 	snd_seq_query_subscribe_set_root(subsinfo, addr);
 	snd_seq_query_subscribe_set_index(subsinfo, 0);
-	
+
 	while (!snd_seq_query_port_subscribers(_seq, subsinfo)) {
 		const snd_seq_addr_t* connected_addr = snd_seq_query_subscribe_get_addr(subsinfo);
 		if (!connected_addr)
 			continue;
-		
+
 		PortID id(*connected_addr, true);
 		connected_port = _app->canvas()->find_port(id);
 
@@ -336,17 +336,17 @@ AlsaDriver::add_connections(boost::shared_ptr<PatchagePort> port)
 
 
 /** Connects two Alsa Midi ports.
- * 
+ *
  * \return Whether connection succeeded.
  */
 bool
-AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<PatchagePort> dst_port) 
+AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<PatchagePort> dst_port)
 {
 	const snd_seq_addr_t* src = src_port->alsa_addr();
 	const snd_seq_addr_t* dst = dst_port->alsa_addr();
 
 	bool result = true;
-	
+
 	if (src && dst) {
 		snd_seq_port_subscribe_t* subs;
 		snd_seq_port_subscribe_malloc(&subs);
@@ -368,7 +368,7 @@ AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 			result = false;
 		}
 	}
-	
+
 	if (result)
 		_app->status_msg(string("[ALSA] Connected ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
@@ -381,15 +381,15 @@ AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 
 
 /** Disconnects two Alsa Midi ports.
- * 
+ *
  * \return Whether disconnection succeeded.
  */
 bool
-AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<PatchagePort> dst_port) 
+AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<PatchagePort> dst_port)
 {
 	const snd_seq_addr_t* src = src_port->alsa_addr();
 	const snd_seq_addr_t* dst = dst_port->alsa_addr();
-	
+
 	bool result = true;
 
 	snd_seq_port_subscribe_t* subs;
@@ -405,13 +405,13 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 		cerr << "Error: Attempt to unsubscribe Alsa ports that are not subscribed." << endl;
 		result = false;
 	}
-	
+
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
 		cerr << "Alsa unsubscription failed: " << snd_strerror(ret) << endl;
 		result = false;
 	}
-	
+
 	if (result)
 		_app->status_msg(string("[ALSA] Disconnected ")
 			+ src_port->full_name() + " -> " + dst_port->full_name());
@@ -435,7 +435,7 @@ AlsaDriver::create_refresh_port()
 	snd_seq_port_info_set_name(port_info, "System Announcement Reciever");
 	snd_seq_port_info_set_capability(port_info,
 		SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE|SND_SEQ_PORT_CAP_NO_EXPORT);
-	
+
 	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
 
 	ret = snd_seq_create_port(_seq, port_info);
@@ -449,7 +449,7 @@ AlsaDriver::create_refresh_port()
 		snd_seq_port_info_get_port(port_info),
 		SND_SEQ_CLIENT_SYSTEM,
 		SND_SEQ_PORT_SYSTEM_ANNOUNCE);
-	
+
 	if (ret) {
 		cerr << "Could not connect to system announcer port: " << snd_strerror(ret) << endl;
 		return false;

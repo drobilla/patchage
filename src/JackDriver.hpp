@@ -1,15 +1,15 @@
 /* This file is part of Patchage.
  * Copyright (C) 2007 Dave Robillard <http://drobilla.net>
- * 
+ *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your option) any later
  * version.
- * 
+ *
  * Patchage is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
@@ -41,13 +41,13 @@ class JackDriver : public Driver
 public:
 	JackDriver(Patchage* app);
 	~JackDriver();
-	
+
 	void attach(bool launch_daemon);
 	void detach();
 
 	bool is_attached() const { return (_client != NULL); }
 	bool is_realtime() const { return _client && jack_is_realtime(_client); }
-	
+
 	void refresh();
 	void destroy_all();
 
@@ -67,7 +67,7 @@ public:
 
 	void start_transport() { jack_transport_start(_client); }
 	void stop_transport()  { jack_transport_stop(_client); }
-	
+
 	void reset_xruns();
 	void reset_max_dsp_load();
 
@@ -77,9 +77,9 @@ public:
 		zero.valid = (jack_position_bits_t)0;
 		jack_transport_reposition(_client, &zero);
 	}
-	
+
 	jack_client_t* client() { return _client; }
-	
+
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 
@@ -90,7 +90,7 @@ public:
 	float get_max_dsp_load();
 
 private:
-	
+
 	boost::shared_ptr<PatchagePort> create_port(
 			boost::shared_ptr<PatchageModule> parent,
 			jack_port_t*                      port);
@@ -111,7 +111,7 @@ private:
 	jack_client_t* _client;
 
 	Glib::Mutex _shutdown_mutex;
-	
+
 	bool            _is_activated;
 	jack_position_t _last_pos;
 	jack_nframes_t  _buffer_size;
