@@ -35,7 +35,7 @@ def set_options(opt):
 
 def configure(conf):
 	autowaf.configure(conf)
-	autowaf.check_tool(conf, 'compiler_cxx')
+	conf.check_tool('compiler_cxx')
 	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
 	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
 	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.5.1', mandatory=True)
