@@ -161,8 +161,6 @@ Patchage::Patchage(int argc, char** argv)
 	gtkmm_set_width_for_given_text(*_buffer_size_combo, "4096 frames", 40);
 
 	_main_scrolledwin->add(*_canvas);
-	_canvas->scroll_to(static_cast<int>(_canvas->width()/2 - 320),
-	                   static_cast<int>(_canvas->height()/2 - 240)); // FIXME: hardcoded
 
 	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(10);
 	_main_scrolledwin->property_vadjustment().get_value()->set_step_increment(10);
@@ -310,8 +308,6 @@ Patchage::attach()
 	refresh();
 
 	update_toolbar();
-
-	//m_status_bar->push("Connected to JACK server");
 }
 
 
@@ -321,6 +317,7 @@ Patchage::idle_callback()
 	// Initial run, attach
 	if (_attach) {
 		attach();
+		_canvas->scroll_to_center();
 		_attach = false;
 	}
 
@@ -680,7 +677,6 @@ Patchage::on_view_toolbar()
 bool
 Patchage::on_scroll(GdkEventScroll* ev)
 {
-	cout << "ON SCROLL" << endl;
 	return false;
 }
 
