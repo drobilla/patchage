@@ -1,3 +1,14 @@
+patchage (0.4.3) unstable; urgency=low
+
+  * Switch to waf build system
+  * Fix compilation with GCC 4.4
+  * Better ALSA support
+  * Massive performance improvements when ALSA is enabled
+  * Center on startup
+  
+ -- Dave Robillard <dave@drobilla.net>  Tue, 08 Dec 2009 21:13:37 -0500
+
+
 patchage (0.4.2) unstable; urgency=low
 
   * LASH support via D-BUS from ladi-patchage branch

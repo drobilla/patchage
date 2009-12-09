@@ -32,7 +32,7 @@
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: FlowCanvas::Canvas(width, height)
-  	, _app(app)
+	, _app(app)
 {
 }
 
@@ -70,7 +70,7 @@ PatchageCanvas::find_port(const PortID& id)
 	string       module_name;
 	string       port_name;
 
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(USE_LIBJACK)
 	jack_port_t* jack_port = NULL;
 #endif
 
