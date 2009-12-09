@@ -45,16 +45,16 @@ public:
 	bool is_realtime() const;
 
 	void refresh();
+	void destroy_all();
 
-	bool
-	connect(
+	bool connect(
 		boost::shared_ptr<PatchagePort> src,
 		boost::shared_ptr<PatchagePort> dst);
 
-	bool
-	disconnect(
+	bool disconnect(
 		boost::shared_ptr<PatchagePort> src,
 		boost::shared_ptr<PatchagePort> dst);
+
 	void start_transport();
 	void stop_transport();
 	void rewind_transport();
@@ -62,22 +62,20 @@ public:
 	void reset_xruns();
 
 	jack_nframes_t buffer_size();
-	bool set_buffer_size(jack_nframes_t size);
+	bool           set_buffer_size(jack_nframes_t size);
 
 	float sample_rate();
 
 	size_t xruns();
 
 	float get_max_dsp_load();
-	void reset_max_dsp_load();
+	void  reset_max_dsp_load();
 
-	boost::shared_ptr<PatchagePort>
-	find_port_view(
+	boost::shared_ptr<PatchagePort> find_port_view(
 		Patchage*     patchage,
 		const PortID& ref);
 
-	boost::shared_ptr<PatchagePort>
-	create_port_view(
+	boost::shared_ptr<PatchagePort> create_port_view(
 			Patchage*     patchage,
 			const PortID& ref);
 
@@ -85,20 +83,17 @@ private:
 	void error_msg(const std::string& msg) const;
 	void info_msg(const std::string& msg) const;
 
-	boost::shared_ptr<PatchageModule>
-	find_or_create_module(
+	boost::shared_ptr<PatchageModule> find_or_create_module(
 		ModuleType type,
 		const std::string& name);
 
-	void
-	add_port(
+	void add_port(
 		boost::shared_ptr<PatchageModule>& module,
 		PortType type,
 		const std::string& name,
 		bool is_input);
 
-	void
-	add_port(
+	void add_port(
 		dbus_uint64_t client_id,
 		const char *client_name,
 		dbus_uint64_t port_id,
@@ -106,15 +101,13 @@ private:
 		dbus_uint32_t port_flags,
 		dbus_uint32_t port_type);
 
-	void
-	remove_port(
+	void remove_port(
 		dbus_uint64_t client_id,
 		const char *client_name,
 		dbus_uint64_t port_id,
 		const char *port_name);
 
-	void
-	connect_ports(
+	void connect_ports(
 		dbus_uint64_t connection_id,
 		dbus_uint64_t client1_id,
 		const char *client1_name,
@@ -125,8 +118,7 @@ private:
 		dbus_uint64_t port2_id,
 		const char *port2_name);
 
-	void
-	disconnect_ports(
+	void disconnect_ports(
 		dbus_uint64_t connection_id,
 		dbus_uint64_t client1_id,
 		const char *client1_name,
@@ -137,8 +129,7 @@ private:
 		dbus_uint64_t port2_id,
 		const char *port2_name);
 
-	bool
-	call(
+	bool call(
 		bool response_expected,
 		const char* iface,
 		const char* method,
@@ -146,39 +137,28 @@ private:
 		int in_type,
 		...);
 
-	void
-	update_attached();
+	void update_attached();
 
-	bool
-	is_started();
+	bool is_started();
 
-	void
-	start_server();
+	void start_server();
 
-	void
-	stop_server();
-
-	void
-	destroy_all_ports();
+	void stop_server();
 
 	void refresh_internal(bool force);
 
-	static
-	DBusHandlerResult
-	dbus_message_hook(
+	static DBusHandlerResult dbus_message_hook(
 		DBusConnection *connection,
 		DBusMessage *message,
 		void *me);
 
-	void
-	on_jack_appeared();
+	void on_jack_appeared();
 
-	void
-	on_jack_disappeared();
+	void on_jack_disappeared();
 
 private:
-	Patchage* _app;
-	DBusError _dbus_error;
+	Patchage*       _app;
+	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;
 
 	bool _server_responding;

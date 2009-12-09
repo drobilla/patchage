@@ -67,8 +67,8 @@ JackDriver::JackDriver(Patchage* app)
 	: Driver(128)
 	, _app(app)
 	, _dbus_connection(0)
-	, _server_started(false)
 	, _server_responding(false)
+	, _server_started(false)
 	, _graph_version(0)
 	, _max_dsp_load(0.0)
 {
@@ -91,7 +91,7 @@ JackDriver::~JackDriver()
 /** Destroy all JACK (canvas) ports.
  */
 void
-JackDriver::destroy_all_ports()
+JackDriver::destroy_all()
 {
 	ItemList modules = _app->canvas()->items(); // copy
 	for (ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
@@ -102,7 +102,7 @@ JackDriver::destroy_all_ports()
 		PortVector ports = module->ports(); // copy
 		for (PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
 			boost::shared_ptr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
-			if (port && port->type() == JACK_AUDIO || port->type() == JACK_MIDI) {
+			if (port && (port->type() == JACK_AUDIO || port->type() == JACK_MIDI)) {
 				module->remove_port(port);
 				port->hide();
 			}
@@ -111,7 +111,7 @@ JackDriver::destroy_all_ports()
 		if (module->ports().empty())
 			_app->canvas()->remove_item(module);
 		else
-			_app->enqueue_resize();
+			_app->enqueue_resize(module);
 	}
 }
 
@@ -711,7 +711,6 @@ JackDriver::refresh_internal(bool force)
 {
 	DBusMessage* reply_ptr;
 	DBusMessageIter iter;
-	int type;
 	dbus_uint64_t version;
 	const char * reply_signature;
 	DBusMessageIter clients_array_iter;
@@ -760,7 +759,7 @@ JackDriver::refresh_internal(bool force)
 		goto unref;
 	}
 
-	destroy_all_ports();
+	destroy_all();
 
 	//info_msg(str(boost::format("got new graph version %llu") % version));
 	_graph_version = version;
@@ -976,6 +975,8 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 	}
 
 	dbus_message_unref(reply_ptr);
+
+	return true;
 }
 
 
