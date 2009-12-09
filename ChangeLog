@@ -1,3 +1,10 @@
+patchage (?) unstable; urgency=low
+
+  * Install SVG icon
+  
+ -- Dave Robillard <dave@drobilla.net>  ?
+
+
 patchage (0.4.4) unstable; urgency=low
 
   * Fix incorrect icon install paths

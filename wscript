@@ -172,6 +172,11 @@ def build(bld):
 					bld.env['APP_INSTALL_NAME'] + '.png'),
 			'icons/' + s + '/patchage.png')
 
+	bld.install_as(
+		os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', 'scalable', 'apps',
+				bld.env['APP_INSTALL_NAME'] + '.svg'),
+		'icons/scalable/patchage.svg')
+
 def shutdown():
 	autowaf.shutdown()
 
