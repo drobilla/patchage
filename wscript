@@ -7,7 +7,7 @@ import autowaf
 import Options
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '0.4.3'
+PATCHAGE_VERSION = '0.4.4'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
@@ -169,7 +169,7 @@ def build(bld):
 	for s in icon_sizes:
 		bld.install_as(
 			os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', s, 'apps',
-					bld.env['APP_INSTALL_NAME'], '.png'),
+					bld.env['APP_INSTALL_NAME'] + '.png'),
 			'icons/' + s + '/patchage.png')
 
 def shutdown():
