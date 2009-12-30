@@ -35,6 +35,7 @@ def set_options(opt):
 
 def configure(conf):
 	autowaf.configure(conf)
+	autowaf.display_header('Patchage Configuration')
 	conf.check_tool('compiler_cxx')
 	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
 	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
@@ -90,7 +91,6 @@ def configure(conf):
 	conf.write_config_header('patchage-config.h')
 
 	autowaf.print_summary(conf)
-	autowaf.display_header('Patchage Configuration')
 	autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
