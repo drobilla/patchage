@@ -366,8 +366,8 @@ JackDriver::port_names(const PortID& id,
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
 
 	if (!jack_port) {
-		module_name = "";
-		port_name = "";
+		module_name.clear();
+		port_name.clear();
 		return false;
 	}
 
