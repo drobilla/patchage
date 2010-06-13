@@ -339,8 +339,10 @@ Patchage::idle_callback()
 	if (_refresh) {
 		refresh();
 	} else if (_driver_detached) {
+#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver && !_jack_driver->is_attached())
 			_jack_driver->destroy_all();
+#endif
 #ifdef HAVE_ALSA
 		if (_alsa_driver && !_alsa_driver->is_attached())
 			_alsa_driver->destroy_all();
