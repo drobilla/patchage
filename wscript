@@ -54,7 +54,8 @@ def configure(conf):
 		conf.define('HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
 	else:
 		autowaf.check_pkg(conf, 'jack', uselib_store='JACK', atleast_version='0.107.0', mandatory=False)
-		conf.define('USE_LIBJACK', int(conf.env['HAVE_JACK'] == 1))
+		if conf.env['HAVE_JACK'] == 1:
+			conf.define('USE_LIBJACK', 1)
 
 	conf.define('HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
