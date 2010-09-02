@@ -58,11 +58,6 @@ public:
 			sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
 	}
 
-	void move(double dx, double dy) {
-		FlowCanvas::Module::move(dx, dy);
-		store_location();
-	}
-
 	void load_location() {
 		boost::shared_ptr<Canvas> canvas = _canvas.lock();
 		if (!canvas)
