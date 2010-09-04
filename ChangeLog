@@ -1,14 +1,18 @@
-patchage (?) unstable; urgency=low
+patchage (0.4.5) unstable; urgency=low
 
   * Install SVG icon
-  
- -- Dave Robillard <dave@drobilla.net>  ?
+  * Fix compilation without Jack
+  * Improve performance when dragging modules
+  * Bump FlowCanvas dependency to 0.6.0
+  * Upgrade to waf 1.5.18
+
+ -- Dave Robillard <dave@drobilla.net>  Fri, 03 Sep 2010 20:24:36 -0400
 
 
 patchage (0.4.4) unstable; urgency=low
 
   * Fix incorrect icon install paths
-  
+
  -- Dave Robillard <dave@drobilla.net>  Wed, 09 Dec 2009 10:17:37 -0500
 
 
@@ -19,7 +23,7 @@ patchage (0.4.3) unstable; urgency=low
   * Better ALSA support
   * Massive performance improvements when ALSA is enabled
   * Center on startup
-  
+
  -- Dave Robillard <dave@drobilla.net>  Tue, 08 Dec 2009 21:13:37 -0500
 
 
@@ -27,13 +31,13 @@ patchage (0.4.2) unstable; urgency=low
 
   * LASH support via D-BUS from ladi-patchage branch
   * Remove old LASH support via liblash
- 
+
  -- Dave Robillard <dave@drobilla.net>  Tue, 09 Sep 2008 15:41:04 -0400
 
 
 patchage (0.4.1) unstable; urgency=low
 
   * Initial Debian release
- 
+
  -- Dave Robillard <dave@drobilla.net>  Sun, 06 Jul 2008 17:19:55 -0400
 

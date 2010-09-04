@@ -7,7 +7,7 @@ import autowaf
 import Options
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '0.4.4'
+PATCHAGE_VERSION = '0.4.5'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
@@ -39,7 +39,7 @@ def configure(conf):
 	conf.check_tool('compiler_cxx')
 	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
 	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
-	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.5.1', mandatory=True)
+	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.6.0', mandatory=True)
 	autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM', atleast_version='2.6.0', mandatory=True)
 	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0', mandatory=True)
 	autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM', mandatory=True)
