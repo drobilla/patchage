@@ -111,15 +111,12 @@ PatchageCanvas::find_port(const PortID& id)
 					continue;
 
 				if (pp->type() == ALSA_MIDI) {
-					/*cerr << "ALSA PORT: " << (int)pp->alsa_addr()->client << ":"
-					  << (int)pp->alsa_addr()->port << endl;*/
-
 					if (pp->alsa_addr()
 							&& pp->alsa_addr()->client == id.id.alsa_addr.client
 							&& pp->alsa_addr()->port   == id.id.alsa_addr.port) {
-						if (!id.is_input && module->type() == Input) {
-							//cerr << "WRONG DIRECTION, SKIPPED PORT" << endl;
-						} else {
+						if ((module->type() == InputOutput)
+						    || (id.is_input && (module->type() == Input))
+						    || (!id.is_input && (module->type() == Output))) {
 							return pp;
 						}
 					}
