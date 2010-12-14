@@ -290,12 +290,16 @@ Patchage::~Patchage()
 #endif
 #ifdef HAVE_LASH
 	delete _lash_proxy;
+	delete _project_list;
+	delete _session;
+	delete _dbus;
 #endif
 	delete _state_manager;
-
+	
 	_about_win.destroy();
 	_messages_win.destroy();
-	//_main_win.destroy();
+
+	_xml.reset();
 }
 
 
@@ -646,6 +650,7 @@ Patchage::on_quit()
 	_jack_driver->detach();
 #endif
 	_main_win->hide();
+	_canvas.reset();
 }
 
 
