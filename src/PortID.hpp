@@ -20,6 +20,7 @@
 
 #include "patchage-config.h"
 
+#include <iostream>
 #include <cstring>
 #ifdef USE_LIBJACK
 #include <jack/jack.h>
@@ -59,6 +60,26 @@ struct PortID {
 #endif
 	} id;
 };
+
+static inline std::ostream&
+operator<<(std::ostream& os, const PortID& id)
+{
+	switch (id.type) {
+	case PortID::NULL_PORT_ID:
+		return os << "(null)";
+	case PortID::JACK_ID:
+#ifdef USE_LIBJACK
+		return os << "jack:" << id.id.jack_id;
+#endif
+		break;
+	case PortID::ALSA_ADDR:
+#ifdef HAVE_ALSA
+		return os << "alsa:" << (int)id.id.alsa_addr.client << ":" << (int)id.id.alsa_addr.port;
+#endif
+		break;
+	}
+	assert(false);
+}
 
 #endif // PATCHAGE_PORTID_HPP
 
