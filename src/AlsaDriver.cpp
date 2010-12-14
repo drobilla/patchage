@@ -17,8 +17,8 @@
 
 #include <string>
 #include <set>
-#include <iostream>
 #include <cassert>
+#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
 #include "PatchageCanvas.hpp"
 #include "AlsaDriver.hpp"
@@ -66,7 +66,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 
 		ret = pthread_create(&_refresh_thread, &attr, &AlsaDriver::refresh_main, this);
 		if (ret)
-			cerr << "Couldn't start refresh thread" << endl;
+			Raul::error << "Couldn't start refresh thread" << endl;
 
 		signal_attached.emit();
 	}
@@ -358,13 +358,13 @@ AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 
 		// Already connected (shouldn't happen)
 		if (!snd_seq_get_port_subscription(_seq, subs)) {
-			cerr << "Error: Attempt to subscribe Alsa ports that are already subscribed." << endl;
+			Raul::error << "[ALSA] Attempt to subscribe ports that are already subscribed." << endl;
 			result = false;
 		}
 
 		int ret = snd_seq_subscribe_port(_seq, subs);
 		if (ret < 0) {
-			cerr << "Alsa subscription failed: " << snd_strerror(ret) << endl;
+			Raul::error << "[ALSA] Subscription failed: " << snd_strerror(ret) << endl;
 			result = false;
 		}
 	}
@@ -402,13 +402,13 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 
 	// Not connected (shouldn't happen)
 	if (snd_seq_get_port_subscription(_seq, subs) != 0) {
-		cerr << "Error: Attempt to unsubscribe Alsa ports that are not subscribed." << endl;
+		Raul::error << "[ALSA] Attempt to unsubscribe ports that are not subscribed." << endl;
 		result = false;
 	}
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		cerr << "Alsa unsubscription failed: " << snd_strerror(ret) << endl;
+		Raul::error << "[ALSA] Unsubscription failed: " << snd_strerror(ret) << endl;
 		result = false;
 	}
 
@@ -440,7 +440,7 @@ AlsaDriver::create_refresh_port()
 
 	ret = snd_seq_create_port(_seq, port_info);
 	if (ret) {
-		cerr << "Error creating alsa port: " << snd_strerror(ret) << endl;
+		Raul::error << "[ALSA] Error creating port: " << snd_strerror(ret) << endl;
 		return false;
 	}
 
@@ -451,7 +451,8 @@ AlsaDriver::create_refresh_port()
 		SND_SEQ_PORT_SYSTEM_ANNOUNCE);
 
 	if (ret) {
-		cerr << "Could not connect to system announcer port: " << snd_strerror(ret) << endl;
+		Raul::error << "[ALSA] Could not connect to system announcer port: "
+		            << snd_strerror(ret) << endl;
 		return false;
 	}
 
@@ -472,7 +473,7 @@ void
 AlsaDriver::_refresh_main()
 {
 	if (!create_refresh_port()) {
-		cerr << "Could not create Alsa listen port.  Auto refreshing will not work." << endl;
+		Raul::error << "[ALSA] Could not create listen port, auto-refresh will not work." << endl;
 		return;
 	}
 
@@ -489,14 +490,14 @@ AlsaDriver::_refresh_main()
 			if (errno == EINTR)
 				continue;
 
-			cerr << "Error polling Alsa sequencer: " << strerror(errno) << endl;
+			Raul::error << "[ALSA] Error polling sequencer: " << strerror(errno) << endl;
 			continue;
 		}
 
 		ret = snd_seq_poll_descriptors_revents(_seq, pfds, nfds, revents);
 		if (ret) {
-			cerr << "Error getting Alsa sequencer poll events: "
-				<< snd_strerror(ret) << endl;
+			Raul::error << "[ALSA] Error getting sequencer poll events: "
+			            << snd_strerror(ret) << endl;
 			continue;
 		}
 

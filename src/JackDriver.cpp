@@ -19,11 +19,11 @@
 #include <cstring>
 #include <string>
 #include <set>
-#include <iostream>
 #include "patchage-config.h"
 #include <jack/jack.h>
 #include <jack/statistics.h>
 #include <jack/thread.h>
+#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
@@ -210,7 +210,7 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 		port_type = JACK_MIDI;
 #endif
 	} else {
-		cerr << "WARNING: " << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
+		Raul::warn << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
 		return boost::shared_ptr<PatchagePort>();
 	}
 
@@ -296,7 +296,7 @@ JackDriver::refresh()
 			port_type = JACK_MIDI;
 #endif
 		} else {
-			cerr << "WARNING: " << ports[i] << " has unknown type \'" << type_str << "\'" << endl;
+			Raul::warn << ports[i] << " has unknown type \'" << type_str << "\'" << endl;
 			continue;
 		}
 
@@ -525,7 +525,7 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
-	cerr << "[JACK] Shutdown" << endl;
+	Raul::info << "[JACK] Shutdown" << endl;
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	Glib::Mutex::Lock lock(me->_shutdown_mutex);
@@ -538,7 +538,7 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 void
 JackDriver::error_cb(const char* msg)
 {
-	cerr << "[JACK] ERROR: " << msg << endl;
+	Raul::error << "[JACK] " << msg << endl;
 }
 
 

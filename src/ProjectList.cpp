@@ -16,7 +16,6 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <iostream>
 #include <gtkmm.h>
 #include <libglademm/xml.h>
 
@@ -115,7 +114,6 @@ ProjectListImpl::on_button_press_event(GdkEventButton* event)
 		menulist.push_back(Gtk::Menu_Helpers::MenuElem("Save _all projects", sigc::mem_fun(*this, &ProjectListImpl::on_menu_popup_save_all_projects)));
 
 		if (_widget->get_path_at_pos((int)event->x, (int)event->y, path, column_ptr, cell_x, cell_y)) {
-			//cout << path.to_string() << endl;
 			selection->unselect_all();
 			selection->select(path);
 
@@ -147,7 +145,6 @@ ProjectListImpl::on_button_press_event(GdkEventButton* event)
 				            project)));
 			}
 		} else {
-			//cout << "No row" << endl;
 			selection->unselect_all();
 		}
 

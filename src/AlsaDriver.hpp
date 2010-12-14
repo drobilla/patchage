@@ -18,7 +18,6 @@
 #ifndef PATCHAGE_ALSADRIVER_HPP
 #define PATCHAGE_ALSADRIVER_HPP
 
-#include <iostream>
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 #include <string>

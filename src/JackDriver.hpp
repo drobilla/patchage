@@ -18,7 +18,6 @@
 #ifndef PATCHAGE_JACKDRIVER_HPP
 #define PATCHAGE_JACKDRIVER_HPP
 
-#include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <jack/jack.h>
 #include <jack/statistics.h>

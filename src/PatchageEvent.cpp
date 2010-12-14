@@ -15,8 +15,10 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "patchage-config.h"
+#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
+
+#include "patchage-config.h"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
@@ -32,7 +34,6 @@
 #endif
 
 using namespace std;
-
 
 void
 PatchageEvent::execute(Patchage* patchage)
@@ -50,6 +51,8 @@ PatchageEvent::execute(Patchage* patchage)
 		if (module) {
 			patchage->canvas()->remove_item(module);
 			module.reset();
+		} else {
+			Raul::error << "Unable to find client " << _str << " to remove" << endl;
 		}
 
 		free(_str);
@@ -73,9 +76,9 @@ PatchageEvent::execute(Patchage* patchage)
 			if (port)
 				patchage->enqueue_resize(port->module().lock());
 			else
-				cerr << "Unable to create port view" << endl;
+				Raul::error << "Unable to create port view" << endl;
 		} else {
-			cerr << "ERROR: Create port with unknown port type" << endl;
+			Raul::error << "Attempt to create port with unknown type" << endl;
 		}
 
 	} else if (_type == PORT_DESTRUCTION) {
@@ -99,7 +102,7 @@ PatchageEvent::execute(Patchage* patchage)
 			}
 
 		} else {
-			cerr << "Unable to find port to destroy" << endl;
+			Raul::error << "Unable to find port to destroy" << endl;
 		}
 
 	} else if (_type == CONNECTION) {
@@ -110,7 +113,7 @@ PatchageEvent::execute(Patchage* patchage)
 		if (port_1 && port_2)
 			patchage->canvas()->add_connection(port_1, port_2, port_1->color() + 0x22222200);
 		else
-			cerr << "Unable to find port to connect" << endl;
+			Raul::error << "Unable to find port to connect" << endl;
 
 	} else if (_type == DISCONNECTION) {
 
@@ -120,9 +123,7 @@ PatchageEvent::execute(Patchage* patchage)
 		if (port_1 && port_2)
 			patchage->canvas()->remove_connection(port_1, port_2);
 		else
-			cerr << "Unable to find port to disconnect" << endl;
+			Raul::error << "Unable to find port to disconnect" << endl;
 	}
-
-	//cerr << "}" << endl << endl;
 }
 

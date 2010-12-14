@@ -21,7 +21,6 @@
 #include <string>
 #include <list>
 #include <map>
-#include <iostream>
 #include <boost/optional.hpp>
 #include "PatchagePort.hpp"
 

@@ -15,13 +15,15 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <iostream>
 #include <libgnomecanvasmm.h>
 #include <glibmm/exception.h>
 
+#include "raul/log.hpp"
+
 #include "Patchage.hpp"
 
-int main(int argc, char** argv)
+int
+main(int argc, char** argv)
 {
 	try {
 
@@ -34,13 +36,13 @@ int main(int argc, char** argv)
 	app.run(*patchage.window());
 
 	} catch (std::exception& e) {
-		std::cerr << "Caught exception, aborting.  Error message was: "
-				<< e.what() << std::endl;
+		Raul::error << "Caught exception, aborting.  Error message was: "
+		            << e.what() << std::endl;
 		return 1;
 
 	} catch (Glib::Exception& e) {
-		std::cerr << "Caught exception, aborting.  Error message was: "
-				<< e.what() << std::endl;
+		Raul::error << "Caught exception, aborting.  Error message was: "
+		            << e.what() << std::endl;
 		return 1;
 	}
 

@@ -15,10 +15,13 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <stdexcept>
 #include <stdlib.h>
-#include <iostream>
+
+#include <stdexcept>
 #include <fstream>
+
+#include "raul/log.hpp"
+
 #include "StateManager.hpp"
 #include "Patchage.hpp"
 
@@ -126,15 +129,13 @@ StateManager::load(const string& filename)
 {
 	_module_settings.clear();
 
-	cerr << "Loading configuration file " << filename << endl;
-
 	std::ifstream is;
 	is.open(filename.c_str(), std::ios::in);
 
-	if ( ! is.good()) {
-		std::cerr << "Unable to load file " << filename << "!" << endl;
+	if ( ! is.good())
 		return;
-	}
+	
+	Raul::info << "Loading configuration file " << filename << endl;
 
 	string s;
 

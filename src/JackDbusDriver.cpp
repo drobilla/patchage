@@ -20,7 +20,6 @@
 #include <cstring>
 #include <string>
 #include <set>
-#include <iostream>
 
 #include "patchage-config.h"
 
