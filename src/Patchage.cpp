@@ -100,6 +100,7 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver_autoattach(true)
 #endif
 	, _jack_driver(NULL)
+	, _jack_driver_autoattach(true)
 	, _state_manager(NULL)
 	, _attach(true)
 	, _driver_detached(false)
@@ -140,12 +141,21 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas = boost::shared_ptr<PatchageCanvas>(new PatchageCanvas(this, 1600*2, 1200*2));
 
 	while (argc > 0) {
-		if (!strcmp(*argv, "--help")) {
-			cout << "Usage: patchage [OPTIONS]\nOptions: --no-alsa" << endl;
+		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
+			cout << "Usage: patchage [OPTIONS]" << endl;
+			cout << "Visually connect JACK and ALSA Audio/MIDI ports." << endl << endl;
+			cout << "Options:" << endl;
+			cout << "\t-h  --help     Show this help" << endl;
+			cout << "\t-A  --no-alsa  Do not automatically attach to ALSA" << endl;
+			cout << "\t-J  --no-jack  Do not automatically attack to JACK" << endl;
 			exit(0);
 #ifdef HAVE_ALSA
 		} else if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
 			_alsa_driver_autoattach = false;
+#endif
+#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+		} else if (!strcmp(*argv, "-J") || !strcmp(*argv, "--no-jack")) {
+			_jack_driver_autoattach = false;
 #endif
 		}
 
@@ -295,7 +305,8 @@ Patchage::attach()
 	_enable_refresh = false;
 
 #if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver->attach(true);
+	if (_jack_driver_autoattach)
+		_jack_driver->attach(true);
 #endif
 
 #ifdef HAVE_ALSA

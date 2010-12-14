@@ -127,6 +127,7 @@ protected:
 	std::set< boost::shared_ptr<FlowCanvas::Module> > _pending_resize;
 
 	JackDriver*   _jack_driver;
+	bool          _jack_driver_autoattach;
 	StateManager* _state_manager;
 
 	Gtk::Main* _gtk_main;
