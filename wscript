@@ -48,7 +48,7 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL', atleast_version='0.5.1', mandatory=True)
 
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
-	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and Options.options.jack_dbus
+	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
 
 	if conf.env['HAVE_JACK_DBUS']:
 		conf.define('HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
