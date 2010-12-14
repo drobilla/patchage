@@ -607,6 +607,7 @@ JackDriver::get_max_dsp_load()
 void
 JackDriver::reset_max_dsp_load()
 {
-	jack_reset_max_delayed_usecs(_client);
+	if (_client)
+		jack_reset_max_delayed_usecs(_client);
 }
 
