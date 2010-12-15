@@ -43,6 +43,9 @@ public:
 
 	boost::shared_ptr<PatchageModule> find_module(const std::string& name, ModuleType type);
 	boost::shared_ptr<PatchagePort>   find_port(const PortID& id);
+	
+	boost::shared_ptr<PatchagePort> find_port_by_name(const std::string& client_name,
+	                                                  const std::string& port_name);
 
 	void connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
 	             boost::shared_ptr<FlowCanvas::Connectable> port2);
@@ -60,7 +63,7 @@ public:
 		_module_index.insert(std::make_pair(name, module));
 		add_item(module);
 	}
-	
+
 	void destroy();
 
 private:

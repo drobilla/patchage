@@ -100,7 +100,7 @@ JackDriver::destroy_all()
 
 		PortVector ports = module->ports(); // copy
 		for (PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
-			boost::shared_ptr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
+			SharedPtr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
 			if (port && (port->type() == JACK_AUDIO || port->type() == JACK_MIDI)) {
 				module->remove_port(port);
 				port->hide();
@@ -533,17 +533,17 @@ JackDriver::is_attached() const
 
 void
 JackDriver::add_port(
-	boost::shared_ptr<PatchageModule>& module,
-	PortType                           type,
-	const std::string&                 name,
-	bool                               is_input)
+	SharedPtr<PatchageModule>& module,
+	PortType                   type,
+	const std::string&         name,
+	bool                       is_input)
 {
 	if (module->get_port(name)) {
 		return;
 	}
 
 	module->add_port(
-		boost::shared_ptr<PatchagePort>(
+		SharedPtr<PatchagePort>(
 			new PatchagePort(
 				module,
 				type,
@@ -587,7 +587,7 @@ JackDriver::add_port(
 		}
 	}
 
-	boost::shared_ptr<PatchageModule> module = find_or_create_module(type, client_name);
+	SharedPtr<PatchageModule> module = find_or_create_module(type, client_name);
 
 	add_port(module, local_port_type, port_name, port_flags & JACKDBUS_PORT_FLAG_INPUT);
 }
@@ -600,13 +600,13 @@ JackDriver::remove_port(
 	dbus_uint64_t port_id,
 	const char*   port_name)
 {
-	boost::shared_ptr<PatchagePort> port = PtrCast<PatchagePort>(_app->canvas()->get_port(client_name, port_name));
+	SharedPtr<PatchagePort> port = _app->canvas()->find_port_by_name(client_name, port_name);
 	if (!port) {
 		error_msg("Unable to remove unknown port");
 		return;
 	}
 
-	boost::shared_ptr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
+	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
 
 	module->remove_port(port);
 	port.reset();
@@ -629,15 +629,15 @@ JackDriver::remove_port(
 }
 
 
-boost::shared_ptr<PatchageModule>
+SharedPtr<PatchageModule>
 JackDriver::find_or_create_module(
 	ModuleType type,
 	const std::string& name)
 {
-	boost::shared_ptr<PatchageModule> module = _app->canvas()->find_module(name, type);
+	SharedPtr<PatchageModule> module = _app->canvas()->find_module(name, type);
 
 	if (!module) {
-		module = boost::shared_ptr<PatchageModule>(new PatchageModule(_app, name, type));
+		module = SharedPtr<PatchageModule>(new PatchageModule(_app, name, type));
 		module->load_location();
 		_app->canvas()->add_module(name, module);
 	}
@@ -658,13 +658,13 @@ JackDriver::connect_ports(
 	dbus_uint64_t port2_id,
 	const char*   port2_name)
 {
-	boost::shared_ptr<PatchagePort> port1 = PtrCast<PatchagePort>(_app->canvas()->get_port(client1_name, port1_name));
+	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
 		error_msg((string)"Unable to connect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	boost::shared_ptr<PatchagePort> port2 = PtrCast<PatchagePort>(_app->canvas()->get_port(client2_name, port2_name));
+	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
 		error_msg((string)"Unable to connect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
@@ -686,13 +686,13 @@ JackDriver::disconnect_ports(
 	dbus_uint64_t port2_id,
 	const char*   port2_name)
 {
-	boost::shared_ptr<PatchagePort> port1 = PtrCast<PatchagePort>(_app->canvas()->get_port(client1_name, port1_name));
+	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
 		error_msg((string)"Unable to disconnect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	boost::shared_ptr<PatchagePort> port2 = PtrCast<PatchagePort>(_app->canvas()->get_port(client2_name, port2_name));
+	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
 		error_msg((string)"Unable to disconnect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
@@ -870,8 +870,8 @@ JackDriver::refresh()
 
 bool
 JackDriver::connect(
-	boost::shared_ptr<PatchagePort> src,
-	boost::shared_ptr<PatchagePort> dst)
+	SharedPtr<PatchagePort> src,
+	SharedPtr<PatchagePort> dst)
 {
 	const char*  client1_name;
 	const char*  port1_name;
@@ -900,8 +900,8 @@ JackDriver::connect(
 
 bool
 JackDriver::disconnect(
-	boost::shared_ptr<PatchagePort> src,
-	boost::shared_ptr<PatchagePort> dst)
+	SharedPtr<PatchagePort> src,
+	SharedPtr<PatchagePort> dst)
 {
 	const char*  client1_name;
 	const char*  port1_name;
@@ -1102,7 +1102,7 @@ JackDriver::reset_max_dsp_load()
 }
 
 
-boost::shared_ptr<PatchagePort>
+SharedPtr<PatchagePort>
 JackDriver::create_port_view(
 	Patchage* patchage,
 	const PortID& id)

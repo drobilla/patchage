@@ -98,6 +98,24 @@ PatchageCanvas::find_port(const PortID& id)
 }
 
 
+boost::shared_ptr<PatchagePort>
+PatchageCanvas::find_port_by_name(const std::string& client_name,
+                                  const std::string& port_name)
+{
+	const ModuleIndex::const_iterator i = _module_index.find(client_name);
+	if (i == _module_index.end())
+		return boost::shared_ptr<PatchagePort>();
+
+	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == client_name; ++j) {
+		SharedPtr<PatchagePort> port = PtrCast<PatchagePort>(j->second->get_port(port_name));
+		if (port)
+			return port;
+	}
+
+	return boost::shared_ptr<PatchagePort>();
+}
+
+
 void
 PatchageCanvas::connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2)
 {
