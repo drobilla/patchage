@@ -111,6 +111,7 @@ def build(bld):
 		src/Patchage.cpp
 		src/PatchageCanvas.cpp
 		src/PatchageEvent.cpp
+		src/PatchageModule.cpp
 		src/StateManager.cpp
 		src/main.cpp
 	'''
