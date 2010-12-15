@@ -17,14 +17,12 @@
  */
 
 #include "Project.hpp"
-#include "LashProxy.hpp"
 #include "Client.hpp"
 
 using namespace std;
 using boost::shared_ptr;
 
 struct ProjectImpl {
-	LashProxy* proxy;
 	string     name;
 	string     description;
 	string     notes;
@@ -32,18 +30,12 @@ struct ProjectImpl {
 	list< shared_ptr<Client> > clients;
 };
 
-Project::Project(LashProxy* proxy, const string& name)
+Project::Project(const string& name, const LoadedProjectProperties& properties)
 {
-	LoadedProjectProperties properties;
-
-	proxy->get_loaded_project_properties(name, properties);
-
-	_impl = new ProjectImpl();
-	_impl->proxy = proxy;
-	_impl->name = name;
-
-	_impl->description = properties.description;
-	_impl->notes = properties.notes;
+	_impl                  = new ProjectImpl();
+	_impl->name            = name;
+	_impl->description     = properties.description;
+	_impl->notes           = properties.notes;
 	_impl->modified_status = properties.modified_status;
 }
 
@@ -144,29 +136,5 @@ Project::on_notes_changed(const string& notes)
 {
 	_impl->notes = notes;
 	_signal_notes_changed.emit();
-}
-
-void
-Project::do_rename(const string& name)
-{
-	if (_impl->name != name) {
-		_impl->proxy->project_rename(_impl->name, name);
-	}
-}
-
-void
-Project::do_change_description(const string& description)
-{
-	if (_impl->description != description) {
-		_impl->proxy->project_set_description(_impl->name, description);
-	}
-}
-
-void
-Project::do_change_notes(const string& notes)
-{
-	if (_impl->notes != notes) {
-		_impl->proxy->project_set_notes(_impl->name, notes);
-	}
 }
 

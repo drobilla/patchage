@@ -28,15 +28,10 @@ struct ProjectInfo {
 	std::string description;
 };
 
-struct LoadedProjectProperties {
-	bool        modified_status;
-	std::string description;
-	std::string notes;
-};
-
 class Patchage;
 class Session;
 class LashProxyImpl;
+class LoadedProjectProperties;
 
 class LashProxy {
 public:

@@ -25,13 +25,17 @@
 #include <sigc++/signal.h>
 
 struct ProjectImpl;
-class LashProxy;
-class LashProxyImpl;
 class Client;
+
+struct LoadedProjectProperties {
+	bool        modified_status;
+	std::string description;
+	std::string notes;
+};
 
 class Project {
 public:
-	Project(LashProxy* proxy, const std::string& name);
+	Project(const std::string& name, const LoadedProjectProperties& properties);
 
 	~Project();
 
@@ -45,10 +49,6 @@ public:
 	const Clients&     get_clients() const;
 	bool               get_modified_status() const;
 
-	void do_rename(const std::string& name);
-	void do_change_description(const std::string& description);
-	void do_change_notes(const std::string& notes);
-
 	sigc::signal<void> _signal_renamed;
 	sigc::signal<void> _signal_modified_status_changed;
 	sigc::signal<void> _signal_description_changed;
@@ -57,9 +57,6 @@ public:
 	sigc::signal< void, boost::shared_ptr<Client> > _signal_client_added;
 	sigc::signal< void, boost::shared_ptr<Client> > _signal_client_removed;
 
-private:
-	friend class LashProxyImpl;
-
 	void on_name_changed(const std::string& name);
 	void on_modified_status_changed(bool modified_status);
 	void on_description_changed(const std::string& description);
@@ -67,6 +64,7 @@ private:
 	void on_client_added(boost::shared_ptr<Client> client);
 	void on_client_removed(const std::string& id);
 
+private:
 	ProjectImpl* _impl;
 };
 

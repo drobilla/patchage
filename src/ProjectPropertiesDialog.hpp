@@ -26,7 +26,7 @@ class Project;
 
 class ProjectPropertiesDialog {
 public:
-	ProjectPropertiesDialog(Glib::RefPtr<Gnome::Glade::Xml> xml);
+	ProjectPropertiesDialog(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml);
 	~ProjectPropertiesDialog();
 
 	void run(boost::shared_ptr<Project> project);

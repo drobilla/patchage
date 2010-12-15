@@ -61,6 +61,10 @@ struct LashProxyImpl {
 	    string              id,
 	    string              name);
 
+	void get_loaded_project_properties(
+		const std::string& name,
+		LoadedProjectProperties& properties);
+	
 	bool       _server_responding;
 	Session*   _session;
 	LashProxy* _interface;
@@ -472,7 +476,10 @@ unref:
 shared_ptr<Project>
 LashProxyImpl::on_project_added(const string& name)
 {
-	shared_ptr<Project> project(new Project(_interface, name));
+	LoadedProjectProperties properties;
+	get_loaded_project_properties(name, properties);
+	
+	shared_ptr<Project> project(new Project(name, properties));
 
 	_session->project_add(project);
 
@@ -491,6 +498,76 @@ LashProxyImpl::on_client_added(
 	_session->client_add(client);
 
 	return client;
+}
+
+void
+LashProxyImpl::get_loaded_project_properties(
+    const string& name,
+    LoadedProjectProperties& properties)
+{
+	DBusMessage* reply_ptr;
+	const char* reply_signature;
+	DBusMessageIter iter;
+	DBusMessageIter dict_iter;
+	DBusMessageIter dict_entry_iter;
+	DBusMessageIter variant_iter;
+	const char* key;
+	const char* value_type;
+	dbus_bool_t value_bool;
+	const char* value_string;
+
+	const char* const project_name_cstr = name.c_str();
+
+	if (!call(
+		    true,
+		    LASH_IFACE_CONTROL,
+		    "ProjectGetProperties",
+		    &reply_ptr,
+		    DBUS_TYPE_STRING, &project_name_cstr,
+		    DBUS_TYPE_INVALID)) {
+		return;
+	}
+
+	reply_signature = dbus_message_get_signature(reply_ptr);
+
+	if (strcmp(reply_signature, "a{sv}") != 0) {
+		error_msg((string)"ProjectGetProperties() reply signature mismatch. " + reply_signature);
+		goto unref;
+	}
+
+	dbus_message_iter_init(reply_ptr, &iter);
+
+	for (dbus_message_iter_recurse(&iter, &dict_iter);
+	        dbus_message_iter_get_arg_type(&dict_iter) != DBUS_TYPE_INVALID;
+	        dbus_message_iter_next(&dict_iter)) {
+		dbus_message_iter_recurse(&dict_iter, &dict_entry_iter);
+		dbus_message_iter_get_basic(&dict_entry_iter, &key);
+		dbus_message_iter_next(&dict_entry_iter);
+		dbus_message_iter_recurse(&dict_entry_iter, &variant_iter);
+		value_type = dbus_message_iter_get_signature(&variant_iter);
+		if (value_type[0] != 0 && value_type[1] == 0) {
+			switch (*value_type) {
+			case DBUS_TYPE_BOOLEAN:
+				if (strcmp(key, "Modified Status") == 0) {
+					dbus_message_iter_get_basic(&variant_iter, &value_bool);
+					properties.modified_status = value_bool;
+				}
+				break;
+			case DBUS_TYPE_STRING:
+				if (strcmp(key, "Description") == 0) {
+					dbus_message_iter_get_basic(&variant_iter, &value_string);
+					properties.description = value_string;
+				} else if (strcmp(key, "Notes") == 0) {
+					dbus_message_iter_get_basic(&variant_iter, &value_string);
+					properties.notes = value_string;
+				}
+				break;
+			}
+		}
+	}
+
+unref:
+	dbus_message_unref(reply_ptr);
 }
 
 void
@@ -568,6 +645,14 @@ LashProxy::get_available_projects(list<ProjectInfo>& projects)
 
 unref:
 	dbus_message_unref(reply_ptr);
+}
+
+void
+LashProxy::get_loaded_project_properties(
+    const string& name,
+    LoadedProjectProperties& properties)
+{
+	return _impl->get_loaded_project_properties(name, properties);
 }
 
 void
@@ -651,76 +736,6 @@ LashProxy::project_rename(const string& old_name, const string& new_name)
 		return;
 	}
 
-	dbus_message_unref(reply_ptr);
-}
-
-void
-LashProxy::get_loaded_project_properties(
-    const string& name,
-    LoadedProjectProperties& properties)
-{
-	DBusMessage* reply_ptr;
-	const char* reply_signature;
-	DBusMessageIter iter;
-	DBusMessageIter dict_iter;
-	DBusMessageIter dict_entry_iter;
-	DBusMessageIter variant_iter;
-	const char* key;
-	const char* value_type;
-	dbus_bool_t value_bool;
-	const char* value_string;
-
-	const char* const project_name_cstr = name.c_str();
-
-	if (!_impl->call(
-	            true,
-	            LASH_IFACE_CONTROL,
-	            "ProjectGetProperties",
-	            &reply_ptr,
-	            DBUS_TYPE_STRING, &project_name_cstr,
-	            DBUS_TYPE_INVALID)) {
-		return;
-	}
-
-	reply_signature = dbus_message_get_signature(reply_ptr);
-
-	if (strcmp(reply_signature, "a{sv}") != 0) {
-		_impl->error_msg((string)"ProjectGetProperties() reply signature mismatch. " + reply_signature);
-		goto unref;
-	}
-
-	dbus_message_iter_init(reply_ptr, &iter);
-
-	for (dbus_message_iter_recurse(&iter, &dict_iter);
-	        dbus_message_iter_get_arg_type(&dict_iter) != DBUS_TYPE_INVALID;
-	        dbus_message_iter_next(&dict_iter)) {
-		dbus_message_iter_recurse(&dict_iter, &dict_entry_iter);
-		dbus_message_iter_get_basic(&dict_entry_iter, &key);
-		dbus_message_iter_next(&dict_entry_iter);
-		dbus_message_iter_recurse(&dict_entry_iter, &variant_iter);
-		value_type = dbus_message_iter_get_signature(&variant_iter);
-		if (value_type[0] != 0 && value_type[1] == 0) {
-			switch (*value_type) {
-			case DBUS_TYPE_BOOLEAN:
-				if (strcmp(key, "Modified Status") == 0) {
-					dbus_message_iter_get_basic(&variant_iter, &value_bool);
-					properties.modified_status = value_bool;
-				}
-				break;
-			case DBUS_TYPE_STRING:
-				if (strcmp(key, "Description") == 0) {
-					dbus_message_iter_get_basic(&variant_iter, &value_string);
-					properties.description = value_string;
-				} else if (strcmp(key, "Notes") == 0) {
-					dbus_message_iter_get_basic(&variant_iter, &value_string);
-					properties.notes = value_string;
-				}
-				break;
-			}
-		}
-	}
-
-unref:
 	dbus_message_unref(reply_ptr);
 }
 

@@ -185,7 +185,7 @@ ProjectListImpl::on_menu_popup_close_project(shared_ptr<Project> project)
 void
 ProjectListImpl::on_menu_popup_project_properties(shared_ptr<Project> project)
 {
-	ProjectPropertiesDialog dialog(_app->xml());
+	ProjectPropertiesDialog dialog(_app->lash_proxy(), _app->xml());
 	dialog.run(project);
 }
 

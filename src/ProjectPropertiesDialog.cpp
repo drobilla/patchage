@@ -18,6 +18,8 @@
 
 #include <gtkmm.h>
 #include <libglademm/xml.h>
+
+#include "LashProxy.hpp"
 #include "Patchage.hpp"
 #include "Project.hpp"
 #include "ProjectPropertiesDialog.hpp"
@@ -28,18 +30,19 @@ using namespace std;
 
 
 struct ProjectPropertiesDialogImpl {
-	ProjectPropertiesDialogImpl(Glib::RefPtr<Gnome::Glade::Xml> xml);
+	ProjectPropertiesDialogImpl(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml);
 
-	Widget<Gtk::Dialog> _dialog;
-	Widget<Gtk::Entry> _name;
-	Widget<Gtk::Entry> _description;
+	LashProxy*            _proxy;
+	Widget<Gtk::Dialog>   _dialog;
+	Widget<Gtk::Entry>    _name;
+	Widget<Gtk::Entry>    _description;
 	Widget<Gtk::TextView> _notes;
 };
 
 
-ProjectPropertiesDialog::ProjectPropertiesDialog(Glib::RefPtr<Gnome::Glade::Xml> xml)
+ProjectPropertiesDialog::ProjectPropertiesDialog(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml)
 {
-	_impl = new ProjectPropertiesDialogImpl(xml);
+	_impl = new ProjectPropertiesDialogImpl(proxy, xml);
 }
 
 
@@ -64,17 +67,27 @@ ProjectPropertiesDialog::run(shared_ptr<Project> project)
 
 	result = _impl->_dialog->run();
 	if (result == 2) {
-		project->do_change_description(_impl->_description->get_text());
-		project->do_change_notes(buffer->get_text());
-		project->do_rename(_impl->_name->get_text());
+		const std::string& old_name = project->get_name();
+		const std::string& desc     = _impl->_description->get_text();
+		const std::string& notes    = buffer->get_text();
+		const std::string& name     = _impl->_name->get_text();
+		if (project->get_description() != desc)
+			_impl->_proxy->project_set_description(old_name, _impl->_description->get_text());
+		if (project->get_notes() != notes)
+			_impl->_proxy->project_set_notes(old_name, buffer->get_text());
+		if (old_name != name)
+			_impl->_proxy->project_rename(old_name, buffer->get_text());
 	}
 
 	_impl->_dialog->hide();
 }
 
 
-ProjectPropertiesDialogImpl::ProjectPropertiesDialogImpl(Glib::RefPtr<Gnome::Glade::Xml> xml)
-	: _dialog(xml, "project_properties_dialog")
+ProjectPropertiesDialogImpl::ProjectPropertiesDialogImpl(
+	LashProxy*                      proxy,
+	Glib::RefPtr<Gnome::Glade::Xml> xml)
+	: _proxy(proxy)
+	, _dialog(xml, "project_properties_dialog")
 	, _name(xml, "project_name")
 	, _description(xml, "project_description")
 	, _notes(xml, "project_notes")
