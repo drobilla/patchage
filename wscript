@@ -178,6 +178,8 @@ def build(bld):
 				bld.env['APP_INSTALL_NAME'] + '.svg'),
 		'icons/scalable/patchage.svg')
 
+	bld.install_files('${MANDIR}/man1', 'doc/*.1')
+
 def shutdown():
 	autowaf.shutdown()
 

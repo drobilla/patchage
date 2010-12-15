@@ -1,0 +1,41 @@
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH PATCHAGE 1 "15 Dec 2010"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+.B patchage \- Graphically connect JACK and ALSA Audio/MIDI ports
+
+.SH SYNOPSIS
+.B patchage
+provides a graphical interface to connect jack and midi inputs and
+outputs. Each application is represented as one box with inputs on the left
+and output on the right. Boxes can be arranged to have a clear display of
+the current setup.
+
+.SH OPTIONS
+.TP
+\fB\-h\fT, \fB\-\-help\fR
+Print the command line options.
+
+.TP
+\fB\-A\fT, \fB\-\-no\-alsa\fR
+Do not automatically attach to ALSA.
+
+.TP
+\fB\-J\fT, \fB\-\-no\-jack\fR
+Do not automatically attach to JACK.
+
+.SH AUTHOR
+Patchage was written by David Robillard <d@drobilla.net>
