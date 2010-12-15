@@ -1,5 +1,5 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
+ * Copyright (C) 2008-2010 David Robillard <http://drobilla.net>
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software; you can redistribute it and/or modify it under the
@@ -22,31 +22,25 @@
 using namespace std;
 
 struct LashClientImpl {
-	LashProxy* proxy;
-	Project* project;
-	string id;
-	string name;
+	Project*   project;
+	string     id;
+	string     name;
 };
 
 LashClient::LashClient(
-    LashProxy* proxy,
-    Project* project,
+    Project*      project,
     const string& id,
     const string& name)
 {
-	_impl = new LashClientImpl;
-	_impl->proxy = proxy;
+	_impl          = new LashClientImpl();
 	_impl->project = project;
-	_impl->id = id;
-	_impl->name = name;
-
-	//g_app->info_msg("client created");
+	_impl->id      = id;
+	_impl->name    = name;
 }
 
 LashClient::~LashClient()
 {
 	delete _impl;
-	//g_app->info_msg("client destroyed");
 }
 
 Project*
@@ -68,16 +62,10 @@ LashClient::get_name() const
 }
 
 void
-LashClient::do_rename(const string& name)
+LashClient::set_name(const string& name)
 {
 	if (_impl->name != name) {
-		//_impl->proxy->client_rename(_impl->id, name);
+		_impl->name = name;
+		_signal_renamed.emit();
 	}
-}
-
-void
-LashClient::on_name_changed(const string& name)
-{
-	_impl->name = name;
-	_signal_renamed.emit();
 }

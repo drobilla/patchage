@@ -1,6 +1,5 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
- * Copyright (C) 2008-2009 David Robillard <http://drobilla.net>
+ * Copyright (C) 2008-2010 David Robillard <http://drobilla.net>
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software; you can redistribute it and/or modify it under the
@@ -24,37 +23,28 @@
 #include <sigc++/signal.h>
 
 class LashClientImpl;
-class LashProxy;
-class LashProxyImpl;
 class Project;
 
 class LashClient
 {
 public:
 	LashClient(
-		LashProxy* proxy,
-		Project* project,
+		Project*           project,
 		const std::string& id,
 		const std::string& name);
 
 	~LashClient();
 
-	Project*
-	get_project();
+	Project* get_project();
 
-	const std::string& get_id() const;
+	const std::string& get_id()   const;
 	const std::string& get_name() const;
 
-	void do_rename(const std::string& name);
+	void set_name(const std::string& name);
 
 	sigc::signal<void> _signal_renamed;
 
 private:
-	friend class LashProxyImpl;
-
-	void
-	on_name_changed(const std::string& name);
-
 	LashClientImpl* _impl;
 };
 

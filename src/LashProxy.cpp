@@ -355,7 +355,7 @@ LashProxyImpl::dbus_message_hook(
 
 		client = me->_session->find_client_by_id(client_id);
 		if (client) {
-			client->on_name_changed(client_name);
+			client->set_name(client_name);
 		}
 
 		return DBUS_HANDLER_RESULT_HANDLED;
@@ -491,12 +491,7 @@ LashProxyImpl::on_client_added(
     string id,
     string name)
 {
-	shared_ptr<LashClient> client(
-	    new LashClient(
-	        _interface,
-	        project.get(),
-	        id,
-	        name));
+	shared_ptr<LashClient> client(new LashClient(project.get(), id, name));
 
 	project->on_client_added(client);
 	_session->client_add(client);
