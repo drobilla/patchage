@@ -134,6 +134,9 @@ AlsaDriver::create_port_view_internal(
 		boost::shared_ptr<PatchageModule>& m,
 		boost::shared_ptr<PatchagePort>&   port)
 {
+	if (ignore(addr))
+		return;
+
 	snd_seq_client_info_t* cinfo;
 	snd_seq_client_info_alloca(&cinfo);
 	snd_seq_client_info_set_client(cinfo, addr.client);
@@ -145,27 +148,15 @@ AlsaDriver::create_port_view_internal(
 	snd_seq_port_info_set_port(pinfo, addr.port);
 	snd_seq_get_any_port_info(_seq, addr.client, addr.port, pinfo);
 
-	const string client_name = snd_seq_client_info_get_name(cinfo);
-	const string port_name = snd_seq_port_info_get_name(pinfo);
-	bool is_input       = false;
-	bool is_duplex      = false;
-	bool is_application = true;
-	bool need_refresh   = false;
+	const string client_name    = snd_seq_client_info_get_name(cinfo);
+	const string port_name      = snd_seq_port_info_get_name(pinfo);
+	bool         is_input       = false;
+	bool         is_duplex      = false;
+	bool         is_application = true;
+	bool         need_refresh   = false;
 
 	int caps = snd_seq_port_info_get_capability(pinfo);
 	int type = snd_seq_port_info_get_type(pinfo);
-
-	// Skip ports we shouldn't show
-	if (caps & SND_SEQ_PORT_CAP_NO_EXPORT)
-		return;
-	else if ( !( (caps & SND_SEQ_PORT_CAP_READ)
-				|| (caps & SND_SEQ_PORT_CAP_WRITE)
-				|| (caps & SND_SEQ_PORT_CAP_DUPLEX)))
-		return;
-	else if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT)
-			&& ((type == SND_SEQ_PORT_SYSTEM_TIMER
-					|| type == SND_SEQ_PORT_SYSTEM_ANNOUNCE)))
-		return;
 
 	// Figure out direction
 	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE))
@@ -237,6 +228,48 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 }
 
 
+bool
+AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
+{
+	if (_ignored.find(addr) != _ignored.end())
+		return true;
+
+	if (!add)
+		return false;
+
+	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_alloca(&cinfo);
+	snd_seq_client_info_set_client(cinfo, addr.client);
+	snd_seq_get_any_client_info(_seq, addr.client, cinfo);
+
+	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_alloca(&pinfo);
+	snd_seq_port_info_set_client(pinfo, addr.client);
+	snd_seq_port_info_set_port(pinfo, addr.port);
+	snd_seq_get_any_port_info(_seq, addr.client, addr.port, pinfo);
+
+	const int type = snd_seq_port_info_get_type(pinfo);
+	const int caps = snd_seq_port_info_get_capability(pinfo);
+	
+	if (caps & SND_SEQ_PORT_CAP_NO_EXPORT) {
+		_ignored.insert(addr);
+		return true;
+	} else if ( !( (caps & SND_SEQ_PORT_CAP_READ)
+	               || (caps & SND_SEQ_PORT_CAP_WRITE)
+	               || (caps & SND_SEQ_PORT_CAP_DUPLEX))) {
+		_ignored.insert(addr);
+		return true;
+	} else if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT)
+	           && ((type == SND_SEQ_PORT_SYSTEM_TIMER
+	                || type == SND_SEQ_PORT_SYSTEM_ANNOUNCE))) {
+		_ignored.insert(addr);
+		return true;
+	}
+
+	return false;
+}
+
+
 /** Refresh all Alsa Midi ports.
  */
 void
@@ -261,9 +294,12 @@ AlsaDriver::refresh_ports()
 		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
 		snd_seq_port_info_set_port(pinfo, -1);
 		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
-			create_port_view_internal(_app, *snd_seq_port_info_get_addr(pinfo), parent, port);
-			if (parent)
-				_app->enqueue_resize(parent);
+			const snd_seq_addr_t& addr = *snd_seq_port_info_get_addr(pinfo);
+			if (!ignore(addr)) {
+				create_port_view_internal(_app, addr, parent, port);
+				if (parent)
+					_app->enqueue_resize(parent);
+			}
 		}
 	}
 }
@@ -387,8 +423,6 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 	const snd_seq_addr_t* src = src_port->alsa_addr();
 	const snd_seq_addr_t* dst = dst_port->alsa_addr();
 
-	bool result = true;
-
 	snd_seq_port_subscribe_t* subs;
 	snd_seq_port_subscribe_malloc(&subs);
 	snd_seq_port_subscribe_set_sender(subs, src);
@@ -400,23 +434,19 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 	// Not connected (shouldn't happen)
 	if (snd_seq_get_port_subscription(_seq, subs) != 0) {
 		Raul::error << "[ALSA] Attempt to unsubscribe ports that are not subscribed." << endl;
-		result = false;
+		return false;
 	}
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
 		Raul::error << "[ALSA] Unsubscription failed: " << snd_strerror(ret) << endl;
-		result = false;
+		return false;
 	}
 
-	if (result)
-		_app->status_msg(string("[ALSA] Disconnected ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
-	else
-		_app->status_msg(string("[ALSA] Unable to disconnect ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+	_app->status_msg(string("[ALSA] Disconnected ")
+	                 + src_port->full_name() + " -> " + dst_port->full_name());
 
-	return (!result);
+	return true;
 }
 
 
@@ -469,6 +499,10 @@ AlsaDriver::_refresh_main()
 	}
 
 	int caps = 0;
+	int type = 0;
+
+	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_alloca(&cinfo);
 
 	snd_seq_port_info_t* pinfo;
 	snd_seq_port_info_alloca(&pinfo);
@@ -481,26 +515,34 @@ AlsaDriver::_refresh_main()
 
 		switch (ev->type) {
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
-			_events.push(PatchageEvent(PatchageEvent::CONNECTION,
-			                           ev->data.connect.sender, ev->data.connect.dest));
+			if (!ignore(ev->data.connect.sender) && !ignore(ev->data.connect.dest))
+				_events.push(PatchageEvent(PatchageEvent::CONNECTION,
+				                           ev->data.connect.sender, ev->data.connect.dest));
 			break;
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
-			_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
-			                           ev->data.connect.sender, ev->data.connect.dest));
+			if (!ignore(ev->data.connect.sender) && !ignore(ev->data.connect.dest))
+				_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
+				                           ev->data.connect.sender, ev->data.connect.dest));
 			break;
 		case SND_SEQ_EVENT_PORT_START:
+			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
 			snd_seq_get_any_port_info(_seq, ev->data.addr.client, ev->data.addr.port, pinfo);
 			caps = snd_seq_port_info_get_capability(pinfo);
-			_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,
-			                           PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+			type = snd_seq_port_info_get_type(pinfo);
+
+			if (!ignore(ev->data.addr))
+				_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,
+				                           PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
 			break;
 		case SND_SEQ_EVENT_PORT_EXIT:
-			// Note: getting caps at this point does not work
-			// Delete both inputs and outputs (in case this is a duplex port)
-			_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
-			                           PortID(ev->data.addr, true)));
-			_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
-			                           PortID(ev->data.addr, false)));
+			if (!ignore(ev->data.addr, false)) {
+				// Note: getting caps at this point does not work
+				// Delete both inputs and outputs (in case this is a duplex port)
+				_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
+				                           PortID(ev->data.addr, true)));
+				_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
+				                           PortID(ev->data.addr, false)));
+			}
 			break;
 		case SND_SEQ_EVENT_CLIENT_CHANGE:
 		case SND_SEQ_EVENT_CLIENT_EXIT:

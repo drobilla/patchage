@@ -18,8 +18,9 @@
 #ifndef PATCHAGE_ALSADRIVER_HPP
 #define PATCHAGE_ALSADRIVER_HPP
 
-#include <string>
 #include <queue>
+#include <set>
+#include <string>
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
@@ -93,6 +94,17 @@ private:
 	
 	Glib::Mutex               _events_mutex;
 	std::queue<PatchageEvent> _events;
+
+	struct SeqAddrComparator {
+		bool operator() (const snd_seq_addr_t& a, const snd_seq_addr_t& b) const {
+			return ((a.client < b.client) || ((a.client == b.client) && a.port < b.port));
+		}
+	};
+
+	typedef std::set<snd_seq_addr_t, SeqAddrComparator> Ignored;
+	Ignored _ignored;
+
+	bool ignore(const snd_seq_addr_t& addr, bool add=true);
 };
 
 #endif // PATCHAGE_ALSADRIVER_HPP
