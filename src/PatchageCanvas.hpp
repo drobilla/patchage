@@ -50,10 +50,6 @@ public:
 
 	void status_message(const string& msg);
 
-	boost::shared_ptr<Item> get_item(const string& name);
-	boost::shared_ptr<Port> get_port(const string& module_name,
-                                     const string& port_name);
-
 private:
 	Patchage* _app;
 };

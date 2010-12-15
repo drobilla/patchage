@@ -262,6 +262,7 @@ JackDriver::refresh()
 	string port1_name;
 	string client2_name;
 	string port2_name;
+	size_t colon;
 
 	// Add all ports
 	for (int i=0; ports[i]; ++i) {
@@ -310,27 +311,36 @@ JackDriver::refresh()
 	}
 
 	// Add all connections
-	for (int i=0; ports[i]; ++i) {
+	for (int i = 0; ports[i]; ++i) {
 
 		port = jack_port_by_name(_client, ports[i]);
 		const char** connected_ports = jack_port_get_all_connections(_client, port);
 
+		client1_name = ports[i];
+		colon        = client1_name.find(':');
+		port1_name   = client1_name.substr(colon + 1);
+		client1_name = client1_name.substr(0, colon);
+
+		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput) ? Input : Output;
+
+		boost::shared_ptr<PatchageModule> client1_module
+			= _app->canvas()->find_module(client1_name, port1_type);
+
 		if (connected_ports) {
-			for (int j=0; connected_ports[j]; ++j) {
-				client1_name = ports[i];
-				size_t colon = client1_name.find(':');
-				port1_name = client1_name.substr(colon+1);
-				client1_name = client1_name.substr(0, colon);
+			for (int j = 0; connected_ports[j]; ++j) {
 
 				client2_name = connected_ports[j];
-				colon = client2_name.find(':');
-				port2_name = client2_name.substr(colon+1);
+				colon        = client2_name.find(':');
+				port2_name   = client2_name.substr(colon+1);
 				client2_name = client2_name.substr(0, colon);
 
-				boost::shared_ptr<Port> port1
-					= _app->canvas()->get_port(client1_name, port1_name);
-				boost::shared_ptr<Port> port2
-					= _app->canvas()->get_port(client2_name, port2_name);
+				const ModuleType port2_type = (port1_type == Input) ? Output : Input;
+
+				boost::shared_ptr<PatchageModule> client2_module
+					= _app->canvas()->find_module(client2_name, port2_type);
+
+				boost::shared_ptr<Port> port1 = client1_module->get_port(port1_name);
+				boost::shared_ptr<Port> port2 = client2_module->get_port(port2_name);
 
 				if (!port1 || !port2)
 					continue;

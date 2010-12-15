@@ -40,19 +40,6 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 }
 
 
-boost::shared_ptr<Item>
-PatchageCanvas::get_item(const string& name)
-{
-	ItemList::iterator m = _items.begin();
-
-	for ( ; m != _items.end(); ++m)
-		if ((*m)->name() == name)
-			break;
-
-	return (m == _items.end()) ? boost::shared_ptr<Item>() : *m;
-}
-
-
 boost::shared_ptr<PatchageModule>
 PatchageCanvas::find_module(const string& name, ModuleType type)
 {
@@ -199,22 +186,3 @@ PatchageCanvas::status_message(const string& msg)
 {
 	_app->status_msg(string("[Canvas] ").append(msg));
 }
-
-
-boost::shared_ptr<Port>
-PatchageCanvas::get_port(const string& node_name, const string& port_name)
-{
-	for (ItemList::iterator i = _items.begin(); i != _items.end(); ++i) {
-		const boost::shared_ptr<Item> item = *i;
-		const boost::shared_ptr<Module> module
-			= boost::dynamic_pointer_cast<Module>(item);
-		if (!module)
-			continue;
-		const boost::shared_ptr<Port> port = module->get_port(port_name);
-		if (module->name() == node_name && port)
-			return port;
-	}
-
-	return boost::shared_ptr<Port>();
-}
-
