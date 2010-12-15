@@ -461,7 +461,7 @@ The bar represents the percentage of available time used for audio processing (i
   <widget class="GtkAboutDialog" id="about_win">
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
-    <property name="copyright" translatable="yes">&#xA9; 2005-2008 David Robillard
+    <property name="copyright" translatable="yes">&#xA9; 2005-2010 David Robillard
 &#xA9; 2008 Nedko Arnaudov</property>
     <property name="comments" translatable="yes">A LASH, JACK, and ALSA front-end.</property>
     <property name="website">http://drobilla.net/software/patchage</property>
