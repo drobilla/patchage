@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Licensed under the GNU GPL v2 or later, see COPYING file for details.
-# Copyright (C) 2008 David Robillard
+# Copyright (C) 2008-2010 David Robillard
 # Copyright (C) 2008 Nedko Arnaudov
 import os
 import autowaf
@@ -39,7 +39,7 @@ def configure(conf):
 	conf.check_tool('compiler_cxx')
 	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
 	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
-	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.6.0', mandatory=True)
+	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.7.0', mandatory=True)
 	autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM', atleast_version='2.6.0', mandatory=True)
 	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0', mandatory=True)
 	autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM', mandatory=True)
