@@ -1,6 +1,5 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
- * Copyright (C) 2008-2009 David Robillard <http://drobilla.net>
+ * Copyright (C) 2008-2010 David Robillard <http://drobilla.net>
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software; you can redistribute it and/or modify it under the
