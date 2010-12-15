@@ -21,10 +21,12 @@
 #include <string>
 #include <list>
 #include <map>
+
 #include <boost/optional.hpp>
-#include "PatchagePort.hpp"
 
 enum ModuleType { Input, Output, InputOutput };
+
+enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI };
 
 struct Coord {
 	Coord(double x_=0, double y_=0) : x(x_), y(y_) {}

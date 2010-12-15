@@ -26,6 +26,9 @@
 #include "flowcanvas/Module.hpp"
 
 #include "patchage-config.h"
+#include "PatchageCanvas.hpp"
+#include "PortID.hpp"
+#include "StateManager.hpp"
 
 #ifdef HAVE_ALSA
   #include <alsa/asoundlib.h>
@@ -33,21 +36,23 @@
 
 using namespace FlowCanvas;
 
-enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI };
-
 
 /** A Port on a PatchageModule
  */
 class PatchagePort : public FlowCanvas::Port
 {
 public:
-	PatchagePort(boost::shared_ptr<Module> module, PortType type, const std::string& name, bool is_input, int color)
+	PatchagePort(boost::shared_ptr<Module> module,
+	             PortType                  type,
+	             const std::string&        name,
+	             bool                      is_input,
+	             uint32_t                  color)
 		: Port(module, name, is_input, color)
 		, _type(type)
 	{
 #ifdef HAVE_ALSA
 		_alsa_addr.client = '\0';
-		_alsa_addr.port = '\0';
+		_alsa_addr.port   = '\0';
 #endif
 	}
 

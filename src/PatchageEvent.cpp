@@ -40,10 +40,12 @@ PatchageEvent::execute(Patchage* patchage)
 {
 	if (_type == REFRESH) {
 		patchage->refresh();
+
 	} else if (_type == CLIENT_CREATION) {
 		// No empty modules (for now)
 		free(_str);
 		_str = NULL;
+
 	} else if (_type == CLIENT_DESTRUCTION) {
 		SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(
 				patchage->canvas()->find_module(_str, InputOutput));

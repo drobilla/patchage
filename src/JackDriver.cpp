@@ -177,7 +177,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 		parent = boost::shared_ptr<PatchageModule>(
 				new PatchageModule(patchage, module_name, type));
 		parent->load_location();
-		patchage->canvas()->add_item(parent);
+		patchage->canvas()->add_module(module_name, parent);
 		parent->show();
 		resize = true;
 	}
@@ -186,7 +186,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 			= boost::dynamic_pointer_cast<PatchagePort>(parent->get_port(port_name));
 
 	if (!port) {
-		port = create_port(parent, jack_port);
+		port = create_port(parent, jack_port, id);
 		port->show();
 		parent->add_port(port);
 		resize = true;
@@ -200,7 +200,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 
 boost::shared_ptr<PatchagePort>
-JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* port)
+JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* port, PortID id)
 {
 	assert(port);
 	const char* const type_str = jack_port_type(port);
@@ -219,8 +219,15 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 
 	boost::shared_ptr<PatchagePort> ret(
 		new PatchagePort(parent, port_type, jack_port_short_name(port),
-			(jack_port_flags(port) & JackPortIsInput),
-			_app->state_manager()->get_port_color(port_type)));
+		                 (jack_port_flags(port) & JackPortIsInput),
+		                 _app->state_manager()->get_port_color(port_type)));
+
+	if (id.type != PortID::NULL_PORT_ID) {
+		boost::shared_ptr<PatchageCanvas> canvas
+			= boost::dynamic_pointer_cast<PatchageCanvas>(parent->canvas().lock());
+		if (canvas)
+			canvas->index_port(id, ret);
+	}
 
 	return ret;
 }
@@ -286,7 +293,7 @@ JackDriver::refresh()
 		if (!m) {
 			m = boost::shared_ptr<PatchageModule>(new PatchageModule(_app, client1_name, type));
 			m->load_location();
-			_app->canvas()->add_item(m);
+			_app->canvas()->add_module(client1_name, m);
 		}
 
 		// FIXME: leak?  jack docs don't say
@@ -305,7 +312,7 @@ JackDriver::refresh()
 		}
 
 		if (!m->get_port(jack_port_short_name(port)))
-			m->add_port(create_port(m, port));
+			m->add_port(create_port(m, port, PortID()));
 
 		_app->enqueue_resize(m);
 	}

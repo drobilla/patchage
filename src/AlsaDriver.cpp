@@ -122,7 +122,7 @@ AlsaDriver::find_or_create_module(
 	if (!m) {
 		m = boost::shared_ptr<PatchageModule>(new PatchageModule(patchage, client_name, type));
 		m->load_location();
-		_app->canvas()->add_item(m);
+		_app->canvas()->add_module(client_name, m);
 		_app->enqueue_resize(m);
 	}
 	return m;
@@ -224,7 +224,13 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 {
 	boost::shared_ptr<PatchagePort> ret(
 		new PatchagePort(parent, ALSA_MIDI, name, is_input,
-			_app->state_manager()->get_port_color(ALSA_MIDI)));
+		                 _app->state_manager()->get_port_color(ALSA_MIDI)));
+	
+	boost::shared_ptr<PatchageCanvas> canvas
+		= boost::dynamic_pointer_cast<PatchageCanvas>(parent->canvas().lock());
+	if (canvas)
+		canvas->index_port(PortID(addr, is_input), ret);
+
 	ret->alsa_addr(addr);
 	return ret;
 }

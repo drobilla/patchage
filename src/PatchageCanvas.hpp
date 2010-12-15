@@ -18,7 +18,7 @@
 #ifndef PATCHAGE_PATCHAGECANVAS_HPP
 #define PATCHAGE_PATCHAGECANVAS_HPP
 
-#include <string>
+#include <map>
 
 #include "patchage-config.h"
 
@@ -29,29 +29,48 @@
 #include "flowcanvas/Canvas.hpp"
 
 #include "PatchageEvent.hpp"
+#include "PatchageModule.hpp"
+#include "PortID.hpp"
 #include "StateManager.hpp"
 
 class Patchage;
 class PatchageModule;
 class PatchagePort;
 
-using std::string;
-using namespace FlowCanvas;
-
-class PatchageCanvas : public Canvas {
+class PatchageCanvas : public FlowCanvas::Canvas {
 public:
 	PatchageCanvas(Patchage* _app, int width, int height);
 
-	boost::shared_ptr<PatchageModule> find_module(const string& name, ModuleType type);
+	boost::shared_ptr<PatchageModule> find_module(const std::string& name, ModuleType type);
 	boost::shared_ptr<PatchagePort>   find_port(const PortID& id);
 
-	void connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2);
-	void disconnect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2);
+	void connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
+	             boost::shared_ptr<FlowCanvas::Connectable> port2);
+	
+	void disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
+	                boost::shared_ptr<FlowCanvas::Connectable> port2);
 
-	void status_message(const string& msg);
+	void status_message(const std::string& msg);
+
+	void index_port(const PortID& id, boost::shared_ptr<PatchagePort> port) {
+		_port_index.insert(std::make_pair(id, port));
+	}
+
+	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module) {
+		_module_index.insert(std::make_pair(name, module));
+		add_item(module);
+	}
+	
+	void destroy();
 
 private:
 	Patchage* _app;
+
+	typedef std::map< const PortID, boost::shared_ptr<PatchagePort> > PortIndex;
+	PortIndex _port_index;
+
+	typedef std::multimap< const std::string, boost::shared_ptr<PatchageModule> > ModuleIndex;
+	ModuleIndex _module_index;
 };
 
 

@@ -17,6 +17,7 @@
 
 #include "patchage-config.h"
 
+#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
 
 #if defined(HAVE_JACK_DBUS)
@@ -33,6 +34,8 @@
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 
+using std::string;
+
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: FlowCanvas::Canvas(width, height)
 	, _app(app)
@@ -43,82 +46,55 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 boost::shared_ptr<PatchageModule>
 PatchageCanvas::find_module(const string& name, ModuleType type)
 {
-	for (ItemList::iterator m = _items.begin(); m != _items.end(); ++m) {
-		boost::shared_ptr<PatchageModule> pm = boost::dynamic_pointer_cast<PatchageModule>(*m);
-		if (pm && pm->name() == name && (pm->type() == type || pm->type() == InputOutput)) {
-			return pm;
+	const ModuleIndex::const_iterator i = _module_index.find(name);
+	if (i == _module_index.end())
+		return boost::shared_ptr<PatchageModule>();
+
+	boost::shared_ptr<PatchageModule> io_module;
+	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == name; ++j) {
+		if (j->second->type() == type) {
+			return j->second;
+		} else if (j->second->type() == InputOutput) {
+			io_module = j->second;
 		}
 	}
 
-	return boost::shared_ptr<PatchageModule>();
+	// Return InputOutput module for Input or Output (or NULL if not found at all)
+	return io_module;
 }
 
 
 boost::shared_ptr<PatchagePort>
 PatchageCanvas::find_port(const PortID& id)
 {
-	string       module_name;
-	string       port_name;
+	PortIndex::iterator i = _port_index.find(id);
+	if (i != _port_index.end())
+		return i->second;
 
-#if defined(USE_LIBJACK)
-	jack_port_t* jack_port = NULL;
-#endif
-
-	SharedPtr<PatchageModule> module;
 	boost::shared_ptr<PatchagePort> pp;
 
-	// TODO: filthy.  keep a port map and make this O(log(n))
-	switch (id.type) {
-#if defined(USE_LIBJACK) && !defined(HAVE_JACK_DBUS)
-	case PortID::JACK_ID:
-		jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
-		if (!jack_port)
-			return boost::shared_ptr<PatchagePort>();
+#ifdef USE_LIBJACK
+	assert(id.type == PortID::JACK_ID); // Alsa ports are always indexed
 
-		_app->jack_driver()->port_names(id, module_name, port_name);
+	jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
+	if (!jack_port)
+		return boost::shared_ptr<PatchagePort>();
 
-		module = find_module(module_name,
-				(jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
+	string module_name;
+	string port_name;
+	_app->jack_driver()->port_names(id, module_name, port_name);
 
-		if (module)
-			return PtrCast<PatchagePort>(module->get_port(port_name));
-		else
-			return boost::shared_ptr<PatchagePort>();
+	SharedPtr<PatchageModule> module = find_module(module_name,
+	                     (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
-		break;
-#endif
+	if (module)
+		pp = PtrCast<PatchagePort>(module->get_port(port_name));
 
-#ifdef HAVE_ALSA
-	case PortID::ALSA_ADDR:
-		for (ItemList::iterator m = _items.begin(); m != _items.end(); ++m) {
-			SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(*m);
-			if (!module)
-				continue;
+	if (pp)
+		index_port(id, pp);
+#endif // USE_LIBJACK
 
-			for (PortVector::const_iterator p = module->ports().begin(); p != module->ports().end(); ++p) {
-				pp = boost::dynamic_pointer_cast<PatchagePort>(*p);
-				if (!pp)
-					continue;
-
-				if (pp->type() == ALSA_MIDI) {
-					if (pp->alsa_addr()
-							&& pp->alsa_addr()->client == id.id.alsa_addr.client
-							&& pp->alsa_addr()->port   == id.id.alsa_addr.port) {
-						if ((module->type() == InputOutput)
-						    || (id.id.is_input && (module->type() == Input))
-						    || (!id.id.is_input && (module->type() == Output))) {
-							return pp;
-						}
-					}
-				}
-			}
-		}
-#endif // HAVE_ALSA
-	default:
-		break;
-	}
-
-	return boost::shared_ptr<PatchagePort>();
+	return pp;
 }
 
 
@@ -185,4 +161,12 @@ void
 PatchageCanvas::status_message(const string& msg)
 {
 	_app->status_msg(string("[Canvas] ").append(msg));
+}
+
+void
+PatchageCanvas::destroy()
+{
+	_port_index.clear();
+	_module_index.clear();
+	FlowCanvas::Canvas::destroy();
 }

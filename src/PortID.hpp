@@ -34,6 +34,9 @@
 
 struct PortID {
 	PortID() : type(NULL_PORT_ID) { memset(&id, 0, sizeof(id)); }
+	PortID(const PortID& copy) : type(copy.type) {
+		memcpy(&id, &copy.id, sizeof(id));
+	}
 
 	enum { NULL_PORT_ID, JACK_ID, ALSA_ADDR } type;
 
@@ -73,7 +76,40 @@ operator<<(std::ostream& os, const PortID& id)
 		break;
 	case PortID::ALSA_ADDR:
 #ifdef HAVE_ALSA
-		return os << "alsa:" << (int)id.id.alsa_addr.client << ":" << (int)id.id.alsa_addr.port;
+		return os << "alsa:" << (int)id.id.alsa_addr.client << ":" << (int)id.id.alsa_addr.port
+		          << ":" << (id.id.is_input ? "in" : "out");
+#endif
+		break;
+	}
+	assert(false);
+}
+
+static inline bool
+operator<(const PortID& a, const PortID& b)
+{
+	if (a.type != b.type)
+		return a.type < b.type;
+
+	switch (a.type) {
+	case PortID::NULL_PORT_ID:
+		return true;
+	case PortID::JACK_ID:
+#ifdef USE_LIBJACK
+		return a.id.jack_id < b.id.jack_id;
+#endif
+		break;
+	case PortID::ALSA_ADDR:
+#ifdef HAVE_ALSA
+		if ((a.id.alsa_addr.client < b.id.alsa_addr.client)
+		    || ((a.id.alsa_addr.client == b.id.alsa_addr.client)
+		        && a.id.alsa_addr.port < b.id.alsa_addr.port)) {
+			return true;
+		} else if (a.id.alsa_addr.client == b.id.alsa_addr.client
+		           && a.id.alsa_addr.port == b.id.alsa_addr.port) {
+			return (a.id.is_input < b.id.is_input);
+		} else {
+			return false;
+		}
 #endif
 		break;
 	}

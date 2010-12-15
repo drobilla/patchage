@@ -26,6 +26,8 @@
 
 using namespace FlowCanvas;
 
+class Patchage;
+
 class PatchageModule : public Module
 {
 public:

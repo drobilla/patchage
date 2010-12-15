@@ -639,7 +639,7 @@ JackDriver::find_or_create_module(
 	if (!module) {
 		module = boost::shared_ptr<PatchageModule>(new PatchageModule(_app, name, type));
 		module->load_location();
-		_app->canvas()->add_item(module);
+		_app->canvas()->add_module(name, module);
 	}
 
 	return module;

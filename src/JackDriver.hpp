@@ -80,8 +80,9 @@ public:
 
 private:
 	boost::shared_ptr<PatchagePort> create_port(
-			boost::shared_ptr<PatchageModule> parent,
-			jack_port_t*                      port);
+		boost::shared_ptr<PatchageModule> parent,
+		jack_port_t*                      port,
+		PortID                            id);
 
 	static void error_cb(const char* msg);
 

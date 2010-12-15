@@ -7,7 +7,7 @@ import autowaf
 import Options
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '0.4.5'
+PATCHAGE_VERSION = '0.4.6'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
