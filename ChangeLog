@@ -3,13 +3,14 @@ patchage (0.4.6) unstable; urgency=low
   * Add -J (--no-jack) command line option
   * Add proper --help output and man page
   * Fancy console info/warning/error logging
+  * Improve performance significantly for large setups
   * Fix minor memory leaks and reduce memory consumption
   * Fix handling of ALSA duplex ports
   * Hide "split" module menu item when it is useless
   * Fix Jack D-Bus support
   * Build system and code quality improvements
 
- -- David Robillard <d@drobilla.net>  Wed, 15 Dec 2010 03:48:45 -0500
+ -- David Robillard <d@drobilla.net>  Wed, 15 Dec 2010 15:11:08 -0500
 
 
 patchage (0.4.5) unstable; urgency=low
