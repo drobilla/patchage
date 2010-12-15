@@ -31,13 +31,7 @@ class Driver {
 public:
 	virtual ~Driver() {}
 
-	virtual void process_events(Patchage* app) {
-		while (!events().empty()) {
-			PatchageEvent& ev = events().front();
-			ev.execute(app);
-			events().pop();
-		}
-	}
+	virtual void process_events(Patchage* app) = 0;
 
 	virtual void attach(bool launch_daemon) = 0;
 	virtual void detach()                   = 0;
@@ -56,15 +50,8 @@ public:
 	virtual bool disconnect(boost::shared_ptr<PatchagePort> src_port,
 	                        boost::shared_ptr<PatchagePort> dst_port) = 0;
 
-	Raul::SRSWQueue<PatchageEvent>& events() { return _events; }
-
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;
-
-protected:
-	Driver(size_t event_queue_size) : _events(event_queue_size) {}
-
-	Raul::SRSWQueue<PatchageEvent> _events;
 };
 
 

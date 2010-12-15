@@ -88,8 +88,9 @@ public:
 
 	float get_max_dsp_load();
 
-private:
+	void process_events(Patchage* app);
 
+private:
 	boost::shared_ptr<PatchagePort> create_port(
 			boost::shared_ptr<PatchageModule> parent,
 			jack_port_t*                      port);
@@ -109,6 +110,8 @@ private:
 	Patchage*      _app;
 	jack_client_t* _client;
 
+	Raul::SRSWQueue<PatchageEvent> _events;
+	
 	Glib::Mutex _shutdown_mutex;
 
 	bool            _is_activated;

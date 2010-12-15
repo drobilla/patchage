@@ -30,8 +30,7 @@ using namespace std;
 using namespace FlowCanvas;
 
 AlsaDriver::AlsaDriver(Patchage* app)
-	: Driver(128)
-	, _app(app)
+	: _app(app)
 	, _seq(NULL)
 {
 }
@@ -49,9 +48,7 @@ AlsaDriver::~AlsaDriver()
 void
 AlsaDriver::attach(bool /*launch_daemon*/)
 {
-	int ret = snd_seq_open(&_seq, "default",
-	                       SND_SEQ_OPEN_DUPLEX,
-	                       SND_SEQ_NONBLOCK);
+	int ret = snd_seq_open(&_seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
 	if (ret) {
 		_app->status_msg("[ALSA] Unable to attach");
 		_seq = NULL;
@@ -426,19 +423,14 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 bool
 AlsaDriver::create_refresh_port()
 {
-	// Mostly lifted from alsa-patch-bay, (C) 2002 Robert Ham, released under GPL
-
-	int ret;
 	snd_seq_port_info_t* port_info;
-
 	snd_seq_port_info_alloca(&port_info);
 	snd_seq_port_info_set_name(port_info, "System Announcement Reciever");
+	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
 	snd_seq_port_info_set_capability(port_info,
 		SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE|SND_SEQ_PORT_CAP_NO_EXPORT);
 
-	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
-
-	ret = snd_seq_create_port(_seq, port_info);
+	int ret = snd_seq_create_port(_seq, port_info);
 	if (ret) {
 		Raul::error << "[ALSA] Error creating port: " << snd_strerror(ret) << endl;
 		return false;
@@ -449,7 +441,6 @@ AlsaDriver::create_refresh_port()
 		snd_seq_port_info_get_port(port_info),
 		SND_SEQ_CLIENT_SYSTEM,
 		SND_SEQ_PORT_SYSTEM_ANNOUNCE);
-
 	if (ret) {
 		Raul::error << "[ALSA] Could not connect to system announcer port: "
 		            << snd_strerror(ret) << endl;
@@ -477,77 +468,60 @@ AlsaDriver::_refresh_main()
 		return;
 	}
 
-	int             ret     = 0;
-	int             nfds    = snd_seq_poll_descriptors_count(_seq, POLLIN);
-	struct pollfd*  pfds    = new struct pollfd[nfds];
-	unsigned short* revents = new unsigned short[nfds];
+	int caps = 0;
 
-	snd_seq_poll_descriptors(_seq, pfds, nfds, POLLIN);
+	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_alloca(&pinfo);
 
-	while (true) {
-		ret = poll(pfds, nfds, -1);
-		if (ret == -1) {
-			if (errno == EINTR)
-				continue;
+	snd_seq_event_t* ev;
+	while (snd_seq_event_input(_seq, &ev) > 0) {
+		assert(ev);
+			
+		Glib::Mutex::Lock lock(_events_mutex);
 
-			Raul::error << "[ALSA] Error polling sequencer: " << strerror(errno) << endl;
-			continue;
-		}
-
-		ret = snd_seq_poll_descriptors_revents(_seq, pfds, nfds, revents);
-		if (ret) {
-			Raul::error << "[ALSA] Error getting sequencer poll events: "
-			            << snd_strerror(ret) << endl;
-			continue;
-		}
-
-		snd_seq_port_info_t* pinfo;
-		snd_seq_port_info_alloca(&pinfo);
-		int caps = 0;
-
-		for (int i = 0; i < nfds; ++i) {
-			if (revents[i] > 0) {
-				snd_seq_event_t* ev;
-				snd_seq_event_input(_seq, &ev);
-				if (!ev)
-					continue;
-
-				switch (ev->type) {
-				case SND_SEQ_EVENT_PORT_SUBSCRIBED:
-					_events.push(PatchageEvent(PatchageEvent::CONNECTION,
-								ev->data.connect.sender, ev->data.connect.dest));
-					break;
-				case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
-					_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
-								ev->data.connect.sender, ev->data.connect.dest));
-					break;
-				case SND_SEQ_EVENT_PORT_START:
-					snd_seq_port_info_set_client(pinfo, ev->data.addr.client);
-					caps = snd_seq_port_info_get_capability(pinfo);
-					_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,
-								PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
-					break;
-				case SND_SEQ_EVENT_PORT_EXIT:
-					snd_seq_port_info_set_client(pinfo, ev->data.addr.client);
-					caps = snd_seq_port_info_get_capability(pinfo);
-					_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
-								PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
-					break;
-				// TODO: What should happen for these?
-				case SND_SEQ_EVENT_PORT_CHANGE:
-				case SND_SEQ_EVENT_CLIENT_START:
-				case SND_SEQ_EVENT_CLIENT_EXIT:
-				case SND_SEQ_EVENT_CLIENT_CHANGE:
-				case SND_SEQ_EVENT_RESET:
-				default:
-					//_events.push(PatchageEvent(PatchageEvent::REFRESH));
-					break;
-				}
-			}
+		switch (ev->type) {
+		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
+			_events.push(PatchageEvent(PatchageEvent::CONNECTION,
+			                           ev->data.connect.sender, ev->data.connect.dest));
+			break;
+		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
+			_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
+			                           ev->data.connect.sender, ev->data.connect.dest));
+			break;
+		case SND_SEQ_EVENT_PORT_START:
+			snd_seq_get_any_port_info(_seq, ev->data.addr.client, ev->data.addr.port, pinfo);
+			caps = snd_seq_port_info_get_capability(pinfo);
+			_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,
+			                           PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+			break;
+		case SND_SEQ_EVENT_PORT_EXIT:
+			// Note: getting caps at this point does not work
+			// Delete both inputs and outputs (in case this is a duplex port)
+			_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
+			                           PortID(ev->data.addr, true)));
+			_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
+			                           PortID(ev->data.addr, false)));
+			break;
+		case SND_SEQ_EVENT_CLIENT_CHANGE:
+		case SND_SEQ_EVENT_CLIENT_EXIT:
+		case SND_SEQ_EVENT_CLIENT_START:
+		case SND_SEQ_EVENT_PORT_CHANGE:
+		case SND_SEQ_EVENT_RESET:
+		default:
+			//_events.push(PatchageEvent(PatchageEvent::REFRESH));
+			break;
 		}
 	}
-
-	delete[] pfds;
-	delete[] revents;
 }
 
+
+void
+AlsaDriver::process_events(Patchage* app)
+{
+	Glib::Mutex::Lock lock(_events_mutex);
+	while (!_events.empty()) {
+		PatchageEvent& ev = _events.front();
+		ev.execute(app);
+		_events.pop();
+	}
+}

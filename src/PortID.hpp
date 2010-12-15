@@ -43,20 +43,18 @@ struct PortID {
 
 #ifdef HAVE_ALSA
 	PortID(snd_seq_addr_t addr, bool in)
-		: type(ALSA_ADDR) { id.alsa_addr = addr; is_input = in; }
-
-	bool is_input;
+		: type(ALSA_ADDR) { id.alsa_addr = addr; id.is_input = in; }
 #endif
 
 	union {
 #ifdef USE_LIBJACK
-		struct {
-			jack_port_id_t jack_id;
-			int            jack_flags;
-		};
+		jack_port_id_t jack_id;
 #endif
 #ifdef HAVE_ALSA
-		snd_seq_addr_t alsa_addr;
+		struct {
+			snd_seq_addr_t alsa_addr;
+			bool           is_input : 1;
+		};
 #endif
 	} id;
 };

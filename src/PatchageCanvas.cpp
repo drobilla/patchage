@@ -115,8 +115,8 @@ PatchageCanvas::find_port(const PortID& id)
 							&& pp->alsa_addr()->client == id.id.alsa_addr.client
 							&& pp->alsa_addr()->port   == id.id.alsa_addr.port) {
 						if ((module->type() == InputOutput)
-						    || (id.is_input && (module->type() == Input))
-						    || (!id.is_input && (module->type() == Output))) {
+						    || (id.id.is_input && (module->type() == Input))
+						    || (!id.id.is_input && (module->type() == Output))) {
 							return pp;
 						}
 					}
@@ -158,10 +158,8 @@ PatchageCanvas::connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<
 void
 PatchageCanvas::disconnect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2)
 {
-	boost::shared_ptr<PatchagePort> input
-		= boost::dynamic_pointer_cast<PatchagePort>(port1);
-	boost::shared_ptr<PatchagePort> output
-		= boost::dynamic_pointer_cast<PatchagePort>(port2);
+	boost::shared_ptr<PatchagePort> input  = boost::dynamic_pointer_cast<PatchagePort>(port1);
+	boost::shared_ptr<PatchagePort> output = boost::dynamic_pointer_cast<PatchagePort>(port2);
 
 	if (!input || !output)
 		return;

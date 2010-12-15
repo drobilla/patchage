@@ -63,8 +63,7 @@ using namespace FlowCanvas;
 
 
 JackDriver::JackDriver(Patchage* app)
-	: Driver(128)
-	, _app(app)
+	: _app(app)
 	, _dbus_connection(0)
 	, _server_responding(false)
 	, _server_started(false)

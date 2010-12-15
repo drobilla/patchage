@@ -36,9 +36,9 @@ using namespace FlowCanvas;
 
 
 JackDriver::JackDriver(Patchage* app)
-	: Driver(128)
-	, _app(app)
+	: _app(app)
 	, _client(NULL)
+	, _events(128)
 	, _is_activated(false)
 	, _xruns(0)
 	, _xrun_delay(0)
@@ -610,4 +610,16 @@ JackDriver::reset_max_dsp_load()
 	if (_client)
 		jack_reset_max_delayed_usecs(_client);
 }
+
+
+void
+JackDriver::process_events(Patchage* app)
+{
+	while (!_events.empty()) {
+		PatchageEvent& ev = _events.front();
+		ev.execute(app);
+		_events.pop();
+	}
+}
+
 

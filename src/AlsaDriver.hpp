@@ -18,9 +18,12 @@
 #ifndef PATCHAGE_ALSADRIVER_HPP
 #define PATCHAGE_ALSADRIVER_HPP
 
+#include <string>
+#include <queue>
+
 #include <alsa/asoundlib.h>
 #include <pthread.h>
-#include <string>
+
 #include "Driver.hpp"
 class Patchage;
 class PatchagePort;
@@ -53,6 +56,8 @@ public:
 
 	void print_addr(snd_seq_addr_t addr);
 
+	void process_events(Patchage* app);
+	
 private:
 	void refresh_ports();
 	void refresh_connections();
@@ -85,6 +90,9 @@ private:
 	Patchage*  _app;
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
+	
+	Glib::Mutex               _events_mutex;
+	std::queue<PatchageEvent> _events;
 };
 
 #endif // PATCHAGE_ALSADRIVER_HPP
