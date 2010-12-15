@@ -16,53 +16,53 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "LashClient.hpp"
+#include "Client.hpp"
 #include "Patchage.hpp"
 
 using namespace std;
 
-struct LashClientImpl {
-	Project*   project;
-	string     id;
-	string     name;
+struct ClientImpl {
+	Project* project;
+	string   id;
+	string   name;
 };
 
-LashClient::LashClient(
+Client::Client(
     Project*      project,
     const string& id,
     const string& name)
 {
-	_impl          = new LashClientImpl();
+	_impl          = new ClientImpl();
 	_impl->project = project;
 	_impl->id      = id;
 	_impl->name    = name;
 }
 
-LashClient::~LashClient()
+Client::~Client()
 {
 	delete _impl;
 }
 
 Project*
-LashClient::get_project()
+Client::get_project()
 {
 	return _impl->project;
 }
 
 const string&
-LashClient::get_id() const
+Client::get_id() const
 {
 	return _impl->id;
 }
 
 const string&
-LashClient::get_name() const
+Client::get_name() const
 {
 	return _impl->name;
 }
 
 void
-LashClient::set_name(const string& name)
+Client::set_name(const string& name)
 {
 	if (_impl->name != name) {
 		_impl->name = name;

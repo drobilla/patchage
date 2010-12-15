@@ -1,4 +1,3 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
@@ -23,7 +22,7 @@
 #include "LashProxy.hpp"
 #include "Session.hpp"
 #include "Project.hpp"
-#include "LashClient.hpp"
+#include "Client.hpp"
 #include "DBus.hpp"
 
 #define LASH_SERVICE       "org.nongnu.LASH"
@@ -42,35 +41,30 @@ struct LashProxyImpl {
 	void error_msg(const std::string& msg);
 	void info_msg(const std::string& msg);
 
-	static
-	DBusHandlerResult
-	dbus_message_hook(
+	static DBusHandlerResult dbus_message_hook(
 	    DBusConnection* connection,
-	    DBusMessage* message,
-	    void* proxy);
+	    DBusMessage*    message,
+	    void*           proxy);
 
-	bool
-	call(
-	    bool response_expected,
-	    const char* iface,
-	    const char* method,
+	bool call(
+	    bool          response_expected,
+	    const char*   iface,
+	    const char*   method,
 	    DBusMessage** reply_ptr,
-	    int in_type,
+	    int           in_type,
 	    ...);
 
-	shared_ptr<Project>
-	on_project_added(const string& name);
+	shared_ptr<Project> on_project_added(const string& name);
 
-	shared_ptr<LashClient>
-	on_client_added(
+	shared_ptr<Client> on_client_added(
 	    shared_ptr<Project> project,
-	    string id,
-	    string name);
+	    string              id,
+	    string              name);
 
-	bool        _server_responding;
-	Session*    _session;
-	LashProxy*  _interface;
-	Patchage*   _app;
+	bool       _server_responding;
+	Session*   _session;
+	LashProxy* _interface;
+	Patchage*  _app;
 };
 
 LashProxy::LashProxy(Patchage* app, Session* session)
@@ -131,17 +125,17 @@ LashProxyImpl::dbus_message_hook(
     DBusMessage* message,
     void* proxy)
 {
-	const char* project_name;
-	const char* new_project_name;
-	const char* object_name;
-	const char* old_owner;
-	const char* new_owner;
-	const char* value_string;
-	const char* client_id;
-	const char* client_name;
-	dbus_bool_t modified_status;
+	const char*         project_name;
+	const char*         new_project_name;
+	const char*         object_name;
+	const char*         old_owner;
+	const char*         new_owner;
+	const char*         value_string;
+	const char*         client_id;
+	const char*         client_name;
+	dbus_bool_t         modified_status;
 	shared_ptr<Project> project;
-	shared_ptr<LashClient> client;
+	shared_ptr<Client>  client;
 
 	assert(proxy);
 	LashProxyImpl* me = reinterpret_cast<LashProxyImpl*>(proxy);
@@ -485,13 +479,13 @@ LashProxyImpl::on_project_added(const string& name)
 	return project;
 }
 
-shared_ptr<LashClient>
+shared_ptr<Client>
 LashProxyImpl::on_client_added(
     shared_ptr<Project> project,
     string id,
     string name)
 {
-	shared_ptr<LashClient> client(new LashClient(project.get(), id, name));
+	shared_ptr<Client> client(new Client(project.get(), id, name));
 
 	project->on_client_added(client);
 	_session->client_add(client);

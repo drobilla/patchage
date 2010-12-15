@@ -19,7 +19,7 @@
 #include <gtkmm.h>
 #include <libglademm/xml.h>
 
-#include "LashClient.hpp"
+#include "Client.hpp"
 #include "LashProxy.hpp"
 #include "Project.hpp"
 #include "ProjectList.hpp"
@@ -43,8 +43,8 @@ struct ProjectListImpl : public sigc::trackable {
 	void project_added(shared_ptr<Project> project);
 	void project_closed(shared_ptr<Project> project);
 	void project_renamed(Gtk::TreeModel::iterator iter);
-	void client_added(shared_ptr<LashClient> client, Gtk::TreeModel::iterator iter);
-	void client_removed(shared_ptr<LashClient> client, Gtk::TreeModel::iterator iter);
+	void client_added(shared_ptr<Client> client, Gtk::TreeModel::iterator iter);
+	void client_removed(shared_ptr<Client> client, Gtk::TreeModel::iterator iter);
 
 	bool on_button_press_event(GdkEventButton * event);
 
@@ -264,7 +264,7 @@ ProjectListImpl::project_renamed(
 
 void
 ProjectListImpl::client_added(
-    shared_ptr<LashClient>   client,
+    shared_ptr<Client>       client,
     Gtk::TreeModel::iterator iter)
 {
 	Gtk::TreeModel::Path path = _model->get_path(iter);
@@ -279,7 +279,7 @@ ProjectListImpl::client_added(
 
 void
 ProjectListImpl::client_removed(
-    shared_ptr<LashClient>   client,
+    shared_ptr<Client>       client,
     Gtk::TreeModel::iterator iter)
 {
 	if (!iter)

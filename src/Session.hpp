@@ -23,7 +23,7 @@
 
 struct SessionImpl;
 class Project;
-class LashClient;
+class Client;
 
 class Session
 {
@@ -38,10 +38,10 @@ public:
 
 	boost::shared_ptr<Project> find_project_by_name(const std::string& name);
 
-	void client_add(boost::shared_ptr<LashClient> client);
+	void client_add(boost::shared_ptr<Client> client);
 	void client_remove(const std::string& id);
 
-	boost::shared_ptr<LashClient> find_client_by_id(const std::string& id);
+	boost::shared_ptr<Client> find_client_by_id(const std::string& id);
 
 	sigc::signal< void, boost::shared_ptr<Project> > _signal_project_added;
 	sigc::signal< void, boost::shared_ptr<Project> > _signal_project_closed;

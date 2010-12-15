@@ -1,4 +1,3 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
@@ -28,7 +27,7 @@
 struct ProjectImpl;
 class LashProxy;
 class LashProxyImpl;
-class LashClient;
+class Client;
 
 class Project {
 public:
@@ -38,7 +37,7 @@ public:
 
 	void clear();
 
-	typedef std::list< boost::shared_ptr<LashClient> > Clients;
+	typedef std::list< boost::shared_ptr<Client> > Clients;
 
 	const std::string& get_name() const;
 	const std::string& get_description() const;
@@ -55,8 +54,8 @@ public:
 	sigc::signal<void> _signal_description_changed;
 	sigc::signal<void> _signal_notes_changed;
 
-	sigc::signal< void, boost::shared_ptr<LashClient> > _signal_client_added;
-	sigc::signal< void, boost::shared_ptr<LashClient> > _signal_client_removed;
+	sigc::signal< void, boost::shared_ptr<Client> > _signal_client_added;
+	sigc::signal< void, boost::shared_ptr<Client> > _signal_client_removed;
 
 private:
 	friend class LashProxyImpl;
@@ -65,7 +64,7 @@ private:
 	void on_modified_status_changed(bool modified_status);
 	void on_description_changed(const std::string& description);
 	void on_notes_changed(const std::string& notes);
-	void on_client_added(boost::shared_ptr<LashClient> client);
+	void on_client_added(boost::shared_ptr<Client> client);
 	void on_client_removed(const std::string& id);
 
 	ProjectImpl* _impl;

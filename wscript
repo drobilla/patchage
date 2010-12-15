@@ -107,7 +107,7 @@ def build(bld):
 	prog.install_path = '${BINDIR}'
 	autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS GLADEMM DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
 	prog.source = '''
-		src/LashClient.cpp
+		src/Client.cpp
 		src/Patchage.cpp
 		src/PatchageCanvas.cpp
 		src/PatchageEvent.cpp

@@ -1,6 +1,5 @@
-// -*- Mode: C++ ; indent-tabs-mode: t -*-
 /* This file is part of Patchage.
- * Copyright (C) 2008-2009 David Robillard <http://drobilla.net>
+ * Copyright (C) 2008-2010 David Robillard <http://drobilla.net>
  * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software; you can redistribute it and/or modify it under the
@@ -19,7 +18,7 @@
 
 #include "Project.hpp"
 #include "LashProxy.hpp"
-#include "LashClient.hpp"
+#include "Client.hpp"
 
 using namespace std;
 using boost::shared_ptr;
@@ -30,7 +29,7 @@ struct ProjectImpl {
 	string     description;
 	string     notes;
 	bool       modified_status;
-	list< shared_ptr<LashClient> > clients;
+	list< shared_ptr<Client> > clients;
 };
 
 Project::Project(LashProxy* proxy, const string& name)
@@ -39,27 +38,24 @@ Project::Project(LashProxy* proxy, const string& name)
 
 	proxy->get_loaded_project_properties(name, properties);
 
-	_impl = new ProjectImpl;
+	_impl = new ProjectImpl();
 	_impl->proxy = proxy;
 	_impl->name = name;
 
 	_impl->description = properties.description;
 	_impl->notes = properties.notes;
 	_impl->modified_status = properties.modified_status;
-
-	//g_app->info_msg("project created");
 }
 
 Project::~Project()
 {
 	delete _impl;
-	//g_app->info_msg("project destroyed");
 }
 
 void
 Project::clear()
 {
-	shared_ptr<LashClient> client;
+	shared_ptr<Client> client;
 
 	while (!_impl->clients.empty()) {
 		client = _impl->clients.front();
@@ -106,7 +102,7 @@ Project::get_clients() const
 }
 
 void
-Project::on_client_added(shared_ptr<LashClient> client)
+Project::on_client_added(shared_ptr<Client> client)
 {
 	_impl->clients.push_back(client);
 	_signal_client_added.emit(client);
@@ -115,9 +111,10 @@ Project::on_client_added(shared_ptr<LashClient> client)
 void
 Project::on_client_removed(const string& id)
 {
-	shared_ptr<LashClient> client;
+	shared_ptr<Client> client;
 
-	for (list< shared_ptr<LashClient> >::iterator iter = _impl->clients.begin(); iter != _impl->clients.end(); iter++) {
+	for (list< shared_ptr<Client> >::iterator iter = _impl->clients.begin();
+	     iter != _impl->clients.end(); iter++) {
 		client = *iter;
 
 		if (client->get_id() == id) {

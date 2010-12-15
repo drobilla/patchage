@@ -16,7 +16,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "LashClient.hpp"
+#include "Client.hpp"
 #include "Project.hpp"
 #include "Session.hpp"
 
@@ -24,8 +24,8 @@ using namespace std;
 using boost::shared_ptr;
 
 struct SessionImpl {
-	list< shared_ptr<Project> >    projects;
-	list< shared_ptr<LashClient> > clients;
+	list< shared_ptr<Project> > projects;
+	list< shared_ptr<Client> >  clients;
 };
 
 Session::Session()
@@ -65,7 +65,8 @@ shared_ptr<Project>
 Session::find_project_by_name(const string& name)
 {
 	shared_ptr<Project> project;
-	for (list< shared_ptr<Project> >::iterator i = _impl->projects.begin(); i != _impl->projects.end(); i++)
+	for (list< shared_ptr<Project> >::iterator i = _impl->projects.begin();
+	     i != _impl->projects.end(); i++)
 		if ((*i)->get_name() == name)
 			return (*i);
 
@@ -78,7 +79,8 @@ Session::project_close(const string& project_name)
 	shared_ptr<Project> project;
 	Project::Clients clients;
 
-	for (list<shared_ptr<Project> >::iterator iter = _impl->projects.begin(); iter != _impl->projects.end(); iter++) {
+	for (list<shared_ptr<Project> >::iterator iter = _impl->projects.begin();
+	     iter != _impl->projects.end(); iter++) {
 		project = *iter;
 
 		if (project->get_name() == project_name) {
@@ -96,7 +98,7 @@ Session::project_close(const string& project_name)
 }
 
 void
-Session::client_add(shared_ptr<LashClient> client)
+Session::client_add(shared_ptr<Client> client)
 {
 	_impl->clients.push_back(client);
 }
@@ -104,7 +106,8 @@ Session::client_add(shared_ptr<LashClient> client)
 void
 Session::client_remove(const string& id)
 {
-	for (list<shared_ptr<LashClient> >::iterator i = _impl->clients.begin(); i != _impl->clients.end(); i++) {
+	for (list< shared_ptr<Client> >::iterator i = _impl->clients.begin();
+	     i != _impl->clients.end(); i++) {
 		if ((*i)->get_id() == id) {
 			_impl->clients.erase(i);
 			return;
@@ -112,13 +115,14 @@ Session::client_remove(const string& id)
 	}
 }
 
-shared_ptr<LashClient>
+shared_ptr<Client>
 Session::find_client_by_id(const string& id)
 {
-	for (list<shared_ptr<LashClient> >::iterator i = _impl->clients.begin(); i != _impl->clients.end(); i++)
+	for (list< shared_ptr<Client> >::iterator i = _impl->clients.begin();
+	     i != _impl->clients.end(); i++)
 		if ((*i)->get_id() == id)
 			return *i;
 
-	return shared_ptr<LashClient>();
+	return shared_ptr<Client>();
 }
 

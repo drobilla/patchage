@@ -22,18 +22,18 @@
 #include <string>
 #include <sigc++/signal.h>
 
-class LashClientImpl;
+class ClientImpl;
 class Project;
 
-class LashClient
+class Client
 {
 public:
-	LashClient(
+	Client(
 		Project*           project,
 		const std::string& id,
 		const std::string& name);
 
-	~LashClient();
+	~Client();
 
 	Project* get_project();
 
@@ -45,7 +45,7 @@ public:
 	sigc::signal<void> _signal_renamed;
 
 private:
-	LashClientImpl* _impl;
+	ClientImpl* _impl;
 };
 
 #endif // PATCHAGE_LASH_CLIENT_HPP
