@@ -37,8 +37,6 @@ enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI };
 
 
 /** A Port on a PatchageModule
- *
- * \ingroup OmGtk
  */
 class PatchagePort : public FlowCanvas::Port
 {
