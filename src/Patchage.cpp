@@ -373,7 +373,13 @@ Patchage::idle_callback()
 	_driver_detached = false;
 
 	flush_resize();
-	update_load();
+
+	// Update load every 10 idle callbacks
+	static int count = 0;
+	if (++count == 10) {
+		update_load();
+		count = 0;
+	}
 
 	return true;
 }
@@ -400,7 +406,7 @@ Patchage::update_load()
 		return true;
 
 	char tmp_buf[8];
-	snprintf(tmp_buf, 8, "%zd", _jack_driver->xruns());
+	snprintf(tmp_buf, 8, "%zd", _jack_driver->get_xruns());
 
 	_main_xrun_progress->set_text(string(tmp_buf) + " Dropouts");
 

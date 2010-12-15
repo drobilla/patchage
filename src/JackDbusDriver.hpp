@@ -54,27 +54,17 @@ public:
 		boost::shared_ptr<PatchagePort> src,
 		boost::shared_ptr<PatchagePort> dst);
 
-	void start_transport();
-	void stop_transport();
-	void rewind_transport();
-
-	void reset_xruns();
-
-	jack_nframes_t buffer_size();
-	bool           set_buffer_size(jack_nframes_t size);
-
-	float sample_rate();
-
-	size_t xruns();
+	size_t get_xruns();
+	void   reset_xruns();
 
 	float get_max_dsp_load();
 	void  reset_max_dsp_load();
 
-	void process_events(Patchage* app) {}
+	float          sample_rate();
+	jack_nframes_t buffer_size();
+	bool           set_buffer_size(jack_nframes_t size);
 
-	boost::shared_ptr<PatchagePort> find_port_view(
-		Patchage*     patchage,
-		const PortID& ref);
+	void process_events(Patchage* app) {}
 
 	boost::shared_ptr<PatchagePort> create_port_view(
 			Patchage*     patchage,

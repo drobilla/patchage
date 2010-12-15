@@ -64,29 +64,17 @@ public:
 	bool disconnect(boost::shared_ptr<PatchagePort> src,
 	                boost::shared_ptr<PatchagePort> dst);
 
-	void start_transport() { jack_transport_start(_client); }
-	void stop_transport()  { jack_transport_stop(_client); }
+	size_t get_xruns() { return _xruns; }
+	void   reset_xruns();
 
-	void reset_xruns();
-	void reset_max_dsp_load();
-
-	void rewind_transport() {
-		jack_position_t zero;
-		zero.frame = 0;
-		zero.valid = (jack_position_bits_t)0;
-		jack_transport_reposition(_client, &zero);
-	}
+	float  get_max_dsp_load();
+	void   reset_max_dsp_load();
 
 	jack_client_t* client() { return _client; }
 
+	float          sample_rate() { return jack_get_sample_rate(_client); }
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
-
-	inline float sample_rate() { return jack_get_sample_rate(_client); }
-
-	inline size_t xruns() { return _xruns; }
-
-	float get_max_dsp_load();
 
 	void process_events(Patchage* app);
 

@@ -28,14 +28,16 @@
 #include <dbus/dbus-glib-lowlevel.h>
 
 #include <boost/format.hpp>
+
+#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
 
-#include "PatchageCanvas.hpp"
-#include "PatchageEvent.hpp"
-#include "Patchage.hpp"
-#include "PatchageModule.hpp"
 #include "Driver.hpp"
 #include "JackDbusDriver.hpp"
+#include "Patchage.hpp"
+#include "PatchageCanvas.hpp"
+#include "PatchageEvent.hpp"
+#include "PatchageModule.hpp"
 
 using namespace std;
 using namespace FlowCanvas;
@@ -163,35 +165,32 @@ JackDriver::on_jack_disappeared()
 }
 
 
+/** Handle signals we have subscribed for in attach(). */
 DBusHandlerResult
 JackDriver::dbus_message_hook(
 	DBusConnection* connection,
 	DBusMessage*    message,
 	void*           jack_driver)
 {
-	dbus_uint64_t new_graph_version;
-	dbus_uint64_t client_id;
-	const char *client_name;
-	dbus_uint64_t port_id;
-	const char *port_name;
+	const char*   client2_name;
+	const char*   client_name;
+	const char*   new_owner;
+	const char*   object_name;
+	const char*   old_owner;
+	const char*   port2_name;
+	const char*   port_name;
 	dbus_uint32_t port_flags;
 	dbus_uint32_t port_type;
 	dbus_uint64_t client2_id;
-	const char *client2_name;
-	dbus_uint64_t port2_id;
-	const char *port2_name;
+	dbus_uint64_t client_id;
 	dbus_uint64_t connection_id;
-	const char *object_name;
-	const char *old_owner;
-	const char *new_owner;
+	dbus_uint64_t new_graph_version;
+	dbus_uint64_t port2_id;
+	dbus_uint64_t port_id;
 
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_dbus_connection);
-
-	//me->info_msg("dbus_message_hook() called.");
-
-	// Handle signals we have subscribed for in attach()
 
 	if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
 		if (!dbus_message_get_args( message, &me->_dbus_error,
@@ -706,27 +705,27 @@ JackDriver::disconnect_ports(
 void
 JackDriver::refresh_internal(bool force)
 {
-	DBusMessage* reply_ptr;
+	DBusMessage*    reply_ptr;
 	DBusMessageIter iter;
-	dbus_uint64_t version;
-	const char * reply_signature;
+	dbus_uint64_t   version;
+	const char*     reply_signature;
 	DBusMessageIter clients_array_iter;
 	DBusMessageIter client_struct_iter;
 	DBusMessageIter ports_array_iter;
 	DBusMessageIter port_struct_iter;
 	DBusMessageIter connections_array_iter;
 	DBusMessageIter connection_struct_iter;
-	dbus_uint64_t client_id;
-	const char *client_name;
-	dbus_uint64_t port_id;
-	const char *port_name;
-	dbus_uint32_t port_flags;
-	dbus_uint32_t port_type;
-	dbus_uint64_t client2_id;
-	const char *client2_name;
-	dbus_uint64_t port2_id;
-	const char *port2_name;
-	dbus_uint64_t connection_id;
+	dbus_uint64_t   client_id;
+	const char*     client_name;
+	dbus_uint64_t   port_id;
+	const char*     port_name;
+	dbus_uint32_t   port_flags;
+	dbus_uint32_t   port_type;
+	dbus_uint64_t   client2_id;
+	const char*     client2_name;
+	dbus_uint64_t   port2_id;
+	const char*     port2_name;
+	dbus_uint64_t   connection_id;
 
 	if (force) {
 		version = 0; // workaround module split/join stupidity
@@ -874,16 +873,16 @@ JackDriver::connect(
 	boost::shared_ptr<PatchagePort> src,
 	boost::shared_ptr<PatchagePort> dst)
 {
-	const char *client1_name;
-	const char *port1_name;
-	const char *client2_name;
-	const char *port2_name;
+	const char*  client1_name;
+	const char*  port1_name;
+	const char*  client2_name;
+	const char*  port2_name;
 	DBusMessage* reply_ptr;
 
 	client1_name = src->module().lock()->name().c_str();
-	port1_name = src->name().c_str();
+	port1_name   = src->name().c_str();
 	client2_name = dst->module().lock()->name().c_str();
-	port2_name = dst->name().c_str();
+	port2_name   = dst->name().c_str();
 
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "ConnectPortsByName", &reply_ptr,
 				DBUS_TYPE_STRING, &client1_name,
@@ -904,16 +903,16 @@ JackDriver::disconnect(
 	boost::shared_ptr<PatchagePort> src,
 	boost::shared_ptr<PatchagePort> dst)
 {
-	const char *client1_name;
-	const char *port1_name;
-	const char *client2_name;
-	const char *port2_name;
+	const char*  client1_name;
+	const char*  port1_name;
+	const char*  client2_name;
+	const char*  port2_name;
 	DBusMessage* reply_ptr;
 
 	client1_name = src->module().lock()->name().c_str();
-	port1_name = src->name().c_str();
+	port1_name   = src->name().c_str();
 	client2_name = dst->module().lock()->name().c_str();
-	port2_name = dst->name().c_str();
+	port2_name   = dst->name().c_str();
 
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "DisconnectPortsByName", &reply_ptr,
 				DBUS_TYPE_STRING, &client1_name,
@@ -1024,9 +1023,9 @@ JackDriver::is_realtime() const
 
 
 size_t
-JackDriver::xruns()
+JackDriver::get_xruns()
 {
-	DBusMessage* reply_ptr;
+	DBusMessage*  reply_ptr;
 	dbus_uint32_t xruns;
 
 	if (_server_responding && !_server_started) {
@@ -1088,8 +1087,7 @@ JackDriver::get_max_dsp_load()
 
 	load /= 100.0;								// dbus returns it in percents, we use 0..1
 
-	if (load > _max_dsp_load)
-	{
+	if (load > _max_dsp_load) {
 		_max_dsp_load = load;
 	}
 
@@ -1104,37 +1102,9 @@ JackDriver::reset_max_dsp_load()
 }
 
 
-void
-JackDriver::start_transport()
-{
-	//info_msg(__func__);
-}
-
-
-void
-JackDriver::stop_transport()
-{
-	//info_msg(__func__);
-}
-
-
-void
-JackDriver::rewind_transport()
-{
-	//info_msg(__func__);
-}
-
-
-boost::shared_ptr<PatchagePort>
-JackDriver::find_port_view(Patchage* patchage, const PortID& id)
-{
-	assert(false);  // we dont use events at all
-}
-
-
 boost::shared_ptr<PatchagePort>
 JackDriver::create_port_view(
-	Patchage * patchage,
+	Patchage* patchage,
 	const PortID& id)
 {
 	assert(false);  // we dont use events at all
