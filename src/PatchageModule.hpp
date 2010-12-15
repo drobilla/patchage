@@ -32,10 +32,15 @@ public:
 	PatchageModule(Patchage* app, const std::string& name, ModuleType type, double x=0, double y=0);
 	~PatchageModule();
 
+	void add_port(boost::shared_ptr<Port> port);
+	void remove_port(boost::shared_ptr<Port> port);
+
 	void split();
 	void join();
 
 	void create_menu();
+	void update_menu();
+
 	void load_location();
 	void menu_disconnect_all();
 	void show_dialog() {}

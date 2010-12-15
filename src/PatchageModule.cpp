@@ -35,6 +35,30 @@ PatchageModule::~PatchageModule()
 }
 
 void
+PatchageModule::update_menu()
+{
+	if (!_menu)
+		return;
+
+	if (_type == InputOutput) {
+		bool has_in  = false;
+		bool has_out = false;
+		for (PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p) {
+			if ((*p)->is_input()) {
+				has_in = true;
+			} else {
+				has_out = true;
+			}
+			if (has_in && has_out) {
+				_menu->items()[0].show(); // Show "Split" menu item
+				return;
+			}
+		}
+		_menu->items()[0].hide(); // Hide "Split" menu item
+	}
+}
+
+void
 PatchageModule::create_menu()
 {
 	_menu = new Gtk::Menu();
@@ -42,6 +66,7 @@ PatchageModule::create_menu()
 	if (_type == InputOutput) {
 		items.push_back(
 			Gtk::Menu_Helpers::MenuElem("_Split", sigc::mem_fun(this, &PatchageModule::split)));
+		update_menu();
 	} else {
 		items.push_back(
 			Gtk::Menu_Helpers::MenuElem("_Join", sigc::mem_fun(this, &PatchageModule::join)));
@@ -88,6 +113,20 @@ PatchageModule::join()
 	assert(_type != InputOutput);
 	_app->state_manager()->set_module_split(_name, false);
 	_app->refresh();
+}
+
+void
+PatchageModule::add_port(boost::shared_ptr<Port> port)
+{
+	FlowCanvas::Module::add_port(port);
+	update_menu();
+}
+
+void
+PatchageModule::remove_port(boost::shared_ptr<Port> port)
+{
+	FlowCanvas::Module::remove_port(port);
+	update_menu();
 }
 
 void
