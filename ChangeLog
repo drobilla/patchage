@@ -8,6 +8,7 @@ patchage (0.4.6) unstable; urgency=low
   * Fix handling of ALSA duplex ports
   * Hide "split" module menu item when it is useless
   * Fix Jack D-Bus support
+  * Bump FlowCanvas dependency to 0.7.0
   * Build system and code quality improvements
 
  -- David Robillard <d@drobilla.net>  Wed, 15 Dec 2010 15:11:08 -0500
