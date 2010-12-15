@@ -300,7 +300,7 @@ Patchage::~Patchage()
 	delete _dbus;
 #endif
 	delete _state_manager;
-	
+
 	_about_win.destroy();
 	_messages_win.destroy();
 

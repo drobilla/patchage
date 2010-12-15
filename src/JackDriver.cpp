@@ -502,6 +502,11 @@ JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
 
 	jack_reset_max_delayed_usecs(me->_client);
 
+	if (buffer_size == 0) {
+		Raul::error << "Jack is insane and reporting a buffer size of 0" << endl;
+		return 0;
+	}
+
 	me->_buffer_size = buffer_size;
 	me->reset_xruns();
 	me->reset_max_dsp_load();
@@ -587,15 +592,12 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 float
 JackDriver::get_max_dsp_load()
 {
+	const float max_delay = jack_get_max_delayed_usecs(_client);
+	const float rate      = sample_rate();
+	const float size      = buffer_size();
+	const float period    = size / rate * 1000000; // usec
+
 	float max_load;
-	float max_delay;
-
-	max_delay = jack_get_max_delayed_usecs(_client);
-
-	const float rate = sample_rate();
-	const float size = buffer_size();
-	const float period = size / rate * 1000000; // usec
-
 	if (max_delay > period) {
 		max_load = 1.0;
 		jack_reset_max_delayed_usecs(_client);
