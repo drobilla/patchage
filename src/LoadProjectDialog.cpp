@@ -25,12 +25,13 @@ convert_timestamp_to_string(
     const time_t timestamp,
     std::string& timestamp_string)
 {
-	GDate mtime, now;
-	gint days_diff;
-	struct tm tm_mtime;
-	time_t time_now;
-	const gchar *format;
-	gchar buf[256];
+	GDate        mtime;
+	GDate        now;
+	gint         days_diff;
+	struct tm    tm_mtime;
+	time_t       time_now;
+	const gchar* format;
+	gchar        buf[256];
 
 	if (timestamp == 0) {
 		timestamp_string = "Unknown";

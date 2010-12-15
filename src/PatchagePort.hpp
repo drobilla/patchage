@@ -18,14 +18,17 @@
 #ifndef PATCHAGE_PATCHAGEPORT_HPP
 #define PATCHAGE_PATCHAGEPORT_HPP
 
-#include "patchage-config.h"
 #include <string>
+
 #include <boost/shared_ptr.hpp>
+
 #include "flowcanvas/Port.hpp"
 #include "flowcanvas/Module.hpp"
 
+#include "patchage-config.h"
+
 #ifdef HAVE_ALSA
-#include <alsa/asoundlib.h>
+  #include <alsa/asoundlib.h>
 #endif
 
 using namespace FlowCanvas;

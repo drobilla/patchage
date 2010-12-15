@@ -18,14 +18,18 @@
 #ifndef PATCHAGE_PATCHAGECANVAS_HPP
 #define PATCHAGE_PATCHAGECANVAS_HPP
 
-#include "patchage-config.h"
 #include <string>
+
+#include "patchage-config.h"
+
 #ifdef HAVE_ALSA
-#include <alsa/asoundlib.h>
+  #include <alsa/asoundlib.h>
 #endif
+
 #include "flowcanvas/Canvas.hpp"
-#include "StateManager.hpp"
+
 #include "PatchageEvent.hpp"
+#include "StateManager.hpp"
 
 class Patchage;
 class PatchageModule;

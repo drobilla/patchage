@@ -21,6 +21,7 @@
 
 #include <string>
 #include <list>
+
 #include <boost/shared_ptr.hpp>
 #include <sigc++/signal.h>
 

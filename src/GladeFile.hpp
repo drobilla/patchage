@@ -18,13 +18,16 @@
 #ifndef PATCHAGE_GLADEFILE_HPP
 #define PATCHAGE_GLADEFILE_HPP
 
-#include <string>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+
 #include <libglademm/xml.h>
+
 #include "patchage-config.h"
 #include "binary_location.h"
+
 
 class GladeFile {
 public:

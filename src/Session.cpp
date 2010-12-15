@@ -16,9 +16,9 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
+#include "LashClient.hpp"
 #include "Project.hpp"
 #include "Session.hpp"
-#include "LashClient.hpp"
 
 using namespace std;
 using boost::shared_ptr;

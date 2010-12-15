@@ -19,9 +19,9 @@
 #ifndef PATCHAGE_DBUS_HPP
 #define PATCHAGE_DBUS_HPP
 
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
+#include <dbus/dbus-glib.h>
+#include <dbus/dbus.h>
 
 class Patchage;
 
@@ -30,23 +30,23 @@ public:
 	DBus(Patchage* app);
 
 	bool call(
-		bool response_expected,
-		const char* service,
-		const char* object,
-		const char* iface,
-		const char* method,
+		bool          response_expected,
+		const char*   service,
+		const char*   object,
+		const char*   iface,
+		const char*   method,
 		DBusMessage** reply_ptr,
-		int in_type,
-		va_list ap);
+		int           in_type,
+		va_list       ap);
 
 	bool call(
-		bool response_expected,
-		const char* service,
-		const char* object,
-		const char* iface,
-		const char* method,
+		bool          response_expected,
+		const char*   service,
+		const char*   object,
+		const char*   iface,
+		const char*   method,
 		DBusMessage** reply_ptr,
-		int in_type,
+		int           in_type,
 		...);
 
 	DBusConnection* connection() { return _connection; }

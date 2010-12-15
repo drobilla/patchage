@@ -15,20 +15,23 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "raul/SharedPtr.hpp"
 #include "patchage-config.h"
-#include "PatchageCanvas.hpp"
-#include "Patchage.hpp"
+
+#include "raul/SharedPtr.hpp"
+
 #if defined(HAVE_JACK_DBUS)
-#include "JackDbusDriver.hpp"
+  #include "JackDbusDriver.hpp"
 #elif defined(USE_LIBJACK)
-#include "JackDriver.hpp"
+  #include "JackDriver.hpp"
 #endif
+#ifdef HAVE_ALSA
+  #include "AlsaDriver.hpp"
+#endif
+
+#include "Patchage.hpp"
+#include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
-#ifdef HAVE_ALSA
-#include "AlsaDriver.hpp"
-#endif
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: FlowCanvas::Canvas(width, height)

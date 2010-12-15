@@ -19,13 +19,13 @@
 #include <gtkmm.h>
 #include <libglademm/xml.h>
 
-#include "ProjectList.hpp"
-#include "Widget.hpp"
-#include "Session.hpp"
-#include "Project.hpp"
-#include "ProjectPropertiesDialog.hpp"
 #include "LashClient.hpp"
 #include "LashProxy.hpp"
+#include "Project.hpp"
+#include "ProjectList.hpp"
+#include "ProjectPropertiesDialog.hpp"
+#include "Session.hpp"
+#include "Widget.hpp"
 
 using boost::shared_ptr;
 using namespace std;
@@ -36,12 +36,6 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 };
 
 struct ProjectListImpl : public sigc::trackable {
-	Patchage*                    _app;
-	Widget<Gtk::TreeView>        _widget;
-	ProjectList_column_record    _columns;
-	Glib::RefPtr<Gtk::TreeStore> _model;
-	Gtk::Menu                    _menu_popup;
-
 	ProjectListImpl(
 	    Glib::RefPtr<Gnome::Glade::Xml> xml,
 	    Patchage* app);
@@ -60,6 +54,12 @@ struct ProjectListImpl : public sigc::trackable {
 	void on_menu_popup_close_project(shared_ptr<Project> project);
 	void on_menu_popup_project_properties(shared_ptr<Project> project);
 	void on_menu_popup_close_all_projects();
+
+	Patchage*                    _app;
+	Widget<Gtk::TreeView>        _widget;
+	ProjectList_column_record    _columns;
+	Glib::RefPtr<Gtk::TreeStore> _model;
+	Gtk::Menu                    _menu_popup;
 };
 
 ProjectList::ProjectList(

@@ -15,39 +15,44 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <cmath>
-#include <sstream>
-#include <fstream>
 #include <pthread.h>
-#include <libgnomecanvasmm.h>
-#include <libglademm/xml.h>
+
+#include <cmath>
+#include <fstream>
+#include <sstream>
+
 #include <gtk/gtkwindow.h>
-#include "raul/SharedPtr.hpp"
+#include <libglademm/xml.h>
+#include <libgnomecanvasmm.h>
+
 #include "flowcanvas/Module.hpp"
+#include "raul/SharedPtr.hpp"
 
 #include "patchage-config.h"
 #include "GladeFile.hpp"
-#if defined(HAVE_JACK_DBUS)
-#include "JackDbusDriver.hpp"
-#elif defined(USE_LIBJACK)
-#include "JackDriver.hpp"
-#include <jack/statistics.h>
-#endif
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "StateManager.hpp"
+
+#if defined(HAVE_JACK_DBUS)
+  #include "JackDbusDriver.hpp"
+#elif defined(USE_LIBJACK)
+  #include "JackDriver.hpp"
+  #include <jack/statistics.h>
+#endif
+
 #ifdef HAVE_ALSA
-#include "AlsaDriver.hpp"
+  #include "AlsaDriver.hpp"
 #endif
 #if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
-#include "DBus.hpp"
+  #include "DBus.hpp"
 #endif
 #ifdef HAVE_LASH
-#include "LashProxy.hpp"
-#include "LoadProjectDialog.hpp"
-#include "ProjectList.hpp"
-#include "Session.hpp"
+  #include "LashProxy.hpp"
+  #include "LoadProjectDialog.hpp"
+  #include "ProjectList.hpp"
+  #include "Session.hpp"
 #endif
 
 #define LOG_TO_STATUS 1

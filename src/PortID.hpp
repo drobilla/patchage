@@ -18,15 +18,16 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
+#include <cstring>
+#include <iostream>
+
 #include "patchage-config.h"
 
-#include <iostream>
-#include <cstring>
 #ifdef USE_LIBJACK
-#include <jack/jack.h>
+  #include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA
-#include <alsa/asoundlib.h>
+  #include <alsa/asoundlib.h>
 #endif
 
 #include "PatchagePort.hpp"

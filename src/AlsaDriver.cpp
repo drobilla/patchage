@@ -15,14 +15,16 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <string>
-#include <set>
 #include <cassert>
-#include "raul/log.hpp"
+#include <set>
+#include <string>
+
 #include "raul/SharedPtr.hpp"
-#include "PatchageCanvas.hpp"
+#include "raul/log.hpp"
+
 #include "AlsaDriver.hpp"
 #include "Patchage.hpp"
+#include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 

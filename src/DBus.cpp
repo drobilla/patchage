@@ -16,9 +16,11 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include "DBus.hpp"
 #include <stdexcept>
+
 #include <boost/format.hpp>
+
+#include "DBus.hpp"
 #include "Patchage.hpp"
 
 #define DBUS_CALL_DEFAULT_TIMEOUT 1000 // in milliseconds
@@ -44,14 +46,14 @@ DBus::DBus(Patchage* app)
 
 bool
 DBus::call(
-		bool response_expected,
-		const char * service,
-		const char * object,
-		const char * iface,
-		const char * method,
-		DBusMessage ** reply_ptr_ptr,
-		int in_type,
-		va_list ap)
+		bool          response_expected,
+		const char*   service,
+		const char*   object,
+		const char*   iface,
+		const char*   method,
+		DBusMessage** reply_ptr_ptr,
+		int           in_type,
+		va_list       ap)
 {
 	DBusMessage* request_ptr;
 	DBusMessage* reply_ptr;
@@ -91,13 +93,13 @@ DBus::call(
 
 bool
 DBus::call(
-		bool response_expected,
-		const char * serivce,
-		const char * object,
-		const char * iface,
-		const char * method,
-		DBusMessage ** reply_ptr_ptr,
-		int in_type,
+		bool          response_expected,
+		const char*   serivce,
+		const char*   object,
+		const char*   iface,
+		const char*   method,
+		DBusMessage** reply_ptr_ptr,
+		int           in_type,
 		...)
 {
 	bool ret;

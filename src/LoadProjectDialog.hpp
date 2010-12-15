@@ -20,7 +20,9 @@
 #define PATCHAGE_LOAD_PROJECT_DIALOG_H
 
 #include <list>
+
 #include <gtkmm.h>
+
 #include "Widget.hpp"
 
 class Patchage;

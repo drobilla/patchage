@@ -19,6 +19,7 @@
 #define PATCHAGE_WIDGET_HPP
 
 #include <string>
+
 #include <boost/utility.hpp>
 #include <libglademm/xml.h>
 

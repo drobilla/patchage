@@ -18,17 +18,23 @@
 #ifndef PATCHAGE_PATCHAGEMODULE_HPP
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
-#include "patchage-config.h"
 #include <string>
+
 #include <libgnomecanvasmm.h>
+
+#include "patchage-config.h"
+
 #ifdef HAVE_ALSA
-#include <alsa/asoundlib.h>
+  #include <alsa/asoundlib.h>
 #endif
+
 #include "flowcanvas/Canvas.hpp"
 #include "flowcanvas/Module.hpp"
+
+#include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
-#include "StateManager.hpp"
 #include "PatchagePort.hpp"
+#include "StateManager.hpp"
 
 using namespace FlowCanvas;
 

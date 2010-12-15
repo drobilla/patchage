@@ -18,11 +18,13 @@
 #ifndef PATCHAGE_PATCHAGE_HPP
 #define PATCHAGE_PATCHAGE_HPP
 
-#include <string>
 #include <set>
+#include <string>
+
 #include <boost/shared_ptr.hpp>
-#include <libgnomecanvasmm.h>
 #include <libglademm/xml.h>
+#include <libgnomecanvasmm.h>
+
 #include "patchage-config.h"
 #include "Widget.hpp"
 

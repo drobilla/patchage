@@ -17,18 +17,21 @@
 
 #include <cassert>
 #include <cstring>
-#include <string>
 #include <set>
-#include "patchage-config.h"
+#include <string>
+
 #include <jack/jack.h>
 #include <jack/statistics.h>
 #include <jack/thread.h>
-#include "raul/log.hpp"
+
 #include "raul/SharedPtr.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchageEvent.hpp"
+#include "raul/log.hpp"
+
+#include "patchage-config.h"
 #include "JackDriver.hpp"
 #include "Patchage.hpp"
+#include "PatchageCanvas.hpp"
+#include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 
 using namespace std;
