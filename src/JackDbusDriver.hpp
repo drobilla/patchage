@@ -70,6 +70,8 @@ public:
 	float get_max_dsp_load();
 	void  reset_max_dsp_load();
 
+	void process_events(Patchage* app) {}
+
 	boost::shared_ptr<PatchagePort> find_port_view(
 		Patchage*     patchage,
 		const PortID& ref);

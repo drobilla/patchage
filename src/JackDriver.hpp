@@ -111,7 +111,7 @@ private:
 	jack_client_t* _client;
 
 	Raul::SRSWQueue<PatchageEvent> _events;
-	
+
 	Glib::Mutex _shutdown_mutex;
 
 	bool            _is_activated;
