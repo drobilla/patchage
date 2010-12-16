@@ -39,13 +39,19 @@ def configure(conf):
 	conf.check_tool('compiler_cxx')
 	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
 	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
-	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS', atleast_version='0.7.0', mandatory=True)
-	autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM', atleast_version='2.6.0', mandatory=True)
-	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM', atleast_version='2.14.0', mandatory=True)
 	autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM', mandatory=True)
-	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD', atleast_version='2.14.0', mandatory=True)
-	autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM', atleast_version='2.11.12', mandatory=True)
-	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL', atleast_version='0.5.1', mandatory=True)
+	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD',
+			  atleast_version='2.14.0', mandatory=True)
+	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM',
+			  atleast_version='2.14.0', mandatory=True)
+	autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
+			  atleast_version='2.11.12', mandatory=True)
+	autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM',
+			  atleast_version='2.6.0', mandatory=True)
+	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
+			  atleast_version='0.7.0', mandatory=True)
+	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
+			  atleast_version='0.5.1', mandatory=True)
 
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
 	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
@@ -75,12 +81,8 @@ def configure(conf):
 
 	conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
 	conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
-	if conf.env['BUNDLE']:
-		autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
-				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
-	else:
-		autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
-				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
+	autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
+			conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 
 	conf.write_config_header('patchage-config.h', remove=False)
 
