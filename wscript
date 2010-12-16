@@ -15,10 +15,10 @@ VERSION = PATCHAGE_VERSION
 APP_HUMAN_NAME = 'Patchage'
 
 # Mandatory variables
-srcdir = '.'
-blddir = 'build'
+top = '.'
+out = 'build'
 
-def set_options(opt):
+def options(opt):
 	autowaf.set_options(opt)
 	opt.add_option('--patchage-install-name', type='string', default=APPNAME,
 			dest='patchage_install_name',
@@ -51,13 +51,13 @@ def configure(conf):
 	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
 
 	if conf.env['HAVE_JACK_DBUS']:
-		conf.define('HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
+		autowaf.define(conf, 'HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
 	else:
 		autowaf.check_pkg(conf, 'jack', uselib_store='JACK', atleast_version='0.107.0', mandatory=False)
 		if conf.env['HAVE_JACK'] == 1:
-			conf.define('USE_LIBJACK', 1)
+			autowaf.define(conf, 'USE_LIBJACK', 1)
 
-	conf.define('HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
+	autowaf.define(conf, 'HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
 	# Use Alsa if present unless --no-alsa
 	if not Options.options.no_alsa and conf.env['HAVE_ALSA'] != 1:
@@ -68,7 +68,7 @@ def configure(conf):
 	# Use LASH if we have DBUS unless --no-lash
 	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
 		conf.env['HAVE_LASH'] = 1
-		conf.define('HAVE_LASH', 1)
+		autowaf.define(conf, 'HAVE_LASH', 1)
 	else:
 		conf.env['HAVE_LASH'] = False
 
@@ -83,25 +83,25 @@ def configure(conf):
 	conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
 	conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
 	if conf.env['BUNDLE']:
-		conf.define('PATCHAGE_DATA_DIR', os.path.join(
+		autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
 				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 	else:
-		conf.define('PATCHAGE_DATA_DIR', os.path.join(
+		autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
 				conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 
-	conf.write_config_header('patchage-config.h')
+	conf.write_config_header('patchage-config.h', remove=False)
 
 	autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
 	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
-	autowaf.display_msg(conf, "Jack (libjack)", str(bool(conf.env['USE_LIBJACK'])))
+	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['USE_LIBJACK'] == 1))
 	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
 	print
 
 def build(bld):
 	# Program
-	prog = bld.new_task_gen('cxx', 'program')
+	prog = bld(features = 'cxx cxxprogram')
 	prog.includes = ['.', 'src']
 	prog.target = bld.env['APP_INSTALL_NAME']
 	prog.install_path = '${BINDIR}'
@@ -141,15 +141,14 @@ def build(bld):
 	bld.install_files('${DATADIR}/' + bld.env['APP_INSTALL_NAME'], 'src/patchage.glade')
 
 	# 'Desktop' file (menu entry, icon, etc)
-	obj = bld.new_task_gen('subst')
-	obj.source = 'patchage.desktop.in'
-	obj.target = 'patchage.desktop'
-	obj.dict = {
-		'BINDIR'           : os.path.normpath(bld.env['BINDIR']),
-		'APP_INSTALL_NAME' : bld.env['APP_INSTALL_NAME'],
-		'APP_HUMAN_NAME'   : bld.env['APP_HUMAN_NAME'],
-	}
-	obj.install_path = '${DATADIR}/applications'
+	bld(features         = 'subst',
+	    source           = 'patchage.desktop.in',
+	    target           = 'patchage.desktop',
+	    install_path     = '${DATADIR}/applications',
+	    chmod            = 0755,
+	    BINDIR           = os.path.normpath(bld.env['BINDIR']),
+	    APP_INSTALL_NAME = bld.env['APP_INSTALL_NAME'],
+	    APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])
 
 	# Icons
 	#
@@ -178,8 +177,8 @@ def build(bld):
 				bld.env['APP_INSTALL_NAME'] + '.svg'),
 		'icons/scalable/patchage.svg')
 
-	bld.install_files('${MANDIR}/man1', 'doc/*.1')
+	bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
 
-def shutdown():
+def shutdown(self):
 	autowaf.shutdown()
 
