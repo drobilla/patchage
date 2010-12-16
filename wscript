@@ -72,8 +72,6 @@ def configure(conf):
 	else:
 		conf.env['HAVE_LASH'] = False
 
-	conf.check_tool('misc') # subst tool
-
 	# Boost headers
 	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
 	autowaf.check_header(conf, 'boost/weak_ptr.hpp', mandatory=True)
