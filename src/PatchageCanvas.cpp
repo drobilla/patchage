@@ -74,24 +74,25 @@ PatchageCanvas::find_port(const PortID& id)
 	boost::shared_ptr<PatchagePort> pp;
 
 #ifdef USE_LIBJACK
-	assert(id.type == PortID::JACK_ID); // Alsa ports are always indexed
+	// Alsa ports are always indexed (or don't exist at all)
+	if (id.type == PortID::JACK_ID) {
+		jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
+		if (!jack_port)
+			return boost::shared_ptr<PatchagePort>();
 
-	jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
-	if (!jack_port)
-		return boost::shared_ptr<PatchagePort>();
+		string module_name;
+		string port_name;
+		_app->jack_driver()->port_names(id, module_name, port_name);
 
-	string module_name;
-	string port_name;
-	_app->jack_driver()->port_names(id, module_name, port_name);
+		SharedPtr<PatchageModule> module = find_module(
+			module_name, (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
-	SharedPtr<PatchageModule> module = find_module(module_name,
-	                     (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
+		if (module)
+			pp = PtrCast<PatchagePort>(module->get_port(port_name));
 
-	if (module)
-		pp = PtrCast<PatchagePort>(module->get_port(port_name));
-
-	if (pp)
-		index_port(id, pp);
+		if (pp)
+			index_port(id, pp);
+	}
 #endif // USE_LIBJACK
 
 	return pp;
