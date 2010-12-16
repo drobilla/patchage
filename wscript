@@ -60,17 +60,12 @@ def configure(conf):
 	autowaf.define(conf, 'HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
 	# Use Alsa if present unless --no-alsa
-	if not Options.options.no_alsa and conf.env['HAVE_ALSA'] != 1:
+	if not Options.options.no_alsa:
 		autowaf.check_pkg(conf, 'alsa', uselib_store='ALSA', mandatory=False)
-		if conf.env['HAVE_ALSA']:
-			conf.define('HAVE_ALSA', 1)
 
 	# Use LASH if we have DBUS unless --no-lash
 	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
-		conf.env['HAVE_LASH'] = 1
 		autowaf.define(conf, 'HAVE_LASH', 1)
-	else:
-		conf.env['HAVE_LASH'] = False
 
 	# Boost headers
 	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
