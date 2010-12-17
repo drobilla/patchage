@@ -173,7 +173,3 @@ def build(bld):
 		'icons/scalable/patchage.svg')
 
 	bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
-
-def shutdown(self):
-	autowaf.shutdown()
-
