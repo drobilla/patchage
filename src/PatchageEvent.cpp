@@ -96,7 +96,7 @@ PatchageEvent::execute(Patchage* patchage)
 
 			// No empty modules (for now)
 			if (module->num_ports() == 0) {
-				patchage->canvas()->remove_item(module)
+				patchage->canvas()->remove_item(module);
 				module.reset();
 			} else {
 				patchage->enqueue_resize(module);
