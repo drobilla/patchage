@@ -92,12 +92,12 @@ PatchageEvent::execute(Patchage* patchage)
 			assert(module);
 
 			module->remove_port(port);
-			patchage->enqueue_resize(module);
 			port.reset();
 
 			// No empty modules (for now)
 			if (module->num_ports() == 0) {
-				patchage->canvas()->remove_item(module);
+				if (!patchage->canvas()->remove_item(module))
+					Raul::error << "Failed to remove module `" << module->name() << "'" << endl;
 				module.reset();
 			} else {
 				patchage->enqueue_resize(module);
