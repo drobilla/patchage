@@ -59,11 +59,7 @@ public:
 		_port_index.insert(std::make_pair(id, port));
 	}
 
-	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module) {
-		_module_index.insert(std::make_pair(name, module));
-		add_item(module);
-	}
-
+	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module);
 	bool remove_item(boost::shared_ptr<Item> i);
 
 	void destroy();

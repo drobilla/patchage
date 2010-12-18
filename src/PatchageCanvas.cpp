@@ -182,6 +182,29 @@ PatchageCanvas::status_message(const string& msg)
 	_app->status_msg(string("[Canvas] ").append(msg));
 }
 
+
+void
+PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageModule> module)
+{
+	_module_index.insert(std::make_pair(name, module));
+
+	// Join partners, if applicable
+	boost::shared_ptr<PatchageModule> in_module;
+	boost::shared_ptr<PatchageModule> out_module;
+	if (module->type() == Input) {
+		in_module  = module;
+		out_module = find_module(name, Output);
+	} else if (module->type() == Output) {
+		in_module  = find_module(name, Output);
+		out_module = module;
+	}
+	if (in_module && out_module)
+		out_module->set_partner(in_module);
+	
+	add_item(module);
+}
+
+
 bool
 PatchageCanvas::remove_item(boost::shared_ptr<Item> i)
 {
@@ -206,6 +229,7 @@ PatchageCanvas::remove_item(boost::shared_ptr<Item> i)
 
 	return ret;
 }
+
 
 void
 PatchageCanvas::destroy()

@@ -49,7 +49,7 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM',
 			  atleast_version='2.6.0', mandatory=True)
 	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
-			  atleast_version='0.7.0', mandatory=True)
+			  atleast_version='0.7.1', mandatory=True)
 	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
 			  atleast_version='0.5.1', mandatory=True)
 
