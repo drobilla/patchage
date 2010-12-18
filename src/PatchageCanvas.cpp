@@ -182,6 +182,31 @@ PatchageCanvas::status_message(const string& msg)
 	_app->status_msg(string("[Canvas] ").append(msg));
 }
 
+bool
+PatchageCanvas::remove_item(boost::shared_ptr<Item> i)
+{
+	// Remove item from canvas
+	const bool ret = FlowCanvas::Canvas::remove_item(i);
+	if (!ret)
+		return ret;
+
+	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(i);
+	if (!module)
+		return ret;
+
+	// Remove module from cache
+	boost::shared_ptr<PatchageModule> io_module;
+	for (ModuleIndex::iterator i = _module_index.find(module->name());
+	     i != _module_index.end() && i->first == module->name(); ++i) {
+		if (i->second == module) {
+			_module_index.erase(i);
+			return true;
+		}
+	}
+
+	return ret;
+}
+
 void
 PatchageCanvas::destroy()
 {

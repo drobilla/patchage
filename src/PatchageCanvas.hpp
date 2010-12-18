@@ -64,6 +64,8 @@ public:
 		add_item(module);
 	}
 
+	bool remove_item(boost::shared_ptr<Item> i);
+
 	void destroy();
 
 private:
