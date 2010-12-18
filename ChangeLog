@@ -1,5 +1,6 @@
 patchage (0.4.6) unstable; urgency=low
 
+  * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
   * Add -J (--no-jack) command line option
   * Add proper --help output and man page
   * Fancy console info/warning/error logging
@@ -11,7 +12,7 @@ patchage (0.4.6) unstable; urgency=low
   * Bump FlowCanvas dependency to 0.7.0
   * Build system and code quality improvements
 
- -- David Robillard <d@drobilla.net>  Wed, 15 Dec 2010 15:11:08 -0500
+ -- David Robillard <d@drobilla.net>  UNRELEASED
 
 
 patchage (0.4.5) unstable; urgency=low
