@@ -26,8 +26,10 @@
 #include <libglademm/xml.h>
 
 #include "patchage-config.h"
-#include "binary_location.h"
 
+#ifdef BUNDLE
+#include "binary_location.h"
+#endif
 
 class GladeFile {
 public:
