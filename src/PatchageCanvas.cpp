@@ -67,11 +67,13 @@ PatchageCanvas::find_module(const string& name, ModuleType type)
 boost::shared_ptr<PatchagePort>
 PatchageCanvas::find_port(const PortID& id)
 {
-	PortIndex::iterator i = _port_index.find(id);
-	if (i != _port_index.end())
-		return i->second;
-
 	boost::shared_ptr<PatchagePort> pp;
+
+	PortIndex::iterator i = _port_index.find(id);
+	if (i != _port_index.end()) {
+		assert(i->second->module().lock());
+		return i->second;
+	}
 
 #ifdef USE_LIBJACK
 	// Alsa ports are always indexed (or don't exist at all)
@@ -98,6 +100,23 @@ PatchageCanvas::find_port(const PortID& id)
 	return pp;
 }
 
+boost::shared_ptr<PatchagePort>
+PatchageCanvas::remove_port(const PortID& id)
+{
+	boost::shared_ptr<PatchagePort> port = find_port(id);
+	if (!port)
+		return port;
+
+	_port_index.erase(id);
+
+	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
+	if (!module)
+		return port;
+
+	module->remove_port(port);
+	_app->enqueue_resize(module);
+	return port;
+}
 
 boost::shared_ptr<PatchagePort>
 PatchageCanvas::find_port_by_name(const std::string& client_name,
@@ -218,7 +237,6 @@ PatchageCanvas::remove_item(boost::shared_ptr<Item> i)
 		return ret;
 
 	// Remove module from cache
-	boost::shared_ptr<PatchageModule> io_module;
 	for (ModuleIndex::iterator i = _module_index.find(module->name());
 	     i != _module_index.end() && i->first == module->name(); ++i) {
 		if (i->second == module) {

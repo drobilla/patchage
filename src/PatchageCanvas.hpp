@@ -62,6 +62,8 @@ public:
 	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module);
 	bool remove_item(boost::shared_ptr<Item> i);
 
+	boost::shared_ptr<PatchagePort> remove_port(const PortID& id);
+
 	void destroy();
 
 private:

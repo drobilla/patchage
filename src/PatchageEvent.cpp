@@ -53,8 +53,6 @@ PatchageEvent::execute(Patchage* patchage)
 		if (module) {
 			patchage->canvas()->remove_item(module);
 			module.reset();
-		} else {
-			Raul::error << "Unable to find client `" << _str << "' to remove" << endl;
 		}
 
 		free(_str);
@@ -85,23 +83,9 @@ PatchageEvent::execute(Patchage* patchage)
 
 	} else if (_type == PORT_DESTRUCTION) {
 
-		SharedPtr<PatchagePort> port = patchage->canvas()->find_port(_port_1);
-
+		SharedPtr<PatchagePort> port = patchage->canvas()->remove_port(_port_1);
 		if (port) {
-			SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
-			assert(module);
-
-			module->remove_port(port);
 			port.reset();
-
-			// No empty modules (for now)
-			if (module->num_ports() == 0) {
-				patchage->canvas()->remove_item(module);
-				module.reset();
-			} else {
-				patchage->enqueue_resize(module);
-			}
-
 		} else {
 			Raul::error << "Unable to find port `" << _port_1 << "' to destroy" << endl;
 		}
