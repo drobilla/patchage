@@ -461,6 +461,8 @@ The bar represents the percentage of available time used for audio processing (i
   <widget class="GtkAboutDialog" id="about_win">
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
+    <property name="program_name">Patchage</property>
+    <property name="version">@PATCHAGE_VERSION@</property>
     <property name="copyright" translatable="yes">&#xA9; 2005-2010 David Robillard
 &#xA9; 2008 Nedko Arnaudov</property>
     <property name="comments" translatable="yes">A LASH, JACK, and ALSA front-end.</property>
@@ -484,6 +486,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
     <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
     <property name="artists">Icon:
 	Lapo Calamandrei</property>
+    <property name="logo_icon_name">patchage</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">
         <child internal-child="action_area">
@@ -544,7 +547,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="messages_clear_but">
-                <property name="label" translatable="yes">gtk-clear</property>
+                <property name="label">gtk-clear</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -559,7 +562,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             </child>
             <child>
               <widget class="GtkButton" id="messages_close_but">
-                <property name="label" translatable="yes">gtk-close</property>
+                <property name="label">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -626,7 +629,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="load_project_cancel_button">
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="response_id">1</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -642,7 +645,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             </child>
             <child>
               <widget class="GtkButton" id="load_project_ok_button">
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="response_id">2</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -797,7 +800,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="project_properties_cancel_button">
-                <property name="label" translatable="yes">gtk-cancel</property>
+                <property name="label">gtk-cancel</property>
                 <property name="response_id">1</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -813,7 +816,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
             </child>
             <child>
               <widget class="GtkButton" id="project_properties_ok_button">
-                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="label">gtk-ok</property>
                 <property name="response_id">2</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>

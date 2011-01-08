@@ -132,8 +132,13 @@ def build(bld):
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
 
-	# Glade UI definitions (XML)
-	bld.install_files('${DATADIR}/' + bld.env['APP_INSTALL_NAME'], 'src/patchage.glade')
+	# Glade XML UI definition
+	bld(features         = 'subst',
+	    source           = 'src/patchage.glade',
+	    target           = 'patchage.glade',
+	    install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
+	    chmod            = 0755,
+		PATCHAGE_VERSION = PATCHAGE_VERSION)
 
 	# 'Desktop' file (menu entry, icon, etc)
 	bld(features         = 'subst',
