@@ -36,13 +36,10 @@ main(int argc, char** argv)
 	app.run(*patchage.window());
 
 	} catch (std::exception& e) {
-		Raul::error << "Caught exception, aborting.  Error message was: "
-		            << e.what() << std::endl;
+		Raul::error << "patchage: error: " << e.what() << std::endl;
 		return 1;
-
 	} catch (Glib::Exception& e) {
-		Raul::error << "Caught exception, aborting.  Error message was: "
-		            << e.what() << std::endl;
+		Raul::error << "patchage: error: " << e.what() << std::endl;
 		return 1;
 	}
 

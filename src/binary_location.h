@@ -1,5 +1,5 @@
 /* Find the location of the program in the filesytem.
- * Copyright (C) 2008-2009 David Robillard <http://drobilla.net>
+ * Copyright (C) 2008-2010 David Robillard <http://drobilla.net>
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -19,10 +19,10 @@
 	#define _GNU_SOURCE
 #endif
 
-#include <dlfcn.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <assert.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <dlfcn.h>
 
 /** Return the absolute path of the binary.
  * Returned value must be freed by caller.
@@ -31,11 +31,11 @@ static char*
 binary_location()
 {
 	Dl_info dli;
-	dladdr((void*)&binary_location, &dli);
-
-	char* bin_loc = (char*)calloc(PATH_MAX, sizeof(char));
-	realpath(dli.dli_fname, bin_loc);
-
-	return bin_loc;
+	const int ret = dladdr((void*)&binary_location, &dli);
+	if (ret) {
+		char* const bin_loc = (char*)calloc(PATH_MAX, sizeof(char));
+		realpath(dli.dli_fname, bin_loc);
+		return bin_loc;
+	}
+	return NULL;
 }
-

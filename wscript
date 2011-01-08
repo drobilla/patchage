@@ -32,6 +32,8 @@ def options(opt):
 			help="Do not build Lash support")
 	opt.add_option('--no-alsa', action='store_true', default=False, dest='no_alsa',
 			help="Do not build Alsa Sequencer support")
+	opt.add_option('--no-binloc', action='store_true', default=False, dest='no_binloc',
+			help="Do not try to read files from executable's parent directory")
 
 def configure(conf):
 	autowaf.configure(conf)
@@ -53,6 +55,13 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
 			  atleast_version='0.5.1', mandatory=True)
 
+	# Check for dladdr
+	conf.check(function_name='dladdr',
+			   header_name='dlfcn.h',
+			   cflags='-D_GNU_SOURCE',
+			   linkflags='-ldl',
+			   define_name='HAVE_DLADDR')
+
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
 	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
 
@@ -72,6 +81,10 @@ def configure(conf):
 	# Use LASH if we have DBUS unless --no-lash
 	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
 		autowaf.define(conf, 'HAVE_LASH', 1)
+
+	# Find files at binary location if we have dladdr unless --no-binloc
+	if not Options.options.no_binloc and conf.env['HAVE_DLADDR']:
+		autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
 	# Boost headers
 	autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
@@ -131,13 +144,15 @@ def build(bld):
 	if bld.env['HAVE_ALSA'] == 1:
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
+	if bld.env['PATCHAGE_BINLOC']:
+		prog.linkflags = '-ldl'
 
 	# Glade XML UI definition
 	bld(features         = 'subst',
 	    source           = 'src/patchage.glade',
 	    target           = 'patchage.glade',
 	    install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
-	    chmod            = 0755,
+	    chmod            = 0644,
 		PATCHAGE_VERSION = PATCHAGE_VERSION)
 
 	# 'Desktop' file (menu entry, icon, etc)
@@ -145,7 +160,7 @@ def build(bld):
 	    source           = 'patchage.desktop.in',
 	    target           = 'patchage.desktop',
 	    install_path     = '${DATADIR}/applications',
-	    chmod            = 0755,
+	    chmod            = 0644,
 	    BINDIR           = os.path.normpath(bld.env['BINDIR']),
 	    APP_INSTALL_NAME = bld.env['APP_INSTALL_NAME'],
 	    APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])

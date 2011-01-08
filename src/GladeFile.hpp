@@ -25,35 +25,50 @@
 
 #include <libglademm/xml.h>
 
-#include "patchage-config.h"
+#include "raul/log.hpp"
 
-#ifdef BUNDLE
+#include "patchage-config.h"
+#ifdef PATCHAGE_BINLOC
 #include "binary_location.h"
 #endif
 
 class GladeFile {
 public:
+	inline static bool is_readable(const std::string& filename) {
+		std::ifstream fs(filename.c_str());
+		const bool fail = fs.fail();
+		fs.close();
+		return !fail;
+	}
+		
 	static Glib::RefPtr<Gnome::Glade::Xml> open(const std::string& base_name) {
 		std::string glade_filename;
-#ifdef BUNDLE
-		char* loc = binary_location();
-		std::string bundle = loc;
-		bundle = bundle.substr(0, bundle.find_last_of("/"));
-		glade_filename = bundle + "/" + PATCHAGE_DATA_DIR + "/" + base_name + ".glade";
-		free(loc);
-#else
-		glade_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".glade";
+		char* loc = NULL;
+#ifdef PATCHAGE_BINLOC
+		loc = binary_location();
+		if (loc) {
+			std::string bundle = loc;
+			bundle = bundle.substr(0, bundle.find_last_of("/"));
+			glade_filename = bundle + "/" + base_name + ".glade";
+			free(loc);
+			if (is_readable(glade_filename)) {
+				Raul::info << "Loading glade file " << glade_filename << std::endl;
+				return Gnome::Glade::Xml::create(glade_filename);
+			}
+		}
 #endif
-		std::ifstream fs(glade_filename.c_str());
-		if (fs.fail()) {
-			std::ostringstream ss;
-			ss << "Unable to find " << base_name << ".glade in " << PATCHAGE_DATA_DIR << std::endl;
-			throw std::runtime_error(ss.str());
+		glade_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".glade";
+		if (is_readable(glade_filename)) {
+			Raul::info << "Loading glade file " << glade_filename << std::endl;
+			return Gnome::Glade::Xml::create(glade_filename);
 		}
 
-		fs.close();
-
-		return Gnome::Glade::Xml::create(glade_filename);
+		std::stringstream ss;
+		ss << "Unable to find " << base_name << ".glade in " << loc
+		   << " or " << PATCHAGE_DATA_DIR << std::endl;
+		throw std::runtime_error(ss.str());
+		return Glib::RefPtr<Gnome::Glade::Xml>();
+		//return Gnome::Glade::Xml::create(glade_filename);
 	}
 };
 
