@@ -23,7 +23,7 @@
 
 #include "patchage-config.h"
 
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
   #include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA
@@ -40,7 +40,7 @@ struct PortID {
 
 	enum { NULL_PORT_ID, JACK_ID, ALSA_ADDR } type;
 
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
 	PortID(jack_port_id_t jack_id, bool ign=false)
 		: type(JACK_ID) { id.jack_id = jack_id; }
 #endif
@@ -51,7 +51,7 @@ struct PortID {
 #endif
 
 	union {
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
 		jack_port_id_t jack_id;
 #endif
 #ifdef HAVE_ALSA
@@ -70,7 +70,7 @@ operator<<(std::ostream& os, const PortID& id)
 	case PortID::NULL_PORT_ID:
 		return os << "(null)";
 	case PortID::JACK_ID:
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
 		return os << "jack:" << id.id.jack_id;
 #endif
 		break;
@@ -94,7 +94,7 @@ operator<(const PortID& a, const PortID& b)
 	case PortID::NULL_PORT_ID:
 		return true;
 	case PortID::JACK_ID:
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
 		return a.id.jack_id < b.id.jack_id;
 #endif
 		break;

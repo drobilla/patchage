@@ -37,7 +37,7 @@
 
 #if defined(HAVE_JACK_DBUS)
   #include "JackDbusDriver.hpp"
-#elif defined(USE_LIBJACK)
+#elif defined(PATCHAGE_LIBJACK)
   #include "JackDriver.hpp"
   #include <jack/statistics.h>
 #endif
@@ -158,7 +158,7 @@ Patchage::Patchage(int argc, char** argv)
 		} else if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
 			_alsa_driver_autoattach = false;
 #endif
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		} else if (!strcmp(*argv, "-J") || !strcmp(*argv, "--no-jack")) {
 			_jack_driver_autoattach = false;
 #endif
@@ -251,7 +251,7 @@ Patchage::Patchage(int argc, char** argv)
 
 	_about_win->set_transient_for(*_main_win);
 
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver = new JackDriver(this);
 	_jack_driver->signal_detached.connect(sigc::mem_fun(this, &Patchage::driver_detached));
 
@@ -287,7 +287,7 @@ Patchage::Patchage(int argc, char** argv)
 
 Patchage::~Patchage()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
 #endif
 #ifdef HAVE_ALSA
@@ -313,7 +313,7 @@ Patchage::attach()
 {
 	_enable_refresh = false;
 
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver_autoattach)
 		_jack_driver->attach(true);
 #endif
@@ -342,7 +342,7 @@ Patchage::idle_callback()
 	}
 
 	// Process any JACK events
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver) {
 		_jack_driver->process_events(this);
 	}
@@ -359,7 +359,7 @@ Patchage::idle_callback()
 	if (_refresh) {
 		refresh();
 	} else if (_driver_detached) {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver && !_jack_driver->is_attached())
 			_jack_driver->destroy_all();
 #endif
@@ -388,7 +388,7 @@ Patchage::idle_callback()
 void
 Patchage::update_toolbar()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_enable_refresh && _jack_driver->is_attached()) {
 		_enable_refresh = false;
 		_buffer_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
@@ -401,7 +401,7 @@ Patchage::update_toolbar()
 bool
 Patchage::update_load()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (!_jack_driver->is_attached())
 		return true;
 
@@ -441,7 +441,7 @@ Patchage::refresh()
 
 		_canvas->destroy();
 
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver)
 			_jack_driver->refresh();
 #endif
@@ -478,7 +478,7 @@ Patchage::store_window_location()
 void
 Patchage::clear_load()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_main_xrun_progress->set_fraction(0.0);
 	_jack_driver->reset_xruns();
 	_jack_driver->reset_max_dsp_load();
@@ -539,7 +539,7 @@ Patchage::update_state()
 void
 Patchage::connect_widgets()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver->signal_attached.connect(
 			sigc::mem_fun(this, &Patchage::update_toolbar));
 	_jack_driver->signal_attached.connect(sigc::bind(
@@ -657,7 +657,7 @@ Patchage::on_quit()
 #ifdef HAVE_ALSA
 	_alsa_driver->detach();
 #endif
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver->detach();
 #endif
 	_main_win->hide();
@@ -713,7 +713,7 @@ Patchage::on_scroll(GdkEventScroll* ev)
 void
 Patchage::buffer_size_changed()
 {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	const int selected = _buffer_size_combo->get_active_row_number();
 
 	if (selected == -1) {

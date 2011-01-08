@@ -61,7 +61,7 @@ def configure(conf):
 	else:
 		autowaf.check_pkg(conf, 'jack', uselib_store='JACK', atleast_version='0.107.0', mandatory=False)
 		if conf.env['HAVE_JACK'] == 1:
-			autowaf.define(conf, 'USE_LIBJACK', 1)
+			autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
 
 	autowaf.define(conf, 'HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
 
@@ -90,7 +90,7 @@ def configure(conf):
 	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
 	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
-	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['USE_LIBJACK'] == 1))
+	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['PATCHAGE_LIBJACK'] == 1))
 	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
 	print
 
@@ -125,7 +125,7 @@ def build(bld):
 		'''
 	if bld.env['HAVE_LASH'] or bld.env['HAVE_JACK_DBUS']:
 		prog.source += ' src/DBus.cpp '
-	if bld.env['USE_LIBJACK']:
+	if bld.env['PATCHAGE_LIBJACK']:
 		prog.source += ' src/JackDriver.cpp '
 		prog.uselib += ' JACK '
 	if bld.env['HAVE_ALSA'] == 1:

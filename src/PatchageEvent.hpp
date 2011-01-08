@@ -22,7 +22,7 @@
 
 #include "patchage-config.h"
 
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
   #include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA

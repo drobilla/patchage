@@ -26,7 +26,7 @@
 #include "Driver.hpp"
 #if defined(HAVE_JACK_DBUS)
   #include "JackDbusDriver.hpp"
-#elif defined(USE_LIBJACK)
+#elif defined(PATCHAGE_LIBJACK)
   #include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
@@ -62,7 +62,7 @@ PatchageEvent::execute(Patchage* patchage)
 
 		Driver* driver = NULL;
 		if (_port_1.type == PortID::JACK_ID) {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 			driver = patchage->jack_driver();
 #endif
 #ifdef HAVE_ALSA

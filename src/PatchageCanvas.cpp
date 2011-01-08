@@ -22,7 +22,7 @@
 
 #if defined(HAVE_JACK_DBUS)
   #include "JackDbusDriver.hpp"
-#elif defined(USE_LIBJACK)
+#elif defined(PATCHAGE_LIBJACK)
   #include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
@@ -75,7 +75,7 @@ PatchageCanvas::find_port(const PortID& id)
 		return i->second;
 	}
 
-#ifdef USE_LIBJACK
+#ifdef PATCHAGE_LIBJACK
 	// Alsa ports are always indexed (or don't exist at all)
 	if (id.type == PortID::JACK_ID) {
 		jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
@@ -95,7 +95,7 @@ PatchageCanvas::find_port(const PortID& id)
 		if (pp)
 			index_port(id, pp);
 	}
-#endif // USE_LIBJACK
+#endif // PATCHAGE_LIBJACK
 
 	return pp;
 }
@@ -146,7 +146,7 @@ PatchageCanvas::connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<
 
 	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO)
 			|| ((p1->type() == JACK_MIDI && p2->type() == JACK_MIDI))) {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->connect(p1, p2);
 #endif
 #ifdef HAVE_ALSA
@@ -182,7 +182,7 @@ PatchageCanvas::disconnect(boost::shared_ptr<Connectable> port1, boost::shared_p
 
 	if ((input->type() == JACK_AUDIO && output->type() == JACK_AUDIO)
 			|| (input->type() == JACK_MIDI && output->type() == JACK_MIDI)) {
-#if defined(USE_LIBJACK) || defined(HAVE_JACK_DBUS)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->disconnect(output, input);
 #endif
 #ifdef HAVE_ALSA
