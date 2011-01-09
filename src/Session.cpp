@@ -19,8 +19,9 @@
 #include "Project.hpp"
 #include "Session.hpp"
 
-using namespace std;
 using boost::shared_ptr;
+using std::list;
+using std::string;
 
 struct SessionImpl {
 	list< shared_ptr<Project> > projects;

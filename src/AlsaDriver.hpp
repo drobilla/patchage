@@ -35,7 +35,7 @@ class PatchagePort;
 class AlsaDriver : public Driver
 {
 public:
-	AlsaDriver(Patchage* app);
+	explicit AlsaDriver(Patchage* app);
 	~AlsaDriver();
 
 	void attach(bool launch_daemon = false);

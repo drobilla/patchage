@@ -49,7 +49,7 @@ public:
 		DISCONNECTION
 	};
 
-	PatchageEvent(Type type=NULL_EVENT)
+	explicit PatchageEvent(Type type=NULL_EVENT)
 		: _str(NULL)
 		, _type(type)
 	{}

@@ -25,8 +25,6 @@
 #include "Widget.hpp"
 
 using boost::shared_ptr;
-using namespace std;
-
 
 struct ProjectPropertiesDialogImpl {
 	ProjectPropertiesDialogImpl(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml);

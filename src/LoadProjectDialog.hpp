@@ -30,7 +30,7 @@ class ProjectInfo;
 
 class LoadProjectDialog {
 public:
-	LoadProjectDialog(Patchage* app);
+	explicit LoadProjectDialog(Patchage* app);
 
 	void run(std::list<ProjectInfo>& projects);
 

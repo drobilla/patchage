@@ -39,9 +39,6 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 
-using namespace std;
-using namespace FlowCanvas;
-
 #define JACKDBUS_SERVICE         "org.jackaudio.service"
 #define JACKDBUS_OBJECT          "/org/jackaudio/Controller"
 #define JACKDBUS_IFACE_CONTROL   "org.jackaudio.JackControl"
@@ -1005,13 +1002,13 @@ JackDriver::is_realtime() const
 	DBusMessage* reply_ptr;
 	dbus_bool_t realtime;
 
-	if (!((JackDriver *)this)->call(true, JACKDBUS_IFACE_CONTROL, "IsRealtime", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!this->call(true, JACKDBUS_IFACE_CONTROL, "IsRealtime", &reply_ptr, DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &((JackDriver *)this)->_dbus_error, DBUS_TYPE_BOOLEAN, &realtime, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr, &this->_dbus_error, DBUS_TYPE_BOOLEAN, &realtime, DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
-		dbus_error_free(&((JackDriver *)this)->_dbus_error);
+		dbus_error_free(&this->_dbus_error);
 		error_msg("decoding reply of IsRealtime failed.");
 		return false;
 	}

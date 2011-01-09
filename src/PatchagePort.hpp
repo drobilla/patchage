@@ -34,19 +34,16 @@
   #include <alsa/asoundlib.h>
 #endif
 
-using namespace FlowCanvas;
-
-
 /** A Port on a PatchageModule
  */
 class PatchagePort : public FlowCanvas::Port
 {
 public:
-	PatchagePort(boost::shared_ptr<Module> module,
-	             PortType                  type,
-	             const std::string&        name,
-	             bool                      is_input,
-	             uint32_t                  color)
+	PatchagePort(boost::shared_ptr<FlowCanvas::Module> module,
+	             PortType                              type,
+	             const std::string&                    name,
+	             bool                                  is_input,
+	             uint32_t                              color)
 		: Port(module, name, is_input, color)
 		, _type(type)
 	{

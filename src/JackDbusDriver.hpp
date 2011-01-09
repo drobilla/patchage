@@ -18,6 +18,7 @@
 #ifndef PATCHAGE_JACKDBUSDRIVER_HPP
 #define PATCHAGE_JACKDBUSDRIVER_HPP
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include <jack/jack.h>
 #include <jack/statistics.h>
@@ -34,7 +35,7 @@ class PatchagePort;
 class JackDriver : public Driver
 {
 public:
-	JackDriver(Patchage* app);
+	explicit JackDriver(Patchage* app);
 	~JackDriver();
 
 	void attach(bool launch_daemon);

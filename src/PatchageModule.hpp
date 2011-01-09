@@ -24,18 +24,16 @@
 
 #include "StateManager.hpp"
 
-using namespace FlowCanvas;
-
 class Patchage;
 
-class PatchageModule : public Module
+class PatchageModule : public FlowCanvas::Module
 {
 public:
 	PatchageModule(Patchage* app, const std::string& name, ModuleType type, double x=0, double y=0);
 	~PatchageModule();
 
-	void add_port(boost::shared_ptr<Port> port);
-	void remove_port(boost::shared_ptr<Port> port);
+	void add_port(boost::shared_ptr<FlowCanvas::Port> port);
+	void remove_port(boost::shared_ptr<FlowCanvas::Port> port);
 
 	void split();
 	void join();

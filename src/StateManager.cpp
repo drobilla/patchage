@@ -25,8 +25,9 @@
 #include "StateManager.hpp"
 #include "Patchage.hpp"
 
-using namespace std;
-
+using std::endl;
+using std::map;
+using std::string;
 
 StateManager::StateManager()
 	: _window_location(0, 0)

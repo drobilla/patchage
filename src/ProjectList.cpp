@@ -27,7 +27,7 @@
 #include "Widget.hpp"
 
 using boost::shared_ptr;
-using namespace std;
+using std::string;
 
 struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 	Gtk::TreeModelColumn<Glib::ustring> name;

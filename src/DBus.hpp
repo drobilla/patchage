@@ -27,7 +27,7 @@ class Patchage;
 
 class DBus {
 public:
-	DBus(Patchage* app);
+	explicit DBus(Patchage* app);
 
 	bool call(
 		bool          response_expected,

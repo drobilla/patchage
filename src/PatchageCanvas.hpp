@@ -19,6 +19,7 @@
 #define PATCHAGE_PATCHAGECANVAS_HPP
 
 #include <map>
+#include <string>
 
 #include "patchage-config.h"
 
@@ -60,7 +61,7 @@ public:
 	}
 
 	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module);
-	bool remove_item(boost::shared_ptr<Item> i);
+	bool remove_item(boost::shared_ptr<FlowCanvas::Item> i);
 
 	boost::shared_ptr<PatchagePort> remove_port(const PortID& id);
 

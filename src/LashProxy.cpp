@@ -17,6 +17,10 @@
  */
 
 #include <string.h>
+
+#include <string>
+#include <list>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/format.hpp>
 
@@ -30,8 +34,9 @@
 #define LASH_OBJECT        "/"
 #define LASH_IFACE_CONTROL "org.nongnu.LASH.Control"
 
-using namespace std;
 using boost::shared_ptr;
+using std::list;
+using std::string;
 
 struct LashProxyImpl {
 	void init(Patchage* app);
@@ -55,7 +60,7 @@ struct LashProxyImpl {
 	    int           in_type,
 	    ...);
 
-	shared_ptr<Project> on_project_added(const string& name);
+	shared_ptr<Project> on_project_added(const std::string& name);
 
 	shared_ptr<Client> on_client_added(
 	    shared_ptr<Project> project,

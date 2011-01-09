@@ -19,6 +19,9 @@
 #ifndef PATCHAGE_LASH_PROXY_HPP
 #define PATCHAGE_LASH_PROXY_HPP
 
+#include <list>
+#include <string>
+
 #include "Patchage.hpp"
 
 struct ProjectInfo {

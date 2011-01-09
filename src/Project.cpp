@@ -19,8 +19,9 @@
 #include "Project.hpp"
 #include "Client.hpp"
 
-using namespace std;
 using boost::shared_ptr;
+using std::string;
+using std::list;
 
 struct ProjectImpl {
 	string     name;

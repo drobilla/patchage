@@ -34,9 +34,8 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 
-using namespace std;
-using namespace FlowCanvas;
-
+using std::endl;
+using std::string;
 
 JackDriver::JackDriver(Patchage* app)
 	: _app(app)
@@ -119,13 +118,13 @@ JackDriver::detach()
 void
 JackDriver::destroy_all()
 {
-	ItemList modules = _app->canvas()->items(); // copy
-	for (ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
-		SharedPtr<Module> module = PtrCast<Module>(*m);
+	FlowCanvas::ItemList modules = _app->canvas()->items(); // copy
+	for (FlowCanvas::ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
+		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*m);
 		if (!module)
 			continue;
-		PortVector ports = module->ports(); // copy
-		for (PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
+		FlowCanvas::PortVector ports = module->ports(); // copy
+		for (FlowCanvas::PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
 			boost::shared_ptr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
 			if ((port && port->type() == JACK_AUDIO) || (port->type() == JACK_MIDI)) {
 				module->remove_port(port);
@@ -346,14 +345,14 @@ JackDriver::refresh()
 				boost::shared_ptr<PatchageModule> client2_module
 					= _app->canvas()->find_module(client2_name, port2_type);
 
-				boost::shared_ptr<Port> port1 = client1_module->get_port(port1_name);
-				boost::shared_ptr<Port> port2 = client2_module->get_port(port2_name);
+				boost::shared_ptr<FlowCanvas::Port> port1 = client1_module->get_port(port1_name);
+				boost::shared_ptr<FlowCanvas::Port> port2 = client2_module->get_port(port2_name);
 
 				if (!port1 || !port2)
 					continue;
 
-				boost::shared_ptr<Port> src;
-				boost::shared_ptr<Port> dst;
+				boost::shared_ptr<FlowCanvas::Port> src;
+				boost::shared_ptr<FlowCanvas::Port> dst;
 
 				if (port1->is_output() && port2->is_input()) {
 					src = port1;

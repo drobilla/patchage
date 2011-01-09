@@ -18,6 +18,7 @@
 #ifndef PATCHAGE_SESSION_HPP
 #define PATCHAGE_SESSION_HPP
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 
 struct SessionImpl;

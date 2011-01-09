@@ -28,8 +28,8 @@
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 
-using namespace std;
-using namespace FlowCanvas;
+using std::endl;
+using std::string;
 
 AlsaDriver::AlsaDriver(Patchage* app)
 	: _app(app)
@@ -296,7 +296,7 @@ AlsaDriver::refresh_ports()
 	boost::shared_ptr<PatchageModule> parent;
 	boost::shared_ptr<PatchagePort>   port;
 
-	set< boost::shared_ptr<PatchageModule> > to_resize;
+	std::set< boost::shared_ptr<PatchageModule> > to_resize;
 
 	while (snd_seq_query_next_client (_seq, cinfo) >= 0) {
 		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
@@ -324,11 +324,11 @@ AlsaDriver::refresh_connections()
 	boost::shared_ptr<PatchageModule> m;
 	boost::shared_ptr<PatchagePort>   p;
 
-	for (ItemList::iterator i = _app->canvas()->items().begin();
+	for (FlowCanvas::ItemList::iterator i = _app->canvas()->items().begin();
 			i != _app->canvas()->items().end(); ++i) {
 		m = boost::dynamic_pointer_cast<PatchageModule>(*i);
 		if (m) {
-			for (PortVector::const_iterator j = m->ports().begin(); j != m->ports().end(); ++j) {
+			for (FlowCanvas::PortVector::const_iterator j = m->ports().begin(); j != m->ports().end(); ++j) {
 				p = boost::dynamic_pointer_cast<PatchagePort>(*j);
 				if (p->type() == ALSA_MIDI)
 					add_connections(p);

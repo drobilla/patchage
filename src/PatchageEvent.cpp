@@ -33,7 +33,7 @@
   #include "AlsaDriver.hpp"
 #endif
 
-using namespace std;
+using std::endl;
 
 void
 PatchageEvent::execute(Patchage* patchage)

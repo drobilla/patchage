@@ -57,7 +57,9 @@
 
 #define LOG_TO_STATUS 1
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::string;
 
 /* Gtk helpers (resize combo boxes) */
 
@@ -406,7 +408,7 @@ Patchage::update_load()
 		return true;
 
 	char tmp_buf[8];
-	snprintf(tmp_buf, 8, "%zd", _jack_driver->get_xruns());
+	snprintf(tmp_buf, sizeof(tmp_buf), "%zd", _jack_driver->get_xruns());
 
 	_main_xrun_progress->set_text(string(tmp_buf) + " Dropouts");
 
@@ -524,8 +526,8 @@ Patchage::status_msg(const string& msg)
 void
 Patchage::update_state()
 {
-	for (ItemList::iterator i = _canvas->items().begin(); i != _canvas->items().end(); ++i) {
-		SharedPtr<Module> module = PtrCast<Module>(*i);
+	for (FlowCanvas::ItemList::iterator i = _canvas->items().begin(); i != _canvas->items().end(); ++i) {
+		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*i);
 		if (module)
 			module->load_location();
 	}
@@ -739,7 +741,7 @@ Patchage::enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module)
 void
 Patchage::flush_resize()
 {
-	for (set< boost::shared_ptr<FlowCanvas::Module> >::iterator i = _pending_resize.begin();
+	for (std::set< boost::shared_ptr<FlowCanvas::Module> >::iterator i = _pending_resize.begin();
 			i != _pending_resize.end(); ++i) {
 		(*i)->resize();
 	}

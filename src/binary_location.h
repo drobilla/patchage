@@ -33,7 +33,7 @@ binary_location()
 	Dl_info dli;
 	const int ret = dladdr((void*)&binary_location, &dli);
 	if (ret) {
-		char* const bin_loc = (char*)calloc(PATH_MAX, sizeof(char));
+		char* const bin_loc = (char*)calloc(PATH_MAX, 1);
 		realpath(dli.dli_fname, bin_loc);
 		return bin_loc;
 	}

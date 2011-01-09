@@ -137,7 +137,8 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 
 
 void
-PatchageCanvas::connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2)
+PatchageCanvas::connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
+                        boost::shared_ptr<FlowCanvas::Connectable> port2)
 {
 	boost::shared_ptr<PatchagePort> p1 = boost::dynamic_pointer_cast<PatchagePort>(port1);
 	boost::shared_ptr<PatchagePort> p2 = boost::dynamic_pointer_cast<PatchagePort>(port2);
@@ -160,7 +161,8 @@ PatchageCanvas::connect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<
 
 
 void
-PatchageCanvas::disconnect(boost::shared_ptr<Connectable> port1, boost::shared_ptr<Connectable> port2)
+PatchageCanvas::disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
+                           boost::shared_ptr<FlowCanvas::Connectable> port2)
 {
 	boost::shared_ptr<PatchagePort> input  = boost::dynamic_pointer_cast<PatchagePort>(port1);
 	boost::shared_ptr<PatchagePort> output = boost::dynamic_pointer_cast<PatchagePort>(port2);
@@ -225,7 +227,7 @@ PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageMo
 
 
 bool
-PatchageCanvas::remove_item(boost::shared_ptr<Item> i)
+PatchageCanvas::remove_item(boost::shared_ptr<FlowCanvas::Item> i)
 {
 	// Remove item from canvas
 	const bool ret = FlowCanvas::Canvas::remove_item(i);

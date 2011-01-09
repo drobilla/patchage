@@ -43,7 +43,7 @@ PatchageModule::update_menu()
 	if (_type == InputOutput) {
 		bool has_in  = false;
 		bool has_out = false;
-		for (PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p) {
+		for (FlowCanvas::PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p) {
 			if ((*p)->is_input()) {
 				has_in = true;
 			} else {
@@ -79,7 +79,7 @@ PatchageModule::create_menu()
 void
 PatchageModule::load_location()
 {
-	boost::shared_ptr<Canvas> canvas = _canvas.lock();
+	boost::shared_ptr<FlowCanvas::Canvas> canvas = _canvas.lock();
 	if (!canvas)
 		return;
 
@@ -116,14 +116,14 @@ PatchageModule::join()
 }
 
 void
-PatchageModule::add_port(boost::shared_ptr<Port> port)
+PatchageModule::add_port(boost::shared_ptr<FlowCanvas::Port> port)
 {
 	FlowCanvas::Module::add_port(port);
 	update_menu();
 }
 
 void
-PatchageModule::remove_port(boost::shared_ptr<Port> port)
+PatchageModule::remove_port(boost::shared_ptr<FlowCanvas::Port> port)
 {
 	FlowCanvas::Module::remove_port(port);
 	update_menu();
@@ -132,6 +132,6 @@ PatchageModule::remove_port(boost::shared_ptr<Port> port)
 void
 PatchageModule::menu_disconnect_all()
 {
-	for (PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p)
+	for (FlowCanvas::PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p)
 		(*p)->disconnect_all();
 }
