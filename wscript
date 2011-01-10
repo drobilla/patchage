@@ -57,10 +57,11 @@ def configure(conf):
 
 	# Check for dladdr
 	conf.check(function_name='dladdr',
-			   header_name='dlfcn.h',
-			   cflags='-D_GNU_SOURCE',
-			   linkflags='-ldl',
-			   define_name='HAVE_DLADDR')
+	           header_name='dlfcn.h',
+	           cflags='-D_GNU_SOURCE',
+	           linkflags='-ldl',
+	           define_name='HAVE_DLADDR',
+	           mandatory=False)
 
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
 	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
