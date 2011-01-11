@@ -15,6 +15,16 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
+#ifdef __APPLE__ 
+#include <stdlib.h>
+#include <unistd.h>
+#include <string>
+#include <gtk/gtk.h>
+#include "binary_location.h"
+#endif
+
+#include <iostream>
+
 #include <libgnomecanvasmm.h>
 #include <glibmm/exception.h>
 
@@ -22,9 +32,35 @@
 
 #include "Patchage.hpp"
 
+#ifdef __APPLE__
+void
+set_bundle_environment()
+{
+	char* binloc_c = binary_location();
+	std::string binloc(binloc_c);
+	free(binloc_c);
+
+	const std::string bundle_path = binloc.substr(0, binloc.find_last_of('/'));
+
+	const std::string gtk_path(bundle_path + "/lib");
+	setenv("GTK_PATH", gtk_path.c_str(), 1);
+	std::cout << "GTK PATH " << gtk_path << std::endl;
+
+	chdir(bundle_path.c_str());
+	const std::string pangorc_path(bundle_path + "/Resources/pangorc");
+	setenv("PANGO_RC_FILE", pangorc_path.c_str(), 1);
+	
+	gtk_rc_parse((bundle_path + "/Resources/gtkrc").c_str());
+}
+#endif
+
 int
 main(int argc, char** argv)
 {
+#ifdef __APPLE__
+	set_bundle_environment();
+#endif
+
 	try {
 
 	Glib::thread_init();
@@ -34,7 +70,7 @@ main(int argc, char** argv)
 
 	Patchage patchage(argc, argv);
 	app.run(*patchage.window());
-
+ 
 	} catch (std::exception& e) {
 		Raul::error << "patchage: error: " << e.what() << std::endl;
 		return 1;

@@ -173,15 +173,21 @@ def build(bld):
 	if Options.platform == 'darwin':
 		# Property list
 		bld(features         = 'subst',
-		    source           = 'Info.plist.in',
+		    source           = 'osx/Info.plist.in',
 		    target           = out_base + 'Info.plist',
 		    install_path     = '',
 		    chmod            = 0644)
 
 		# Icons
 		bld(rule='cp ${SRC} ${TGT}',
-		    source = 'icons/Patchage.icns',
+		    source = 'osx/Patchage.icns',
 		    target = out_base + 'Resources/Patchage.icns')
+
+		# Gtk/Pango/etc configuration files
+		for i in ['pangorc', 'pango.modules', 'gtkrc']:
+			bld(rule   = 'cp ${SRC} ${TGT}',
+			    source = 'osx/' + i,
+			    target = out_base + 'Resources/' + i)
 
 	# Icons
 	# After installation, icon cache should be updated using:
