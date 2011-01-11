@@ -167,26 +167,15 @@ def build(bld):
 	    APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])
 
 	# Icons
-	#
-	# Installation layout (with /usr prefix)
-	# /usr/bin/patchage
-	# /usr/share/applications/patchage.desktop
-	# /usr/share/icons/hicolor/16x16/apps/patchage.png
-	# /usr/share/icons/hicolor/22x22/apps/patchage.png
-	# /usr/share/icons/hicolor/24x24/apps/patchage.png
-	# /usr/share/icons/hicolor/32x32/apps/patchage.png
-	# /usr/share/icons/hicolor/48x48/apps/patchage.png
-	# /usr/share/icons/hicolor/scalable/apps/patchage.svg
-	# /usr/share/patchage/patchage.glade
-	#
-	# icon cache is updated using:
+	# After installation, icon cache should be updated using:
 	# gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
-	icon_sizes = ['16x16', '22x22', '24x24', '32x32', '48x48']
+	icon_sizes = [16, 22, 24, 32, 48, 128, 256, 512]
 	for s in icon_sizes:
+		d = '%dx%d' % (s, s)
 		bld.install_as(
-			os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', s, 'apps',
+			os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', d, 'apps',
 					bld.env['APP_INSTALL_NAME'] + '.png'),
-			'icons/' + s + '/patchage.png')
+			'icons/' + d + '/patchage.png')
 
 	bld.install_as(
 		os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', 'scalable', 'apps',
