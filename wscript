@@ -109,10 +109,14 @@ def configure(conf):
 	print
 
 def build(bld):
+	out_base = ''
+	if Options.platform == 'darwin':
+		out_base = 'Patchage.app/Contents/'
+
 	# Program
 	prog = bld(features = 'cxx cxxprogram')
 	prog.includes = ['.', 'src']
-	prog.target = bld.env['APP_INSTALL_NAME']
+	prog.target = out_base + bld.env['APP_INSTALL_NAME']
 	prog.install_path = '${BINDIR}'
 	autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS GLADEMM DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
 	prog.source = '''
@@ -146,12 +150,12 @@ def build(bld):
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
 	if bld.env['PATCHAGE_BINLOC']:
-		prog.linkflags = '-ldl'
+		prog.linkflags = ['-ldl']
 
 	# Glade XML UI definition
 	bld(features         = 'subst',
 	    source           = 'src/patchage.glade',
-	    target           = 'patchage.glade',
+	    target           = out_base + 'patchage.glade',
 	    install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
 	    chmod            = 0644,
 		PATCHAGE_VERSION = PATCHAGE_VERSION)
@@ -165,6 +169,19 @@ def build(bld):
 	    BINDIR           = os.path.normpath(bld.env['BINDIR']),
 	    APP_INSTALL_NAME = bld.env['APP_INSTALL_NAME'],
 	    APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])
+
+	if Options.platform == 'darwin':
+		# Property list
+		bld(features         = 'subst',
+		    source           = 'Info.plist.in',
+		    target           = out_base + 'Info.plist',
+		    install_path     = '',
+		    chmod            = 0644)
+
+		# Icons
+		bld(rule='cp ${SRC} ${TGT}',
+		    source = 'icons/Patchage.icns',
+		    target = out_base + 'Resources/Patchage.icns')
 
 	# Icons
 	# After installation, icon cache should be updated using:

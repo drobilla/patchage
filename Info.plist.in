@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>Patchage</string>
+	<key>CFBundleExecutable</key>
+	<string>patchage</string>
+	<key>CFBundleGetInfoString</key>
+	<string>@PATCHAGE_VERSION@, Copyright © 2010 David Robillard</string>
+	<key>CFBundleIconFile</key>
+	<string>Patchage</string>
+	<key>CFBundleIdentifier</key>
+	<string>net.drobilla.Patchage</string>
+	<key>CFBundleName</key>
+	<string>Patchage</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@PATCHAGE_VERSION@</string>
+	<key>CFBundleSignature</key>
+	<string>patc</string>
+</dict>
+</plist>
