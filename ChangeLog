@@ -1,19 +1,21 @@
-patchage (0.4.6) unstable; urgency=low
+patchage (0.5.0) unstable; urgency=low
 
   * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
   * Add -J (--no-jack) command line option
   * Add proper --help output and man page
+  * Improve performance (dramatically for large setups)
   * Fancy console info/warning/error logging
-  * Improve performance significantly for large setups
   * Fix minor memory leaks and reduce memory consumption
   * Fix handling of ALSA duplex ports
   * Hide "split" module menu item when it is useless
   * Fix Jack D-Bus support
+  * Mac OS X .app bundle port
   * Bump FlowCanvas dependency to 0.7.0
+  * Add more/larger icons
+  * Add missing COPYING file to distribution
   * Build system and code quality improvements
 
- -- David Robillard <d@drobilla.net>  UNRELEASED
-
+ -- David Robillard <d@drobilla.net>  Tue, 11 Jan 2011 17:42:07 -0500
 
 patchage (0.4.5) unstable; urgency=low
 
