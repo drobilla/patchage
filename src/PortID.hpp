@@ -82,6 +82,7 @@ operator<<(std::ostream& os, const PortID& id)
 		break;
 	}
 	assert(false);
+	return os;
 }
 
 static inline bool
@@ -114,6 +115,7 @@ operator<(const PortID& a, const PortID& b)
 		break;
 	}
 	assert(false);
+	return false;
 }
 
 #endif // PATCHAGE_PORTID_HPP
