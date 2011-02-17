@@ -39,26 +39,26 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 
-#define JACKDBUS_SERVICE         "org.jackaudio.service"
-#define JACKDBUS_OBJECT          "/org/jackaudio/Controller"
-#define JACKDBUS_IFACE_CONTROL   "org.jackaudio.JackControl"
-#define JACKDBUS_IFACE_PATCHBAY  "org.jackaudio.JackPatchbay"
+#define JACKDBUS_SERVICE        "org.jackaudio.service"
+#define JACKDBUS_OBJECT         "/org/jackaudio/Controller"
+#define JACKDBUS_IFACE_CONTROL  "org.jackaudio.JackControl"
+#define JACKDBUS_IFACE_PATCHBAY "org.jackaudio.JackPatchbay"
+
 #define JACKDBUS_CALL_DEFAULT_TIMEOUT 1000 // in milliseconds
 
-#define JACKDBUS_PORT_FLAG_INPUT         0x00000001
-#define JACKDBUS_PORT_FLAG_OUTPUT        0x00000002
-#define JACKDBUS_PORT_FLAG_PHYSICAL      0x00000004
-#define JACKDBUS_PORT_FLAG_CAN_MONITOR   0x00000008
-#define JACKDBUS_PORT_FLAG_TERMINAL      0x00000010
+#define JACKDBUS_PORT_FLAG_INPUT       0x00000001
+#define JACKDBUS_PORT_FLAG_OUTPUT      0x00000002
+#define JACKDBUS_PORT_FLAG_PHYSICAL    0x00000004
+#define JACKDBUS_PORT_FLAG_CAN_MONITOR 0x00000008
+#define JACKDBUS_PORT_FLAG_TERMINAL    0x00000010
 
-#define JACKDBUS_PORT_TYPE_AUDIO    0
-#define JACKDBUS_PORT_TYPE_MIDI     1
+#define JACKDBUS_PORT_TYPE_AUDIO 0
+#define JACKDBUS_PORT_TYPE_MIDI  1
 
 //#define LOG_TO_STD
 #define LOG_TO_STATUS
 
 //#define USE_FULL_REFRESH
-
 
 JackDriver::JackDriver(Patchage* app)
 	: _app(app)
@@ -71,7 +71,6 @@ JackDriver::JackDriver(Patchage* app)
 	dbus_error_init(&_dbus_error);
 }
 
-
 JackDriver::~JackDriver()
 {
 	if (_dbus_connection) {
@@ -83,20 +82,19 @@ JackDriver::~JackDriver()
 	}
 }
 
-
 /** Destroy all JACK (canvas) ports.
  */
 void
 JackDriver::destroy_all()
 {
-	ItemList modules = _app->canvas()->items(); // copy
-	for (ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
-		SharedPtr<Module> module = PtrCast<Module>(*m);
+	FlowCanvas::ItemList modules = _app->canvas()->items(); // copy
+	for (FlowCanvas::ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
+		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*m);
 		if (!module)
 			continue;
 
-		PortVector ports = module->ports(); // copy
-		for (PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
+		FlowCanvas::PortVector ports = module->ports(); // copy
+		for (FlowCanvas::PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
 			SharedPtr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
 			if (port && (port->type() == JACK_AUDIO || port->type() == JACK_MIDI)) {
 				module->remove_port(port);
@@ -110,7 +108,6 @@ JackDriver::destroy_all()
 			_app->enqueue_resize(module);
 	}
 }
-
 
 void
 JackDriver::update_attached()
@@ -136,14 +133,12 @@ JackDriver::update_attached()
 	}
 }
 
-
 void
 JackDriver::on_jack_appeared()
 {
 	info_msg("JACK appeared.");
 	update_attached();
 }
-
 
 void
 JackDriver::on_jack_disappeared()
@@ -160,7 +155,6 @@ JackDriver::on_jack_disappeared()
 
 	_server_started = false;
 }
-
 
 /** Handle signals we have subscribed for in attach(). */
 DBusHandlerResult
@@ -367,7 +361,6 @@ JackDriver::dbus_message_hook(
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-
 bool
 JackDriver::call(
 	bool          response_expected,
@@ -416,7 +409,6 @@ JackDriver::call(
 	return reply_ptr;
 }
 
-
 bool
 JackDriver::is_started()
 {
@@ -441,7 +433,6 @@ JackDriver::is_started()
 	return started;
 }
 
-
 void
 JackDriver::start_server()
 {
@@ -455,7 +446,6 @@ JackDriver::start_server()
 
 	update_attached();
 }
-
 
 void
 JackDriver::stop_server()
@@ -473,7 +463,6 @@ JackDriver::stop_server()
 		signal_detached.emit();
 	}
 }
-
 
 void
 JackDriver::attach(bool launch_daemon)
@@ -513,20 +502,17 @@ JackDriver::attach(bool launch_daemon)
 	}
 }
 
-
 void
 JackDriver::detach()
 {
 	stop_server();
 }
 
-
 bool
 JackDriver::is_attached() const
 {
 	return _dbus_connection && _server_responding;
 }
-
 
 void
 JackDriver::add_port(
@@ -550,7 +536,6 @@ JackDriver::add_port(
 
 	_app->enqueue_resize(module);
 }
-
 
 void
 JackDriver::add_port(
@@ -589,7 +574,6 @@ JackDriver::add_port(
 	add_port(module, local_port_type, port_name, port_flags & JACKDBUS_PORT_FLAG_INPUT);
 }
 
-
 void
 JackDriver::remove_port(
 	dbus_uint64_t client_id,
@@ -625,7 +609,6 @@ JackDriver::remove_port(
 	}
 }
 
-
 SharedPtr<PatchageModule>
 JackDriver::find_or_create_module(
 	ModuleType type,
@@ -642,7 +625,6 @@ JackDriver::find_or_create_module(
 	return module;
 }
 
-
 void
 JackDriver::connect_ports(
 	dbus_uint64_t connection_id,
@@ -657,19 +639,18 @@ JackDriver::connect_ports(
 {
 	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((string)"Unable to connect unknown port '" + port1_name + "' of client '" + client1_name + "'");
+		error_msg((std::string)"Unable to connect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
 	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((string)"Unable to connect unknown port '" + port2_name + "' of client '" + client2_name + "'");
+		error_msg((std::string)"Unable to connect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
 	}
 
 	_app->canvas()->add_connection(port1, port2, port1->color() + 0x22222200);
 }
-
 
 void
 JackDriver::disconnect_ports(
@@ -685,19 +666,18 @@ JackDriver::disconnect_ports(
 {
 	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((string)"Unable to disconnect unknown port '" + port1_name + "' of client '" + client1_name + "'");
+		error_msg((std::string)"Unable to disconnect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
 	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((string)"Unable to disconnect unknown port '" + port2_name + "' of client '" + client2_name + "'");
+		error_msg((std::string)"Unable to disconnect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
 	}
 
 	_app->canvas()->remove_connection(port1, port2);
 }
-
 
 void
 JackDriver::refresh_internal(bool force)
@@ -738,7 +718,7 @@ JackDriver::refresh_internal(bool force)
 	reply_signature = dbus_message_get_signature(reply_ptr);
 
 	if (strcmp(reply_signature, "ta(tsa(tsuu))a(tstststst)") != 0) {
-		error_msg((string )"GetGraph() reply signature mismatch. " + reply_signature);
+		error_msg((std::string)"GetGraph() reply signature mismatch. " + reply_signature);
 		goto unref;
 	}
 
@@ -857,13 +837,11 @@ unref:
 	dbus_message_unref(reply_ptr);
 }
 
-
 void
 JackDriver::refresh()
 {
 	refresh_internal(true);
 }
-
 
 bool
 JackDriver::connect(
@@ -894,7 +872,6 @@ JackDriver::connect(
 	return true;
 }
 
-
 bool
 JackDriver::disconnect(
 	SharedPtr<PatchagePort> src,
@@ -923,7 +900,6 @@ JackDriver::disconnect(
 
 	return true;
 }
-
 
 jack_nframes_t
 JackDriver::buffer_size()
@@ -954,7 +930,6 @@ fail:
 	return 4096; // something fake, patchage needs it to match combobox value
 }
 
-
 bool
 JackDriver::set_buffer_size(jack_nframes_t size)
 {
@@ -971,7 +946,6 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 
 	return true;
 }
-
 
 float
 JackDriver::sample_rate()
@@ -995,20 +969,22 @@ JackDriver::sample_rate()
 	return sample_rate;
 }
 
-
 bool
 JackDriver::is_realtime() const
 {
 	DBusMessage* reply_ptr;
-	dbus_bool_t realtime;
+	dbus_bool_t  realtime;
 
-	if (!this->call(true, JACKDBUS_IFACE_CONTROL, "IsRealtime", &reply_ptr, DBUS_TYPE_INVALID)) {
+	JackDriver* me = const_cast<JackDriver*>(this);
+	if (!me->call(true, JACKDBUS_IFACE_CONTROL, "IsRealtime",
+	              &reply_ptr, DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &this->_dbus_error, DBUS_TYPE_BOOLEAN, &realtime, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr, &me->_dbus_error, DBUS_TYPE_BOOLEAN,
+	                           &realtime, DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
-		dbus_error_free(&this->_dbus_error);
+		dbus_error_free(&me->_dbus_error);
 		error_msg("decoding reply of IsRealtime failed.");
 		return false;
 	}
@@ -1017,7 +993,6 @@ JackDriver::is_realtime() const
 
 	return realtime;
 }
-
 
 size_t
 JackDriver::get_xruns()
@@ -1045,7 +1020,6 @@ JackDriver::get_xruns()
 	return xruns;
 }
 
-
 void
 JackDriver::reset_xruns()
 {
@@ -1057,7 +1031,6 @@ JackDriver::reset_xruns()
 
 	dbus_message_unref(reply_ptr);
 }
-
 
 float
 JackDriver::get_max_dsp_load()
@@ -1091,13 +1064,11 @@ JackDriver::get_max_dsp_load()
 	return _max_dsp_load;
 }
 
-
 void
 JackDriver::reset_max_dsp_load()
 {
 	_max_dsp_load = 0.0;
 }
-
 
 SharedPtr<PatchagePort>
 JackDriver::create_port_view(
@@ -1106,7 +1077,6 @@ JackDriver::create_port_view(
 {
 	assert(false);  // we dont use events at all
 }
-
 
 void
 JackDriver::error_msg(const std::string& msg) const
@@ -1119,7 +1089,6 @@ JackDriver::error_msg(const std::string& msg) const
 	cerr << (std::string)"[JACKDBUS] " << msg << endl;
 #endif
 }
-
 
 void
 JackDriver::info_msg(const std::string& msg) const

@@ -76,57 +76,57 @@ private:
 	void info_msg(const std::string& msg) const;
 
 	boost::shared_ptr<PatchageModule> find_or_create_module(
-		ModuleType type,
+		ModuleType         type,
 		const std::string& name);
 
 	void add_port(
 		boost::shared_ptr<PatchageModule>& module,
-		PortType type,
-		const std::string& name,
-		bool is_input);
+		PortType                           type,
+		const std::string&                 name,
+		bool                               is_input);
 
 	void add_port(
 		dbus_uint64_t client_id,
-		const char *client_name,
+		const char*   client_name,
 		dbus_uint64_t port_id,
-		const char *port_name,
+		const char*   port_name,
 		dbus_uint32_t port_flags,
 		dbus_uint32_t port_type);
 
 	void remove_port(
 		dbus_uint64_t client_id,
-		const char *client_name,
+		const char*   client_name,
 		dbus_uint64_t port_id,
-		const char *port_name);
+		const char*   port_name);
 
 	void connect_ports(
 		dbus_uint64_t connection_id,
 		dbus_uint64_t client1_id,
-		const char *client1_name,
+		const char*   client1_name,
 		dbus_uint64_t port1_id,
-		const char *port1_name,
+		const char*   port1_name,
 		dbus_uint64_t client2_id,
-		const char *client2_name,
+		const char*   client2_name,
 		dbus_uint64_t port2_id,
-		const char *port2_name);
+		const char*   port2_name);
 
 	void disconnect_ports(
 		dbus_uint64_t connection_id,
 		dbus_uint64_t client1_id,
-		const char *client1_name,
+		const char*   client1_name,
 		dbus_uint64_t port1_id,
-		const char *port1_name,
+		const char*   port1_name,
 		dbus_uint64_t client2_id,
-		const char *client2_name,
+		const char*   client2_name,
 		dbus_uint64_t port2_id,
-		const char *port2_name);
+		const char*   port2_name);
 
 	bool call(
-		bool response_expected,
-		const char* iface,
-		const char* method,
-		DBusMessage ** reply_ptr_ptr,
-		int in_type,
+		bool          response_expected,
+		const char*   iface,
+		const char*   method,
+		DBusMessage** reply_ptr_ptr,
+		int           in_type,
 		...);
 
 	void update_attached();
