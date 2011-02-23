@@ -179,7 +179,7 @@ def build(bld):
 		    chmod            = 0644)
 
 		# Icons
-		bld(rule='cp ${SRC} ${TGT}',
+		bld(rule   = 'cp ${SRC} ${TGT}',
 		    source = 'osx/Patchage.icns',
 		    target = out_base + 'Resources/Patchage.icns')
 
