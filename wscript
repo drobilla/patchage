@@ -5,6 +5,7 @@
 import os
 import autowaf
 import Options
+import Utils
 
 # Version of this package (even if built as a child)
 PATCHAGE_VERSION = '0.5.0'
@@ -106,7 +107,7 @@ def configure(conf):
 	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
 	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['PATCHAGE_LIBJACK'] == 1))
 	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
-	print
+	print()
 
 def build(bld):
 	out_base = ''
@@ -157,7 +158,7 @@ def build(bld):
 	    source           = 'src/patchage.glade',
 	    target           = out_base + 'patchage.glade',
 	    install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
-	    chmod            = 0644,
+	    chmod            = Utils.O644,
 		PATCHAGE_VERSION = PATCHAGE_VERSION)
 
 	# 'Desktop' file (menu entry, icon, etc)
@@ -165,7 +166,7 @@ def build(bld):
 	    source           = 'patchage.desktop.in',
 	    target           = 'patchage.desktop',
 	    install_path     = '${DATADIR}/applications',
-	    chmod            = 0644,
+	    chmod            = Utils.O644,
 	    BINDIR           = os.path.normpath(bld.env['BINDIR']),
 	    APP_INSTALL_NAME = bld.env['APP_INSTALL_NAME'],
 	    APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])
@@ -176,7 +177,7 @@ def build(bld):
 		    source           = 'osx/Info.plist.in',
 		    target           = out_base + 'Info.plist',
 		    install_path     = '',
-		    chmod            = 0644)
+		    chmod            = Utils.O644)
 
 		# Icons
 		bld(rule   = 'cp ${SRC} ${TGT}',
