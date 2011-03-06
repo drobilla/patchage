@@ -107,7 +107,7 @@ def configure(conf):
 	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
 	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['PATCHAGE_LIBJACK'] == 1))
 	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
-	print()
+	print('')
 
 def build(bld):
 	out_base = ''
