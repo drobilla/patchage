@@ -3,9 +3,9 @@
 # Copyright (C) 2008-2010 David Robillard
 # Copyright (C) 2008 Nedko Arnaudov
 import os
-import autowaf
-import Options
-import Utils
+
+from waflib.extras import autowaf as autowaf
+import waflib.Options as Options, waflib.Utils as Utils
 
 # Version of this package (even if built as a child)
 PATCHAGE_VERSION = '0.5.0'
@@ -39,10 +39,13 @@ def options(opt):
 def configure(conf):
 	autowaf.configure(conf)
 	autowaf.display_header('Patchage Configuration')
-	conf.check_tool('compiler_cxx')
-	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS', mandatory=False)
-	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
-	autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM', mandatory=True)
+	conf.load('compiler_cxx')
+	autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
+	                  mandatory=False)
+	autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
+	                  mandatory=False)
+	autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM',
+	                  mandatory=True)
 	autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD',
 			  atleast_version='2.14.0', mandatory=True)
 	autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM',
@@ -65,27 +68,27 @@ def configure(conf):
 	           mandatory=False)
 
 	# Use Jack D-Bus if requested (only one jack driver is allowed)
-	conf.env['HAVE_JACK_DBUS'] = conf.env['HAVE_DBUS'] == 1 and conf.env['HAVE_DBUS_GLIB'] == 1 and Options.options.jack_dbus
-
-	if conf.env['HAVE_JACK_DBUS']:
-		autowaf.define(conf, 'HAVE_JACK_DBUS', conf.env['HAVE_JACK_DBUS'])
+	if Options.options.jack_dbus and conf.is_defined('HAVE_DBUS') and conf.is_defined('HAVE_DBUS_GLIB'):
+		autowaf.define(conf, 'HAVE_JACK_DBUS', 1)
 	else:
-		autowaf.check_pkg(conf, 'jack', uselib_store='JACK', atleast_version='0.107.0', mandatory=False)
-		if conf.env['HAVE_JACK'] == 1:
+		autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
+		                  atleast_version='0.107.0', mandatory=False)
+		if conf.is_defined('HAVE_JACK'):
 			autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
 
-	autowaf.define(conf, 'HAVE_JACK_MIDI', int(conf.env['HAVE_JACK'] == 1 or conf.env['HAVE_JACK_DBUS'] == 1))
+	if conf.is_defined('HAVE_JACK') and conf.is_defined('HAVE_JACK_DBUS'):
+		autowaf.define(conf, 'HAVE_JACK_MIDI', 1)
 
 	# Use Alsa if present unless --no-alsa
 	if not Options.options.no_alsa:
 		autowaf.check_pkg(conf, 'alsa', uselib_store='ALSA', mandatory=False)
 
 	# Use LASH if we have DBUS unless --no-lash
-	if not Options.options.no_lash and conf.env['HAVE_DBUS_GLIB']:
+	if not Options.options.no_lash and conf.is_defined('HAVE_DBUS_GLIB'):
 		autowaf.define(conf, 'HAVE_LASH', 1)
 
 	# Find files at binary location if we have dladdr unless --no-binloc
-	if not Options.options.no_binloc and conf.env['HAVE_DLADDR']:
+	if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
 		autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
 	# Boost headers
@@ -103,10 +106,10 @@ def configure(conf):
 
 	autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
 	autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
-	autowaf.display_msg(conf, "Jack (D-Bus)", str(conf.env['HAVE_JACK_DBUS']))
-	autowaf.display_msg(conf, "LASH (D-Bus)", str(conf.env['HAVE_LASH'] == 1))
-	autowaf.display_msg(conf, "Jack (libjack)", str(conf.env['PATCHAGE_LIBJACK'] == 1))
-	autowaf.display_msg(conf, "Alsa Sequencer", str(conf.env['HAVE_ALSA'] == 1))
+	autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
+	autowaf.display_msg(conf, "LASH (D-Bus)", conf.is_defined('HAVE_LASH'))
+	autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
+	autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
 	print('')
 
 def build(bld):
@@ -144,13 +147,13 @@ def build(bld):
 		'''
 	if bld.env['HAVE_LASH'] or bld.env['HAVE_JACK_DBUS']:
 		prog.source += ' src/DBus.cpp '
-	if bld.env['PATCHAGE_LIBJACK']:
+	if bld.is_defined('PATCHAGE_LIBJACK'):
 		prog.source += ' src/JackDriver.cpp '
 		prog.uselib += ' JACK '
-	if bld.env['HAVE_ALSA'] == 1:
+	if bld.is_defined('HAVE_ALSA'):
 		prog.source += ' src/AlsaDriver.cpp '
 		prog.uselib += ' ALSA '
-	if bld.env['PATCHAGE_BINLOC']:
+	if bld.is_defined('PATCHAGE_BINLOC'):
 		prog.linkflags = ['-ldl']
 
 	# Glade XML UI definition
