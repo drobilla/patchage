@@ -132,6 +132,9 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_view_projects)
 	, INIT_WIDGET(_menu_view_refresh)
 	, INIT_WIDGET(_menu_view_toolbar)
+	, INIT_WIDGET(_menu_zoom_in)
+	, INIT_WIDGET(_menu_zoom_out)
+	, INIT_WIDGET(_menu_zoom_normal)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
@@ -230,6 +233,12 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_show_projects));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
+	_menu_zoom_in->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_zoom_in));
+	_menu_zoom_out->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_zoom_out));
+	_menu_zoom_normal->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_zoom_normal));
 
 	_messages_clear_but->signal_clicked().connect(
 			sigc::mem_fun(this, &Patchage::on_messages_clear));
@@ -626,6 +635,27 @@ Patchage::on_help_about()
 {
 	_about_win->run();
 	_about_win->hide();
+}
+
+
+void
+Patchage::on_zoom_in()
+{
+	_canvas->set_font_size(_canvas->get_font_size() + 1.0);
+}
+
+
+void
+Patchage::on_zoom_out()
+{
+	_canvas->set_font_size(_canvas->get_font_size() - 1.0);
+}
+
+
+void
+Patchage::on_zoom_normal()
+{
+	_canvas->set_zoom_and_font_size(1.0, _canvas->get_default_font_size());
 }
 
 

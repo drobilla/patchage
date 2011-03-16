@@ -96,6 +96,10 @@ protected:
 	void on_show_projects();
 	void on_store_positions();
 	void on_view_toolbar();
+	void on_zoom_in();
+	void on_zoom_out();
+	void on_zoom_normal();
+
 	bool on_scroll(GdkEventScroll* ev);
 
 	void zoom(double z);
@@ -159,6 +163,9 @@ protected:
 	Widget<Gtk::CheckMenuItem>  _menu_view_projects;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
+	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
+	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
+	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
