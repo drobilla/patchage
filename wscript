@@ -132,11 +132,11 @@ def build(bld):
 		src/StateManager.cpp
 		src/main.cpp
 	'''
-	if bld.env['HAVE_JACK_DBUS']:
+	if bld.is_defined('HAVE_JACK_DBUS'):
 		prog.source += '''
 			src/JackDbusDriver.cpp
 		'''
-	if bld.env['HAVE_LASH']:
+	if bld.is_defined('HAVE_LASH'):
 		prog.source += '''
 			src/LashProxy.cpp
 			src/LoadProjectDialog.cpp
@@ -145,7 +145,7 @@ def build(bld):
 			src/ProjectPropertiesDialog.cpp
 			src/Session.cpp
 		'''
-	if bld.env['HAVE_LASH'] or bld.env['HAVE_JACK_DBUS']:
+	if bld.is_defined('HAVE_LASH') or bld.is_defined('HAVE_JACK_DBUS'):
 		prog.source += ' src/DBus.cpp '
 	if bld.is_defined('PATCHAGE_LIBJACK'):
 		prog.source += ' src/JackDriver.cpp '
