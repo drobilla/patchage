@@ -57,7 +57,7 @@ def configure(conf):
 	autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
 			  atleast_version='0.8.0', mandatory=True)
 	autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
-			  atleast_version='0.5.1', mandatory=True)
+			  atleast_version='0.7.0', mandatory=True)
 
 	# Check for dladdr
 	conf.check(function_name='dladdr',
