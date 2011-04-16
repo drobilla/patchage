@@ -1,6 +1,6 @@
 /* This file is part of Patchage.
- * Copyright (C) 2008-2009 David Robillard <http://drobilla.net>
- * Copyright (C) 2008 Nedko Arnaudov <nedko@arnaudov.name>
+ * Copyright 2008-2011 David Robillard <http://drobilla.net>
+ * Copyright 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software

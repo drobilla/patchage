@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Licensed under the GNU GPL v2 or later, see COPYING file for details.
-# Copyright (C) 2008-2010 David Robillard
-# Copyright (C) 2008 Nedko Arnaudov
+# Copyright 2008-2010 David Robillard
+# Copyright 2008 Nedko Arnaudov
 import os
 
 from waflib.extras import autowaf as autowaf
