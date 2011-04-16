@@ -36,18 +36,15 @@ struct ProjectPropertiesDialogImpl {
 	Widget<Gtk::TextView> _notes;
 };
 
-
 ProjectPropertiesDialog::ProjectPropertiesDialog(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml)
 {
 	_impl = new ProjectPropertiesDialogImpl(proxy, xml);
 }
 
-
 ProjectPropertiesDialog::~ProjectPropertiesDialog()
 {
 	delete _impl;
 }
-
 
 void
 ProjectPropertiesDialog::run(shared_ptr<Project> project)
@@ -78,7 +75,6 @@ ProjectPropertiesDialog::run(shared_ptr<Project> project)
 
 	_impl->_dialog->hide();
 }
-
 
 ProjectPropertiesDialogImpl::ProjectPropertiesDialogImpl(
 	LashProxy*                      proxy,

@@ -43,5 +43,4 @@ private:
 	W* _me;
 };
 
-
 #endif // PATCHAGE_WIDGET_HPP

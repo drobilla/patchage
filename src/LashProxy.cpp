@@ -70,7 +70,7 @@ struct LashProxyImpl {
 	void get_loaded_project_properties(
 		const std::string& name,
 		LoadedProjectProperties& properties);
-	
+
 	bool       _server_responding;
 	Session*   _session;
 	LashProxy* _interface;
@@ -214,7 +214,6 @@ LashProxyImpl::dbus_message_hook(
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
-
 
 	if (dbus_message_is_signal(message, LASH_IFACE_CONTROL, "ProjectNameChanged")) {
 		if (!dbus_message_get_args(
@@ -484,7 +483,7 @@ LashProxyImpl::on_project_added(const string& name)
 {
 	LoadedProjectProperties properties;
 	get_loaded_project_properties(name, properties);
-	
+
 	shared_ptr<Project> project(new Project(name, properties));
 
 	_session->project_add(project);

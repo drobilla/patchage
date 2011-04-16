@@ -85,6 +85,5 @@ private:
 	uint8_t _type;
 };
 
-
 #endif // PATCHAGE_PATCHAGEEVENT_HPP
 

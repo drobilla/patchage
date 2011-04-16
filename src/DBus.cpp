@@ -25,7 +25,6 @@
 
 #define DBUS_CALL_DEFAULT_TIMEOUT 1000 // in milliseconds
 
-
 DBus::DBus(Patchage* app)
 	: _app(app)
 	, _connection(NULL)
@@ -42,7 +41,6 @@ DBus::DBus(Patchage* app)
 
 	dbus_connection_setup_with_g_main(_connection, NULL);
 }
-
 
 bool
 DBus::call(

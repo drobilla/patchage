@@ -37,12 +37,10 @@ AlsaDriver::AlsaDriver(Patchage* app)
 {
 }
 
-
 AlsaDriver::~AlsaDriver()
 {
 	detach();
 }
-
 
 /** Attach to ALSA.
  * @a launch_daemon is ignored, as ALSA has no daemon to launch/connect to.
@@ -71,7 +69,6 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 	}
 }
 
-
 void
 AlsaDriver::detach()
 {
@@ -84,7 +81,6 @@ AlsaDriver::detach()
 		_app->status_msg("[ALSA] Detached");
 	}
 }
-
 
 /** Refresh all Alsa Midi ports and connections.
  */
@@ -100,7 +96,6 @@ AlsaDriver::refresh()
 	refresh_connections();
 }
 
-
 boost::shared_ptr<PatchagePort>
 AlsaDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
@@ -110,7 +105,6 @@ AlsaDriver::create_port_view(Patchage*     patchage,
 	create_port_view_internal(patchage, id.id.alsa_addr, parent, port);
 	return port;
 }
-
 
 boost::shared_ptr<PatchageModule>
 AlsaDriver::find_or_create_module(
@@ -127,7 +121,6 @@ AlsaDriver::find_or_create_module(
 	}
 	return m;
 }
-
 
 void
 AlsaDriver::create_port_view_internal(
@@ -217,7 +210,6 @@ AlsaDriver::create_port_view_internal(
 	}
 }
 
-
 boost::shared_ptr<PatchagePort>
 AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 		const string& name, bool is_input, snd_seq_addr_t addr)
@@ -225,7 +217,7 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 	boost::shared_ptr<PatchagePort> ret(
 		new PatchagePort(parent, ALSA_MIDI, name, is_input,
 		                 _app->state_manager()->get_port_color(ALSA_MIDI)));
-	
+
 	boost::shared_ptr<PatchageCanvas> canvas
 		= boost::dynamic_pointer_cast<PatchageCanvas>(parent->canvas().lock());
 	if (canvas)
@@ -234,7 +226,6 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 	ret->alsa_addr(addr);
 	return ret;
 }
-
 
 bool
 AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
@@ -258,7 +249,7 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 
 	const int type = snd_seq_port_info_get_type(pinfo);
 	const int caps = snd_seq_port_info_get_capability(pinfo);
-	
+
 	if (caps & SND_SEQ_PORT_CAP_NO_EXPORT) {
 		_ignored.insert(addr);
 		return true;
@@ -276,7 +267,6 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 
 	return false;
 }
-
 
 /** Refresh all Alsa Midi ports.
  */
@@ -312,7 +302,6 @@ AlsaDriver::refresh_ports()
 	}
 }
 
-
 /** Refresh all Alsa Midi connections.
  */
 void
@@ -336,7 +325,6 @@ AlsaDriver::refresh_connections()
 		}
 	}
 }
-
 
 /** Add all connections for the given port.
  */
@@ -374,7 +362,6 @@ AlsaDriver::add_connections(boost::shared_ptr<PatchagePort> port)
 	}
 
 }
-
 
 /** Connects two Alsa Midi ports.
  *
@@ -420,7 +407,6 @@ AlsaDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 	return (!result);
 }
 
-
 /** Disconnects two Alsa Midi ports.
  *
  * \return Whether disconnection succeeded.
@@ -457,7 +443,6 @@ AlsaDriver::disconnect(boost::shared_ptr<PatchagePort> src_port, boost::shared_p
 	return true;
 }
 
-
 bool
 AlsaDriver::create_refresh_port()
 {
@@ -488,7 +473,6 @@ AlsaDriver::create_refresh_port()
 	return true;
 }
 
-
 void*
 AlsaDriver::refresh_main(void* me)
 {
@@ -496,7 +480,6 @@ AlsaDriver::refresh_main(void* me)
 	ad->_refresh_main();
 	return NULL;
 }
-
 
 void
 AlsaDriver::_refresh_main()
@@ -518,7 +501,7 @@ AlsaDriver::_refresh_main()
 	snd_seq_event_t* ev;
 	while (snd_seq_event_input(_seq, &ev) > 0) {
 		assert(ev);
-			
+
 		Glib::Mutex::Lock lock(_events_mutex);
 
 		switch (ev->type) {
@@ -563,7 +546,6 @@ AlsaDriver::_refresh_main()
 		}
 	}
 }
-
 
 void
 AlsaDriver::process_events(Patchage* app)

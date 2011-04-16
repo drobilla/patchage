@@ -15,7 +15,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#ifdef __APPLE__ 
+#ifdef __APPLE__
 #include <stdlib.h>
 #include <unistd.h>
 #include <string>
@@ -49,13 +49,13 @@ set_bundle_environment()
 	chdir(bundle_path.c_str());
 	const std::string pangorc_path(bundle_path + "/Resources/pangorc");
 	setenv("PANGO_RC_FILE", pangorc_path.c_str(), 1);
-	
+
 	const char* path_c = getenv("PATH");
 	std::string path = "/opt/local/bin";
 	if (path_c)
 		path += std::string(":") + path_c;
 	setenv("PATH", path.c_str(), 1);
-	
+
 	gtk_rc_parse((bundle_path + "/Resources/gtkrc").c_str());
 }
 #endif
@@ -76,7 +76,7 @@ main(int argc, char** argv)
 
 	Patchage patchage(argc, argv);
 	app.run(*patchage.window());
- 
+
 	} catch (std::exception& e) {
 		Raul::error << "patchage: error: " << e.what() << std::endl;
 		return 1;
@@ -87,5 +87,4 @@ main(int argc, char** argv)
 
 	return 0;
 }
-
 

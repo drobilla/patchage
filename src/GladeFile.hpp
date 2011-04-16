@@ -40,7 +40,7 @@ public:
 		fs.close();
 		return !fail;
 	}
-		
+
 	static Glib::RefPtr<Gnome::Glade::Xml> open(const std::string& base_name) {
 		std::string glade_filename;
 		char* loc = NULL;

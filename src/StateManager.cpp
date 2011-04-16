@@ -36,7 +36,6 @@ StateManager::StateManager()
 {
 }
 
-
 bool
 StateManager::get_module_location(const string& name, ModuleType type, Coord& loc)
 {
@@ -72,7 +71,6 @@ StateManager::get_module_location(const string& name, ModuleType type, Coord& lo
 	return false;
 }
 
-
 void
 StateManager::set_module_location(const string& name, ModuleType type, Coord loc)
 {
@@ -101,7 +99,6 @@ retry:
 	}
 }
 
-
 /** Returns whether or not this module should be split.
  *
  * If nothing is known about the given module, @a default_val is returned (this is
@@ -117,13 +114,11 @@ StateManager::get_module_split(const string& name, bool default_val) const
 	return (*i).second.split;
 }
 
-
 void
 StateManager::set_module_split(const string& name, bool split)
 {
 	_module_settings[name].split = split;
 }
-
 
 void
 StateManager::load(const string& filename)
@@ -135,7 +130,7 @@ StateManager::load(const string& filename)
 
 	if ( ! is.good())
 		return;
-	
+
 	Raul::info << "Loading configuration file " << filename << endl;
 
 	string s;
@@ -228,7 +223,6 @@ StateManager::save(const string& filename)
 	os << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
 	os << "zoom_level " << _zoom << std::endl;
 
-
 	for (map<string, ModuleSettings>::iterator i = _module_settings.begin();
 			i != _module_settings.end(); ++i) {
 		const ModuleSettings& settings = (*i).second;
@@ -249,20 +243,17 @@ StateManager::save(const string& filename)
 	os.close();
 }
 
-
 float
 StateManager::get_zoom()
 {
 	return _zoom;
 }
 
-
 void
 StateManager::set_zoom(float zoom)
 {
 	_zoom = zoom;
 }
-
 
 int
 StateManager::get_port_color(PortType type)

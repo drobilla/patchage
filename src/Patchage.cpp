@@ -91,7 +91,6 @@ gtkmm_set_width_for_given_text (Gtk::Widget &w, const gchar *text,
 
 /* end Gtk helpers */
 
-
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
@@ -295,7 +294,6 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::idle_callback), 100);
 }
 
-
 Patchage::~Patchage()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -318,7 +316,6 @@ Patchage::~Patchage()
 	_xml.reset();
 }
 
-
 void
 Patchage::attach()
 {
@@ -340,7 +337,6 @@ Patchage::attach()
 
 	update_toolbar();
 }
-
 
 bool
 Patchage::idle_callback()
@@ -395,7 +391,6 @@ Patchage::idle_callback()
 	return true;
 }
 
-
 void
 Patchage::update_toolbar()
 {
@@ -407,7 +402,6 @@ Patchage::update_toolbar()
 	}
 #endif
 }
-
 
 bool
 Patchage::update_load()
@@ -434,14 +428,12 @@ Patchage::update_load()
 	return true;
 }
 
-
 void
 Patchage::zoom(double z)
 {
 	_state_manager->set_zoom(z);
 	_canvas->set_zoom(z);
 }
-
 
 void
 Patchage::refresh()
@@ -466,7 +458,6 @@ Patchage::refresh()
 	}
 }
 
-
 /** Update the stored window location and size in the StateManager (in memory).
  */
 void
@@ -485,7 +476,6 @@ Patchage::store_window_location()
 	_state_manager->set_window_size(window_size);
 }
 
-
 void
 Patchage::clear_load()
 {
@@ -495,7 +485,6 @@ Patchage::clear_load()
 	_jack_driver->reset_max_dsp_load();
 #endif
 }
-
 
 void
 Patchage::error_msg(const std::string& msg)
@@ -508,7 +497,6 @@ Patchage::error_msg(const std::string& msg)
 #endif
 }
 
-
 void
 Patchage::info_msg(const std::string& msg)
 {
@@ -520,7 +508,6 @@ Patchage::info_msg(const std::string& msg)
 #endif
 }
 
-
 void
 Patchage::status_msg(const string& msg)
 {
@@ -531,7 +518,6 @@ Patchage::status_msg(const string& msg)
 	_status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(), 0);
 }
 
-
 void
 Patchage::update_state()
 {
@@ -541,7 +527,6 @@ Patchage::update_state()
 			module->load_location();
 	}
 }
-
 
 /** Update the sensitivity status of menus to reflect the present.
  *
@@ -611,7 +596,6 @@ Patchage::menu_alsa_connect()
 	_alsa_driver->refresh();
 }
 
-
 void
 Patchage::menu_alsa_disconnect()
 {
@@ -619,7 +603,6 @@ Patchage::menu_alsa_disconnect()
 	refresh();
 }
 #endif
-
 
 void
 Patchage::on_arrange()
@@ -629,7 +612,6 @@ Patchage::on_arrange()
 	_canvas->arrange();
 }
 
-
 void
 Patchage::on_help_about()
 {
@@ -637,13 +619,11 @@ Patchage::on_help_about()
 	_about_win->hide();
 }
 
-
 void
 Patchage::on_zoom_in()
 {
 	_canvas->set_font_size(_canvas->get_font_size() + 1.0);
 }
-
 
 void
 Patchage::on_zoom_out()
@@ -651,13 +631,11 @@ Patchage::on_zoom_out()
 	_canvas->set_font_size(_canvas->get_font_size() - 1.0);
 }
 
-
 void
 Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom_and_font_size(1.0, _canvas->get_default_font_size());
 }
-
 
 void
 Patchage::on_messages_clear()
@@ -667,13 +645,11 @@ Patchage::on_messages_clear()
 			_status_text->get_buffer()->end());
 }
 
-
 void
 Patchage::on_messages_close()
 {
 	_menu_view_messages->set_active(false);
 }
-
 
 bool
 Patchage::on_messages_delete(GdkEventAny*)
@@ -681,7 +657,6 @@ Patchage::on_messages_delete(GdkEventAny*)
 	_menu_view_messages->set_active(false);
 	return true;
 }
-
 
 void
 Patchage::on_quit()
@@ -696,7 +671,6 @@ Patchage::on_quit()
 	_canvas.reset();
 }
 
-
 void
 Patchage::on_show_messages()
 {
@@ -705,7 +679,6 @@ Patchage::on_show_messages()
 	else
 		_messages_win->hide();
 }
-
 
 void
 Patchage::on_show_projects()
@@ -716,14 +689,12 @@ Patchage::on_show_projects()
 		_project_list_viewport->hide();
 }
 
-
 void
 Patchage::on_store_positions()
 {
 	store_window_location();
 	_state_manager->save(_settings_filename);
 }
-
 
 void
 Patchage::on_view_toolbar()
@@ -734,13 +705,11 @@ Patchage::on_view_toolbar()
 		_toolbar->hide();
 }
 
-
 bool
 Patchage::on_scroll(GdkEventScroll* ev)
 {
 	return false;
 }
-
 
 void
 Patchage::buffer_size_changed()
@@ -759,14 +728,12 @@ Patchage::buffer_size_changed()
 #endif
 }
 
-
 void
 Patchage::enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module)
 {
 	if (module)
 		_pending_resize.insert(module);
 }
-
 
 void
 Patchage::flush_resize()

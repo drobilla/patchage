@@ -42,7 +42,6 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 {
 }
 
-
 boost::shared_ptr<PatchageModule>
 PatchageCanvas::find_module(const string& name, ModuleType type)
 {
@@ -62,7 +61,6 @@ PatchageCanvas::find_module(const string& name, ModuleType type)
 	// Return InputOutput module for Input or Output (or NULL if not found at all)
 	return io_module;
 }
-
 
 boost::shared_ptr<PatchagePort>
 PatchageCanvas::find_port(const PortID& id)
@@ -135,7 +133,6 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 	return boost::shared_ptr<PatchagePort>();
 }
 
-
 void
 PatchageCanvas::connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
                         boost::shared_ptr<FlowCanvas::Connectable> port2)
@@ -158,7 +155,6 @@ PatchageCanvas::connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
 		status_message("WARNING: Cannot make connection, incompatible port types.");
 	}
 }
-
 
 void
 PatchageCanvas::disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
@@ -196,13 +192,11 @@ PatchageCanvas::disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
 	}
 }
 
-
 void
 PatchageCanvas::status_message(const string& msg)
 {
 	_app->status_msg(string("[Canvas] ").append(msg));
 }
-
 
 void
 PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageModule> module)
@@ -221,10 +215,9 @@ PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageMo
 	}
 	if (in_module && out_module)
 		out_module->set_partner(in_module);
-	
+
 	add_item(module);
 }
-
 
 bool
 PatchageCanvas::remove_item(boost::shared_ptr<FlowCanvas::Item> i)
@@ -249,7 +242,6 @@ PatchageCanvas::remove_item(boost::shared_ptr<FlowCanvas::Item> i)
 
 	return ret;
 }
-
 
 void
 PatchageCanvas::destroy()

@@ -31,7 +31,6 @@ class PatchageFlowCanvas;
 class PatchagePort;
 class PatchageModule;
 
-
 /** Handles all externally driven functionality, registering ports etc.
  *
  * Jack callbacks and connect methods and things like that live here.
@@ -111,6 +110,5 @@ private:
 	size_t          _xruns;
 	float           _xrun_delay;
 };
-
 
 #endif // PATCHAGE_JACKDRIVER_HPP

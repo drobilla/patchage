@@ -73,5 +73,4 @@ private:
 	PortType       _type;
 };
 
-
 #endif // PATCHAGE_PATCHAGEPORT_HPP

@@ -65,7 +65,6 @@ convert_timestamp_to_string(
 	}
 }
 
-
 LoadProjectDialog::LoadProjectDialog(Patchage* app)
 	: _app(app)
 	, _dialog(app->xml(), "load_project_dialog")
@@ -83,7 +82,6 @@ LoadProjectDialog::LoadProjectDialog(Patchage* app)
 	_widget->append_column("Modified", _columns.modified);
 	_widget->append_column("Description", _columns.description);
 }
-
 
 void
 LoadProjectDialog::run(std::list<ProjectInfo>& projects)
@@ -119,7 +117,6 @@ loop:
 	_dialog->hide();
 }
 
-
 void
 LoadProjectDialog::load_selected_project()
 {
@@ -128,7 +125,6 @@ LoadProjectDialog::load_selected_project()
 	_app->lash_proxy()->load_project(name);
 	_dialog->hide();
 }
-
 
 bool
 LoadProjectDialog::on_button_press_event(GdkEventButton * event_ptr)
@@ -139,7 +135,6 @@ LoadProjectDialog::on_button_press_event(GdkEventButton * event_ptr)
 	}
 	return false;
 }
-
 
 bool
 LoadProjectDialog::on_key_press_event(GdkEventKey * event_ptr)

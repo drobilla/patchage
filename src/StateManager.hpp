@@ -73,5 +73,4 @@ private:
 	float _zoom;
 };
 
-
 #endif // PATCHAGE_STATEMANAGER_HPP

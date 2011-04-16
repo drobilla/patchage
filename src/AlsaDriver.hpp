@@ -58,7 +58,7 @@ public:
 	void print_addr(snd_seq_addr_t addr);
 
 	void process_events(Patchage* app);
-	
+
 private:
 	void refresh_ports();
 	void refresh_connections();
@@ -91,7 +91,7 @@ private:
 	Patchage*  _app;
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
-	
+
 	Glib::Mutex               _events_mutex;
 	std::queue<PatchageEvent> _events;
 

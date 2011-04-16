@@ -49,12 +49,10 @@ JackDriver::JackDriver(Patchage* app)
 	_last_pos.valid = (jack_position_bits_t)0;
 }
 
-
 JackDriver::~JackDriver()
 {
 	detach();
 }
-
 
 /** Connect to Jack.
  */
@@ -97,7 +95,6 @@ JackDriver::attach(bool launch_daemon)
 	}
 }
 
-
 void
 JackDriver::detach()
 {
@@ -111,7 +108,6 @@ JackDriver::detach()
 	signal_detached.emit();
 	_app->status_msg("[JACK] Detached");
 }
-
 
 /** Destroy all JACK (canvas) ports.
  */
@@ -138,7 +134,6 @@ JackDriver::destroy_all()
 			_app->enqueue_resize(module);
 	}
 }
-
 
 boost::shared_ptr<PatchagePort>
 JackDriver::create_port_view(Patchage*     patchage,
@@ -197,7 +192,6 @@ JackDriver::create_port_view(Patchage*     patchage,
 	return port;
 }
 
-
 boost::shared_ptr<PatchagePort>
 JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* port, PortID id)
 {
@@ -231,13 +225,11 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 	return ret;
 }
 
-
 void
 JackDriver::shutdown()
 {
 	signal_detached.emit();
 }
-
 
 /** Refresh all Jack audio ports/connections.
  * To be called from GTK thread only.
@@ -373,7 +365,6 @@ JackDriver::refresh()
 	free(ports);
 }
 
-
 bool
 JackDriver::port_names(const PortID& id,
                        string&       module_name,
@@ -398,7 +389,6 @@ JackDriver::port_names(const PortID& id,
 	return true;
 }
 
-
 /** Connects two Jack audio ports.
  * To be called from GTK thread only.
  * \return Whether connection succeeded.
@@ -420,7 +410,6 @@ JackDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
 
 	return (!result);
 }
-
 
 /** Disconnects two Jack audio ports.
  * To be called from GTK thread only.
@@ -444,7 +433,6 @@ JackDriver::disconnect(boost::shared_ptr<PatchagePort> const src_port, boost::sh
 	return (!result);
 }
 
-
 void
 JackDriver::jack_client_registration_cb(const char* name, int registered, void* jack_driver)
 {
@@ -460,7 +448,6 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_DESTRUCTION, name));
 	}
 }
-
 
 void
 JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, void* jack_driver)
@@ -478,7 +465,6 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 	}
 }
 
-
 void
 JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* jack_driver)
 {
@@ -495,7 +481,6 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int con
 	}
 }
 
-
 int
 JackDriver::jack_graph_order_cb(void* jack_driver)
 {
@@ -507,7 +492,6 @@ JackDriver::jack_graph_order_cb(void* jack_driver)
 
 	return 0;
 }
-
 
 int
 JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
@@ -530,7 +514,6 @@ JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
 	return 0;
 }
 
-
 int
 JackDriver::jack_xrun_cb(void* jack_driver)
 {
@@ -545,7 +528,6 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 	return 0;
 }
 
-
 void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
@@ -558,13 +540,11 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	me->signal_detached.emit();
 }
 
-
 void
 JackDriver::error_cb(const char* msg)
 {
 	Raul::error << "[JACK] " << msg << endl;
 }
-
 
 jack_nframes_t
 JackDriver::buffer_size()
@@ -575,14 +555,12 @@ JackDriver::buffer_size()
 		return jack_get_buffer_size(_client);
 }
 
-
 void
 JackDriver::reset_xruns()
 {
 	_xruns = 0;
 	_xrun_delay = 0;
 }
-
 
 bool
 JackDriver::set_buffer_size(jack_nframes_t size)
@@ -604,7 +582,6 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 	}
 }
 
-
 float
 JackDriver::get_max_dsp_load()
 {
@@ -624,14 +601,12 @@ JackDriver::get_max_dsp_load()
 	return max_load;
 }
 
-
 void
 JackDriver::reset_max_dsp_load()
 {
 	if (_client)
 		jack_reset_max_delayed_usecs(_client);
 }
-
 
 void
 JackDriver::process_events(Patchage* app)
@@ -642,5 +617,4 @@ JackDriver::process_events(Patchage* app)
 		_events.pop();
 	}
 }
-
 

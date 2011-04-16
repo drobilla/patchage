@@ -56,6 +56,5 @@ public:
 	sigc::signal<void> signal_detached;
 };
 
-
 #endif // PATCHAGE_DRIVER_HPP
 

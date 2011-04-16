@@ -53,5 +53,4 @@ protected:
 	ModuleType _type;
 };
 
-
 #endif // PATCHAGE_PATCHAGEMODULE_HPP
