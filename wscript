@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 # Licensed under the GNU GPL v2 or later, see COPYING file for details.
 # Copyright 2008-2010 David Robillard
@@ -38,6 +39,7 @@ def options(opt):
 
 def configure(conf):
     autowaf.configure(conf)
+    conf.line_just = 38
     autowaf.display_header('Patchage Configuration')
     conf.load('compiler_cxx')
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
