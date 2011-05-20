@@ -23,7 +23,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <libglademm/xml.h>
+#include <gtkmm.h>
 
 #include "raul/log.hpp"
 
@@ -32,7 +32,7 @@
 #include "binary_location.h"
 #endif
 
-class GladeFile {
+class UIFile {
 public:
 	inline static bool is_readable(const std::string& filename) {
 		std::ifstream fs(filename.c_str());
@@ -41,34 +41,33 @@ public:
 		return !fail;
 	}
 
-	static Glib::RefPtr<Gnome::Glade::Xml> open(const std::string& base_name) {
-		std::string glade_filename;
+	static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name) {
+		std::string ui_filename;
 		char* loc = NULL;
 #ifdef PATCHAGE_BINLOC
 		loc = binary_location();
 		if (loc) {
 			std::string bundle = loc;
 			bundle = bundle.substr(0, bundle.find_last_of("/"));
-			glade_filename = bundle + "/" + base_name + ".glade";
+			ui_filename = bundle + "/" + base_name + ".ui";
 			free(loc);
-			if (is_readable(glade_filename)) {
-				Raul::info << "Loading glade file " << glade_filename << std::endl;
-				return Gnome::Glade::Xml::create(glade_filename);
+			if (is_readable(ui_filename)) {
+				Raul::info << "Loading UI file " << ui_filename << std::endl;
+				return Gtk::Builder::create_from_file(ui_filename);
 			}
 		}
 #endif
-		glade_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".glade";
-		if (is_readable(glade_filename)) {
-			Raul::info << "Loading glade file " << glade_filename << std::endl;
-			return Gnome::Glade::Xml::create(glade_filename);
+		ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".ui";
+		if (is_readable(ui_filename)) {
+			Raul::info << "Loading UI file " << ui_filename << std::endl;
+			return Gtk::Builder::create_from_file(ui_filename);
 		}
 
 		std::stringstream ss;
-		ss << "Unable to find " << base_name << ".glade in " << loc
+		ss << "Unable to find " << base_name << ".ui in " << loc
 		   << " or " << PATCHAGE_DATA_DIR << std::endl;
 		throw std::runtime_error(ss.str());
-		return Glib::RefPtr<Gnome::Glade::Xml>();
-		//return Gnome::Glade::Xml::create(glade_filename);
+		return Glib::RefPtr<Gtk::Builder>();
 	}
 };
 

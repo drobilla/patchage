@@ -21,13 +21,13 @@
 #include <string>
 
 #include <boost/utility.hpp>
-#include <libglademm/xml.h>
+#include <gtkmm.h>
 
 template <typename W>
 class Widget : public boost::noncopyable {
 public:
-	Widget(Glib::RefPtr<Gnome::Glade::Xml> xml, const std::string& name) {
-		xml->get_widget(name.c_str(), _me);
+	Widget(Glib::RefPtr<Gtk::Builder> xml, const std::string& name) {
+		xml->get_widget(name, _me);
 	}
 
 	void destroy() { delete _me; }

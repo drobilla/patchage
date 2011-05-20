@@ -15,8 +15,7 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <gtkmm.h>
-#include <libglademm/xml.h>
+#include <gtkmm/gtkmm.h>
 
 #include "LashProxy.hpp"
 #include "Patchage.hpp"
@@ -27,7 +26,7 @@
 using boost::shared_ptr;
 
 struct ProjectPropertiesDialogImpl {
-	ProjectPropertiesDialogImpl(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml);
+	ProjectPropertiesDialogImpl(LashProxy* proxy, Glib::RefPtr<Gtk::Builder> xml);
 
 	LashProxy*            _proxy;
 	Widget<Gtk::Dialog>   _dialog;
@@ -36,7 +35,8 @@ struct ProjectPropertiesDialogImpl {
 	Widget<Gtk::TextView> _notes;
 };
 
-ProjectPropertiesDialog::ProjectPropertiesDialog(LashProxy* proxy, Glib::RefPtr<Gnome::Glade::Xml> xml)
+ProjectPropertiesDialog::ProjectPropertiesDialog(LashProxy*                 proxy,
+                                                 Glib::RefPtr<Gtk::Builder> xml)
 {
 	_impl = new ProjectPropertiesDialogImpl(proxy, xml);
 }
@@ -77,8 +77,8 @@ ProjectPropertiesDialog::run(shared_ptr<Project> project)
 }
 
 ProjectPropertiesDialogImpl::ProjectPropertiesDialogImpl(
-	LashProxy*                      proxy,
-	Glib::RefPtr<Gnome::Glade::Xml> xml)
+	LashProxy*                 proxy,
+	Glib::RefPtr<Gtk::Builder> xml)
 	: _proxy(proxy)
 	, _dialog(xml, "project_properties_dialog")
 	, _name(xml, "project_name")

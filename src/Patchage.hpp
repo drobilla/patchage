@@ -22,7 +22,7 @@
 #include <string>
 
 #include <boost/shared_ptr.hpp>
-#include <libglademm/xml.h>
+#include <gtkmm.h>
 #include <libgnomecanvasmm.h>
 
 #include "patchage-config.h"
@@ -64,7 +64,7 @@ public:
 	void set_lash_available(bool available);
 #endif
 
-	Glib::RefPtr<Gnome::Glade::Xml> xml() { return _xml; }
+	Glib::RefPtr<Gtk::Builder> xml() { return _xml; }
 
 	void attach();
 	void quit() { _main_win->hide(); }
@@ -109,7 +109,7 @@ protected:
 
 	void buffer_size_changed();
 
-	Glib::RefPtr<Gnome::Glade::Xml> _xml;
+	Glib::RefPtr<Gtk::Builder> _xml;
 
 #if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
 	DBus* _dbus;

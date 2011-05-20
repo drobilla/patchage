@@ -53,8 +53,6 @@ def configure(conf):
                       atleast_version='2.14.0', mandatory=True)
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
                       atleast_version='2.11.12', mandatory=True)
-    autowaf.check_pkg(conf, 'libglademm-2.4', uselib_store='GLADEMM',
-                      atleast_version='2.6.0', mandatory=True)
     autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
                       atleast_version='0.8.0', mandatory=True)
     autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
@@ -123,7 +121,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS GLADEMM DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
+    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
     prog.source = '''
             src/Client.cpp
             src/Patchage.cpp
@@ -157,10 +155,10 @@ def build(bld):
     if bld.is_defined('PATCHAGE_BINLOC'):
         prog.linkflags = ['-ldl']
 
-    # Glade XML UI definition
+    # XML UI definition
     bld(features         = 'subst',
-        source           = 'src/patchage.glade',
-        target           = out_base + 'patchage.glade',
+        source           = 'src/patchage.ui',
+        target           = out_base + 'patchage.ui',
         install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
         chmod            = Utils.O644,
             PATCHAGE_VERSION = PATCHAGE_VERSION)

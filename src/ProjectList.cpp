@@ -16,7 +16,6 @@
  */
 
 #include <gtkmm.h>
-#include <libglademm/xml.h>
 
 #include "Client.hpp"
 #include "LashProxy.hpp"
@@ -35,9 +34,8 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 };
 
 struct ProjectListImpl : public sigc::trackable {
-	ProjectListImpl(
-	    Glib::RefPtr<Gnome::Glade::Xml> xml,
-	    Patchage* app);
+	ProjectListImpl(Glib::RefPtr<Gtk::Builder> xml,
+	    Patchage*                              app);
 
 	void project_added(shared_ptr<Project> project);
 	void project_closed(shared_ptr<Project> project);
@@ -75,7 +73,7 @@ ProjectList::~ProjectList()
 	delete _impl;
 }
 
-ProjectListImpl::ProjectListImpl(Glib::RefPtr<Gnome::Glade::Xml> xml, Patchage* app)
+ProjectListImpl::ProjectListImpl(Glib::RefPtr<Gtk::Builder> xml, Patchage* app)
 	: _app(app)
 	, _widget(xml, "projects_list")
 {

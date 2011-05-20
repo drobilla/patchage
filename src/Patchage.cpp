@@ -22,14 +22,14 @@
 #include <sstream>
 
 #include <gtk/gtkwindow.h>
-#include <libglademm/xml.h>
+#include <gtkmm.h>
 #include <libgnomecanvasmm.h>
 
 #include "flowcanvas/Module.hpp"
 #include "raul/SharedPtr.hpp"
 
 #include "patchage-config.h"
-#include "GladeFile.hpp"
+#include "UIFile.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
@@ -60,6 +60,10 @@
 using std::cout;
 using std::endl;
 using std::string;
+
+struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
+	Gtk::TreeModelColumn<Glib::ustring> label;
+};
 
 /* Gtk helpers (resize combo boxes) */
 
@@ -94,7 +98,7 @@ gtkmm_set_width_for_given_text (Gtk::Widget &w, const gchar *text,
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
-	: _xml(GladeFile::open("patchage"))
+	: _xml(UIFile::open("patchage"))
 #ifdef HAVE_LASH
 	, _dbus(NULL)
 	, _lash_proxy(NULL)
