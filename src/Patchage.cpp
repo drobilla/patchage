@@ -566,12 +566,15 @@ Patchage::show_open_session_dialog()
 	}
 
 	const std::string dir = dialog.get_filename();
-	const std::string cmd = dir + "/jack-session";
+	if (g_chdir(dir.c_str())) {
+		Raul::error << "Failed to switch to session directory " << dir << endl;
+		return;
+	}
 
-	if (system(cmd.c_str()) < 0) {
-		Raul::error << "Error executing session load command " << cmd << endl;
+	if (system("./jack-session") < 0) {
+		Raul::error << "Error executing `./jack-session' in " << dir << endl;
 	} else {
-		Raul::info << "Executed session load command " << cmd << endl;
+		Raul::info << "Loaded session " << dir << endl;
 	}
 }
 
