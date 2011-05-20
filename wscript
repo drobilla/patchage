@@ -52,7 +52,7 @@ def configure(conf):
     autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM',
                       atleast_version='2.14.0', mandatory=True)
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
-                      atleast_version='2.11.12', mandatory=True)
+                      atleast_version='2.12.0', mandatory=True)
     autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
                       atleast_version='0.8.0', mandatory=True)
     autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
@@ -121,7 +121,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GNOMECANVASMM GTHREAD RAUL')
+    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD RAUL')
     prog.source = '''
             src/Client.cpp
             src/Patchage.cpp
