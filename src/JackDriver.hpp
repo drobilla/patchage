@@ -73,7 +73,7 @@ public:
 
 	jack_client_t* client() { return _client; }
 
-	float          sample_rate() { return jack_get_sample_rate(_client); }
+	jack_nframes_t sample_rate() { return jack_get_sample_rate(_client); }
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 

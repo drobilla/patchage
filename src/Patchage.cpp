@@ -65,36 +65,6 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
 
-/* Gtk helpers (resize combo boxes) */
-
-static void
-gtkmm_get_ink_pixel_size (Glib::RefPtr<Pango::Layout> layout,
-			       int& width,
-			       int& height)
-{
-	Pango::Rectangle ink_rect = layout->get_ink_extents ();
-
-	width = (ink_rect.get_width() + PANGO_SCALE / 2) / PANGO_SCALE;
-	height = (ink_rect.get_height() + PANGO_SCALE / 2) / PANGO_SCALE;
-}
-
-static void
-gtkmm_set_width_for_given_text (Gtk::Widget &w, const gchar *text,
-						   gint hpadding/*, gint vpadding*/)
-
-{
-	int old_width, old_height;
-	w.get_size_request(old_width, old_height);
-
-	int width, height;
-	w.ensure_style ();
-
-	gtkmm_get_ink_pixel_size (w.create_pango_layout (text), width, height);
-	w.set_size_request(width + hpadding, old_height);//height + vpadding);
-}
-
-/* end Gtk helpers */
-
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
@@ -117,8 +87,6 @@ Patchage::Patchage(int argc, char** argv)
 	, _refresh(false)
 	, _enable_refresh(true)
 	, INIT_WIDGET(_about_win)
-	, INIT_WIDGET(_buffer_size_combo)
-	, INIT_WIDGET(_clear_load_but)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
 	, INIT_WIDGET(_main_xrun_progress)
@@ -134,19 +102,20 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_view_messages)
 	, INIT_WIDGET(_menu_view_projects)
 	, INIT_WIDGET(_menu_view_refresh)
-	, INIT_WIDGET(_menu_view_toolbar)
+	, INIT_WIDGET(_menu_view_statusbar)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
+	, INIT_WIDGET(_menu_zoom_full)
 	, INIT_WIDGET(_menu_zoom_normal)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
 	, INIT_WIDGET(_project_list_viewport)
+	, INIT_WIDGET(_latency_frames_label)
+	, INIT_WIDGET(_latency_ms_label)
 	, INIT_WIDGET(_sample_rate_label)
 	, INIT_WIDGET(_status_text)
-	, INIT_WIDGET(_toolbar)
-	, INIT_WIDGET(_zoom_full_but)
-	, INIT_WIDGET(_zoom_normal_but)
+	, INIT_WIDGET(_statusbar)
 {
 	_settings_filename = getenv("HOME");
 	_settings_filename += "/.patchagerc";
@@ -181,8 +150,6 @@ Patchage::Patchage(int argc, char** argv)
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
 
-	gtkmm_set_width_for_given_text(*_buffer_size_combo, "4096 frames", 40);
-
 	_main_scrolledwin->add(*_canvas);
 
 	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(10);
@@ -190,15 +157,6 @@ Patchage::Patchage(int argc, char** argv)
 
 	_main_scrolledwin->signal_scroll_event().connect(
 			sigc::mem_fun(this, &Patchage::on_scroll));
-
-	_buffer_size_combo->signal_changed().connect(
-			sigc::mem_fun(this, &Patchage::buffer_size_changed));
-	_clear_load_but->signal_clicked().connect(
-			sigc::mem_fun(this, &Patchage::clear_load));
-	_zoom_normal_but->signal_clicked().connect(sigc::bind(
-			sigc::mem_fun(this, &Patchage::zoom), 1.0));
-	_zoom_full_but->signal_clicked().connect(
-			sigc::mem_fun(_canvas.get(), &PatchageCanvas::zoom_full));
 
 #ifdef HAVE_LASH
 	_menu_open_session->signal_activate().connect(
@@ -228,8 +186,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
-	_menu_view_toolbar->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_toolbar));
+	_menu_view_statusbar->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_view_statusbar));
 	_menu_view_messages->signal_toggled().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
 	_menu_view_projects->signal_toggled().connect(
@@ -240,6 +198,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_zoom_in));
 	_menu_zoom_out->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_zoom_out));
+	_menu_zoom_full->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_zoom_full));
 	_menu_zoom_normal->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_zoom_normal));
 
@@ -339,7 +299,7 @@ Patchage::attach()
 
 	refresh();
 
-	update_toolbar();
+	update_statusbar();
 }
 
 bool
@@ -396,12 +356,27 @@ Patchage::idle_callback()
 }
 
 void
-Patchage::update_toolbar()
+Patchage::update_statusbar()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_enable_refresh && _jack_driver->is_attached()) {
 		_enable_refresh = false;
-		_buffer_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
+
+		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
+		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
+
+		std::stringstream ss;
+		ss << buffer_size;
+		_latency_frames_label->set_text(ss.str());
+
+		ss.str("");
+		ss << (sample_rate / 1000);
+		_sample_rate_label->set_text(ss.str());
+
+		ss.str("");
+		ss << buffer_size * 1000 / sample_rate;
+		_latency_ms_label->set_text(ss.str());
+		
 		_enable_refresh = true;
 	}
 #endif
@@ -481,16 +456,6 @@ Patchage::store_window_location()
 }
 
 void
-Patchage::clear_load()
-{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_main_xrun_progress->set_fraction(0.0);
-	_jack_driver->reset_xruns();
-	_jack_driver->reset_max_dsp_load();
-#endif
-}
-
-void
 Patchage::error_msg(const std::string& msg)
 {
 #if defined(LOG_TO_STATUS)
@@ -541,7 +506,7 @@ Patchage::connect_widgets()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver->signal_attached.connect(
-			sigc::mem_fun(this, &Patchage::update_toolbar));
+			sigc::mem_fun(this, &Patchage::update_statusbar));
 	_jack_driver->signal_attached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive), false));
 	_jack_driver->signal_attached.connect(
@@ -636,6 +601,12 @@ Patchage::on_zoom_out()
 }
 
 void
+Patchage::on_zoom_full()
+{
+	_canvas->zoom_full();
+}
+
+void
 Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom_and_font_size(1.0, _canvas->get_default_font_size());
@@ -701,35 +672,18 @@ Patchage::on_store_positions()
 }
 
 void
-Patchage::on_view_toolbar()
+Patchage::on_view_statusbar()
 {
-	if (_menu_view_toolbar->get_active())
-		_toolbar->show();
+	if (_menu_view_statusbar->get_active())
+		_statusbar->show();
 	else
-		_toolbar->hide();
+		_statusbar->hide();
 }
 
 bool
 Patchage::on_scroll(GdkEventScroll* ev)
 {
 	return false;
-}
-
-void
-Patchage::buffer_size_changed()
-{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	const int selected = _buffer_size_combo->get_active_row_number();
-
-	if (selected == -1) {
-		update_toolbar();
-	} else {
-		jack_nframes_t buffer_size = 1 << (selected+5);
-
-		if ( ! _jack_driver->set_buffer_size(buffer_size))
-			update_toolbar(); // reset combo box to actual value
-	}
-#endif
 }
 
 void

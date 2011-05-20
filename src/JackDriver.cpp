@@ -440,7 +440,7 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
-	jack_reset_max_delayed_usecs(me->_client);
+	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_CREATION, name));
@@ -456,7 +456,7 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
-	jack_reset_max_delayed_usecs(me->_client);
+	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::PORT_CREATION, port_id));
@@ -472,7 +472,7 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int con
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
-	jack_reset_max_delayed_usecs(me->_client);
+	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (connect) {
 		me->_events.push(PatchageEvent(PatchageEvent::CONNECTION, src, dst));
@@ -488,7 +488,7 @@ JackDriver::jack_graph_order_cb(void* jack_driver)
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
-	jack_reset_max_delayed_usecs(me->_client);
+	//jack_reset_max_delayed_usecs(me->_client);
 
 	return 0;
 }
@@ -588,17 +588,9 @@ JackDriver::get_max_dsp_load()
 	const float max_delay = jack_get_max_delayed_usecs(_client);
 	const float rate      = sample_rate();
 	const float size      = buffer_size();
-	const float period    = size / rate * 1000000; // usec
+	const float period    = size / rate * 1000000.0f; // usec
 
-	float max_load;
-	if (max_delay > period) {
-		max_load = 1.0;
-		jack_reset_max_delayed_usecs(_client);
-	} else {
-		max_load = max_delay / period;
-	}
-
-	return max_load;
+	return (max_delay > period) ? 1.0 : (max_delay / period);
 }
 
 void

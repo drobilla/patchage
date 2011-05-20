@@ -95,9 +95,10 @@ protected:
 	void on_show_messages();
 	void on_show_projects();
 	void on_store_positions();
-	void on_view_toolbar();
+	void on_view_statusbar();
 	void on_zoom_in();
 	void on_zoom_out();
+	void on_zoom_full();
 	void on_zoom_normal();
 
 	bool on_scroll(GdkEventScroll* ev);
@@ -105,7 +106,7 @@ protected:
 	void zoom(double z);
 	bool idle_callback();
 	bool update_load();
-	void update_toolbar();
+	void update_statusbar();
 
 	void buffer_size_changed();
 
@@ -145,8 +146,6 @@ protected:
 	bool        _enable_refresh;
 
 	Widget<Gtk::AboutDialog>    _about_win;
-	Widget<Gtk::ComboBox>       _buffer_size_combo;
-	Widget<Gtk::ToolButton>     _clear_load_but;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
 	Widget<Gtk::ProgressBar>    _main_xrun_progress;
@@ -162,19 +161,20 @@ protected:
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
 	Widget<Gtk::CheckMenuItem>  _menu_view_projects;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
-	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
+	Widget<Gtk::CheckMenuItem>  _menu_view_statusbar;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
+	Widget<Gtk::ImageMenuItem>  _menu_zoom_full;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
 	Widget<Gtk::Viewport>       _project_list_viewport;
+	Widget<Gtk::Label>          _latency_frames_label;
+	Widget<Gtk::Label>          _latency_ms_label;
 	Widget<Gtk::Label>          _sample_rate_label;
 	Widget<Gtk::TextView>       _status_text;
-	Widget<Gtk::Toolbar>        _toolbar;
-	Widget<Gtk::ToolButton>     _zoom_full_but;
-	Widget<Gtk::ToolButton>     _zoom_normal_but;
+	Widget<Gtk::Statusbar>      _statusbar;
 };
 
 #endif // PATCHAGE_PATCHAGE_HPP
