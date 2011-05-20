@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # Licensed under the GNU GPL v2 or later, see COPYING file for details.
 # Copyright 2008-2010 David Robillard
