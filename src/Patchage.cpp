@@ -15,12 +15,15 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
+#include <stdlib.h>
 #include <pthread.h>
 
 #include <cmath>
 #include <fstream>
 #include <sstream>
 
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <gtk/gtkwindow.h>
 #include <gtkmm.h>
 #include <libgnomecanvasmm.h>
@@ -40,6 +43,10 @@
 #elif defined(PATCHAGE_LIBJACK)
   #include "JackDriver.hpp"
   #include <jack/statistics.h>
+#endif
+
+#ifdef PATCHAGE_JACK_SESSION
+#include <jack/session.h>
 #endif
 
 #ifdef HAVE_ALSA
@@ -97,6 +104,8 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_jack_connect)
 	, INIT_WIDGET(_menu_jack_disconnect)
 	, INIT_WIDGET(_menu_open_session)
+	, INIT_WIDGET(_menu_save_session)
+	, INIT_WIDGET(_menu_save_close_session)
 	, INIT_WIDGET(_menu_store_positions)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
@@ -162,6 +171,14 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_open_session->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::show_load_project_dialog));
 	_menu_view_projects->set_active(true);
+#elif defined(PATCHAGE_JACK_SESSION)
+	_menu_open_session->signal_activate().connect(
+		sigc::mem_fun(this, &Patchage::show_open_session_dialog));
+	_menu_save_session->signal_activate().connect(
+		sigc::mem_fun(this, &Patchage::show_save_session_dialog));
+	_menu_save_close_session->signal_activate().connect(
+		sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
+		    
 #else
 	_menu_open_session->set_sensitive(false);
 	_menu_view_projects->set_active(false);
@@ -533,6 +550,110 @@ Patchage::connect_widgets()
 #endif
 }
 
+#ifdef PATCHAGE_JACK_SESSION
+void
+Patchage::show_open_session_dialog()
+{
+	Gtk::FileChooserDialog dialog(*_main_win, "Open Session",
+	                              Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	
+	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+	Gtk::Button* open_but = dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
+	open_but->property_has_default() = true;
+
+	if (dialog.run() != Gtk::RESPONSE_OK) {
+		return;
+	}
+
+	const std::string dir = dialog.get_filename();
+	const std::string cmd = dir + "/jack-session";
+
+	if (system(cmd.c_str()) < 0) {
+		Raul::error << "Error executing session load command " << cmd << endl;
+	} else {
+		Raul::info << "Executed session load command " << cmd << endl;
+	}
+}
+
+void
+Patchage::save_session(bool close)
+{
+	Gtk::FileChooserDialog dialog(*_main_win, "Save Session",
+	                              Gtk::FILE_CHOOSER_ACTION_SAVE);
+
+	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+	Gtk::Button* save_but = dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
+	save_but->property_has_default() = true;
+
+	if (dialog.run() != Gtk::RESPONSE_OK) {
+		return;
+	}
+
+	std::string path = dialog.get_filename();
+	if (g_mkdir_with_parents(path.c_str(), 0740)) {
+		Raul::error << "Failed to create session directory " << path << endl;
+		return;
+	}
+
+	path += '/';
+	jack_session_command_t* cmd = jack_session_notify(
+		_jack_driver->client(),
+		NULL,
+		close ? JackSessionSaveAndQuit : JackSessionSave,
+		path.c_str());
+
+	const std::string script_path = path + "jack-session";
+	std::ofstream script(script_path.c_str());
+	script << "#!/bin/sh" << endl << endl;
+
+	const std::string var("${SESSION_DIR}");
+	for (int c = 0; cmd[c].uuid; ++c) {
+		std::string  command = cmd[c].command;
+		const size_t index   = command.find(var);
+		if (index != string::npos) {
+			command.replace(index, var.length(), cmd[c].client_name);
+		}
+
+		script << command << " &" << endl;
+	}
+
+	script << endl;
+	script << "sleep 3" << endl;
+	script << endl;
+
+	for (FlowCanvas::ConnectionList::const_iterator c = _canvas->connections().begin();
+	     c != _canvas->connections().end(); ++c) {
+		boost::shared_ptr<PatchagePort> src
+			= boost::dynamic_pointer_cast<PatchagePort>((*c)->source().lock());
+		boost::shared_ptr<PatchagePort> dst
+			= boost::dynamic_pointer_cast<PatchagePort>((*c)->dest().lock());
+
+		if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
+			continue;
+		}
+
+		script << "jack_connect '" << src->full_name()
+		       << "' '" << dst->full_name() << "' &" << endl;
+	}
+
+	script.close();
+	g_chmod(script_path.c_str(), 0740);
+}
+
+void
+Patchage::show_save_session_dialog()
+{
+	save_session(false);
+}
+
+void
+Patchage::show_save_close_session_dialog()
+{
+	save_session(true);
+}
+
+#endif
+
 #ifdef HAVE_LASH
 void
 Patchage::show_load_project_dialog()
@@ -543,9 +664,7 @@ Patchage::show_load_project_dialog()
 	LoadProjectDialog dialog(this);
 	dialog.run(projects);
 }
-#endif
 
-#ifdef HAVE_LASH
 void
 Patchage::set_lash_available(bool available)
 {

@@ -57,6 +57,11 @@ public:
 #if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
 	DBus*         dbus()          const { return _dbus; }
 #endif
+#ifdef PATCHAGE_JACK_SESSION
+	void show_open_session_dialog();
+	void show_save_session_dialog();
+	void show_save_close_session_dialog();
+#endif
 #ifdef HAVE_LASH
 	LashProxy*    lash_proxy()    const { return _lash_proxy; }
 
@@ -129,6 +134,10 @@ protected:
 	void menu_alsa_disconnect();
 #endif
 
+#ifdef PATCHAGE_JACK_SESSION
+	void save_session(bool close);
+#endif
+
 	boost::shared_ptr<PatchageCanvas> _canvas;
 
 	std::set< boost::shared_ptr<FlowCanvas::Module> > _pending_resize;
@@ -156,6 +165,8 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_jack_connect;
 	Widget<Gtk::MenuItem>       _menu_jack_disconnect;
 	Widget<Gtk::MenuItem>       _menu_open_session;
+	Widget<Gtk::MenuItem>       _menu_save_session;
+	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_store_positions;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;

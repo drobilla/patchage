@@ -43,7 +43,7 @@ public:
 	void save(const std::string& filename);
 
 	bool get_module_location(const std::string& name, ModuleType type, Coord& loc);
-	void  set_module_location(const std::string& name, ModuleType type, Coord loc);
+	void set_module_location(const std::string& name, ModuleType type, Coord loc);
 
 	void set_module_split(const std::string& name, bool split);
 	bool get_module_split(const std::string& name, bool default_val) const;

@@ -71,12 +71,15 @@ def configure(conf):
         autowaf.define(conf, 'HAVE_JACK_DBUS', 1)
     else:
         autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
-                          atleast_version='0.107.0', mandatory=False)
+                          atleast_version='0.120.0', mandatory=False)
         if conf.is_defined('HAVE_JACK'):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
-
-    if conf.is_defined('HAVE_JACK') and conf.is_defined('HAVE_JACK_DBUS'):
-        autowaf.define(conf, 'HAVE_JACK_MIDI', 1)
+            autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
+        else:
+            autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
+                              atleast_version='0.107.0', mandatory=False)
+            if conf.is_defined('HAVE_JACK'):
+                autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
@@ -108,6 +111,7 @@ def configure(conf):
     autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
     autowaf.display_msg(conf, "LASH (D-Bus)", conf.is_defined('HAVE_LASH'))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
+    autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
     print('')
 

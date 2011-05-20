@@ -201,10 +201,8 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 
 	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
 		port_type = JACK_AUDIO;
-#ifdef HAVE_JACK_MIDI
 	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
 		port_type = JACK_MIDI;
-#endif
 	} else {
 		Raul::warn << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
 		return boost::shared_ptr<PatchagePort>();
@@ -293,10 +291,8 @@ JackDriver::refresh()
 
 		if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
 			port_type = JACK_AUDIO;
-#ifdef HAVE_JACK_MIDI
 		} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
 			port_type = JACK_MIDI;
-#endif
 		} else {
 			Raul::warn << ports[i] << " has unknown type \'" << type_str << "\'" << endl;
 			continue;
