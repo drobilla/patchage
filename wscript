@@ -29,6 +29,9 @@ def options(opt):
                     help="Patchage human name [Default: '" + APP_HUMAN_NAME + "']")
     opt.add_option('--jack-dbus', action='store_true', default=False, dest='jack_dbus',
                     help="Use Jack via D-Bus [Default: False (use libjack)]")
+    opt.add_option('--no-jack-session', action='store_true', default=False,
+                    dest='no_jack_session',
+                    help="Do not build JACK session support")
     opt.add_option('--no-lash', action='store_true', default=False, dest='no_lash',
                     help="Do not build Lash support")
     opt.add_option('--no-alsa', action='store_true', default=False, dest='no_alsa',
@@ -74,7 +77,8 @@ def configure(conf):
                           atleast_version='0.120.0', mandatory=False)
         if conf.is_defined('HAVE_JACK'):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
-            autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
+            if not Options.options.no_jack_session:
+                autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
         else:
             autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
                               atleast_version='0.107.0', mandatory=False)
