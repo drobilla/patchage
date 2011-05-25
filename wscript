@@ -40,8 +40,8 @@ def options(opt):
                     help="Do not try to read files from executable's parent directory")
 
 def configure(conf):
+    conf.line_just = 40
     autowaf.configure(conf)
-    conf.line_just = 38
     autowaf.display_header('Patchage Configuration')
     conf.load('compiler_cxx')
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
@@ -98,8 +98,8 @@ def configure(conf):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
     # Boost headers
-    autowaf.check_header(conf, 'boost/shared_ptr.hpp', mandatory=True)
-    autowaf.check_header(conf, 'boost/weak_ptr.hpp', mandatory=True)
+    autowaf.check_header(conf, 'boost/shared_ptr.hpp')
+    autowaf.check_header(conf, 'boost/weak_ptr.hpp')
 
     conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
