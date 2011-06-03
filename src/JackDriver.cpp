@@ -214,10 +214,7 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 		                 _app->state_manager()->get_port_color(port_type)));
 
 	if (id.type != PortID::NULL_PORT_ID) {
-		boost::shared_ptr<PatchageCanvas> canvas
-			= boost::dynamic_pointer_cast<PatchageCanvas>(parent->canvas().lock());
-		if (canvas)
-			canvas->index_port(id, ret);
+		dynamic_cast<PatchageCanvas*>(parent->canvas())->index_port(id, ret);
 	}
 
 	return ret;

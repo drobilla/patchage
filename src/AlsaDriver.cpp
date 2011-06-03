@@ -218,10 +218,8 @@ AlsaDriver::create_port(boost::shared_ptr<PatchageModule> parent,
 		new PatchagePort(parent, ALSA_MIDI, name, is_input,
 		                 _app->state_manager()->get_port_color(ALSA_MIDI)));
 
-	boost::shared_ptr<PatchageCanvas> canvas
-		= boost::dynamic_pointer_cast<PatchageCanvas>(parent->canvas().lock());
-	if (canvas)
-		canvas->index_port(PortID(addr, is_input), ret);
+	dynamic_cast<PatchageCanvas*>(parent->canvas())->index_port(
+		PortID(addr, is_input), ret);
 
 	ret->alsa_addr(addr);
 	return ret;

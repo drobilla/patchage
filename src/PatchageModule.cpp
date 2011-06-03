@@ -22,7 +22,7 @@
 
 PatchageModule::PatchageModule(
 	Patchage* app, const std::string& name, ModuleType type, double x, double y)
-	: Module(app->canvas(), name, x, y)
+	: Module(*app->canvas().get(), name, x, y)
 	, _app(app)
 	, _type(type)
 {
@@ -79,17 +79,13 @@ PatchageModule::create_menu()
 void
 PatchageModule::load_location()
 {
-	boost::shared_ptr<FlowCanvas::Canvas> canvas = _canvas.lock();
-	if (!canvas)
-		return;
-
 	Coord loc;
 
 	if (_app->state_manager()->get_module_location(_name, _type, loc))
 		move_to(loc.x, loc.y);
 	else
-		move_to((canvas->width()/2) - 100 + rand() % 400,
-		        (canvas->height()/2) - 100 + rand() % 400);
+		move_to((_canvas->width()/2) - 100 + rand() % 400,
+		        (_canvas->height()/2) - 100 + rand() % 400);
 }
 
 void
