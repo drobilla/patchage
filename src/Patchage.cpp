@@ -52,7 +52,7 @@
 #ifdef HAVE_ALSA
   #include "AlsaDriver.hpp"
 #endif
-#if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
+#ifdef HAVE_LASH
   #include "DBus.hpp"
 #endif
 #ifdef HAVE_LASH
@@ -391,7 +391,8 @@ Patchage::update_statusbar()
 		_sample_rate_label->set_text(ss.str());
 
 		ss.str("");
-		ss << buffer_size * 1000 / sample_rate;
+		if (sample_rate != 0)
+			ss << buffer_size * 1000 / sample_rate;
 		_latency_ms_label->set_text(ss.str());
 		
 		_enable_refresh = true;
