@@ -65,8 +65,8 @@ public:
 	bool disconnect(boost::shared_ptr<PatchagePort> src,
 	                boost::shared_ptr<PatchagePort> dst);
 
-	size_t get_xruns() { return _xruns; }
-	void   reset_xruns();
+	uint32_t get_xruns() { return _xruns; }
+	void     reset_xruns();
 
 	float  get_max_dsp_load();
 	void   reset_max_dsp_load();
@@ -104,11 +104,11 @@ private:
 
 	Glib::Mutex _shutdown_mutex;
 
-	bool            _is_activated;
 	jack_position_t _last_pos;
 	jack_nframes_t  _buffer_size;
-	size_t          _xruns;
+	uint32_t        _xruns;
 	float           _xrun_delay;
+	bool            _is_activated :1;
 };
 
 #endif // PATCHAGE_JACKDRIVER_HPP

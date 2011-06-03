@@ -129,7 +129,6 @@ protected:
 
 #ifdef HAVE_ALSA
 	AlsaDriver* _alsa_driver;
-	bool _alsa_driver_autoattach;
 	void menu_alsa_connect();
 	void menu_alsa_disconnect();
 #endif
@@ -143,16 +142,11 @@ protected:
 	std::set< boost::shared_ptr<FlowCanvas::Module> > _pending_resize;
 
 	JackDriver*   _jack_driver;
-	bool          _jack_driver_autoattach;
 	StateManager* _state_manager;
 
 	Gtk::Main* _gtk_main;
 
 	std::string _settings_filename;
-	bool        _attach;
-	bool        _driver_detached;
-	bool        _refresh;
-	bool        _enable_refresh;
 
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
@@ -186,6 +180,16 @@ protected:
 	Widget<Gtk::Label>          _sample_rate_label;
 	Widget<Gtk::TextView>       _status_text;
 	Widget<Gtk::Statusbar>      _statusbar;
+
+	bool        _attach;
+	bool        _driver_detached;
+	bool        _refresh;
+	bool        _enable_refresh;
+	bool        _jack_driver_autoattach;
+#ifdef HAVE_ALSA
+	bool        _alsa_driver_autoattach;
+#endif
+
 };
 
 #endif // PATCHAGE_PATCHAGE_HPP

@@ -41,9 +41,9 @@ JackDriver::JackDriver(Patchage* app)
 	: _app(app)
 	, _client(NULL)
 	, _events(128)
-	, _is_activated(false)
 	, _xruns(0)
 	, _xrun_delay(0)
+	, _is_activated(false)
 {
 	_last_pos.frame = 0;
 	_last_pos.valid = (jack_position_bits_t)0;
@@ -517,7 +517,7 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
-	me->_xruns++;
+	++me->_xruns;
 	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
 	jack_reset_max_delayed_usecs(me->_client);
 
@@ -554,7 +554,7 @@ JackDriver::buffer_size()
 void
 JackDriver::reset_xruns()
 {
-	_xruns = 0;
+	_xruns      = 0;
 	_xrun_delay = 0;
 }
 

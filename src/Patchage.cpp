@@ -84,15 +84,9 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 #ifdef HAVE_ALSA
 	, _alsa_driver(NULL)
-	, _alsa_driver_autoattach(true)
 #endif
 	, _jack_driver(NULL)
-	, _jack_driver_autoattach(true)
 	, _state_manager(NULL)
-	, _attach(true)
-	, _driver_detached(false)
-	, _refresh(false)
-	, _enable_refresh(true)
 	, INIT_WIDGET(_about_win)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
@@ -125,6 +119,14 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_sample_rate_label)
 	, INIT_WIDGET(_status_text)
 	, INIT_WIDGET(_statusbar)
+	, _attach(true)
+	, _driver_detached(false)
+	, _refresh(false)
+	, _enable_refresh(true)
+	, _jack_driver_autoattach(true)
+#ifdef HAVE_ALSA
+	, _alsa_driver_autoattach(true)
+#endif
 {
 	_settings_filename = getenv("HOME");
 	_settings_filename += "/.patchagerc";
@@ -408,7 +410,7 @@ Patchage::update_load()
 		return true;
 
 	char tmp_buf[8];
-	snprintf(tmp_buf, sizeof(tmp_buf), "%zd", _jack_driver->get_xruns());
+	snprintf(tmp_buf, sizeof(tmp_buf), "%u", _jack_driver->get_xruns());
 
 	_main_xrun_progress->set_text(string(tmp_buf) + " Dropouts");
 

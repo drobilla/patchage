@@ -61,10 +61,10 @@ public:
 private:
 	struct ModuleSettings {
 		ModuleSettings() : split(false) {}
-		bool split;
 		boost::optional<Coord> input_location;
 		boost::optional<Coord> output_location;
 		boost::optional<Coord> inout_location;
+		bool split;
 	};
 
 	std::map<std::string,ModuleSettings> _module_settings;
