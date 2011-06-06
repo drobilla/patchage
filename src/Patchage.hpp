@@ -54,7 +54,7 @@ public:
 #ifdef HAVE_ALSA
 	AlsaDriver*   alsa_driver()   const { return _alsa_driver; }
 #endif
-#if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
+#ifdef HAVE_LASH
 	DBus*         dbus()          const { return _dbus; }
 #endif
 #ifdef PATCHAGE_JACK_SESSION
@@ -117,11 +117,8 @@ protected:
 
 	Glib::RefPtr<Gtk::Builder> _xml;
 
-#if defined(HAVE_LASH) || defined(HAVE_JACK_DBUS)
-	DBus* _dbus;
-#endif
-
 #ifdef HAVE_LASH
+	DBus*        _dbus;
 	LashProxy*   _lash_proxy;
 	ProjectList* _project_list;
 	Session*     _session;

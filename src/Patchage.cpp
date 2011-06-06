@@ -510,7 +510,8 @@ Patchage::status_msg(const string& msg)
 void
 Patchage::update_state()
 {
-	for (FlowCanvas::ItemList::iterator i = _canvas->items().begin(); i != _canvas->items().end(); ++i) {
+	for (FlowCanvas::Canvas::Items::iterator i = _canvas->items().begin();
+	     i != _canvas->items().end(); ++i) {
 		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*i);
 		if (module)
 			module->load_location();

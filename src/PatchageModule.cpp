@@ -43,7 +43,7 @@ PatchageModule::update_menu()
 	if (_type == InputOutput) {
 		bool has_in  = false;
 		bool has_out = false;
-		for (FlowCanvas::PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p) {
+		for (Ports::const_iterator p = _ports.begin(); p != _ports.end(); ++p) {
 			if ((*p)->is_input()) {
 				has_in = true;
 			} else {
@@ -128,6 +128,6 @@ PatchageModule::remove_port(boost::shared_ptr<FlowCanvas::Port> port)
 void
 PatchageModule::menu_disconnect_all()
 {
-	for (FlowCanvas::PortVector::iterator p = _ports.begin(); p != _ports.end(); ++p)
+	for (Ports::iterator p = _ports.begin(); p != _ports.end(); ++p)
 		(*p)->disconnect_all();
 }

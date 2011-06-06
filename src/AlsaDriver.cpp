@@ -311,11 +311,11 @@ AlsaDriver::refresh_connections()
 	boost::shared_ptr<PatchageModule> m;
 	boost::shared_ptr<PatchagePort>   p;
 
-	for (FlowCanvas::ItemList::iterator i = _app->canvas()->items().begin();
+	for (FlowCanvas::Canvas::Items::iterator i = _app->canvas()->items().begin();
 			i != _app->canvas()->items().end(); ++i) {
 		m = boost::dynamic_pointer_cast<PatchageModule>(*i);
 		if (m) {
-			for (FlowCanvas::PortVector::const_iterator j = m->ports().begin(); j != m->ports().end(); ++j) {
+			for (FlowCanvas::Module::Ports::const_iterator j = m->ports().begin(); j != m->ports().end(); ++j) {
 				p = boost::dynamic_pointer_cast<PatchagePort>(*j);
 				if (p->type() == ALSA_MIDI)
 					add_connections(p);

@@ -114,13 +114,13 @@ JackDriver::detach()
 void
 JackDriver::destroy_all()
 {
-	FlowCanvas::ItemList modules = _app->canvas()->items(); // copy
-	for (FlowCanvas::ItemList::iterator m = modules.begin(); m != modules.end(); ++m) {
+	FlowCanvas::Canvas::Items modules = _app->canvas()->items(); // copy
+	for (FlowCanvas::Canvas::Items::iterator m = modules.begin(); m != modules.end(); ++m) {
 		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*m);
 		if (!module)
 			continue;
-		FlowCanvas::PortVector ports = module->ports(); // copy
-		for (FlowCanvas::PortVector::iterator p = ports.begin(); p != ports.end(); ++p) {
+		FlowCanvas::Module::Ports ports = module->ports(); // copy
+		for (FlowCanvas::Module::Ports::iterator p = ports.begin(); p != ports.end(); ++p) {
 			boost::shared_ptr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
 			if ((port && port->type() == JACK_AUDIO) || (port->type() == JACK_MIDI)) {
 				module->remove_port(port);
