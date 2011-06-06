@@ -74,7 +74,7 @@ PatchageEvent::execute(Patchage* patchage)
 		if (driver) {
 			SharedPtr<PatchagePort> port = driver->create_port_view(patchage, _port_1);
 			if (port)
-				patchage->enqueue_resize(port->module().lock());
+				patchage->enqueue_resize(port->module());
 			else
 				Raul::error << "Unable to create port view: " << _port_1 << endl;
 		} else {

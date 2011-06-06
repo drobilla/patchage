@@ -117,7 +117,7 @@ AlsaDriver::find_or_create_module(
 		m = boost::shared_ptr<PatchageModule>(new PatchageModule(patchage, client_name, type));
 		m->load_location();
 		_app->canvas()->add_module(client_name, m);
-		_app->enqueue_resize(m);
+		_app->enqueue_resize(m.get());
 	}
 	return m;
 }
@@ -294,7 +294,7 @@ AlsaDriver::refresh_ports()
 			if (!ignore(addr)) {
 				create_port_view_internal(_app, addr, parent, port);
 				if (parent)
-					_app->enqueue_resize(parent);
+					_app->enqueue_resize(parent.get());
 			}
 		}
 	}

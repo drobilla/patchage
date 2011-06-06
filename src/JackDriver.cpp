@@ -131,7 +131,7 @@ JackDriver::destroy_all()
 		if (module->ports().empty())
 			_app->canvas()->remove_item(module);
 		else
-			_app->enqueue_resize(module);
+			_app->enqueue_resize(module.get());
 	}
 }
 
@@ -187,7 +187,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 	}
 
 	if (resize)
-		_app->enqueue_resize(parent);
+		_app->enqueue_resize(parent.get());
 
 	return port;
 }
@@ -298,7 +298,7 @@ JackDriver::refresh()
 		if (!m->get_port(jack_port_short_name(port)))
 			m->add_port(create_port(m, port, PortID()));
 
-		_app->enqueue_resize(m);
+		_app->enqueue_resize(m.get());
 	}
 
 	// Add all connections

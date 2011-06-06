@@ -85,7 +85,7 @@ public:
 	void update_state();
 	void store_window_location();
 
-	void enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module);
+	void enqueue_resize(FlowCanvas::Module* module);
 	void flush_resize();
 
 protected:
@@ -139,7 +139,7 @@ protected:
 
 	boost::shared_ptr<PatchageCanvas> _canvas;
 
-	std::set< boost::shared_ptr<FlowCanvas::Module> > _pending_resize;
+	std::set<FlowCanvas::Module*> _pending_resize;
 
 	JackDriver*   _jack_driver;
 	StateManager* _state_manager;

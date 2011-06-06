@@ -62,7 +62,7 @@ public:
 #endif
 
 	/** Returns the full name of this port, as "modulename:portname" */
-	std::string full_name() const { return _module.lock()->name() + ":" + _name; }
+	std::string full_name() const { return _module->name() + ":" + _name; }
 
 	PortType type() const { return _type; }
 

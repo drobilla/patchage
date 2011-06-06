@@ -69,7 +69,7 @@ PatchageCanvas::find_port(const PortID& id)
 
 	PortIndex::iterator i = _port_index.find(id);
 	if (i != _port_index.end()) {
-		assert(i->second->module().lock());
+		assert(i->second->module());
 		return i->second;
 	}
 
@@ -107,7 +107,7 @@ PatchageCanvas::remove_port(const PortID& id)
 
 	_port_index.erase(id);
 
-	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
+	PatchageModule* module = dynamic_cast<PatchageModule*>(port->module());
 	if (!module)
 		return port;
 

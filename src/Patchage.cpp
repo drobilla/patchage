@@ -812,7 +812,7 @@ Patchage::on_scroll(GdkEventScroll* ev)
 }
 
 void
-Patchage::enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module)
+Patchage::enqueue_resize(FlowCanvas::Module* module)
 {
 	if (module)
 		_pending_resize.insert(module);
@@ -821,8 +821,8 @@ Patchage::enqueue_resize(boost::shared_ptr<FlowCanvas::Module> module)
 void
 Patchage::flush_resize()
 {
-	for (std::set< boost::shared_ptr<FlowCanvas::Module> >::iterator i = _pending_resize.begin();
-			i != _pending_resize.end(); ++i) {
+	for (std::set<FlowCanvas::Module*>::iterator i = _pending_resize.begin();
+	     i != _pending_resize.end(); ++i) {
 		(*i)->resize();
 	}
 
