@@ -42,14 +42,14 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 {
 }
 
-boost::shared_ptr<PatchageModule>
+PatchageModule*
 PatchageCanvas::find_module(const string& name, ModuleType type)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(name);
 	if (i == _module_index.end())
-		return boost::shared_ptr<PatchageModule>();
+		return NULL;
 
-	boost::shared_ptr<PatchageModule> io_module;
+	PatchageModule* io_module = NULL;
 	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == name; ++j) {
 		if (j->second->type() == type) {
 			return j->second;
@@ -62,10 +62,10 @@ PatchageCanvas::find_module(const string& name, ModuleType type)
 	return io_module;
 }
 
-boost::shared_ptr<PatchagePort>
+PatchagePort*
 PatchageCanvas::find_port(const PortID& id)
 {
-	boost::shared_ptr<PatchagePort> pp;
+	PatchagePort* pp = NULL;
 
 	PortIndex::iterator i = _port_index.find(id);
 	if (i != _port_index.end()) {
@@ -78,17 +78,17 @@ PatchageCanvas::find_port(const PortID& id)
 	if (id.type == PortID::JACK_ID) {
 		jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
 		if (!jack_port)
-			return boost::shared_ptr<PatchagePort>();
+			return NULL;
 
 		string module_name;
 		string port_name;
 		_app->jack_driver()->port_names(id, module_name, port_name);
 
-		SharedPtr<PatchageModule> module = find_module(
+		PatchageModule* module = find_module(
 			module_name, (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
 		if (module)
-			pp = PtrCast<PatchagePort>(module->get_port(port_name));
+			pp = dynamic_cast<PatchagePort*>(module->get_port(port_name));
 
 		if (pp)
 			index_port(id, pp);
@@ -98,10 +98,10 @@ PatchageCanvas::find_port(const PortID& id)
 	return pp;
 }
 
-boost::shared_ptr<PatchagePort>
+PatchagePort*
 PatchageCanvas::remove_port(const PortID& id)
 {
-	boost::shared_ptr<PatchagePort> port = find_port(id);
+	PatchagePort* const port = find_port(id);
 	if (!port)
 		return port;
 
@@ -116,29 +116,67 @@ PatchageCanvas::remove_port(const PortID& id)
 	return port;
 }
 
-boost::shared_ptr<PatchagePort>
+void
+PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
+{
+	std::set<PatchageModule*> empty;
+	for (Items::iterator i = items().begin(); i != items().end(); ++i) {
+		PatchageModule* module = dynamic_cast<PatchageModule*>(*i);
+		if (!module)
+			continue;
+
+		FlowCanvas::Module::Ports ports = module->ports(); // copy
+		for (FlowCanvas::Module::Ports::iterator p = ports.begin();
+		     p != ports.end(); ++p) {
+			if (pred(dynamic_cast<PatchagePort*>(*p))) {
+				delete *p;
+			}
+		}
+
+		if (module->num_ports() == 0) {
+			empty.insert(module);
+		}
+	}
+
+	for (PortIndex::iterator i = _port_index.begin();
+	     i != _port_index.end();) {
+		PortIndex::iterator next = i;
+		++next;
+		if (pred(i->second)) {
+			_port_index.erase(i);
+		}
+		i = next;
+	}
+
+	for (std::set<PatchageModule*>::iterator i = empty.begin();
+	     i != empty.end(); ++i) {
+		delete *i;
+	}
+}
+
+PatchagePort*
 PatchageCanvas::find_port_by_name(const std::string& client_name,
                                   const std::string& port_name)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(client_name);
 	if (i == _module_index.end())
-		return boost::shared_ptr<PatchagePort>();
+		return NULL;
 
 	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == client_name; ++j) {
-		SharedPtr<PatchagePort> port = PtrCast<PatchagePort>(j->second->get_port(port_name));
+		PatchagePort* port = dynamic_cast<PatchagePort*>(j->second->get_port(port_name));
 		if (port)
 			return port;
 	}
 
-	return boost::shared_ptr<PatchagePort>();
+	return NULL;
 }
 
 void
-PatchageCanvas::connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
-                        boost::shared_ptr<FlowCanvas::Connectable> port2)
+PatchageCanvas::connect(FlowCanvas::Connectable* port1,
+                        FlowCanvas::Connectable* port2)
 {
-	boost::shared_ptr<PatchagePort> p1 = boost::dynamic_pointer_cast<PatchagePort>(port1);
-	boost::shared_ptr<PatchagePort> p2 = boost::dynamic_pointer_cast<PatchagePort>(port2);
+	PatchagePort* p1 = dynamic_cast<PatchagePort*>(port1);
+	PatchagePort* p2 = dynamic_cast<PatchagePort*>(port2);
 	if (!p1 || !p2)
 		return;
 
@@ -157,18 +195,17 @@ PatchageCanvas::connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
 }
 
 void
-PatchageCanvas::disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
-                           boost::shared_ptr<FlowCanvas::Connectable> port2)
+PatchageCanvas::disconnect(FlowCanvas::Connectable* port1,
+                           FlowCanvas::Connectable* port2)
 {
-	boost::shared_ptr<PatchagePort> input  = boost::dynamic_pointer_cast<PatchagePort>(port1);
-	boost::shared_ptr<PatchagePort> output = boost::dynamic_pointer_cast<PatchagePort>(port2);
-
+	PatchagePort* input  = dynamic_cast<PatchagePort*>(port1);
+	PatchagePort* output = dynamic_cast<PatchagePort*>(port2);
 	if (!input || !output)
 		return;
 
 	if (input->is_output() && output->is_input()) {
 		// Damn, guessed wrong
-		boost::shared_ptr<PatchagePort> swap = input;
+		PatchagePort* swap = input;
 		input = output;
 		output = swap;
 	}
@@ -199,13 +236,13 @@ PatchageCanvas::status_message(const string& msg)
 }
 
 void
-PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageModule> module)
+PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 {
 	_module_index.insert(std::make_pair(name, module));
 
 	// Join partners, if applicable
-	boost::shared_ptr<PatchageModule> in_module;
-	boost::shared_ptr<PatchageModule> out_module;
+	PatchageModule* in_module = NULL;
+	PatchageModule* out_module = NULL;
 	if (module->type() == Input) {
 		in_module  = module;
 		out_module = find_module(name, Output);
@@ -220,14 +257,14 @@ PatchageCanvas::add_module(const std::string& name, boost::shared_ptr<PatchageMo
 }
 
 bool
-PatchageCanvas::remove_item(boost::shared_ptr<FlowCanvas::Item> i)
+PatchageCanvas::remove_item(FlowCanvas::Item* i)
 {
 	// Remove item from canvas
 	const bool ret = FlowCanvas::Canvas::remove_item(i);
 	if (!ret)
 		return ret;
 
-	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(i);
+	PatchageModule* const module = dynamic_cast<PatchageModule*>(i);
 	if (!module)
 		return ret;
 

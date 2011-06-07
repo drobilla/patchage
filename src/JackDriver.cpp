@@ -109,33 +109,21 @@ JackDriver::detach()
 	_app->status_msg("[JACK] Detached");
 }
 
+static bool
+is_jack_port(const PatchagePort* port)
+{
+	return port->type() == JACK_AUDIO || port->type() == JACK_MIDI;
+}
+
 /** Destroy all JACK (canvas) ports.
  */
 void
 JackDriver::destroy_all()
 {
-	FlowCanvas::Canvas::Items modules = _app->canvas()->items(); // copy
-	for (FlowCanvas::Canvas::Items::iterator m = modules.begin(); m != modules.end(); ++m) {
-		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*m);
-		if (!module)
-			continue;
-		FlowCanvas::Module::Ports ports = module->ports(); // copy
-		for (FlowCanvas::Module::Ports::iterator p = ports.begin(); p != ports.end(); ++p) {
-			boost::shared_ptr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
-			if ((port && port->type() == JACK_AUDIO) || (port->type() == JACK_MIDI)) {
-				module->remove_port(port);
-				port->hide();
-			}
-		}
-
-		if (module->ports().empty())
-			_app->canvas()->remove_item(module);
-		else
-			_app->enqueue_resize(module.get());
-	}
+	_app->canvas()->remove_ports(is_jack_port);
 }
 
-boost::shared_ptr<PatchagePort>
+PatchagePort*
 JackDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
 {
@@ -145,7 +133,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
 
 	if (jack_port == NULL)
-		return boost::shared_ptr<PatchagePort>();
+		return NULL;
 
 	const int jack_flags = jack_port_flags(jack_port);
 
@@ -162,38 +150,35 @@ JackDriver::create_port_view(Patchage*     patchage,
 		}
 	}
 
-	boost::shared_ptr<PatchageModule> parent
-		= _app->canvas()->find_module(module_name, type);
+	PatchageModule* parent = _app->canvas()->find_module(module_name, type);
 
 	bool resize = false;
 
 	if (!parent) {
-		parent = boost::shared_ptr<PatchageModule>(
-				new PatchageModule(patchage, module_name, type));
+		parent = new PatchageModule(patchage, module_name, type);
 		parent->load_location();
 		patchage->canvas()->add_module(module_name, parent);
 		parent->show();
 		resize = true;
 	}
 
-	boost::shared_ptr<PatchagePort> port
-			= boost::dynamic_pointer_cast<PatchagePort>(parent->get_port(port_name));
+	PatchagePort* port = dynamic_cast<PatchagePort*>(parent->get_port(port_name));
 
 	if (!port) {
-		port = create_port(parent, jack_port, id);
+		port = create_port(*parent, jack_port, id);
 		port->show();
 		parent->add_port(port);
 		resize = true;
 	}
 
 	if (resize)
-		_app->enqueue_resize(parent.get());
+		_app->enqueue_resize(parent);
 
 	return port;
 }
 
-boost::shared_ptr<PatchagePort>
-JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* port, PortID id)
+PatchagePort*
+JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 {
 	assert(port);
 	const char* const type_str = jack_port_type(port);
@@ -205,16 +190,16 @@ JackDriver::create_port(boost::shared_ptr<PatchageModule> parent, jack_port_t* p
 		port_type = JACK_MIDI;
 	} else {
 		Raul::warn << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
-		return boost::shared_ptr<PatchagePort>();
+		return NULL;
 	}
 
-	boost::shared_ptr<PatchagePort> ret(
+	PatchagePort* ret(
 		new PatchagePort(parent, port_type, jack_port_short_name(port),
 		                 (jack_port_flags(port) & JackPortIsInput),
 		                 _app->state_manager()->get_port_color(port_type)));
 
 	if (id.type != PortID::NULL_PORT_ID) {
-		dynamic_cast<PatchageCanvas*>(parent->canvas())->index_port(id, ret);
+		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
 	}
 
 	return ret;
@@ -274,10 +259,10 @@ JackDriver::refresh()
 			}
 		}
 
-		boost::shared_ptr<PatchageModule> m = _app->canvas()->find_module(client1_name, type);
+		PatchageModule* m = _app->canvas()->find_module(client1_name, type);
 
 		if (!m) {
-			m = boost::shared_ptr<PatchageModule>(new PatchageModule(_app, client1_name, type));
+			m = new PatchageModule(_app, client1_name, type);
 			m->load_location();
 			_app->canvas()->add_module(client1_name, m);
 		}
@@ -296,9 +281,9 @@ JackDriver::refresh()
 		}
 
 		if (!m->get_port(jack_port_short_name(port)))
-			m->add_port(create_port(m, port, PortID()));
+			m->add_port(create_port(*m, port, PortID()));
 
-		_app->enqueue_resize(m.get());
+		_app->enqueue_resize(m);
 	}
 
 	// Add all connections
@@ -314,7 +299,7 @@ JackDriver::refresh()
 
 		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput) ? Input : Output;
 
-		boost::shared_ptr<PatchageModule> client1_module
+		PatchageModule* client1_module
 			= _app->canvas()->find_module(client1_name, port1_type);
 
 		if (connected_ports) {
@@ -327,17 +312,17 @@ JackDriver::refresh()
 
 				const ModuleType port2_type = (port1_type == Input) ? Output : Input;
 
-				boost::shared_ptr<PatchageModule> client2_module
+				PatchageModule* client2_module
 					= _app->canvas()->find_module(client2_name, port2_type);
 
-				boost::shared_ptr<FlowCanvas::Port> port1 = client1_module->get_port(port1_name);
-				boost::shared_ptr<FlowCanvas::Port> port2 = client2_module->get_port(port2_name);
+				FlowCanvas::Port* port1 = client1_module->get_port(port1_name);
+				FlowCanvas::Port* port2 = client2_module->get_port(port2_name);
 
 				if (!port1 || !port2)
 					continue;
 
-				boost::shared_ptr<FlowCanvas::Port> src;
-				boost::shared_ptr<FlowCanvas::Port> dst;
+				FlowCanvas::Port* src = NULL;
+				FlowCanvas::Port* dst = NULL;
 
 				if (port1->is_output() && port2->is_input()) {
 					src = port1;
@@ -387,7 +372,8 @@ JackDriver::port_names(const PortID& id,
  * \return Whether connection succeeded.
  */
 bool
-JackDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<PatchagePort> dst_port)
+JackDriver::connect(PatchagePort* src_port,
+                    PatchagePort* dst_port)
 {
 	if (_client == NULL)
 		return false;
@@ -409,7 +395,8 @@ JackDriver::connect(boost::shared_ptr<PatchagePort> src_port, boost::shared_ptr<
  * \return Whether disconnection succeeded.
  */
 bool
-JackDriver::disconnect(boost::shared_ptr<PatchagePort> const src_port, boost::shared_ptr<PatchagePort> const dst_port)
+JackDriver::disconnect(PatchagePort* const src_port,
+                       PatchagePort* const dst_port)
 {
 	if (_client == NULL)
 		return false;

@@ -42,15 +42,15 @@ public:
 	virtual void refresh() = 0;
 	virtual void destroy_all() {}
 
-	virtual boost::shared_ptr<PatchagePort> create_port_view(
+	virtual PatchagePort* create_port_view(
 			Patchage*     patchage,
 			const PortID& id) = 0;
 
-	virtual bool connect(boost::shared_ptr<PatchagePort> src_port,
-	                     boost::shared_ptr<PatchagePort> dst_port) = 0;
+	virtual bool connect(PatchagePort* src_port,
+	                     PatchagePort* dst_port) = 0;
 
-	virtual bool disconnect(boost::shared_ptr<PatchagePort> src_port,
-	                        boost::shared_ptr<PatchagePort> dst_port) = 0;
+	virtual bool disconnect(PatchagePort* src_port,
+	                        PatchagePort* dst_port) = 0;
 
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;

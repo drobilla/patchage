@@ -55,15 +55,15 @@ public:
 	                std::string&  module_name,
 	                std::string&  port_name);
 
-	boost::shared_ptr<PatchagePort> create_port_view(
+	PatchagePort* create_port_view(
 			Patchage*     patchage,
 			const PortID& id);
 
-	bool connect(boost::shared_ptr<PatchagePort> src,
-	             boost::shared_ptr<PatchagePort> dst);
+	bool connect(PatchagePort* src,
+	             PatchagePort* dst);
 
-	bool disconnect(boost::shared_ptr<PatchagePort> src,
-	                boost::shared_ptr<PatchagePort> dst);
+	bool disconnect(PatchagePort* src,
+	                PatchagePort* dst);
 
 	uint32_t get_xruns() { return _xruns; }
 	void     reset_xruns();
@@ -80,10 +80,10 @@ public:
 	void process_events(Patchage* app);
 
 private:
-	boost::shared_ptr<PatchagePort> create_port(
-		boost::shared_ptr<PatchageModule> parent,
-		jack_port_t*                      port,
-		PortID                            id);
+	PatchagePort* create_port(
+		PatchageModule& parent,
+		jack_port_t*    port,
+		PortID          id);
 
 	static void error_cb(const char* msg);
 

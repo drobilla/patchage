@@ -512,7 +512,7 @@ Patchage::update_state()
 {
 	for (FlowCanvas::Canvas::Items::iterator i = _canvas->items().begin();
 	     i != _canvas->items().end(); ++i) {
-		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*i);
+		FlowCanvas::Module* module = dynamic_cast<FlowCanvas::Module*>(*i);
 		if (module)
 			module->load_location();
 	}
@@ -628,12 +628,10 @@ Patchage::save_session(bool close)
 	script << "sleep 3" << endl;
 	script << endl;
 
-	for (FlowCanvas::ConnectionList::const_iterator c = _canvas->connections().begin();
+	for (FlowCanvas::Canvas::Connections::const_iterator c = _canvas->connections().begin();
 	     c != _canvas->connections().end(); ++c) {
-		boost::shared_ptr<PatchagePort> src
-			= boost::dynamic_pointer_cast<PatchagePort>((*c)->source().lock());
-		boost::shared_ptr<PatchagePort> dst
-			= boost::dynamic_pointer_cast<PatchagePort>((*c)->dest().lock());
+		PatchagePort* src = dynamic_cast<PatchagePort*>((*c)->source());
+		PatchagePort* dst = dynamic_cast<PatchagePort*>((*c)->dest());
 
 		if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
 			continue;

@@ -42,38 +42,40 @@ class PatchageCanvas : public FlowCanvas::Canvas {
 public:
 	PatchageCanvas(Patchage* _app, int width, int height);
 
-	boost::shared_ptr<PatchageModule> find_module(const std::string& name, ModuleType type);
-	boost::shared_ptr<PatchagePort>   find_port(const PortID& id);
+	PatchageModule* find_module(const std::string& name, ModuleType type);
+	PatchagePort*   find_port(const PortID& id);
 
-	boost::shared_ptr<PatchagePort> find_port_by_name(const std::string& client_name,
-	                                                  const std::string& port_name);
+	PatchagePort* find_port_by_name(const std::string& client_name,
+	                                const std::string& port_name);
 
-	void connect(boost::shared_ptr<FlowCanvas::Connectable> port1,
-	             boost::shared_ptr<FlowCanvas::Connectable> port2);
+	void connect(FlowCanvas::Connectable* port1,
+	             FlowCanvas::Connectable* port2);
 
-	void disconnect(boost::shared_ptr<FlowCanvas::Connectable> port1,
-	                boost::shared_ptr<FlowCanvas::Connectable> port2);
+	void disconnect(FlowCanvas::Connectable* port1,
+	                FlowCanvas::Connectable* port2);
 
 	void status_message(const std::string& msg);
 
-	void index_port(const PortID& id, boost::shared_ptr<PatchagePort> port) {
+	void index_port(const PortID& id, PatchagePort* port) {
 		_port_index.insert(std::make_pair(id, port));
 	}
 
-	void add_module(const std::string& name, boost::shared_ptr<PatchageModule> module);
-	bool remove_item(boost::shared_ptr<FlowCanvas::Item> i);
+	void remove_ports(bool (*pred)(const PatchagePort*));
 
-	boost::shared_ptr<PatchagePort> remove_port(const PortID& id);
+	void add_module(const std::string& name, PatchageModule* module);
+	bool remove_item(FlowCanvas::Item* i);
+
+	PatchagePort* remove_port(const PortID& id);
 
 	void destroy();
 
 private:
 	Patchage* _app;
 
-	typedef std::map< const PortID, boost::shared_ptr<PatchagePort> > PortIndex;
+	typedef std::map<const PortID, PatchagePort*> PortIndex;
 	PortIndex _port_index;
 
-	typedef std::multimap< const std::string, boost::shared_ptr<PatchageModule> > ModuleIndex;
+	typedef std::multimap<const std::string, PatchageModule*> ModuleIndex;
 	ModuleIndex _module_index;
 };
 

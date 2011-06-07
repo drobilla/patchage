@@ -32,8 +32,8 @@ public:
 	PatchageModule(Patchage* app, const std::string& name, ModuleType type, double x=0, double y=0);
 	~PatchageModule();
 
-	void add_port(boost::shared_ptr<FlowCanvas::Port> port);
-	void remove_port(boost::shared_ptr<FlowCanvas::Port> port);
+	void add_port(FlowCanvas::Port* port);
+	void remove_port(FlowCanvas::Port* port);
 
 	void split();
 	void join();

@@ -48,13 +48,13 @@ public:
 	void destroy_all();
 
 	bool connect(
-		boost::shared_ptr<PatchagePort> src,
-		boost::shared_ptr<PatchagePort> dst);
+		PatchagePort* src,
+	    PatchagePort* dst);
 
 	bool disconnect(
-		boost::shared_ptr<PatchagePort> src,
-		boost::shared_ptr<PatchagePort> dst);
-
+		PatchagePort* src,
+		PatchagePort* dst);
+	
 	size_t get_xruns();
 	void   reset_xruns();
 
@@ -67,7 +67,7 @@ public:
 
 	void process_events(Patchage* app) {}
 
-	boost::shared_ptr<PatchagePort> create_port_view(
+	PatchagePort* create_port_view(
 			Patchage*     patchage,
 			const PortID& ref);
 

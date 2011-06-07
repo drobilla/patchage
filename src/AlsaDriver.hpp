@@ -44,16 +44,17 @@ public:
 	bool is_attached() const { return (_seq != NULL); }
 
 	void refresh();
+	void destroy_all();
 
-	boost::shared_ptr<PatchagePort> create_port_view(
+	PatchagePort* create_port_view(
 			Patchage*     patchage,
 			const PortID& id);
 
-	bool connect(boost::shared_ptr<PatchagePort> src_port,
-	             boost::shared_ptr<PatchagePort> dst_port);
+	bool connect(PatchagePort* src_port,
+	             PatchagePort* dst_port);
 
-	bool disconnect(boost::shared_ptr<PatchagePort> src_port,
-	                boost::shared_ptr<PatchagePort> dst_port);
+	bool disconnect(PatchagePort* src_port,
+	                PatchagePort* dst_port);
 
 	void print_addr(snd_seq_addr_t addr);
 
@@ -63,13 +64,13 @@ private:
 	void refresh_ports();
 	void refresh_connections();
 
-	void add_connections(boost::shared_ptr<PatchagePort> port);
+	void add_connections(PatchagePort* port);
 
 	bool         create_refresh_port();
 	static void* refresh_main(void* me);
 	void         _refresh_main();
 
-	boost::shared_ptr<PatchageModule>
+	PatchageModule*
 	find_or_create_module(
 			Patchage*          patchage,
 			const std::string& client_name,
@@ -77,16 +78,16 @@ private:
 
 	void
 	create_port_view_internal(
-			Patchage*                          patchage,
-			snd_seq_addr_t                     addr,
-			boost::shared_ptr<PatchageModule>& parent,
-			boost::shared_ptr<PatchagePort>&   port);
+			Patchage*        patchage,
+			snd_seq_addr_t   addr,
+			PatchageModule*& parent,
+			PatchagePort*&   port);
 
-	boost::shared_ptr<PatchagePort> create_port(
-		boost::shared_ptr<PatchageModule> parent,
-		const std::string&                name,
-		bool                              is_input,
-		snd_seq_addr_t                    addr);
+	PatchagePort* create_port(
+		PatchageModule&    parent,
+		const std::string& name,
+		bool               is_input,
+		snd_seq_addr_t     addr);
 
 	Patchage*  _app;
 	snd_seq_t* _seq;

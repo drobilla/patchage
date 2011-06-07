@@ -97,8 +97,7 @@ JackDriver::destroy_all()
 		for (FlowCanvas::Module::Ports::iterator p = ports.begin(); p != ports.end(); ++p) {
 			SharedPtr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
 			if (port && (port->type() == JACK_AUDIO || port->type() == JACK_MIDI)) {
-				module->remove_port(port);
-				port->hide();
+				_app->canvas()->remove_port(port->id());
 			}
 		}
 
@@ -845,8 +844,8 @@ JackDriver::refresh()
 
 bool
 JackDriver::connect(
-	SharedPtr<PatchagePort> src,
-	SharedPtr<PatchagePort> dst)
+	PatchagePort* src,
+	PatchagePort* dst)
 {
 	const char*  client1_name;
 	const char*  port1_name;
@@ -874,8 +873,8 @@ JackDriver::connect(
 
 bool
 JackDriver::disconnect(
-	SharedPtr<PatchagePort> src,
-	SharedPtr<PatchagePort> dst)
+	PatchagePort* src,
+	PatchagePort* dst)
 {
 	const char*  client1_name;
 	const char*  port1_name;
@@ -1070,7 +1069,7 @@ JackDriver::reset_max_dsp_load()
 	_max_dsp_load = 0.0;
 }
 
-SharedPtr<PatchagePort>
+PatchagePort*
 JackDriver::create_port_view(
 	Patchage* patchage,
 	const PortID& id)

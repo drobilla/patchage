@@ -112,14 +112,14 @@ PatchageModule::join()
 }
 
 void
-PatchageModule::add_port(boost::shared_ptr<FlowCanvas::Port> port)
+PatchageModule::add_port(FlowCanvas::Port* port)
 {
 	FlowCanvas::Module::add_port(port);
 	update_menu();
 }
 
 void
-PatchageModule::remove_port(boost::shared_ptr<FlowCanvas::Port> port)
+PatchageModule::remove_port(FlowCanvas::Port* port)
 {
 	FlowCanvas::Module::remove_port(port);
 	update_menu();

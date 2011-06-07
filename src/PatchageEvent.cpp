@@ -47,12 +47,11 @@ PatchageEvent::execute(Patchage* patchage)
 		_str = NULL;
 
 	} else if (_type == CLIENT_DESTRUCTION) {
-		SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(
+		PatchageModule* module = dynamic_cast<PatchageModule*>(
 				patchage->canvas()->find_module(_str, InputOutput));
 
 		if (module) {
 			patchage->canvas()->remove_item(module);
-			module.reset();
 		}
 
 		free(_str);
@@ -72,7 +71,7 @@ PatchageEvent::execute(Patchage* patchage)
 		}
 
 		if (driver) {
-			SharedPtr<PatchagePort> port = driver->create_port_view(patchage, _port_1);
+			PatchagePort* port = driver->create_port_view(patchage, _port_1);
 			if (port)
 				patchage->enqueue_resize(port->module());
 			else
@@ -83,17 +82,17 @@ PatchageEvent::execute(Patchage* patchage)
 
 	} else if (_type == PORT_DESTRUCTION) {
 
-		SharedPtr<PatchagePort> port = patchage->canvas()->remove_port(_port_1);
+		PatchagePort* port = patchage->canvas()->remove_port(_port_1);
 		if (port) {
-			port.reset();
+			delete port;
 		} else {
 			Raul::error << "Unable to find port `" << _port_1 << "' to destroy" << endl;
 		}
 
 	} else if (_type == CONNECTION) {
 
-		SharedPtr<PatchagePort> port_1 = patchage->canvas()->find_port(_port_1);
-		SharedPtr<PatchagePort> port_2 = patchage->canvas()->find_port(_port_2);
+		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
+		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
 			Raul::error << "Unable to find port `" << _port_1 << "' to connect" << endl;
@@ -104,8 +103,8 @@ PatchageEvent::execute(Patchage* patchage)
 
 	} else if (_type == DISCONNECTION) {
 
-		SharedPtr<PatchagePort> port_1 = patchage->canvas()->find_port(_port_1);
-		SharedPtr<PatchagePort> port_2 = patchage->canvas()->find_port(_port_2);
+		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
+		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
 			Raul::error << "Unable to find port `" << _port_1 << "' to disconnect" << endl;
