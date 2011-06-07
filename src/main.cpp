@@ -19,13 +19,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string>
-#include <gtk/gtk.h>
+#include <gtk/gtkrc.h>
 #include "binary_location.h"
 #endif
 
 #include <iostream>
 
-#include <libgnomecanvasmm.h>
+#include <libgnomecanvasmm/init.h>
 #include <glibmm/exception.h>
 
 #include "raul/log.hpp"

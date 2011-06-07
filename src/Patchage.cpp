@@ -25,8 +25,12 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gtk/gtkwindow.h>
-#include <gtkmm.h>
-#include <libgnomecanvasmm.h>
+
+#include <gtkmm/button.h>
+#include <gtkmm/filechooserdialog.h>
+#include <gtkmm/menuitem.h>
+#include <gtkmm/stock.h>
+#include <gtkmm/treemodel.h>
 
 #include "flowcanvas/Module.hpp"
 #include "raul/SharedPtr.hpp"

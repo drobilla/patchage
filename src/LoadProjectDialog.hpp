@@ -21,7 +21,9 @@
 
 #include <list>
 
-#include <gtkmm.h>
+#include <gtkmm/liststore.h>
+#include <gtkmm/treemodel.h>
+#include <gtkmm/treeview.h>
 
 #include "Widget.hpp"
 

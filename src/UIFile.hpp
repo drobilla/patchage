@@ -23,7 +23,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <gtkmm.h>
+#include <gtkmm/builder.h>
 
 #include "raul/log.hpp"
 

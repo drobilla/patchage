@@ -21,7 +21,8 @@
 #include <string>
 
 #include <boost/utility.hpp>
-#include <gtkmm.h>
+
+#include <gtkmm/builder.h>
 
 template <typename W>
 class Widget : public boost::noncopyable {

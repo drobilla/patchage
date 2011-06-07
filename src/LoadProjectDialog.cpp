@@ -16,6 +16,11 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
+#include <gtkmm/dialog.h>
+#include <gtkmm/liststore.h>
+#include <gtkmm/treemodel.h>
+#include <gtkmm/treeview.h>
+
 #include "LoadProjectDialog.hpp"
 #include "Patchage.hpp"
 #include "LashProxy.hpp"

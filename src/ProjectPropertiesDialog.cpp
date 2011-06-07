@@ -15,7 +15,11 @@
  * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-#include <gtkmm.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/textview.h>
+#include <gtkmm/textbuffer.h>
+#include <gtkmm/builder.h>
 
 #include "LashProxy.hpp"
 #include "Patchage.hpp"

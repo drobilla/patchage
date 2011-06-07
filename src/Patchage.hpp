@@ -22,8 +22,22 @@
 #include <string>
 
 #include <boost/shared_ptr.hpp>
-#include <gtkmm.h>
-#include <libgnomecanvasmm.h>
+
+#include <gtkmm/aboutdialog.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/button.h>
+#include <gtkmm/checkmenuitem.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/imagemenuitem.h>
+#include <gtkmm/label.h>
+#include <gtkmm/main.h>
+#include <gtkmm/menuitem.h>
+#include <gtkmm/progressbar.h>
+#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/statusbar.h>
+#include <gtkmm/textview.h>
+#include <gtkmm/viewport.h>
+#include <gtkmm/window.h>
 
 #include "patchage-config.h"
 #include "Widget.hpp"
