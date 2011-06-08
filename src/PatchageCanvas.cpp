@@ -250,10 +250,9 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 		in_module  = find_module(name, Output);
 		out_module = module;
 	}
+
 	if (in_module && out_module)
 		out_module->set_partner(in_module);
-
-	add_item(module);
 }
 
 bool
