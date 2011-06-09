@@ -154,7 +154,6 @@ JackDriver::create_port_view(Patchage*     patchage,
 		parent = new PatchageModule(patchage, module_name, type);
 		parent->load_location();
 		patchage->canvas()->add_module(module_name, parent);
-		parent->show();
 	}
 
 	assert(!parent->get_port(port_name));
