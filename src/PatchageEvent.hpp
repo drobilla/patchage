@@ -55,7 +55,7 @@ public:
 	{}
 
 	PatchageEvent(Type type, const char* str)
-		: _str(strdup(str)) // FIXME: not realtime (jack) :(
+		: _str(strdup(str))
 		, _type(type)
 	{}
 

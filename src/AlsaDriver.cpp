@@ -18,6 +18,7 @@
 #include <cassert>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "raul/SharedPtr.hpp"
 #include "raul/log.hpp"
@@ -94,6 +95,8 @@ void
 AlsaDriver::destroy_all()
 {
 	_app->canvas()->remove_ports(is_alsa_port);
+	_modules.clear();
+	_port_addrs.clear();
 }
 
 /** Refresh all Alsa Midi ports and connections.
@@ -106,32 +109,122 @@ AlsaDriver::refresh()
 
 	assert(_seq);
 
-	refresh_ports();
-	refresh_connections();
+	_modules.clear();
+	_ignored.clear();
+	_port_addrs.clear();
+
+	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_alloca(&cinfo);
+	snd_seq_client_info_set_client(cinfo, -1);
+
+	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_alloca(&pinfo);
+
+	PatchageModule* parent = NULL;
+	PatchagePort*   port   = NULL;
+
+	// Create port views
+	while (snd_seq_query_next_client(_seq, cinfo) >= 0) {
+		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
+		snd_seq_port_info_set_port(pinfo, -1);
+		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
+			const snd_seq_addr_t& addr = *snd_seq_port_info_get_addr(pinfo);
+			if (ignore(addr)) {
+				continue;
+			}
+			
+			create_port_view_internal(_app, addr, parent, port);
+			if (parent) {
+				_app->enqueue_resize(parent);
+			}
+		}
+	}
+
+	// Create connections
+	snd_seq_client_info_set_client(cinfo, -1);
+	while (snd_seq_query_next_client(_seq, cinfo) >= 0) {
+		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
+		snd_seq_port_info_set_port(pinfo, -1);
+		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
+			const snd_seq_addr_t* addr = snd_seq_port_info_get_addr(pinfo);
+			if (ignore(*addr)) {
+				continue;
+			}
+			
+			PatchagePort* port = _app->canvas()->find_port(PortID(*addr, false));
+			if (!port) {
+				continue;
+			}
+
+			snd_seq_query_subscribe_t* subsinfo;
+			snd_seq_query_subscribe_alloca(&subsinfo);
+			snd_seq_query_subscribe_set_root(subsinfo, addr);
+			snd_seq_query_subscribe_set_index(subsinfo, 0);
+			while (!snd_seq_query_port_subscribers(_seq, subsinfo)) {
+				const snd_seq_addr_t* addr2 = snd_seq_query_subscribe_get_addr(subsinfo);
+				if (!addr2)
+					continue;
+
+				PatchagePort* port2 = _app->canvas()->find_port(PortID(*addr2, true));
+				if (port2 && !port->is_connected_to(port2)) {
+					_app->canvas()->add_connection(port,
+					                               port2,
+					                               port->color() + 0x22222200);
+				
+					snd_seq_query_subscribe_set_index(
+						subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);
+				}
+			}
+		}
+	}
 }
 
 PatchagePort*
 AlsaDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
 {
-	PatchageModule* parent;
-	PatchagePort*   port;
+	PatchageModule* parent = NULL;
+	PatchagePort*   port   = NULL;
 	create_port_view_internal(patchage, id.id.alsa_addr, parent, port);
 	return port;
 }
 
 PatchageModule*
+AlsaDriver::find_module(uint8_t client_id, ModuleType type)
+{
+	const Modules::const_iterator i = _modules.find(client_id);
+	if (i == _modules.end())
+		return NULL;
+
+	PatchageModule* io_module = NULL;
+	for (Modules::const_iterator j = i;
+	     j != _modules.end() && j->first == client_id;
+	     ++j) {
+		if (j->second->type() == type) {
+			return j->second;
+		} else if (j->second->type() == InputOutput) {
+			io_module = j->second;
+		}
+	}
+
+	// Return InputOutput module for Input or Output, or NULL if not found
+	return io_module;
+}
+
+PatchageModule*
 AlsaDriver::find_or_create_module(
 		Patchage*          patchage,
+		uint8_t            client_id,
 		const std::string& client_name,
 		ModuleType         type)
 {
-	PatchageModule* m = _app->canvas()->find_module(client_name, type);
+	PatchageModule* m = find_module(client_id, type);
 	if (!m) {
 		m = new PatchageModule(patchage, client_name, type);
 		m->load_location();
 		_app->canvas()->add_module(client_name, m);
 		_app->enqueue_resize(m);
+		_modules.insert(std::make_pair(client_id, m));
 	}
 	return m;
 }
@@ -196,29 +289,26 @@ AlsaDriver::create_port_view_internal(
 		<< " split = " << split << endl;*/
 
 	if (!split) {
-		m = find_or_create_module(_app, client_name, InputOutput);
+		m = find_or_create_module(_app, addr.client, client_name, InputOutput);
 		if (!m->get_port(port_name)) {
 			port = create_port(*m, port_name, is_input, addr);
 			port->show();
-			m->add_port(port);
 		}
 
 	} else { // split
 		ModuleType type = ((is_input) ? Input : Output);
-		m = find_or_create_module(_app, client_name, type);
+		m = find_or_create_module(_app, addr.client, client_name, type);
 		if (!m->get_port(port_name)) {
 			port = create_port(*m, port_name, is_input, addr);
 			port->show();
-			m->add_port(port);
 		}
 
 		if (is_duplex) {
 			type = ((!is_input) ? Input : Output);
-			m = find_or_create_module(_app, client_name, type);
+			m = find_or_create_module(_app, addr.client, client_name, type);
 			if (!m->get_port(port_name)) {
 				port = create_port(*m, port_name, !is_input, addr);
 				port->show();
-				m->add_port(port);
 			}
 		}
 	}
@@ -235,7 +325,8 @@ AlsaDriver::create_port(PatchageModule& parent,
 	dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(
 		PortID(addr, is_input), ret);
 
-	ret->alsa_addr(addr);
+	_app->canvas()->index_port(PortID(addr, is_input), ret);
+	_port_addrs.insert(std::make_pair(ret, PortID(addr, is_input)));
 	return ret;
 }
 
@@ -280,101 +371,6 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 	return false;
 }
 
-/** Refresh all Alsa Midi ports.
- */
-void
-AlsaDriver::refresh_ports()
-{
-	assert(is_attached());
-	assert(_seq);
-
-	snd_seq_client_info_t* cinfo;
-	snd_seq_client_info_alloca(&cinfo);
-	snd_seq_client_info_set_client(cinfo, -1);
-
-	snd_seq_port_info_t* pinfo;
-	snd_seq_port_info_alloca(&pinfo);
-
-	PatchageModule* parent;
-	PatchagePort*   port;
-
-	std::set<PatchageModule*> to_resize;
-
-	while (snd_seq_query_next_client (_seq, cinfo) >= 0) {
-		snd_seq_port_info_set_client(pinfo, snd_seq_client_info_get_client(cinfo));
-		snd_seq_port_info_set_port(pinfo, -1);
-		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
-			const snd_seq_addr_t& addr = *snd_seq_port_info_get_addr(pinfo);
-			if (!ignore(addr)) {
-				create_port_view_internal(_app, addr, parent, port);
-				if (parent)
-					_app->enqueue_resize(parent);
-			}
-		}
-	}
-}
-
-/** Refresh all Alsa Midi connections.
- */
-void
-AlsaDriver::refresh_connections()
-{
-	assert(is_attached());
-	assert(_seq);
-
-	PatchageModule* m = NULL;
-	PatchagePort*   p = NULL;
-
-	for (FlowCanvas::Canvas::Items::iterator i = _app->canvas()->items().begin();
-			i != _app->canvas()->items().end(); ++i) {
-		m = dynamic_cast<PatchageModule*>(*i);
-		if (m) {
-			for (FlowCanvas::Module::Ports::const_iterator j = m->ports().begin(); j != m->ports().end(); ++j) {
-				p = dynamic_cast<PatchagePort*>(*j);
-				if (p->type() == ALSA_MIDI)
-					add_connections(p);
-			}
-		}
-	}
-}
-
-/** Add all connections for the given port.
- */
-void
-AlsaDriver::add_connections(PatchagePort* port)
-{
-	assert(is_attached());
-	assert(_seq);
-
-	const snd_seq_addr_t* addr = port->alsa_addr();
-	PatchagePort* connected_port;
-
-	// Fix a problem with duplex->duplex connections (would show up twice)
-	// No sense doing them all twice anyway..
-	if (port->is_input())
-		return;
-
-	snd_seq_query_subscribe_t* subsinfo;
-	snd_seq_query_subscribe_alloca(&subsinfo);
-	snd_seq_query_subscribe_set_root(subsinfo, addr);
-	snd_seq_query_subscribe_set_index(subsinfo, 0);
-
-	while (!snd_seq_query_port_subscribers(_seq, subsinfo)) {
-		const snd_seq_addr_t* connected_addr = snd_seq_query_subscribe_get_addr(subsinfo);
-		if (!connected_addr)
-			continue;
-
-		PortID id(*connected_addr, true);
-		connected_port = _app->canvas()->find_port(id);
-
-		if (connected_port && !port->is_connected_to(connected_port))
-			_app->canvas()->add_connection(port, connected_port, port->color() + 0x22222200);
-
-		snd_seq_query_subscribe_set_index(subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);
-	}
-
-}
-
 /** Connects two Alsa Midi ports.
  *
  * \return Whether connection succeeded.
@@ -383,31 +379,43 @@ bool
 AlsaDriver::connect(PatchagePort* src_port,
                     PatchagePort* dst_port)
 {
-	const snd_seq_addr_t* src = src_port->alsa_addr();
-	const snd_seq_addr_t* dst = dst_port->alsa_addr();
+	PortAddrs::const_iterator s = _port_addrs.find(src_port);
+	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
+
+	if (s == _port_addrs.end() || d == _port_addrs.end()) {
+		Raul::error << "[ALSA] Attempt to connect port with no address" << endl;
+		return false;
+	}
+
+	const PortID src = s->second;
+	const PortID dst = d->second;
+
+	if (src.id.alsa_addr.client == dst.id.alsa_addr.client
+	    && src.id.alsa_addr.port == dst.id.alsa_addr.port) {
+		Raul::warn << "[ALSA] Refusing to connect port to itself" << endl;
+		return false;
+	}
 
 	bool result = true;
 
-	if (src && dst) {
-		snd_seq_port_subscribe_t* subs;
-		snd_seq_port_subscribe_malloc(&subs);
-		snd_seq_port_subscribe_set_sender(subs, src);
-		snd_seq_port_subscribe_set_dest(subs, dst);
-		snd_seq_port_subscribe_set_exclusive(subs, 0);
-		snd_seq_port_subscribe_set_time_update(subs, 0);
-		snd_seq_port_subscribe_set_time_real(subs, 0);
+	snd_seq_port_subscribe_t* subs;
+	snd_seq_port_subscribe_malloc(&subs);
+	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
+	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
+	snd_seq_port_subscribe_set_exclusive(subs, 0);
+	snd_seq_port_subscribe_set_time_update(subs, 0);
+	snd_seq_port_subscribe_set_time_real(subs, 0);
 
-		// Already connected (shouldn't happen)
-		if (!snd_seq_get_port_subscription(_seq, subs)) {
-			Raul::error << "[ALSA] Attempt to subscribe ports that are already subscribed." << endl;
-			result = false;
-		}
+	// Already connected (shouldn't happen)
+	if (!snd_seq_get_port_subscription(_seq, subs)) {
+		Raul::error << "[ALSA] Attempt to double subscribe ports" << endl;
+		result = false;
+	}
 
-		int ret = snd_seq_subscribe_port(_seq, subs);
-		if (ret < 0) {
-			Raul::error << "[ALSA] Subscription failed: " << snd_strerror(ret) << endl;
-			result = false;
-		}
+	int ret = snd_seq_subscribe_port(_seq, subs);
+	if (ret < 0) {
+		Raul::error << "[ALSA] Subscription failed: " << snd_strerror(ret) << endl;
+		result = false;
 	}
 
 	if (result)
@@ -428,13 +436,21 @@ bool
 AlsaDriver::disconnect(PatchagePort* src_port,
                        PatchagePort* dst_port)
 {
-	const snd_seq_addr_t* src = src_port->alsa_addr();
-	const snd_seq_addr_t* dst = dst_port->alsa_addr();
+	PortAddrs::const_iterator s = _port_addrs.find(src_port);
+	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
+
+	if (s == _port_addrs.end() || d == _port_addrs.end()) {
+		Raul::error << "[ALSA] Attempt to connect port with no address" << endl;
+		return false;
+	}
+
+	const PortID src = s->second;
+	const PortID dst = d->second;
 
 	snd_seq_port_subscribe_t* subs;
 	snd_seq_port_subscribe_malloc(&subs);
-	snd_seq_port_subscribe_set_sender(subs, src);
-	snd_seq_port_subscribe_set_dest(subs, dst);
+	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
+	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
 	snd_seq_port_subscribe_set_exclusive(subs, 0);
 	snd_seq_port_subscribe_set_time_update(subs, 0);
 	snd_seq_port_subscribe_set_time_real(subs, 0);
@@ -547,6 +563,10 @@ AlsaDriver::_refresh_main()
 				                           PortID(ev->data.addr, true)));
 				_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
 				                           PortID(ev->data.addr, false)));
+				_port_addrs.erase(_app->canvas()->find_port(
+					                  PortID(ev->data.addr, false)));
+				_port_addrs.erase(_app->canvas()->find_port(
+					                  PortID(ev->data.addr, true)));
 			}
 			break;
 		case SND_SEQ_EVENT_CLIENT_CHANGE:

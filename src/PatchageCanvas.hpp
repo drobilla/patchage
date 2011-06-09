@@ -65,7 +65,7 @@ public:
 	void add_module(const std::string& name, PatchageModule* module);
 	bool remove_item(FlowCanvas::Item* i);
 
-	PatchagePort* remove_port(const PortID& id);
+	void remove_port(const PortID& id);
 
 	void destroy();
 

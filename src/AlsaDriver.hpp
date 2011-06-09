@@ -21,12 +21,14 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <map>
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 
 #include "Driver.hpp"
 #include "PatchageModule.hpp"
+
 class Patchage;
 class PatchagePort;
 
@@ -61,18 +63,16 @@ public:
 	void process_events(Patchage* app);
 
 private:
-	void refresh_ports();
-	void refresh_connections();
-
-	void add_connections(PatchagePort* port);
-
 	bool         create_refresh_port();
 	static void* refresh_main(void* me);
 	void         _refresh_main();
 
+	PatchageModule* find_module(uint8_t client_id, ModuleType type);
+
 	PatchageModule*
 	find_or_create_module(
 			Patchage*          patchage,
+			uint8_t            client_id,
 			const std::string& client_name,
 			ModuleType         type);
 
@@ -104,6 +104,12 @@ private:
 
 	typedef std::set<snd_seq_addr_t, SeqAddrComparator> Ignored;
 	Ignored _ignored;
+
+	typedef std::multimap<uint8_t, PatchageModule*> Modules;
+	Modules _modules;
+
+	typedef std::map<PatchagePort*, PortID> PortAddrs;
+	PortAddrs _port_addrs;
 
 	bool ignore(const snd_seq_addr_t& addr, bool add=true);
 };

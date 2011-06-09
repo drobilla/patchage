@@ -98,22 +98,16 @@ PatchageCanvas::find_port(const PortID& id)
 	return pp;
 }
 
-PatchagePort*
+void
 PatchageCanvas::remove_port(const PortID& id)
 {
 	PatchagePort* const port = find_port(id);
-	if (!port)
-		return port;
+	if (!port) {
+		Raul::error << "Failed to find port " << id << " to remove" << std::endl;
+	}
 
 	_port_index.erase(id);
-
-	PatchageModule* module = dynamic_cast<PatchageModule*>(port->module());
-	if (!module)
-		return port;
-
-	module->remove_port(port);
-	_app->enqueue_resize(module);
-	return port;
+	delete port;
 }
 
 void

@@ -19,7 +19,7 @@
 #define PATCHAGE_JACKDRIVER_HPP
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+
 #include <jack/jack.h>
 #include <jack/statistics.h>
 #include <glibmm/thread.h>

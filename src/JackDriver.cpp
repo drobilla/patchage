@@ -78,7 +78,6 @@ JackDriver::attach(bool launch_daemon)
 		jack_set_client_registration_callback(client, jack_client_registration_cb, this);
 		jack_set_port_registration_callback(client, jack_port_registration_cb, this);
 		jack_set_port_connect_callback(client, jack_port_connect_cb, this);
-		jack_set_graph_order_callback(client, jack_graph_order_cb, this);
 		jack_set_buffer_size_callback(client, jack_buffer_size_cb, this);
 		jack_set_xrun_callback(client, jack_xrun_cb, this);
 
@@ -127,13 +126,13 @@ PatchagePort*
 JackDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
 {
-	jack_port_t* jack_port = NULL;
-
-	if (id.type == PortID::JACK_ID)
-		jack_port = jack_port_by_id(_client, id.id.jack_id);
-
-	if (jack_port == NULL)
+	assert(id.type == PortID::JACK_ID);
+	
+	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
+	if (!jack_port) {
+		Raul::error << "[JACK] Failed to find port with ID " << id << endl;
 		return NULL;
+	}
 
 	const int jack_flags = jack_port_flags(jack_port);
 
@@ -141,8 +140,8 @@ JackDriver::create_port_view(Patchage*     patchage,
 	port_names(id, module_name, port_name);
 
 	ModuleType type = InputOutput;
-	if (_app->state_manager()->get_module_split(module_name,
-			(jack_flags & JackPortIsTerminal))) {
+	if (_app->state_manager()->get_module_split(
+		    module_name, (jack_flags & JackPortIsTerminal))) {
 		if (jack_flags & JackPortIsInput) {
 			type = Input;
 		} else {
@@ -151,28 +150,18 @@ JackDriver::create_port_view(Patchage*     patchage,
 	}
 
 	PatchageModule* parent = _app->canvas()->find_module(module_name, type);
-
-	bool resize = false;
-
 	if (!parent) {
 		parent = new PatchageModule(patchage, module_name, type);
 		parent->load_location();
 		patchage->canvas()->add_module(module_name, parent);
 		parent->show();
-		resize = true;
 	}
 
-	PatchagePort* port = dynamic_cast<PatchagePort*>(parent->get_port(port_name));
+	assert(!parent->get_port(port_name));
 
-	if (!port) {
-		port = create_port(*parent, jack_port, id);
-		port->show();
-		parent->add_port(port);
-		resize = true;
-	}
-
-	if (resize)
-		_app->enqueue_resize(parent);
+	PatchagePort* port = create_port(*parent, jack_port, id);
+	port->show();
+	_app->enqueue_resize(parent);
 
 	return port;
 }
@@ -243,7 +232,7 @@ JackDriver::refresh()
 	size_t colon;
 
 	// Add all ports
-	for (int i=0; ports[i]; ++i) {
+	for (int i = 0; ports[i]; ++i) {
 		port = jack_port_by_name(_client, ports[i]);
 
 		client1_name = ports[i];
@@ -281,14 +270,13 @@ JackDriver::refresh()
 		}
 
 		if (!m->get_port(jack_port_short_name(port)))
-			m->add_port(create_port(*m, port, PortID()));
+			create_port(*m, port, PortID());
 
 		_app->enqueue_resize(m);
 	}
 
 	// Add all connections
 	for (int i = 0; ports[i]; ++i) {
-
 		port = jack_port_by_name(_client, ports[i]);
 		const char** connected_ports = jack_port_get_all_connections(_client, port);
 
@@ -297,7 +285,8 @@ JackDriver::refresh()
 		port1_name   = client1_name.substr(colon + 1);
 		client1_name = client1_name.substr(0, colon);
 
-		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput) ? Input : Output;
+		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput)
+			? Input : Output;
 
 		PatchageModule* client1_module
 			= _app->canvas()->find_module(client1_name, port1_type);
@@ -336,11 +325,11 @@ JackDriver::refresh()
 					_app->canvas()->add_connection(src, dst, port1->color() + 0x22222200);
 			}
 
-			free(connected_ports);
+			jack_free(connected_ports);
 		}
 	}
 
-	free(ports);
+	jack_free(ports);
 }
 
 bool
@@ -416,11 +405,8 @@ JackDriver::disconnect(PatchagePort* const src_port,
 void
 JackDriver::jack_client_registration_cb(const char* name, int registered, void* jack_driver)
 {
-	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-
-	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_CREATION, name));
@@ -432,11 +418,8 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 void
 JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, void* jack_driver)
 {
-	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-
-	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::PORT_CREATION, port_id));
@@ -448,11 +431,8 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 void
 JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* jack_driver)
 {
-	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
-
-	//jack_reset_max_delayed_usecs(me->_client);
 
 	if (connect) {
 		me->_events.push(PatchageEvent(PatchageEvent::CONNECTION, src, dst));
@@ -462,21 +442,8 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int con
 }
 
 int
-JackDriver::jack_graph_order_cb(void* jack_driver)
-{
-	assert(jack_driver);
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
-
-	//jack_reset_max_delayed_usecs(me->_client);
-
-	return 0;
-}
-
-int
 JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
 {
-	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
@@ -497,7 +464,6 @@ JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
 int
 JackDriver::jack_xrun_cb(void* jack_driver)
 {
-	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 

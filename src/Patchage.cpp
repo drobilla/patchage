@@ -349,7 +349,7 @@ Patchage::idle_callback()
 	}
 #endif
 
-	// Do a full refresh (ie user clicked refresh)
+	// Do a full refresh
 	if (_refresh) {
 		refresh();
 	} else if (_driver_detached) {

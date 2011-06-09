@@ -82,12 +82,7 @@ PatchageEvent::execute(Patchage* patchage)
 
 	} else if (_type == PORT_DESTRUCTION) {
 
-		PatchagePort* port = patchage->canvas()->remove_port(_port_1);
-		if (port) {
-			delete port;
-		} else {
-			Raul::error << "Unable to find port `" << _port_1 << "' to destroy" << endl;
-		}
+		patchage->canvas()->remove_port(_port_1);
 
 	} else if (_type == CONNECTION) {
 
