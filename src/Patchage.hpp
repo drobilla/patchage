@@ -99,9 +99,6 @@ public:
 	void update_state();
 	void store_window_location();
 
-	void enqueue_resize(FlowCanvas::Module* module);
-	void flush_resize();
-
 protected:
 	void connect_widgets();
 
@@ -149,8 +146,6 @@ protected:
 #endif
 
 	boost::shared_ptr<PatchageCanvas> _canvas;
-
-	std::set<FlowCanvas::Module*> _pending_resize;
 
 	JackDriver*   _jack_driver;
 	StateManager* _state_manager;

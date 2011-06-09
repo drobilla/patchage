@@ -366,8 +366,6 @@ Patchage::idle_callback()
 	_refresh         = false;
 	_driver_detached = false;
 
-	flush_resize();
-
 	// Update load every 10 idle callbacks
 	static int count = 0;
 	if (++count == 10) {
@@ -456,8 +454,6 @@ Patchage::refresh()
 		if (_alsa_driver)
 			_alsa_driver->refresh();
 #endif
-
-		flush_resize();
 	}
 }
 
@@ -813,22 +809,3 @@ Patchage::on_scroll(GdkEventScroll* ev)
 {
 	return false;
 }
-
-void
-Patchage::enqueue_resize(FlowCanvas::Module* module)
-{
-	if (module)
-		_pending_resize.insert(module);
-}
-
-void
-Patchage::flush_resize()
-{
-	for (std::set<FlowCanvas::Module*>::iterator i = _pending_resize.begin();
-	     i != _pending_resize.end(); ++i) {
-		(*i)->resize();
-	}
-
-	_pending_resize.clear();
-}
-

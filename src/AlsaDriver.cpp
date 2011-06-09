@@ -134,9 +134,6 @@ AlsaDriver::refresh()
 			}
 			
 			create_port_view_internal(_app, addr, parent, port);
-			if (parent) {
-				_app->enqueue_resize(parent);
-			}
 		}
 	}
 
@@ -223,7 +220,6 @@ AlsaDriver::find_or_create_module(
 		m = new PatchageModule(patchage, client_name, type);
 		m->load_location();
 		_app->canvas()->add_module(client_name, m);
-		_app->enqueue_resize(m);
 		_modules.insert(std::make_pair(client_id, m));
 	}
 	return m;

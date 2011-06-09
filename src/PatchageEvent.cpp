@@ -72,9 +72,7 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (driver) {
 			PatchagePort* port = driver->create_port_view(patchage, _port_1);
-			if (port)
-				patchage->enqueue_resize(port->module());
-			else
+			if (!port)
 				Raul::error << "Unable to create port view: " << _port_1 << endl;
 		} else {
 			Raul::error << "Attempt to create port with unknown type: " << _port_1 << endl;

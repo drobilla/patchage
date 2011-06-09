@@ -161,7 +161,6 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 	PatchagePort* port = create_port(*parent, jack_port, id);
 	port->show();
-	_app->enqueue_resize(parent);
 
 	return port;
 }
@@ -271,8 +270,6 @@ JackDriver::refresh()
 
 		if (!m->get_port(jack_port_short_name(port)))
 			create_port(*m, port, PortID());
-
-		_app->enqueue_resize(m);
 	}
 
 	// Add all connections
