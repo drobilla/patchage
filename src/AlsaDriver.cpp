@@ -251,7 +251,6 @@ AlsaDriver::create_port_view_internal(
 	bool         is_input       = false;
 	bool         is_duplex      = false;
 	bool         is_application = true;
-	bool         need_refresh   = false;
 
 	int caps = snd_seq_port_info_get_capability(pinfo);
 	int type = snd_seq_port_info_get_type(pinfo);
@@ -272,7 +271,6 @@ AlsaDriver::create_port_view_internal(
 	if (is_duplex) {
 		split = true;
 		if (!_app->state_manager()->get_module_split(client_name, !is_application)) {
-			need_refresh = true;
 			_app->state_manager()->set_module_split(client_name, true);
 		}
 	} else {
@@ -516,7 +514,6 @@ AlsaDriver::_refresh_main()
 	}
 
 	int caps = 0;
-	int type = 0;
 
 	snd_seq_client_info_t* cinfo;
 	snd_seq_client_info_alloca(&cinfo);
@@ -545,7 +542,6 @@ AlsaDriver::_refresh_main()
 			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
 			snd_seq_get_any_port_info(_seq, ev->data.addr.client, ev->data.addr.port, pinfo);
 			caps = snd_seq_port_info_get_capability(pinfo);
-			type = snd_seq_port_info_get_type(pinfo);
 
 			if (!ignore(ev->data.addr))
 				_events.push(PatchageEvent(PatchageEvent::PORT_CREATION,

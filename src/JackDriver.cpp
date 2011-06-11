@@ -254,19 +254,6 @@ JackDriver::refresh()
 			_app->canvas()->add_module(client1_name, m);
 		}
 
-		// FIXME: leak?  jack docs don't say
-		const char* const type_str = jack_port_type(port);
-		PortType port_type;
-
-		if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
-			port_type = JACK_AUDIO;
-		} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
-			port_type = JACK_MIDI;
-		} else {
-			Raul::warn << ports[i] << " has unknown type \'" << type_str << "\'" << endl;
-			continue;
-		}
-
 		if (!m->get_port(jack_port_short_name(port)))
 			create_port(*m, port, PortID());
 	}
