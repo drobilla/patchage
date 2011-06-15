@@ -186,14 +186,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="menu_zoom_full">
-                        <property name="label">gtk-zoom-fit</property>
-                        <property name="visible">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkImageMenuItem" id="menu_zoom_normal">
                         <property name="label">gtk-zoom-100</property>
                         <property name="visible">True</property>

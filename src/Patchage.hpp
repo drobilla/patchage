@@ -114,7 +114,6 @@ protected:
 	void on_view_statusbar();
 	void on_zoom_in();
 	void on_zoom_out();
-	void on_zoom_full();
 	void on_zoom_normal();
 
 	bool on_scroll(GdkEventScroll* ev);
@@ -175,7 +174,6 @@ protected:
 	Widget<Gtk::CheckMenuItem>  _menu_view_statusbar;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
-	Widget<Gtk::ImageMenuItem>  _menu_zoom_full;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
