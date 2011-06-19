@@ -50,10 +50,7 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchageModule* module = dynamic_cast<PatchageModule*>(
 				patchage->canvas()->find_module(_str, InputOutput));
 
-		if (module) {
-			patchage->canvas()->remove_item(module);
-		}
-
+		delete module;
 		free(_str);
 		_str = NULL;
 

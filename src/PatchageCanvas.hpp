@@ -63,7 +63,6 @@ public:
 	void remove_ports(bool (*pred)(const PatchagePort*));
 
 	void add_module(const std::string& name, PatchageModule* module);
-	bool remove_item(FlowCanvas::Item* i);
 
 	void remove_port(const PortID& id);
 
@@ -71,6 +70,8 @@ public:
 
 private:
 	Patchage* _app;
+
+	bool remove_item(FlowCanvas::Item* i);
 
 	typedef std::map<const PortID, PatchagePort*> PortIndex;
 	PortIndex _port_index;
