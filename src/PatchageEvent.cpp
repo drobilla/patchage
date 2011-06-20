@@ -47,10 +47,7 @@ PatchageEvent::execute(Patchage* patchage)
 		_str = NULL;
 
 	} else if (_type == CLIENT_DESTRUCTION) {
-		PatchageModule* module = dynamic_cast<PatchageModule*>(
-				patchage->canvas()->find_module(_str, InputOutput));
-
-		delete module;
+		patchage->canvas()->remove_module(_str);
 		free(_str);
 		_str = NULL;
 

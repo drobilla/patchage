@@ -45,6 +45,8 @@ public:
 	PatchageModule* find_module(const std::string& name, ModuleType type);
 	PatchagePort*   find_port(const PortID& id);
 
+	void remove_module(const std::string& name);
+
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
 
