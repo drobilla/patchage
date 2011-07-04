@@ -24,6 +24,7 @@ PatchageModule::PatchageModule(
 	Patchage* app, const std::string& name, ModuleType type, double x, double y)
 	: Module(*app->canvas().get(), name, x, y)
 	, _app(app)
+	, _menu(NULL)
 	, _type(type)
 {
 }
@@ -58,22 +59,28 @@ PatchageModule::update_menu()
 	}
 }
 
-void
-PatchageModule::create_menu()
+bool
+PatchageModule::show_menu(GdkEventButton* ev)
 {
 	_menu = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
 	if (_type == InputOutput) {
 		items.push_back(
-			Gtk::Menu_Helpers::MenuElem("_Split", sigc::mem_fun(this, &PatchageModule::split)));
+			Gtk::Menu_Helpers::MenuElem(
+				"_Split", sigc::mem_fun(this, &PatchageModule::split)));
 		update_menu();
 	} else {
 		items.push_back(
-			Gtk::Menu_Helpers::MenuElem("_Join", sigc::mem_fun(this, &PatchageModule::join)));
+			Gtk::Menu_Helpers::MenuElem(
+				"_Join", sigc::mem_fun(this, &PatchageModule::join)));
 	}
 	items.push_back(
-		Gtk::Menu_Helpers::MenuElem("_Disconnect All",
-		                            sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
+		Gtk::Menu_Helpers::MenuElem(
+			"_Disconnect All",
+			sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
+
+	_menu->popup(ev->button, ev->time);
+	return true;
 }
 
 void

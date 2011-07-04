@@ -36,7 +36,7 @@ public:
 	void split();
 	void join();
 
-	void create_menu();
+	bool show_menu(GdkEventButton* ev);
 	void update_menu();
 
 	void load_location();
@@ -51,6 +51,7 @@ protected:
 	void remove_port(FlowCanvas::Port* port);
 
 	Patchage*  _app;
+	Gtk::Menu* _menu;
 	ModuleType _type;
 };
 
