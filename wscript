@@ -21,6 +21,7 @@ out = 'build'
 
 def options(opt):
     autowaf.set_options(opt)
+    opt.load('compiler_cxx')
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
                     help="Patchage install name. [Default: '" + APPNAME + "']")
@@ -98,8 +99,8 @@ def configure(conf):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
     # Boost headers
-    autowaf.check_header(conf, 'boost/shared_ptr.hpp')
-    autowaf.check_header(conf, 'boost/weak_ptr.hpp')
+    autowaf.check_header(conf, 'cxx', 'boost/shared_ptr.hpp')
+    autowaf.check_header(conf, 'cxx', 'boost/weak_ptr.hpp')
 
     conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
 
