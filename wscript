@@ -57,8 +57,8 @@ def configure(conf):
                       atleast_version='2.14.0', mandatory=True)
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
                       atleast_version='2.12.0', mandatory=True)
-    autowaf.check_pkg(conf, 'flowcanvas', uselib_store='FLOWCANVAS',
-                      atleast_version='0.8.0', mandatory=True)
+    autowaf.check_pkg(conf, 'flowcanvas-1', uselib_store='FLOWCANVAS',
+                      atleast_version='1.0.0', mandatory=True)
     autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
                       atleast_version='0.7.0', mandatory=True)
 
