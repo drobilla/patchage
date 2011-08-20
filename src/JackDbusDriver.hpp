@@ -75,15 +75,15 @@ private:
 	void error_msg(const std::string& msg) const;
 	void info_msg(const std::string& msg) const;
 
-	boost::shared_ptr<PatchageModule> find_or_create_module(
+	PatchageModule* find_or_create_module(
 		ModuleType         type,
 		const std::string& name);
 
 	void add_port(
-		boost::shared_ptr<PatchageModule>& module,
-		PortType                           type,
-		const std::string&                 name,
-		bool                               is_input);
+		PatchageModule*    module,
+		PortType           type,
+		const std::string& name,
+		bool               is_input);
 
 	void add_port(
 		dbus_uint64_t client_id,

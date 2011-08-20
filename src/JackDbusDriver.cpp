@@ -82,30 +82,18 @@ JackDriver::~JackDriver()
 	}
 }
 
+static bool
+is_jack_port(const PatchagePort* port)
+{
+	return port->type() == JACK_AUDIO || port->type() == JACK_MIDI;
+}
+
 /** Destroy all JACK (canvas) ports.
  */
 void
 JackDriver::destroy_all()
 {
-	FlowCanvas::Items modules = _app->canvas()->items(); // copy
-	for (FlowCanvas::Items::iterator m = modules.begin(); m != modules.end(); ++m) {
-		SharedPtr<FlowCanvas::Module> module = PtrCast<FlowCanvas::Module>(*m);
-		if (!module)
-			continue;
-
-		FlowCanvas::Module::Ports ports = module->ports(); // copy
-		for (FlowCanvas::Module::Ports::iterator p = ports.begin(); p != ports.end(); ++p) {
-			SharedPtr<PatchagePort> port = boost::dynamic_pointer_cast<PatchagePort>(*p);
-			if (port && (port->type() == JACK_AUDIO || port->type() == JACK_MIDI)) {
-				_app->canvas()->remove_port(port->id());
-			}
-		}
-
-		if (module->ports().empty())
-			_app->canvas()->remove_item(module);
-		else
-			_app->enqueue_resize(module);
-	}
+	_app->canvas()->remove_ports(is_jack_port);
 }
 
 void
@@ -515,25 +503,21 @@ JackDriver::is_attached() const
 
 void
 JackDriver::add_port(
-	SharedPtr<PatchageModule>& module,
-	PortType                   type,
-	const std::string&         name,
-	bool                       is_input)
+	PatchageModule*    module,
+	PortType           type,
+	const std::string& name,
+	bool               is_input)
 {
 	if (module->get_port(name)) {
 		return;
 	}
 
-	module->add_port(
-		SharedPtr<PatchagePort>(
-			new PatchagePort(
-				module,
-				type,
-				name,
-				is_input,
-				_app->state_manager()->get_port_color(type))));
-
-	_app->enqueue_resize(module);
+	new PatchagePort(
+		*module,
+		type,
+		name,
+		is_input,
+		_app->state_manager()->get_port_color(type));
 }
 
 void
@@ -568,7 +552,7 @@ JackDriver::add_port(
 		}
 	}
 
-	SharedPtr<PatchageModule> module = find_or_create_module(type, client_name);
+	PatchageModule* module = find_or_create_module(type, client_name);
 
 	add_port(module, local_port_type, port_name, port_flags & JACKDBUS_PORT_FLAG_INPUT);
 }
@@ -580,23 +564,19 @@ JackDriver::remove_port(
 	dbus_uint64_t port_id,
 	const char*   port_name)
 {
-	SharedPtr<PatchagePort> port = _app->canvas()->find_port_by_name(client_name, port_name);
+	PatchagePort* port = _app->canvas()->find_port_by_name(client_name, port_name);
 	if (!port) {
 		error_msg("Unable to remove unknown port");
 		return;
 	}
 
-	SharedPtr<PatchageModule> module = PtrCast<PatchageModule>(port->module().lock());
+	PatchageModule* module = dynamic_cast<PatchageModule*>(port->module());
 
-	module->remove_port(port);
-	port.reset();
+	delete port;
 
 	// No empty modules (for now)
 	if (module->num_ports() == 0) {
-		_app->canvas()->remove_item(module);
-		module.reset();
-	} else {
-		_app->enqueue_resize(module);
+		delete module;
 	}
 
 	if (_app->canvas()->items().empty()) {
@@ -608,15 +588,15 @@ JackDriver::remove_port(
 	}
 }
 
-SharedPtr<PatchageModule>
+PatchageModule*
 JackDriver::find_or_create_module(
 	ModuleType type,
 	const std::string& name)
 {
-	SharedPtr<PatchageModule> module = _app->canvas()->find_module(name, type);
+	PatchageModule* module = _app->canvas()->find_module(name, type);
 
 	if (!module) {
-		module = SharedPtr<PatchageModule>(new PatchageModule(_app, name, type));
+		module = new PatchageModule(_app, name, type);
 		module->load_location();
 		_app->canvas()->add_module(name, module);
 	}
@@ -636,13 +616,13 @@ JackDriver::connect_ports(
 	dbus_uint64_t port2_id,
 	const char*   port2_name)
 {
-	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
+	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
 		error_msg((std::string)"Unable to connect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
+	PatchagePort* port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
 		error_msg((std::string)"Unable to connect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
@@ -663,13 +643,13 @@ JackDriver::disconnect_ports(
 	dbus_uint64_t port2_id,
 	const char*   port2_name)
 {
-	SharedPtr<PatchagePort> port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
+	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
 		error_msg((std::string)"Unable to disconnect unknown port '" + port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	SharedPtr<PatchagePort> port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
+	PatchagePort* port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
 		error_msg((std::string)"Unable to disconnect unknown port '" + port2_name + "' of client '" + client2_name + "'");
 		return;
@@ -853,9 +833,9 @@ JackDriver::connect(
 	const char*  port2_name;
 	DBusMessage* reply_ptr;
 
-	client1_name = src->module().lock()->name().c_str();
+	client1_name = src->module()->name().c_str();
 	port1_name   = src->name().c_str();
-	client2_name = dst->module().lock()->name().c_str();
+	client2_name = dst->module()->name().c_str();
 	port2_name   = dst->name().c_str();
 
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "ConnectPortsByName", &reply_ptr,
@@ -882,9 +862,9 @@ JackDriver::disconnect(
 	const char*  port2_name;
 	DBusMessage* reply_ptr;
 
-	client1_name = src->module().lock()->name().c_str();
+	client1_name = src->module()->name().c_str();
 	port1_name   = src->name().c_str();
-	client2_name = dst->module().lock()->name().c_str();
+	client2_name = dst->module()->name().c_str();
 	port2_name   = dst->name().c_str();
 
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "DisconnectPortsByName", &reply_ptr,
