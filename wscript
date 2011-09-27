@@ -20,8 +20,8 @@ top = '.'
 out = 'build'
 
 def options(opt):
-    autowaf.set_options(opt)
     opt.load('compiler_cxx')
+    autowaf.set_options(opt)
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
                     help="Patchage install name. [Default: '" + APPNAME + "']")
@@ -41,10 +41,10 @@ def options(opt):
                     help="Do not try to read files from executable's parent directory")
 
 def configure(conf):
+    conf.load('compiler_cxx')
     conf.line_just = 40
     autowaf.configure(conf)
     autowaf.display_header('Patchage Configuration')
-    conf.load('compiler_cxx')
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
                       mandatory=False)
     autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
