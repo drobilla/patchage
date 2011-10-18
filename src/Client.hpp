@@ -22,8 +22,8 @@
 #include <string>
 #include <sigc++/signal.h>
 
-class ClientImpl;
-class Project;
+struct ClientImpl;
+class  Project;
 
 class Client
 {

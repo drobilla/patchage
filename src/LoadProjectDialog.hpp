@@ -27,8 +27,8 @@
 
 #include "Widget.hpp"
 
-class Patchage;
-class ProjectInfo;
+class  Patchage;
+struct ProjectInfo;
 
 class LoadProjectDialog {
 public:

@@ -30,10 +30,10 @@ struct ProjectInfo {
 	std::string description;
 };
 
-class Patchage;
-class Session;
-class LashProxyImpl;
-class LoadedProjectProperties;
+class  Patchage;
+class  Session;
+struct LashProxyImpl;
+struct LoadedProjectProperties;
 
 class LashProxy {
 public:
