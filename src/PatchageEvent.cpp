@@ -43,12 +43,12 @@ PatchageEvent::execute(Patchage* patchage)
 
 	} else if (_type == CLIENT_CREATION) {
 		// No empty modules (for now)
-		free(_str);
+		g_free(_str);
 		_str = NULL;
 
 	} else if (_type == CLIENT_DESTRUCTION) {
 		patchage->canvas()->remove_module(_str);
-		free(_str);
+		g_free(_str);
 		_str = NULL;
 
 	} else if (_type == PORT_CREATION) {

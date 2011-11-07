@@ -55,7 +55,7 @@ public:
 	{}
 
 	PatchageEvent(Type type, const char* str)
-		: _str(strdup(str))
+		: _str(g_strdup(str))
 		, _type(type)
 	{}
 
