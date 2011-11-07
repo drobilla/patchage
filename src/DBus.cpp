@@ -100,12 +100,10 @@ DBus::call(
 		int           in_type,
 		...)
 {
-	bool ret;
 	va_list ap;
-
 	va_start(ap, in_type);
 
-	ret = _app->dbus()->call(
+	bool ret = _app->dbus()->call(
 		response_expected,
 		serivce,
 		object,
@@ -117,5 +115,5 @@ DBus::call(
 
 	va_end(ap);
 
-	return (ap != NULL);
+	return ret;
 }
