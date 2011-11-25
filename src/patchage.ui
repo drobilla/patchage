@@ -692,7 +692,6 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
     <property name="artists">Icon:
 	Lapo Calamandrei</property>
     <property name="logo_icon_name">patchage</property>
-    <property name="license_type">gpl-3-0</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
