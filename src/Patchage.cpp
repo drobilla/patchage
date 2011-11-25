@@ -56,15 +56,6 @@
 #ifdef HAVE_ALSA
   #include "AlsaDriver.hpp"
 #endif
-#ifdef HAVE_LASH
-  #include "DBus.hpp"
-#endif
-#ifdef HAVE_LASH
-  #include "LashProxy.hpp"
-  #include "LoadProjectDialog.hpp"
-  #include "ProjectList.hpp"
-  #include "Session.hpp"
-#endif
 
 #define LOG_TO_STATUS 1
 
@@ -80,12 +71,6 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 
 Patchage::Patchage(int argc, char** argv)
 	: _xml(UIFile::open("patchage"))
-#ifdef HAVE_LASH
-	, _dbus(NULL)
-	, _lash_proxy(NULL)
-	, _project_list(NULL)
-	, _session(NULL)
-#endif
 #ifdef HAVE_ALSA
 	, _alsa_driver(NULL)
 #endif
@@ -107,7 +92,6 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_store_positions)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
-	, INIT_WIDGET(_menu_view_projects)
 	, INIT_WIDGET(_menu_view_refresh)
 	, INIT_WIDGET(_menu_view_statusbar)
 	, INIT_WIDGET(_menu_zoom_in)
@@ -116,7 +100,6 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
-	, INIT_WIDGET(_project_list_viewport)
 	, INIT_WIDGET(_latency_frames_label)
 	, INIT_WIDGET(_latency_ms_label)
 	, INIT_WIDGET(_sample_rate_label)
@@ -172,22 +155,15 @@ Patchage::Patchage(int argc, char** argv)
 	_main_scrolledwin->signal_scroll_event().connect(
 			sigc::mem_fun(this, &Patchage::on_scroll));
 
-#ifdef HAVE_LASH
-	_menu_open_session->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::show_load_project_dialog));
-	_menu_view_projects->set_active(true);
-#elif defined(PATCHAGE_JACK_SESSION)
+#ifdef PATCHAGE_JACK_SESSION
 	_menu_open_session->signal_activate().connect(
 		sigc::mem_fun(this, &Patchage::show_open_session_dialog));
 	_menu_save_session->signal_activate().connect(
 		sigc::mem_fun(this, &Patchage::show_save_session_dialog));
 	_menu_save_close_session->signal_activate().connect(
 		sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
-		    
 #else
 	_menu_open_session->set_sensitive(false);
-	_menu_view_projects->set_active(false);
-	_menu_view_projects->set_sensitive(false);
 #endif
 
 #ifdef HAVE_ALSA
@@ -212,8 +188,6 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_view_statusbar));
 	_menu_view_messages->signal_toggled().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
-	_menu_view_projects->signal_toggled().connect(
-			sigc::mem_fun(this, &Patchage::on_show_projects));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
 	_menu_zoom_in->signal_activate().connect(
@@ -259,15 +233,6 @@ Patchage::Patchage(int argc, char** argv)
 	_alsa_driver = new AlsaDriver(this);
 #endif
 
-#ifdef HAVE_LASH
-	_dbus = new DBus(this);
-	_session = new Session();
-	_project_list = new ProjectList(this, _session);
-	_lash_proxy = new LashProxy(this, _session);
-#else
-	_project_list_viewport->hide();
-#endif
-
 	connect_widgets();
 	update_state();
 
@@ -286,12 +251,7 @@ Patchage::~Patchage()
 #ifdef HAVE_ALSA
 	delete _alsa_driver;
 #endif
-#ifdef HAVE_LASH
-	delete _lash_proxy;
-	delete _project_list;
-	delete _session;
-	delete _dbus;
-#endif
+
 	delete _state_manager;
 
 	_about_win.destroy();
@@ -656,28 +616,6 @@ Patchage::show_save_close_session_dialog()
 
 #endif
 
-#ifdef HAVE_LASH
-void
-Patchage::show_load_project_dialog()
-{
-	std::list<ProjectInfo> projects;
-	_lash_proxy->get_available_projects(projects);
-
-	LoadProjectDialog dialog(this);
-	dialog.run(projects);
-}
-
-void
-Patchage::set_lash_available(bool available)
-{
-	_project_list->set_lash_available(available);
-	if (!available) {
-		_menu_view_projects->set_active(false);
-		_session->clear();
-	}
-}
-#endif
-
 #ifdef HAVE_ALSA
 void
 Patchage::menu_alsa_connect()
@@ -768,15 +706,6 @@ Patchage::on_show_messages()
 		_messages_win->present();
 	else
 		_messages_win->hide();
-}
-
-void
-Patchage::on_show_projects()
-{
-	if (_menu_view_projects->get_active())
-		_project_list_viewport->show();
-	else
-		_project_list_viewport->hide();
 }
 
 void

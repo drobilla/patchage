@@ -33,8 +33,6 @@ def options(opt):
     opt.add_option('--no-jack-session', action='store_true', default=False,
                     dest='no_jack_session',
                     help="Do not build JACK session support")
-    opt.add_option('--no-lash', action='store_true', default=False, dest='no_lash',
-                    help="Do not build Lash support")
     opt.add_option('--no-alsa', action='store_true', default=False, dest='no_alsa',
                     help="Do not build Alsa Sequencer support")
     opt.add_option('--no-binloc', action='store_true', default=False, dest='no_binloc',
@@ -90,10 +88,6 @@ def configure(conf):
     if not Options.options.no_alsa:
         autowaf.check_pkg(conf, 'alsa', uselib_store='ALSA', mandatory=False)
 
-    # Use LASH if we have DBUS unless --no-lash
-    if not Options.options.no_lash and conf.is_defined('HAVE_DBUS_GLIB'):
-        autowaf.define(conf, 'HAVE_LASH', 1)
-
     # Find files at binary location if we have dladdr unless --no-binloc
     if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
@@ -114,7 +108,6 @@ def configure(conf):
     autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
     autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
     autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
-    autowaf.display_msg(conf, "LASH (D-Bus)", conf.is_defined('HAVE_LASH'))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
     autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
@@ -132,7 +125,6 @@ def build(bld):
     prog.install_path = '${BINDIR}'
     autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD RAUL')
     prog.source = '''
-            src/Client.cpp
             src/Patchage.cpp
             src/PatchageCanvas.cpp
             src/PatchageEvent.cpp
@@ -144,16 +136,7 @@ def build(bld):
         prog.source += '''
                 src/JackDbusDriver.cpp
         '''
-    if bld.is_defined('HAVE_LASH'):
-        prog.source += '''
-                src/LashProxy.cpp
-                src/LoadProjectDialog.cpp
-                src/Project.cpp
-                src/ProjectList.cpp
-                src/ProjectPropertiesDialog.cpp
-                src/Session.cpp
-        '''
-    if bld.is_defined('HAVE_LASH') or bld.is_defined('HAVE_JACK_DBUS'):
+    if bld.is_defined('HAVE_JACK_DBUS'):
         prog.source += ' src/DBus.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
         prog.source += ' src/JackDriver.cpp '

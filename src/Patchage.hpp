@@ -43,13 +43,8 @@
 #include "Widget.hpp"
 
 class AlsaDriver;
-class DBus;
 class JackDriver;
-class JackSettingsDialog;
-class LashProxy;
 class PatchageCanvas;
-class ProjectList;
-class Session;
 class StateManager;
 
 namespace FlowCanvas { class Module; }
@@ -68,19 +63,10 @@ public:
 #ifdef HAVE_ALSA
 	AlsaDriver*   alsa_driver()   const { return _alsa_driver; }
 #endif
-#ifdef HAVE_LASH
-	DBus*         dbus()          const { return _dbus; }
-#endif
 #ifdef PATCHAGE_JACK_SESSION
 	void show_open_session_dialog();
 	void show_save_session_dialog();
 	void show_save_close_session_dialog();
-#endif
-#ifdef HAVE_LASH
-	LashProxy*    lash_proxy()    const { return _lash_proxy; }
-
-	void show_load_project_dialog();
-	void set_lash_available(bool available);
 #endif
 
 	Glib::RefPtr<Gtk::Builder> xml() { return _xml; }
@@ -109,7 +95,6 @@ protected:
 	bool on_messages_delete(GdkEventAny*);
 	void on_quit();
 	void on_show_messages();
-	void on_show_projects();
 	void on_store_positions();
 	void on_view_statusbar();
 	void on_zoom_in();
@@ -126,13 +111,6 @@ protected:
 	void buffer_size_changed();
 
 	Glib::RefPtr<Gtk::Builder> _xml;
-
-#ifdef HAVE_LASH
-	DBus*        _dbus;
-	LashProxy*   _lash_proxy;
-	ProjectList* _project_list;
-	Session*     _session;
-#endif
 
 #ifdef HAVE_ALSA
 	AlsaDriver* _alsa_driver;
@@ -169,7 +147,6 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_store_positions;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
-	Widget<Gtk::CheckMenuItem>  _menu_view_projects;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::CheckMenuItem>  _menu_view_statusbar;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
@@ -178,7 +155,6 @@ protected:
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
-	Widget<Gtk::Viewport>       _project_list_viewport;
 	Widget<Gtk::Label>          _latency_frames_label;
 	Widget<Gtk::Label>          _latency_ms_label;
 	Widget<Gtk::Label>          _sample_rate_label;

@@ -1,8 +1,8 @@
 Patchage
-----
+--------
 
 Patchage is a modular patch bay for audio and MIDI systems
-based on JACK, LASH, and ALSA.
+based on JACK and ALSA.
 
 For more information, see <http://drobilla.net/software/patchage>.
  
