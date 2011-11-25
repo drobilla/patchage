@@ -65,6 +65,10 @@ public:
 
 	void add_module(const std::string& name, PatchageModule* module);
 
+	bool add_connection(FlowCanvas::Connectable* tail,
+	                    FlowCanvas::Connectable* head,
+	                    uint32_t color);
+
 	void remove_port(const PortID& id);
 
 	void destroy();
@@ -73,6 +77,9 @@ private:
 	Patchage* _app;
 
 	bool remove_item(FlowCanvas::Item* i);
+
+	bool on_event(GdkEvent* ev);
+	bool on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev);
 
 	typedef std::map<const PortID, PatchagePort*> PortIndex;
 	PortIndex _port_index;

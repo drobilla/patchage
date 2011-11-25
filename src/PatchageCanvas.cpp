@@ -260,6 +260,55 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 }
 
 bool
+PatchageCanvas::on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev)
+{
+	if (ev->type == GDK_BUTTON_PRESS) {
+		switch (ev->button.button) {
+		case 1:
+			if (!(ev->button.state & GDK_CONTROL_MASK)
+			    && !(ev->button.state & GDK_SHIFT_MASK)) {
+				clear_selection();
+			}
+			select_connection(c);
+			return true;
+		case 2:
+			disconnect(c->source(), c->dest());
+			return true;
+		}
+	}
+	return false;
+}
+
+bool
+PatchageCanvas::on_event(GdkEvent* ev)
+{
+	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_Delete) {
+		Connections cs = selected_connections();
+		clear_selection();
+
+		for (Connections::const_iterator i = cs.begin(); i != cs.end(); ++i) {
+			disconnect((*i)->source(), (*i)->dest());
+		}
+	}
+
+	return false;
+}
+
+bool
+PatchageCanvas::add_connection(FlowCanvas::Connectable* tail,
+                               FlowCanvas::Connectable* head,
+                               uint32_t                 color)
+{
+	FlowCanvas::Connection* c = new FlowCanvas::Connection(
+		*this, tail, head, color);
+	c->show_handle(true);
+	c->signal_event.connect(
+		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
+		              c));
+	return FlowCanvas::Canvas::add_connection(c);
+}
+
+bool
 PatchageCanvas::remove_item(FlowCanvas::Item* i)
 {
 	// Remove item from canvas

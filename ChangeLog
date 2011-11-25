@@ -1,3 +1,11 @@
+patchage (UNRELEASED) unstable; urgency=low
+
+  * Make it possible to remove connections by middle-clicking on their
+    handle, or selecting them and pressing delete.
+  * Fix font configuration on OSX.
+
+ -- David Robillard <d@drobilla.net>  (UNRELEASED)
+
 patchage (0.5.0) unstable; urgency=low
 
   * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
