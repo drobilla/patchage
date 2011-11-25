@@ -49,8 +49,8 @@ set_bundle_environment()
 	const std::string pangorc_path(bundle_path + "/Resources/pangorc");
 	setenv("PANGO_RC_FILE", pangorc_path.c_str(), 1);
 
-	const std::string pangorc_path(bundle_path + "/Resources/fonts.conf");
-	setenv("FONTCONFIG_FILE", pangorc_path.c_str(), 1);
+	const std::string fonts_conf_path(bundle_path + "/Resources/fonts.conf");
+	setenv("FONTCONFIG_FILE", fonts_conf_path.c_str(), 1);
 
 	const char* path_c = getenv("PATH");
 	std::string path = "/opt/local/bin";
