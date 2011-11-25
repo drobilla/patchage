@@ -21,8 +21,6 @@
 
 #include <boost/format.hpp>
 
-#include "raul/SharedPtr.hpp"
-
 #include "AlsaDriver.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"

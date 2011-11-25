@@ -58,8 +58,6 @@ def configure(conf):
                       atleast_version='2.12.0', mandatory=True)
     autowaf.check_pkg(conf, 'flowcanvas-1', uselib_store='FLOWCANVAS',
                       atleast_version='1.0.0', mandatory=True)
-    autowaf.check_pkg(conf, 'raul', uselib_store='RAUL',
-                      atleast_version='0.7.0', mandatory=True)
 
     # Check for dladdr
     conf.check(function_name='dladdr',
@@ -122,7 +120,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD RAUL')
+    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD')
     prog.source = '''
             src/Patchage.cpp
             src/PatchageCanvas.cpp

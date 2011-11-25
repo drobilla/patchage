@@ -19,12 +19,9 @@
 
 #include <fstream>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 
 #include <gtkmm/builder.h>
-
-#include "raul/log.hpp"
 
 #include "patchage-config.h"
 #ifdef PATCHAGE_BINLOC
@@ -51,14 +48,14 @@ public:
 			ui_filename = bundle + "/" + base_name + ".ui";
 			free(loc);
 			if (is_readable(ui_filename)) {
-				Raul::info << "Loading UI file " << ui_filename << std::endl;
+				std::cout << "Loading UI file " << ui_filename << std::endl;
 				return Gtk::Builder::create_from_file(ui_filename);
 			}
 		}
 #endif
 		ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".ui";
 		if (is_readable(ui_filename)) {
-			Raul::info << "Loading UI file " << ui_filename << std::endl;
+			std::cout << "Loading UI file " << ui_filename << std::endl;
 			return Gtk::Builder::create_from_file(ui_filename);
 		}
 

@@ -32,7 +32,6 @@
 #include <gtkmm/treemodel.h>
 
 #include "flowcanvas/Module.hpp"
-#include "raul/SharedPtr.hpp"
 
 #include "patchage-config.h"
 #include "UIFile.hpp"

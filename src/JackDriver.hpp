@@ -23,9 +23,8 @@
 
 #include <glibmm/thread.h>
 
-#include "raul/SRSWQueue.hpp"
-
 #include "Driver.hpp"
+#include "Queue.hpp"
 
 class Patchage;
 class PatchageEvent;
@@ -84,8 +83,6 @@ private:
 		jack_port_t*    port,
 		PortID          id);
 
-	static void error_cb(const char* msg);
-
 	void shutdown();
 
 	static void jack_client_registration_cb(const char* name, int registered, void* me);
@@ -97,7 +94,7 @@ private:
 	Patchage*      _app;
 	jack_client_t* _client;
 
-	Raul::SRSWQueue<PatchageEvent> _events;
+	Queue<PatchageEvent> _events;
 
 	Glib::Mutex _shutdown_mutex;
 

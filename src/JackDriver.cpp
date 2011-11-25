@@ -24,15 +24,13 @@
 #include <jack/jack.h>
 #include <jack/statistics.h>
 
-#include "raul/SharedPtr.hpp"
-#include "raul/log.hpp"
-
-#include "patchage-config.h"
 #include "JackDriver.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+#include "Queue.hpp"
+#include "patchage-config.h"
 
 using std::endl;
 using std::string;
@@ -64,8 +62,6 @@ JackDriver::attach(bool launch_daemon)
 	if (_client)
 		return;
 
-	jack_set_error_function(error_cb);
-
 	jack_options_t options = (!launch_daemon) ? JackNoStartServer : JackNullOption;
 	_client = jack_client_open("Patchage", options, NULL);
 	if (_client == NULL) {
@@ -74,7 +70,6 @@ JackDriver::attach(bool launch_daemon)
 	} else {
 		jack_client_t* const client = _client;
 
-		jack_set_error_function(error_cb);
 		jack_on_shutdown(client, jack_shutdown_cb, this);
 		jack_set_client_registration_callback(client, jack_client_registration_cb, this);
 		jack_set_port_registration_callback(client, jack_port_registration_cb, this);
@@ -462,12 +457,6 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	me->_client = NULL;
 	me->_is_activated = false;
 	me->signal_detached.emit();
-}
-
-void
-JackDriver::error_cb(const char* msg)
-{
-	Raul::error << "jack error: " << msg << endl;
 }
 
 jack_nframes_t

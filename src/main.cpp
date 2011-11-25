@@ -27,8 +27,6 @@
 #include <libgnomecanvasmm/init.h>
 #include <glibmm/exception.h>
 
-#include "raul/log.hpp"
-
 #include "Patchage.hpp"
 
 #ifdef __APPLE__
@@ -80,10 +78,10 @@ main(int argc, char** argv)
 	app.run(*patchage.window());
 
 	} catch (std::exception& e) {
-		Raul::error << "patchage: error: " << e.what() << std::endl;
+		std::cerr << "patchage: error: " << e.what() << std::endl;
 		return 1;
 	} catch (Glib::Exception& e) {
-		Raul::error << "patchage: error: " << e.what() << std::endl;
+		std::cerr << "patchage: error: " << e.what() << std::endl;
 		return 1;
 	}
 

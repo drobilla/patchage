@@ -19,8 +19,6 @@
 #include <stdexcept>
 #include <fstream>
 
-#include "raul/log.hpp"
-
 #include "StateManager.hpp"
 #include "Patchage.hpp"
 
@@ -130,7 +128,7 @@ StateManager::load(const string& filename)
 	if ( ! is.good())
 		return;
 
-	Raul::info << "Loading configuration file " << filename << endl;
+	std::cout << "Loading configuration file " << filename << std::endl;
 
 	string s;
 

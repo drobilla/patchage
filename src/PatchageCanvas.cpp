@@ -16,8 +16,6 @@
 
 #include <boost/format.hpp>
 
-#include "raul/SharedPtr.hpp"
-
 #include "patchage-config.h"
 
 #if defined(HAVE_JACK_DBUS)

@@ -28,9 +28,6 @@
 
 #include <boost/format.hpp>
 
-#include "raul/log.hpp"
-#include "raul/SharedPtr.hpp"
-
 #include "Driver.hpp"
 #include "JackDbusDriver.hpp"
 #include "Patchage.hpp"
