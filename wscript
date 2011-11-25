@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-# Licensed under the GNU GPL v2 or later, see COPYING file for details.
+# Licensed under the GNU GPL v3 or later, see COPYING file for details.
 # Copyright 2008-2010 David Robillard
 # Copyright 2008 Nedko Arnaudov
+
 import os
 
 from waflib.extras import autowaf as autowaf
 import waflib.Options as Options, waflib.Utils as Utils
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '0.5.0'
+PATCHAGE_VERSION = '0.6.0'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
