@@ -22,5 +22,10 @@
 	<string>@PATCHAGE_VERSION@</string>
 	<key>CFBundleSignature</key>
 	<string>patc</string>
+	<key>LSEnvironment</key>
+	<dict>
+		<key>DYLD_LIBRARY_PATH</key>
+		<string>lib</string>
+	</dict>
 </dict>
 </plist>

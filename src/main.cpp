@@ -41,9 +41,9 @@ set_bundle_environment()
 
 	const std::string bundle_path = binloc.substr(0, binloc.find_last_of('/'));
 
-	const std::string gtk_path(bundle_path + "/lib");
-	setenv("GTK_PATH", gtk_path.c_str(), 1);
-	std::cout << "GTK PATH " << gtk_path << std::endl;
+	const std::string lib_path(bundle_path + "/lib");
+	setenv("GTK_PATH", lib_path.c_str(), 1);
+	setenv("DYLD_LIBRARY_PATH", lib_path.c_str(), 1);
 
 	chdir(bundle_path.c_str());
 	const std::string pangorc_path(bundle_path + "/Resources/pangorc");

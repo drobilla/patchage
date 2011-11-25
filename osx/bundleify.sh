@@ -3,20 +3,24 @@
 bundle=$1
 exe=$2
 
-libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local' | sed 's/(.*//'`"
+libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
 
-mkdir "$bundle/Contents/lib"
+mkdir -p "$bundle/Contents/lib"
 for l in $libs; do
 	cp $l $bundle/Contents/lib
 done
 
-mkdir "$bundle/Contents/lib/engines"
+mkdir -p "$bundle/Contents/lib/engines"
 cp /opt/local/lib/gtk-2.0/2.10.0/engines/libclearlooks.so $bundle/Contents/lib/engines
 
-mkdir "$bundle/Contents/lib/modules"
+mkdir -p "$bundle/Contents/lib/modules"
 cp /opt/local/lib/pango/1.6.0/modules/*basic*.so $bundle/Contents/lib/modules
 
-reclibs="`otool -L $bundle/Contents/lib/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep '/User\|/opt/local' | sed 's/(.*//'`"
+reclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
+
+for l in $reclibs; do
+	cp $l $bundle/Contents/lib
+done
 
 for l in $libs $reclibs; do
 	lname=`echo $l | sed 's/.*\///'`
