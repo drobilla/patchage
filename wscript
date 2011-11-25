@@ -180,7 +180,7 @@ def build(bld):
             target = out_base + 'Resources/Patchage.icns')
 
         # Gtk/Pango/etc configuration files
-        for i in ['pangorc', 'pango.modules', 'gtkrc']:
+        for i in ['pangorc', 'pango.modules', 'gtkrc', 'fonts.conf']:
             bld(rule   = 'cp ${SRC} ${TGT}',
                 source = 'osx/' + i,
                 target = out_base + 'Resources/' + i)
