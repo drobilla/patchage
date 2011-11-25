@@ -194,7 +194,7 @@ PatchageCanvas::connect(FlowCanvas::Connectable* port1,
 		_app->alsa_driver()->connect(p1, p2);
 #endif
 	} else {
-		status_message("WARNING: Cannot make connection, incompatible port types.");
+		_app->warning_msg("Cannot make connection, incompatible port types.");
 	}
 }
 
@@ -215,7 +215,7 @@ PatchageCanvas::disconnect(FlowCanvas::Connectable* port1,
 	}
 
 	if (!input || !output || input->is_output() || output->is_input()) {
-		status_message("ERROR: Attempt to disconnect mismatched/unknown ports");
+		_app->error_msg("Attempt to disconnect mismatched/unknown ports.");
 		return;
 	}
 
@@ -229,14 +229,8 @@ PatchageCanvas::disconnect(FlowCanvas::Connectable* port1,
 		_app->alsa_driver()->disconnect(output, input);
 #endif
 	} else {
-		status_message("ERROR: Attempt to disconnect ports with mismatched types");
+		_app->error_msg("Attempt to disconnect ports with mismatched types.");
 	}
-}
-
-void
-PatchageCanvas::status_message(const string& msg)
-{
-	_app->status_msg(string("[Canvas] ").append(msg));
 }
 
 void

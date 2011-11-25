@@ -33,7 +33,6 @@
 #include <gtkmm/menuitem.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
-#include <gtkmm/statusbar.h>
 #include <gtkmm/textview.h>
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
@@ -77,10 +76,10 @@ public:
 	inline void queue_refresh()   { _refresh = true; }
 	inline void driver_detached() { _driver_detached = true; }
 
-	void clear_load();
 	void info_msg(const std::string& msg);
 	void error_msg(const std::string& msg);
-	void status_msg(const std::string& msg);
+	void warning_msg(const std::string& msg);
+
 	void update_state();
 	void store_window_location();
 
@@ -95,7 +94,6 @@ protected:
 	void on_quit();
 	void on_show_messages();
 	void on_store_positions();
-	void on_view_statusbar();
 	void on_zoom_in();
 	void on_zoom_out();
 	void on_zoom_normal();
@@ -105,7 +103,6 @@ protected:
 	void zoom(double z);
 	bool idle_callback();
 	bool update_load();
-	void update_statusbar();
 
 	void buffer_size_changed();
 
@@ -133,7 +130,6 @@ protected:
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
-	Widget<Gtk::ProgressBar>    _main_xrun_progress;
 	Widget<Gtk::MenuItem>       _menu_alsa_connect;
 	Widget<Gtk::MenuItem>       _menu_alsa_disconnect;
 	Widget<Gtk::MenuItem>       _menu_file_quit;
@@ -147,28 +143,25 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
-	Widget<Gtk::CheckMenuItem>  _menu_view_statusbar;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
-	Widget<Gtk::Label>          _latency_frames_label;
-	Widget<Gtk::Label>          _latency_ms_label;
-	Widget<Gtk::Label>          _sample_rate_label;
 	Widget<Gtk::TextView>       _status_text;
-	Widget<Gtk::Statusbar>      _statusbar;
 
-	bool        _attach;
-	bool        _driver_detached;
-	bool        _refresh;
-	bool        _enable_refresh;
-	bool        _jack_driver_autoattach;
+	Glib::RefPtr<Gtk::TextTag> _error_tag;
+	Glib::RefPtr<Gtk::TextTag> _warning_tag;
+
+	bool _attach;
+	bool _driver_detached;
+	bool _refresh;
+	bool _enable_refresh;
+	bool _jack_driver_autoattach;
 #ifdef HAVE_ALSA
-	bool        _alsa_driver_autoattach;
+	bool _alsa_driver_autoattach;
 #endif
-
 };
 
 #endif // PATCHAGE_PATCHAGE_HPP

@@ -14,7 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "raul/log.hpp"
+#include <boost/format.hpp>
+
 #include "raul/SharedPtr.hpp"
 
 #include "patchage-config.h"
@@ -33,6 +34,7 @@
 #endif
 
 using std::endl;
+using boost::format;
 
 void
 PatchageEvent::execute(Patchage* patchage)
@@ -65,10 +67,14 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (driver) {
 			PatchagePort* port = driver->create_port_view(patchage, _port_1);
-			if (!port)
-				Raul::error << "Unable to create port view: " << _port_1 << endl;
+			if (!port) {
+				patchage->error_msg(
+					(format("Unable to create view for port `%1%'")
+					 % _port_1).str());
+			}
 		} else {
-			Raul::error << "Attempt to create port with unknown type: " << _port_1 << endl;
+			patchage->error_msg(
+				(format("Unknown type for port `%1%'") % _port_1).str());
 		}
 
 	} else if (_type == PORT_DESTRUCTION) {
@@ -81,11 +87,14 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
-			Raul::error << "Unable to find port `" << _port_1 << "' to connect" << endl;
+			patchage->error_msg((format("Unable to find port `%1%' to connect")
+			                     % _port_1).str());
 		else if (!port_2)
-			Raul::error << "Unable to find port `" << _port_2 << "' to connect" << endl;
+			patchage->error_msg((format("Unable to find port `%1' to connect")
+			                     % _port_2).str());
 		else
-			patchage->canvas()->add_connection(port_1, port_2, port_1->color() + 0x22222200);
+			patchage->canvas()->add_connection(
+				port_1, port_2, port_1->color() + 0x22222200);
 
 	} else if (_type == DISCONNECTION) {
 
@@ -93,9 +102,11 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
-			Raul::error << "Unable to find port `" << _port_1 << "' to disconnect" << endl;
+			patchage->error_msg((format("Unable to find port `%1' to disconnect")
+			                     % _port_1).str());
 		else if (!port_2)
-			Raul::error << "Unable to find port `" << _port_2 << "' to disconnect" << endl;
+			patchage->error_msg((format("Unable to find port `%1' to disconnect")
+			                     % _port_2).str());
 		else
 			patchage->canvas()->remove_connection(port_1, port_2);
 	}

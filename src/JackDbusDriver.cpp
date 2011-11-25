@@ -54,9 +54,6 @@
 #define JACKDBUS_PORT_TYPE_AUDIO 0
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
-//#define LOG_TO_STD
-#define LOG_TO_STATUS
-
 //#define USE_FULL_REFRESH
 
 JackDriver::JackDriver(Patchage* app)
@@ -65,7 +62,6 @@ JackDriver::JackDriver(Patchage* app)
 	, _server_responding(false)
 	, _server_started(false)
 	, _graph_version(0)
-	, _max_dsp_load(0.0)
 {
 	dbus_error_init(&_dbus_error);
 }
@@ -1010,44 +1006,6 @@ JackDriver::reset_xruns()
 	dbus_message_unref(reply_ptr);
 }
 
-float
-JackDriver::get_max_dsp_load()
-{
-	DBusMessage* reply_ptr;
-	double load;
-
-	if (_server_responding && !_server_started) {
-		return 0.0;
-	}
-
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetLoad", &reply_ptr, DBUS_TYPE_INVALID)) {
-		return 0.0;
-	}
-
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_DOUBLE, &load, DBUS_TYPE_INVALID)) {
-		dbus_message_unref(reply_ptr);
-		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of GetLoad failed.");
-		return 0.0;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	load /= 100.0;								// dbus returns it in percents, we use 0..1
-
-	if (load > _max_dsp_load) {
-		_max_dsp_load = load;
-	}
-
-	return _max_dsp_load;
-}
-
-void
-JackDriver::reset_max_dsp_load()
-{
-	_max_dsp_load = 0.0;
-}
-
 PatchagePort*
 JackDriver::create_port_view(
 	Patchage* patchage,
@@ -1059,24 +1017,12 @@ JackDriver::create_port_view(
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-#if defined(LOG_TO_STATUS)
-	_app->status_msg((std::string)"[JACKDBUS] " + msg);
-#endif
-
-#if defined(LOG_TO_STD)
-	cerr << (std::string)"[JACKDBUS] " << msg << endl;
-#endif
+	_app->error_msg((std::string)"Jack: " + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-#if defined(LOG_TO_STATUS)
-	_app->status_msg((std::string)"[JACKDBUS] " + msg);
-#endif
-
-#if defined(LOG_TO_STD)
-	cerr << (std::string)"[JACKDBUS] " << msg << endl;
-#endif
+	_app->info_msg((std::string)"Jack: " + msg);
 }
 

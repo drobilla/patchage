@@ -19,8 +19,9 @@
 #include <string>
 #include <utility>
 
+#include <boost/format.hpp>
+
 #include "raul/SharedPtr.hpp"
-#include "raul/log.hpp"
 
 #include "AlsaDriver.hpp"
 #include "Patchage.hpp"
@@ -30,6 +31,7 @@
 
 using std::endl;
 using std::string;
+using boost::format;
 
 AlsaDriver::AlsaDriver(Patchage* app)
 	: _app(app)
@@ -50,10 +52,10 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 {
 	int ret = snd_seq_open(&_seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
 	if (ret) {
-		_app->status_msg("[ALSA] Unable to attach");
+		_app->error_msg("Alsa: Unable to attach.");
 		_seq = NULL;
 	} else {
-		_app->status_msg("[ALSA] Attached");
+		_app->info_msg("Alsa: Attached.");
 
 		snd_seq_set_client_name(_seq, "Patchage");
 
@@ -63,7 +65,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 
 		ret = pthread_create(&_refresh_thread, &attr, &AlsaDriver::refresh_main, this);
 		if (ret)
-			Raul::error << "Couldn't start refresh thread" << endl;
+			_app->error_msg("Alsa: Failed to start refresh thread.");
 
 		signal_attached.emit();
 	}
@@ -78,7 +80,7 @@ AlsaDriver::detach()
 		snd_seq_close(_seq);
 		_seq = NULL;
 		signal_detached.emit();
-		_app->status_msg("[ALSA] Detached");
+		_app->info_msg("Alsa: Detached.");
 	}
 }
 
@@ -131,7 +133,7 @@ AlsaDriver::refresh()
 			if (ignore(addr)) {
 				continue;
 			}
-			
+
 			create_port_view_internal(_app, addr, parent, port);
 		}
 	}
@@ -146,7 +148,7 @@ AlsaDriver::refresh()
 			if (ignore(*addr)) {
 				continue;
 			}
-			
+
 			PatchagePort* port = _app->canvas()->find_port(PortID(*addr, false));
 			if (!port) {
 				continue;
@@ -166,7 +168,7 @@ AlsaDriver::refresh()
 					_app->canvas()->add_connection(port,
 					                               port2,
 					                               port->color() + 0x22222200);
-				
+
 					snd_seq_query_subscribe_set_index(
 						subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);
 				}
@@ -209,10 +211,10 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 
 PatchageModule*
 AlsaDriver::find_or_create_module(
-		Patchage*          patchage,
-		uint8_t            client_id,
-		const std::string& client_name,
-		ModuleType         type)
+	Patchage*          patchage,
+	uint8_t            client_id,
+	const std::string& client_name,
+	ModuleType         type)
 {
 	PatchageModule* m = find_module(client_id, type);
 	if (!m) {
@@ -226,10 +228,10 @@ AlsaDriver::find_or_create_module(
 
 void
 AlsaDriver::create_port_view_internal(
-		Patchage*        patchage,
-		snd_seq_addr_t   addr,
-		PatchageModule*& m,
-		PatchagePort*&   port)
+	Patchage*        patchage,
+	snd_seq_addr_t   addr,
+	PatchageModule*& m,
+	PatchagePort*&   port)
 {
 	if (ignore(addr))
 		return;
@@ -277,9 +279,9 @@ AlsaDriver::create_port_view_internal(
 	}
 
 	/*cout << "ALSA PORT: " << client_name << " : " << port_name
-		<< " is_application = " << is_application
-		<< " is_duplex = " << is_duplex
-		<< " split = " << split << endl;*/
+	  << " is_application = " << is_application
+	  << " is_duplex = " << is_duplex
+	  << " split = " << split << endl;*/
 
 	if (!split) {
 		m = find_or_create_module(_app, addr.client, client_name, InputOutput);
@@ -309,7 +311,7 @@ AlsaDriver::create_port_view_internal(
 
 PatchagePort*
 AlsaDriver::create_port(PatchageModule& parent,
-		const string& name, bool is_input, snd_seq_addr_t addr)
+                        const string& name, bool is_input, snd_seq_addr_t addr)
 {
 	PatchagePort* ret = new PatchagePort(
 		parent, ALSA_MIDI, name, is_input,
@@ -376,7 +378,7 @@ AlsaDriver::connect(PatchagePort* src_port,
 	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
 
 	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		Raul::error << "[ALSA] Attempt to connect port with no address" << endl;
+		_app->error_msg("Alsa: Attempt to connect port with no address.");
 		return false;
 	}
 
@@ -385,7 +387,7 @@ AlsaDriver::connect(PatchagePort* src_port,
 
 	if (src.id.alsa_addr.client == dst.id.alsa_addr.client
 	    && src.id.alsa_addr.port == dst.id.alsa_addr.port) {
-		Raul::warn << "[ALSA] Refusing to connect port to itself" << endl;
+		_app->warning_msg("Alsa: Refusing to connect port to itself.");
 		return false;
 	}
 
@@ -401,22 +403,23 @@ AlsaDriver::connect(PatchagePort* src_port,
 
 	// Already connected (shouldn't happen)
 	if (!snd_seq_get_port_subscription(_seq, subs)) {
-		Raul::error << "[ALSA] Attempt to double subscribe ports" << endl;
+		_app->error_msg("Alsa: Attempt to double subscribe ports.");
 		result = false;
 	}
 
 	int ret = snd_seq_subscribe_port(_seq, subs);
 	if (ret < 0) {
-		Raul::error << "[ALSA] Subscription failed: " << snd_strerror(ret) << endl;
+		_app->error_msg((format("Alsa: Subscription failed (%1%).")
+		                 % snd_strerror(ret)).str());
 		result = false;
 	}
 
 	if (result)
-		_app->status_msg(string("[ALSA] Connected ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->info_msg(string("Alsa: Connected ")
+		               + src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->status_msg(string("[ALSA] Unable to connect ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->error_msg(string("Alsa: Unable to connect ")
+		                + src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
 }
@@ -433,7 +436,7 @@ AlsaDriver::disconnect(PatchagePort* src_port,
 	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
 
 	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		Raul::error << "[ALSA] Attempt to connect port with no address" << endl;
+		_app->error_msg("Alsa: Attempt to connect port with no address");
 		return false;
 	}
 
@@ -450,18 +453,20 @@ AlsaDriver::disconnect(PatchagePort* src_port,
 
 	// Not connected (shouldn't happen)
 	if (snd_seq_get_port_subscription(_seq, subs) != 0) {
-		Raul::error << "[ALSA] Attempt to unsubscribe ports that are not subscribed." << endl;
+		_app->error_msg("Alsa: Attempt to unsubscribe ports that are not subscribed.");
 		return false;
 	}
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		Raul::error << "[ALSA] Unsubscription failed: " << snd_strerror(ret) << endl;
+		_app->error_msg(string("Alsa: Unable to disconnect ")
+		                + src_port->full_name() + " => " + dst_port->full_name()
+		                + "(" + snd_strerror(ret) + ")");
 		return false;
 	}
 
-	_app->status_msg(string("[ALSA] Disconnected ")
-	                 + src_port->full_name() + " -> " + dst_port->full_name());
+	_app->info_msg(string("Alsa: Disconnected ")
+	               + src_port->full_name() + " => " + dst_port->full_name());
 
 	return true;
 }
@@ -474,22 +479,23 @@ AlsaDriver::create_refresh_port()
 	snd_seq_port_info_set_name(port_info, "System Announcement Reciever");
 	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
 	snd_seq_port_info_set_capability(port_info,
-		SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE|SND_SEQ_PORT_CAP_NO_EXPORT);
+	                                 SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE|SND_SEQ_PORT_CAP_NO_EXPORT);
 
 	int ret = snd_seq_create_port(_seq, port_info);
 	if (ret) {
-		Raul::error << "[ALSA] Error creating port: " << snd_strerror(ret) << endl;
+		_app->error_msg((format("Alsa: Error creating port (%1%): ")
+		                 % snd_strerror(ret)).str());
 		return false;
 	}
 
 	// Subscribe the port to the system announcer
 	ret = snd_seq_connect_from(_seq,
-		snd_seq_port_info_get_port(port_info),
-		SND_SEQ_CLIENT_SYSTEM,
-		SND_SEQ_PORT_SYSTEM_ANNOUNCE);
+	                           snd_seq_port_info_get_port(port_info),
+	                           SND_SEQ_CLIENT_SYSTEM,
+	                           SND_SEQ_PORT_SYSTEM_ANNOUNCE);
 	if (ret) {
-		Raul::error << "[ALSA] Could not connect to system announcer port: "
-		            << snd_strerror(ret) << endl;
+		_app->error_msg((format("Alsa: Failed to connect to system announce port (%1%)")
+		                 % snd_strerror(ret)).str());
 		return false;
 	}
 
@@ -508,7 +514,7 @@ void
 AlsaDriver::_refresh_main()
 {
 	if (!create_refresh_port()) {
-		Raul::error << "[ALSA] Could not create listen port, auto-refresh will not work." << endl;
+		_app->error_msg("Alsa: Could not create listen port, auto-refresh disabled.");
 		return;
 	}
 

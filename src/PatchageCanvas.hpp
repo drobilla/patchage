@@ -55,8 +55,6 @@ public:
 	void disconnect(FlowCanvas::Connectable* port1,
 	                FlowCanvas::Connectable* port2);
 
-	void status_message(const std::string& msg);
-
 	void index_port(const PortID& id, PatchagePort* port) {
 		_port_index.insert(std::make_pair(id, port));
 	}

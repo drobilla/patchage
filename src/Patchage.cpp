@@ -56,8 +56,6 @@
   #include "AlsaDriver.hpp"
 #endif
 
-#define LOG_TO_STATUS 1
-
 using std::cout;
 using std::endl;
 using std::string;
@@ -78,7 +76,6 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_about_win)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
-	, INIT_WIDGET(_main_xrun_progress)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
 	, INIT_WIDGET(_menu_file_quit)
@@ -92,18 +89,13 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
 	, INIT_WIDGET(_menu_view_refresh)
-	, INIT_WIDGET(_menu_view_statusbar)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
 	, INIT_WIDGET(_menu_zoom_normal)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
-	, INIT_WIDGET(_latency_frames_label)
-	, INIT_WIDGET(_latency_ms_label)
-	, INIT_WIDGET(_sample_rate_label)
 	, INIT_WIDGET(_status_text)
-	, INIT_WIDGET(_statusbar)
 	, _attach(true)
 	, _driver_detached(false)
 	, _refresh(false)
@@ -183,8 +175,6 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
-	_menu_view_statusbar->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_statusbar));
 	_menu_view_messages->signal_toggled().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
 	_menu_help_about->signal_activate().connect(
@@ -202,6 +192,14 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_messages_close));
 	_messages_win->signal_delete_event().connect(
 			sigc::mem_fun(this, &Patchage::on_messages_delete));
+
+	_error_tag = Gtk::TextTag::create();
+	_error_tag->property_foreground() = "#FF0000";
+	_status_text->get_buffer()->get_tag_table()->add(_error_tag);
+
+	_warning_tag = Gtk::TextTag::create();
+	_warning_tag->property_foreground() = "#FFFF00";
+	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
 
 	_canvas->show();
 	_main_win->present();
@@ -277,8 +275,6 @@ Patchage::attach()
 	_enable_refresh = true;
 
 	refresh();
-
-	update_statusbar();
 }
 
 bool
@@ -321,66 +317,6 @@ Patchage::idle_callback()
 
 	_refresh         = false;
 	_driver_detached = false;
-
-	// Update load every 10 idle callbacks
-	static int count = 0;
-	if (++count == 10) {
-		update_load();
-		count = 0;
-	}
-
-	return true;
-}
-
-void
-Patchage::update_statusbar()
-{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_enable_refresh && _jack_driver->is_attached()) {
-		_enable_refresh = false;
-
-		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
-		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
-
-		std::stringstream ss;
-		ss << buffer_size;
-		_latency_frames_label->set_text(ss.str());
-
-		ss.str("");
-		ss << (sample_rate / 1000);
-		_sample_rate_label->set_text(ss.str());
-
-		ss.str("");
-		if (sample_rate != 0)
-			ss << buffer_size * 1000 / sample_rate;
-		_latency_ms_label->set_text(ss.str());
-		
-		_enable_refresh = true;
-	}
-#endif
-}
-
-bool
-Patchage::update_load()
-{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (!_jack_driver->is_attached())
-		return true;
-
-	char tmp_buf[8];
-	snprintf(tmp_buf, sizeof(tmp_buf), "%u", _jack_driver->get_xruns());
-
-	_main_xrun_progress->set_text(string(tmp_buf) + " Dropouts");
-
-	static float last_max_dsp_load = 0;
-
-	const float max_dsp_load = _jack_driver->get_max_dsp_load();
-
-	if (max_dsp_load != last_max_dsp_load) {
-		_main_xrun_progress->set_fraction(max_dsp_load);
-		last_max_dsp_load = max_dsp_load;
-	}
-#endif
 
 	return true;
 }
@@ -434,33 +370,25 @@ Patchage::store_window_location()
 void
 Patchage::error_msg(const std::string& msg)
 {
-#if defined(LOG_TO_STATUS)
-	status_msg(msg);
-#endif
-#if defined(LOG_TO_STD)
-	cerr << msg << endl;
-#endif
+	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
+	buffer->insert_with_tag(buffer->end(), msg + "\n", _error_tag);
+	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
 void
 Patchage::info_msg(const std::string& msg)
 {
-#if defined(LOG_TO_STATUS)
-	status_msg(msg);
-#endif
-#if defined(LOG_TO_STD)
-	cerr << msg << endl;
-#endif
+	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
+	buffer->insert(buffer->end(), msg + "\n");
+	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
 void
-Patchage::status_msg(const string& msg)
+Patchage::warning_msg(const std::string& msg)
 {
-	if (_status_text->get_buffer()->size() > 0)
-		_status_text->get_buffer()->insert(_status_text->get_buffer()->end(), "\n");
-
-	_status_text->get_buffer()->insert(_status_text->get_buffer()->end(), msg);
-	_status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(), 0);
+	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
+	buffer->insert_with_tag(buffer->end(), msg + "\n", _warning_tag);
+	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
 void
@@ -482,8 +410,6 @@ void
 Patchage::connect_widgets()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver->signal_attached.connect(
-			sigc::mem_fun(this, &Patchage::update_statusbar));
 	_jack_driver->signal_attached.connect(sigc::bind(
 			sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive), false));
 	_jack_driver->signal_attached.connect(
@@ -712,15 +638,6 @@ Patchage::on_store_positions()
 {
 	store_window_location();
 	_state_manager->save(_settings_filename);
-}
-
-void
-Patchage::on_view_statusbar()
-{
-	if (_menu_view_statusbar->get_active())
-		_statusbar->show();
-	else
-		_statusbar->hide();
 }
 
 bool

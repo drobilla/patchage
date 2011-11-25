@@ -19,6 +19,8 @@
 #include <set>
 #include <string>
 
+#include <boost/format.hpp>
+
 #include <jack/jack.h>
 #include <jack/statistics.h>
 #include <jack/thread.h>
@@ -35,6 +37,7 @@
 
 using std::endl;
 using std::string;
+using boost::format;
 
 JackDriver::JackDriver(Patchage* app)
 	: _app(app)
@@ -67,7 +70,7 @@ JackDriver::attach(bool launch_daemon)
 	jack_options_t options = (!launch_daemon) ? JackNoStartServer : JackNullOption;
 	_client = jack_client_open("Patchage", options, NULL);
 	if (_client == NULL) {
-		_app->status_msg("[JACK] Unable to create client");
+		_app->error_msg("Jack: Unable to create client.");
 		_is_activated = false;
 	} else {
 		jack_client_t* const client = _client;
@@ -77,7 +80,6 @@ JackDriver::attach(bool launch_daemon)
 		jack_set_client_registration_callback(client, jack_client_registration_cb, this);
 		jack_set_port_registration_callback(client, jack_port_registration_cb, this);
 		jack_set_port_connect_callback(client, jack_port_connect_cb, this);
-		jack_set_buffer_size_callback(client, jack_buffer_size_cb, this);
 		jack_set_xrun_callback(client, jack_xrun_cb, this);
 
 		_buffer_size = jack_get_buffer_size(client);
@@ -85,9 +87,18 @@ JackDriver::attach(bool launch_daemon)
 		if (!jack_activate(client)) {
 			_is_activated = true;
 			signal_attached.emit();
-			_app->status_msg("[JACK] Attached");
+			std::stringstream ss;
+			_app->info_msg("Jack: Attached.");
+			const jack_nframes_t buffer_size = this->buffer_size();
+			const jack_nframes_t sample_rate = this->sample_rate();
+			if (sample_rate != 0) {
+				const int latency_ms = lrintf((buffer_size * 1000 / (float)sample_rate));
+				ss << "Jack: Latency: " << buffer_size << " frames @ "
+				   << (sample_rate / 1000) << "kHz (" << latency_ms << "ms).";
+				_app->info_msg(ss.str());
+			}
 		} else {
-			_app->status_msg("[JACK] ERROR: Failed to attach");
+			_app->error_msg("Jack: Client activation failed.");
 			_is_activated = false;
 		}
 	}
@@ -104,7 +115,7 @@ JackDriver::detach()
 	}
 	_is_activated = false;
 	signal_detached.emit();
-	_app->status_msg("[JACK] Detached");
+	_app->info_msg("Jack: Detached.");
 }
 
 static bool
@@ -129,7 +140,8 @@ JackDriver::create_port_view(Patchage*     patchage,
 	
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
-		Raul::error << "[JACK] Failed to find port with ID " << id << endl;
+		_app->error_msg((format("Jack: Failed to find port with ID `%1%'.")
+		                 % id).str());;
 		return NULL;
 	}
 
@@ -175,7 +187,8 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
 		port_type = JACK_MIDI;
 	} else {
-		Raul::warn << jack_port_name(port) << " has unknown type \'" << type_str << "\'" << endl;
+		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2'.")
+		                   % jack_port_name(port) % type_str).str());
 		return NULL;
 	}
 
@@ -352,11 +365,11 @@ JackDriver::connect(PatchagePort* src_port,
 	int result = jack_connect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->status_msg(string("[JACK] Connected ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->info_msg(string("Jack: Connected ")
+			+ src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->status_msg(string("[JACK] Unable to connect ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->error_msg(string("Jack: Unable to connect ")
+			+ src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
 }
@@ -375,11 +388,11 @@ JackDriver::disconnect(PatchagePort* const src_port,
 	int result = jack_disconnect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->status_msg(string("[JACK] Disconnected ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->info_msg(string("Jack: Disconnected ")
+			+ src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->status_msg(string("[JACK] Unable to disconnect ")
-			+ src_port->full_name() + " -> " + dst_port->full_name());
+		_app->error_msg(string("Jack: Unable to disconnect ")
+			+ src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
 }
@@ -424,26 +437,6 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int con
 }
 
 int
-JackDriver::jack_buffer_size_cb(jack_nframes_t buffer_size, void* jack_driver)
-{
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
-
-	jack_reset_max_delayed_usecs(me->_client);
-
-	if (buffer_size == 0) {
-		Raul::error << "Jack is insane and reporting a buffer size of 0" << endl;
-		return 0;
-	}
-
-	me->_buffer_size = buffer_size;
-	me->reset_xruns();
-	me->reset_max_dsp_load();
-
-	return 0;
-}
-
-int
 JackDriver::jack_xrun_cb(void* jack_driver)
 {
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
@@ -451,6 +444,10 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 
 	++me->_xruns;
 	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
+
+	me->_app->warning_msg((format("Jack: xrun of %1%ms.")
+	                       % me->_xrun_delay).str());
+
 	jack_reset_max_delayed_usecs(me->_client);
 
 	return 0;
@@ -459,9 +456,9 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
-	Raul::info << "[JACK] Shutdown" << endl;
 	assert(jack_driver);
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	me->_app->info_msg("Jack: Shutdown.");
 	Glib::Mutex::Lock lock(me->_shutdown_mutex);
 	me->_client = NULL;
 	me->_is_activated = false;
@@ -471,7 +468,7 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 void
 JackDriver::error_cb(const char* msg)
 {
-	Raul::error << "[JACK] " << msg << endl;
+	Raul::error << "jack error: " << msg << endl;
 }
 
 jack_nframes_t
@@ -503,29 +500,11 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 	}
 
 	if (jack_set_buffer_size(_client, size)) {
-		_app->status_msg("[JACK] ERROR: Unable to set buffer size");
+		_app->error_msg("[JACK] Unable to set buffer size");
 		return false;
 	} else {
 		return true;
 	}
-}
-
-float
-JackDriver::get_max_dsp_load()
-{
-	const float max_delay = jack_get_max_delayed_usecs(_client);
-	const float rate      = sample_rate();
-	const float size      = buffer_size();
-	const float period    = size / rate * 1000000.0f; // usec
-
-	return (max_delay > period) ? 1.0 : (max_delay / period);
-}
-
-void
-JackDriver::reset_max_dsp_load()
-{
-	if (_client)
-		jack_reset_max_delayed_usecs(_client);
 }
 
 void

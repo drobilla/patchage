@@ -57,9 +57,6 @@ public:
 	size_t get_xruns();
 	void   reset_xruns();
 
-	float get_max_dsp_load();
-	void  reset_max_dsp_load();
-
 	float          sample_rate();
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
@@ -156,8 +153,6 @@ private:
 	bool _server_started;
 
 	dbus_uint64_t _graph_version;
-
-	float _max_dsp_load;
 };
 
 #endif // PATCHAGE_JACKDBUSDRIVER_HPP
