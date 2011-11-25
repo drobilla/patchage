@@ -874,14 +874,13 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                   <object class="GtkMenu" id="view_menu_menu">
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu_view_messages">
+                      <object class="GtkMenuItem" id="menu_view_messages">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Messages</property>
+                        <property name="label" translatable="yes">_Messages...</property>
                         <property name="use_underline">True</property>
                         <accelerator key="M" signal="activate" modifiers="GDK_CONTROL_MASK"/>
-                        <signal name="activate" handler="on_messages1_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -898,8 +897,8 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <accelerator key="equal" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="plus" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="equal" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>

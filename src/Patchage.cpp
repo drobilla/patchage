@@ -175,7 +175,7 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
-	_menu_view_messages->signal_toggled().connect(
+	_menu_view_messages->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
@@ -190,8 +190,6 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_messages_clear));
 	_messages_close_but->signal_clicked().connect(
 			sigc::mem_fun(this, &Patchage::on_messages_close));
-	_messages_win->signal_delete_event().connect(
-			sigc::mem_fun(this, &Patchage::on_messages_delete));
 
 	_error_tag = Gtk::TextTag::create();
 	_error_tag->property_foreground() = "#FF0000";
@@ -373,6 +371,7 @@ Patchage::error_msg(const std::string& msg)
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
 	buffer->insert_with_tag(buffer->end(), msg + "\n", _error_tag);
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
+	_messages_win->present();
 }
 
 void
@@ -453,14 +452,14 @@ Patchage::show_open_session_dialog()
 
 	const std::string dir = dialog.get_filename();
 	if (g_chdir(dir.c_str())) {
-		Raul::error << "Failed to switch to session directory " << dir << endl;
+		error_msg("Failed to switch to session directory " + dir);
 		return;
 	}
 
 	if (system("./jack-session") < 0) {
-		Raul::error << "Error executing `./jack-session' in " << dir << endl;
+		error_msg("Error executing `./jack-session' in " + dir);
 	} else {
-		Raul::info << "Loaded session " << dir << endl;
+		info_msg("Loaded session " + dir);
 	}
 }
 
@@ -480,7 +479,7 @@ Patchage::save_session(bool close)
 
 	std::string path = dialog.get_filename();
 	if (g_mkdir_with_parents(path.c_str(), 0740)) {
-		Raul::error << "Failed to create session directory " << path << endl;
+		error_msg("Failed to create session directory " + path);
 		return;
 	}
 
@@ -601,14 +600,7 @@ Patchage::on_messages_clear()
 void
 Patchage::on_messages_close()
 {
-	_menu_view_messages->set_active(false);
-}
-
-bool
-Patchage::on_messages_delete(GdkEventAny*)
-{
-	_menu_view_messages->set_active(false);
-	return true;
+	_messages_win->hide();
 }
 
 void
@@ -627,10 +619,7 @@ Patchage::on_quit()
 void
 Patchage::on_show_messages()
 {
-	if (_menu_view_messages->get_active())
-		_messages_win->present();
-	else
-		_messages_win->hide();
+	_messages_win->present();
 }
 
 void

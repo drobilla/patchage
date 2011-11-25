@@ -14,10 +14,11 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "patchage-config.h"
+#include <boost/format.hpp>
 
-#include "raul/log.hpp"
 #include "raul/SharedPtr.hpp"
+
+#include "patchage-config.h"
 
 #if defined(HAVE_JACK_DBUS)
   #include "JackDbusDriver.hpp"
@@ -34,6 +35,7 @@
 #include "PatchagePort.hpp"
 
 using std::string;
+using boost::format;
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: FlowCanvas::Canvas(width, height)
@@ -113,7 +115,8 @@ PatchageCanvas::remove_port(const PortID& id)
 {
 	PatchagePort* const port = find_port(id);
 	if (!port) {
-		Raul::error << "Failed to find port " << id << " to remove" << std::endl;
+		_app->error_msg((format("Failed to find port with ID `%1' to remove.")
+		                 % id).str());
 	}
 
 	_port_index.erase(id);

@@ -90,7 +90,6 @@ protected:
 	void on_help_about();
 	void on_messages_clear();
 	void on_messages_close();
-	bool on_messages_delete(GdkEventAny*);
 	void on_quit();
 	void on_show_messages();
 	void on_store_positions();
@@ -141,7 +140,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_store_positions;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
-	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
+	Widget<Gtk::MenuItem>       _menu_view_messages;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
