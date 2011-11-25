@@ -74,16 +74,14 @@ def configure(conf):
         autowaf.define(conf, 'HAVE_JACK_DBUS', 1)
     else:
         autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
-                          atleast_version='0.120.0', mandatory=False)
+                          atleast_version='0.107.0', mandatory=False)
         if conf.is_defined('HAVE_JACK'):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
             if not Options.options.no_jack_session:
-                autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
-        else:
-            autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
-                              atleast_version='0.107.0', mandatory=False)
-            if conf.is_defined('HAVE_JACK'):
-                autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
+                autowaf.check_pkg(conf, 'jack', uselib_store='NEW_JACK',
+                                  atleast_version='0.120.0', mandatory=False)
+                if conf.is_defined('HAVE_NEW_JACK'):
+                    autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
@@ -141,7 +139,7 @@ def build(bld):
         prog.source += ' src/DBus.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
         prog.source += ' src/JackDriver.cpp '
-        prog.uselib += ' JACK '
+        prog.uselib += ' JACK NEWJACK '
     if bld.is_defined('HAVE_ALSA'):
         prog.source += ' src/AlsaDriver.cpp '
         prog.uselib += ' ALSA '
