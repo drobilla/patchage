@@ -23,7 +23,6 @@
 
 #include <jack/jack.h>
 #include <jack/statistics.h>
-#include <jack/thread.h>
 
 #include "raul/SharedPtr.hpp"
 #include "raul/log.hpp"
