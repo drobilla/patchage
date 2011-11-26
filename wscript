@@ -69,7 +69,7 @@ def configure(conf):
     conf.check(function_name='dladdr',
                header_name='dlfcn.h',
                cflags='-D_GNU_SOURCE',
-               linkflags='-ldl',
+               lib=['dl'],
                define_name='HAVE_DLADDR',
                mandatory=False)
 
@@ -151,7 +151,7 @@ def build(bld):
         prog.source += ' src/AlsaDriver.cpp '
         prog.uselib += ' ALSA '
     if bld.is_defined('PATCHAGE_BINLOC'):
-        prog.linkflags = ['-ldl']
+        prog.lib = ['dl']
 
     # XML UI definition
     bld(features         = 'subst',
