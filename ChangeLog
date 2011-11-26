@@ -2,8 +2,9 @@ patchage (UNRELEASED) unstable; urgency=low
 
   * Make it possible to remove connections by middle-clicking on their
     handle, or selecting them and pressing delete.
-  * Fix font configuration on OSX.
   * Remove Raul dependency.
+  * Fix font configuration on OSX.
+  * Use Mac style key bindings on OSX.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 

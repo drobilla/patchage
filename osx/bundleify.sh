@@ -3,26 +3,36 @@
 bundle=$1
 exe=$2
 
-libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
-
 mkdir -p "$bundle/Contents/lib"
+mkdir -p "$bundle/Contents/lib/engines"
+mkdir -p "$bundle/Contents/lib/modules"
+
+# Replace Control with Command in key bindings
+sed -i '' 's/GDK_CONTROL_MASK/GDK_META_MASK/' $bundle/Contents/patchage.ui
+
+# Copy GTK and pango modules to bundle
+cp /opt/local/lib/gtk-2.0/2.10.0/engines/libclearlooks.so $bundle/Contents/lib/engines
+cp /opt/local/lib/pango/1.6.0/modules/*basic*.so $bundle/Contents/lib/modules
+
+# Copy libraries depended on by the executable to bundle
+libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
 for l in $libs; do
 	cp $l $bundle/Contents/lib
 done
 
-mkdir -p "$bundle/Contents/lib/engines"
-cp /opt/local/lib/gtk-2.0/2.10.0/engines/libclearlooks.so $bundle/Contents/lib/engines
-
-mkdir -p "$bundle/Contents/lib/modules"
-cp /opt/local/lib/pango/1.6.0/modules/*basic*.so $bundle/Contents/lib/modules
-
+# Add libraries depended on by those libraries
 reclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
-
 for l in $reclibs; do
 	cp $l $bundle/Contents/lib
 done
 
-for l in $libs $reclibs; do
+# ... and libraries depended on by those libraries (yes, this should be done more sanely)
+recreclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
+for l in $recreclibs; do
+	cp $l $bundle/Contents/lib
+done
+
+for l in $libs $reclibs $recreclibs; do
 	lname=`echo $l | sed 's/.*\///'`
 	lid="@executable_path/lib/$lname"
 	lpath="$bundle/Contents/lib/$lname"
