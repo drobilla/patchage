@@ -300,7 +300,7 @@ PatchageCanvas::add_connection(FlowCanvas::Connectable* tail,
 	c->signal_event.connect(
 		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
 		              c));
-	return FlowCanvas::Canvas::add_connection(c);
+	return true;
 }
 
 bool
