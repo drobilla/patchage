@@ -123,7 +123,9 @@ is_jack_port(const PatchagePort* port)
 void
 JackDriver::destroy_all()
 {
-	_app->canvas()->remove_ports(is_jack_port);
+	if (_app->canvas()) {
+		_app->canvas()->remove_ports(is_jack_port);
+	}
 }
 
 PatchagePort*
