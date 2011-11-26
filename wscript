@@ -150,7 +150,7 @@ def build(bld):
         target           = out_base + 'patchage.ui',
         install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
         chmod            = Utils.O644,
-            PATCHAGE_VERSION = PATCHAGE_VERSION)
+        PATCHAGE_VERSION = PATCHAGE_VERSION)
 
     # 'Desktop' file (menu entry, icon, etc)
     bld(features         = 'subst',
