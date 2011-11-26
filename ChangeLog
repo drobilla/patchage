@@ -5,6 +5,7 @@ patchage (UNRELEASED) unstable; urgency=low
   * Remove Raul dependency.
   * Fix font configuration on OSX.
   * Use Mac style key bindings on OSX.
+  * Integrate with Mac menu bar on OSX.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 

@@ -30,6 +30,7 @@
 #include <gtkmm/imagemenuitem.h>
 #include <gtkmm/label.h>
 #include <gtkmm/main.h>
+#include <gtkmm/menubar.h>
 #include <gtkmm/menuitem.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
@@ -129,6 +130,7 @@ protected:
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
+	Widget<Gtk::MenuBar>        _menubar;
 	Widget<Gtk::MenuItem>       _menu_alsa_connect;
 	Widget<Gtk::MenuItem>       _menu_alsa_disconnect;
 	Widget<Gtk::MenuItem>       _menu_file_quit;

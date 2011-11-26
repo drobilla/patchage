@@ -774,7 +774,7 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparatorMenuItem" id="separator3">
+                      <object class="GtkSeparatorMenuItem" id="menu_file_quit_sep">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>

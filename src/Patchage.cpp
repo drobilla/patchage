@@ -41,18 +41,28 @@
 #include "StateManager.hpp"
 
 #if defined(HAVE_JACK_DBUS)
-  #include "JackDbusDriver.hpp"
+    #include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-  #include "JackDriver.hpp"
-  #include <jack/statistics.h>
+    #include "JackDriver.hpp"
+    #include <jack/statistics.h>
 #endif
 
 #ifdef PATCHAGE_JACK_SESSION
-#include <jack/session.h>
+    #include <jack/session.h>
+#endif
+
+#ifdef PATCHAGE_GTK_OSX
+    #include <gtkosxapplication.h>
+
+static gboolean
+can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
+{
+  return gtk_widget_is_sensitive(widget);
+}
 #endif
 
 #ifdef HAVE_ALSA
-  #include "AlsaDriver.hpp"
+    #include "AlsaDriver.hpp"
 #endif
 
 using std::cout;
@@ -75,6 +85,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_about_win)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
+	, INIT_WIDGET(_menubar)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
 	, INIT_WIDGET(_menu_file_quit)
@@ -143,7 +154,7 @@ Patchage::Patchage(int argc, char** argv)
 	_main_scrolledwin->property_vadjustment().get_value()->set_step_increment(10);
 
 	_main_scrolledwin->signal_scroll_event().connect(
-			sigc::mem_fun(this, &Patchage::on_scroll));
+		sigc::mem_fun(this, &Patchage::on_scroll));
 
 #ifdef PATCHAGE_JACK_SESSION
 	_menu_open_session->signal_activate().connect(
@@ -235,6 +246,19 @@ Patchage::Patchage(int argc, char** argv)
 	// Idle callback, check if we need to refresh
 	Glib::signal_timeout().connect(
 			sigc::mem_fun(this, &Patchage::idle_callback), 100);
+
+#ifdef PATCHAGE_GTK_OSX
+	// Set up Mac menu bar
+	GtkOSXApplication* osxapp;
+	gtk_osxapplication_ready(osxapp);
+
+	_menubar->hide();
+	gtk_osxapplication_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
+	gtk_osxapplication_insert_app_menu_item(
+		osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
+	g_signal_connect(_menubar->gobj(), "can-activate-accel", 
+	                 G_CALLBACK(can_activate_cb), NULL);
+#endif
 }
 
 Patchage::~Patchage()

@@ -11,7 +11,7 @@ mkdir -p "$bundle/Contents/lib/modules"
 sed -i '' 's/GDK_CONTROL_MASK/GDK_META_MASK/' $bundle/Contents/patchage.ui
 
 # Copy GTK and pango modules to bundle
-cp /opt/local/lib/gtk-2.0/2.10.0/engines/libclearlooks.so $bundle/Contents/lib/engines
+cp /usr/local/lib/gtk-2.0/2.10.0/engines/libquartz.so  $bundle/Contents/lib/engines
 cp /opt/local/lib/pango/1.6.0/modules/*basic*.so $bundle/Contents/lib/modules
 
 # Copy libraries depended on by the executable to bundle

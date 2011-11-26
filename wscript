@@ -59,6 +59,12 @@ def configure(conf):
     autowaf.check_pkg(conf, 'flowcanvas-1', uselib_store='FLOWCANVAS',
                       atleast_version='1.0.0', mandatory=True)
 
+    if Options.platform == 'darwin':
+        autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
+                          atleast_version='1.0.0', mandatory=True)
+        if conf.is_defined('HAVE_GTK_OSX'):
+            autowaf.define(conf, 'PATCHAGE_GTK_OSX', 1)
+
     # Check for dladdr
     conf.check(function_name='dladdr',
                header_name='dlfcn.h',
@@ -108,6 +114,9 @@ def configure(conf):
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
     autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
+    if Options.platform == 'darwin':
+        autowaf.display_msg(conf, "Mac Integration", conf.is_defined('HAVE_GTK_OSX'))
+        
     print('')
 
 def build(bld):
@@ -120,7 +129,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD')
+    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD GTK_OSX')
     prog.source = '''
             src/Patchage.cpp
             src/PatchageCanvas.cpp
