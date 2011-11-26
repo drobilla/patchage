@@ -125,7 +125,7 @@ void
 PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 {
 	std::set<PatchageModule*> empty;
-	for (Items::iterator i = items().begin(); i != items().end(); ++i) {
+	for (Items::const_iterator i = items().begin(); i != items().end(); ++i) {
 		PatchageModule* module = dynamic_cast<PatchageModule*>(*i);
 		if (!module)
 			continue;
