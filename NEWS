@@ -1,15 +1,17 @@
-patchage (UNRELEASED) unstable; urgency=low
+patchage (UNRELEASED) stable;
 
   * Make it possible to remove connections by middle-clicking on their
     handle, or selecting them and pressing delete.
   * Remove Raul dependency.
+  * Update to use latest FlowCanvas (significant performance improvements).
+  * Remove LASH support and aggressively simplify UI.
   * Fix font configuration on OSX.
   * Use Mac style key bindings on OSX.
   * Integrate with Mac menu bar on OSX.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 
-patchage (0.5.0) unstable; urgency=low
+patchage (0.5.0) stable;
 
   * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
   * Add -J (--no-jack) command line option
@@ -28,7 +30,7 @@ patchage (0.5.0) unstable; urgency=low
 
  -- David Robillard <d@drobilla.net>  Tue, 11 Jan 2011 17:42:07 -0500
 
-patchage (0.4.5) unstable; urgency=low
+patchage (0.4.5) stable;
 
   * Install SVG icon
   * Fix compilation without Jack
@@ -38,15 +40,13 @@ patchage (0.4.5) unstable; urgency=low
 
  -- David Robillard <d@drobilla.net>  Fri, 03 Sep 2010 20:24:36 -0400
 
-
-patchage (0.4.4) unstable; urgency=low
+patchage (0.4.4) stable;
 
   * Fix incorrect icon install paths
 
  -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 10:17:37 -0500
 
-
-patchage (0.4.3) unstable; urgency=low
+patchage (0.4.3) stable;
 
   * Switch to waf build system
   * Fix compilation with GCC 4.4
@@ -56,18 +56,15 @@ patchage (0.4.3) unstable; urgency=low
 
  -- David Robillard <d@drobilla.net>  Tue, 08 Dec 2009 21:13:37 -0500
 
-
-patchage (0.4.2) unstable; urgency=low
+patchage (0.4.2) stable;
 
   * LASH support via D-BUS from ladi-patchage branch
   * Remove old LASH support via liblash
 
  -- David Robillard <d@drobilla.net>  Tue, 09 Sep 2008 15:41:04 -0400
 
+patchage (0.4.1) stable;
 
-patchage (0.4.1) unstable; urgency=low
-
-  * Initial Debian release
+  * Initial release
 
  -- David Robillard <d@drobilla.net>  Sun, 06 Jul 2008 17:19:55 -0400
-
