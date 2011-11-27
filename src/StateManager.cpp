@@ -16,8 +16,9 @@
 
 #include <stdlib.h>
 
-#include <stdexcept>
 #include <fstream>
+#include <iostream>
+#include <stdexcept>
 
 #include "StateManager.hpp"
 #include "Patchage.hpp"
