@@ -63,9 +63,9 @@ public:
 
 	void add_module(const std::string& name, PatchageModule* module);
 
-	bool add_connection(FlowCanvas::Connectable* tail,
-	                    FlowCanvas::Connectable* head,
-	                    uint32_t color);
+	bool make_connection(FlowCanvas::Connectable* tail,
+	                     FlowCanvas::Connectable* head,
+	                     uint32_t color);
 
 	void remove_port(const PortID& id);
 

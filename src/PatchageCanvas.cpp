@@ -290,9 +290,9 @@ PatchageCanvas::on_event(GdkEvent* ev)
 }
 
 bool
-PatchageCanvas::add_connection(FlowCanvas::Connectable* tail,
-                               FlowCanvas::Connectable* head,
-                               uint32_t                 color)
+PatchageCanvas::make_connection(FlowCanvas::Connectable* tail,
+                                FlowCanvas::Connectable* head,
+                                uint32_t                 color)
 {
 	FlowCanvas::Connection* c = new FlowCanvas::Connection(
 		*this, tail, head, color);

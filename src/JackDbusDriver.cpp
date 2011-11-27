@@ -620,7 +620,7 @@ JackDriver::connect_ports(
 		return;
 	}
 
-	_app->canvas()->add_connection(port1, port2, port1->color() + 0x22222200);
+	_app->canvas()->make_connection(port1, port2, port1->color() + 0x22222200);
 }
 
 void
