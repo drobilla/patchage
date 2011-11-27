@@ -278,7 +278,7 @@ bool
 PatchageCanvas::on_event(GdkEvent* ev)
 {
 	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_Delete) {
-		Connections cs = selected_connections();
+		SelectedConnections cs = selected_connections();
 		clear_selection();
 
 		for (Connections::const_iterator i = cs.begin(); i != cs.end(); ++i) {

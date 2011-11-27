@@ -162,7 +162,7 @@ AlsaDriver::refresh()
 					continue;
 
 				PatchagePort* port2 = _app->canvas()->find_port(PortID(*addr2, true));
-				if (port2 && !port->is_connected_to(port2)) {
+				if (port2 && !_app->canvas()->get_connection(port, port2)) {
 					_app->canvas()->make_connection(port,
 					                                port2,
 					                                port->color() + 0x22222200);
