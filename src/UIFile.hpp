@@ -18,6 +18,7 @@
 #define PATCHAGE_GLADEFILE_HPP
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 
