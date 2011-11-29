@@ -24,7 +24,6 @@
 
 #include <iostream>
 
-#include <libgnomecanvasmm/init.h>
 #include <glibmm/exception.h>
 
 #include "Patchage.hpp"
@@ -71,7 +70,6 @@ main(int argc, char** argv)
 
 	Glib::thread_init();
 
-	Gnome::Canvas::init();
 	Gtk::Main app(argc, argv);
 
 	Patchage patchage(argc, argv);

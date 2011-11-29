@@ -48,7 +48,7 @@ def configure(conf):
                       mandatory=False)
     autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
                       mandatory=False)
-    autowaf.check_pkg(conf, 'libgnomecanvasmm-2.6', uselib_store='GNOMECANVASMM',
+    autowaf.check_pkg(conf, 'libgnomecanvas-2.0', uselib_store='GNOMECANVAS',
                       mandatory=True)
     autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD',
                       atleast_version='2.14.0', mandatory=True)
@@ -129,7 +129,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVASMM GTHREAD GTK_OSX')
+    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
             src/Patchage.cpp
             src/PatchageCanvas.cpp

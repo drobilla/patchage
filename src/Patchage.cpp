@@ -148,7 +148,7 @@ Patchage::Patchage(int argc, char** argv)
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
 
-	_main_scrolledwin->add(*_canvas);
+	_main_scrolledwin->add(_canvas->widget());
 
 	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(10);
 	_main_scrolledwin->property_vadjustment().get_value()->set_step_increment(10);
@@ -209,7 +209,7 @@ Patchage::Patchage(int argc, char** argv)
 	_warning_tag->property_foreground() = "#FFFF00";
 	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
 
-	_canvas->show();
+	_canvas->widget().show();
 	_main_win->present();
 
 	_state_manager->load(_settings_filename);
@@ -241,7 +241,7 @@ Patchage::Patchage(int argc, char** argv)
 	connect_widgets();
 	update_state();
 
-	_canvas->grab_focus();
+	_canvas->widget().grab_focus();
 
 	// Idle callback, check if we need to refresh
 	Glib::signal_timeout().connect(
