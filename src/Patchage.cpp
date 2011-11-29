@@ -304,7 +304,6 @@ Patchage::idle_callback()
 	// Initial run, attach
 	if (_attach) {
 		attach();
-		_canvas->scroll_to_center();
 		_attach = false;
 	}
 

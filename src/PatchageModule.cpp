@@ -90,8 +90,8 @@ PatchageModule::load_location()
 	if (_app->state_manager()->get_module_location(_name, _type, loc))
 		move_to(loc.x, loc.y);
 	else
-		move_to((_canvas->width()/2) - 100 + rand() % 400,
-		        (_canvas->height()/2) - 100 + rand() % 400);
+		move_to(20 + rand() % 640,
+		        20 + rand() % 480);
 }
 
 void
