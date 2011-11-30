@@ -533,8 +533,8 @@ Patchage::save_session(bool close)
 
 	for (FlowCanvas::Canvas::Connections::const_iterator c = _canvas->connections().begin();
 	     c != _canvas->connections().end(); ++c) {
-		PatchagePort* src = dynamic_cast<PatchagePort*>((*c)->source());
-		PatchagePort* dst = dynamic_cast<PatchagePort*>((*c)->dest());
+		PatchagePort* src = dynamic_cast<PatchagePort*>((*c)->get_tail());
+		PatchagePort* dst = dynamic_cast<PatchagePort*>((*c)->get_head());
 
 		if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
 			continue;

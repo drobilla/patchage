@@ -267,7 +267,7 @@ PatchageCanvas::on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev)
 			select_connection(c);
 			return true;
 		case 2:
-			disconnect(c->source(), c->dest());
+			disconnect(c->get_tail(), c->get_head());
 			return true;
 		}
 	}
@@ -282,7 +282,7 @@ PatchageCanvas::on_event(GdkEvent* ev)
 		clear_selection();
 
 		for (Connections::const_iterator i = cs.begin(); i != cs.end(); ++i) {
-			disconnect((*i)->source(), (*i)->dest());
+			disconnect((*i)->get_tail(), (*i)->get_head());
 		}
 	}
 
