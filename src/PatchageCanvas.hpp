@@ -49,11 +49,11 @@ public:
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
 
-	void connect(FlowCanvas::Connectable* port1,
-	             FlowCanvas::Connectable* port2);
+	void connect(FlowCanvas::Joinable* port1,
+	             FlowCanvas::Joinable* port2);
 
-	void disconnect(FlowCanvas::Connectable* port1,
-	                FlowCanvas::Connectable* port2);
+	void disconnect(FlowCanvas::Joinable* port1,
+	                FlowCanvas::Joinable* port2);
 
 	void index_port(const PortID& id, PatchagePort* port) {
 		_port_index.insert(std::make_pair(id, port));
@@ -63,9 +63,9 @@ public:
 
 	void add_module(const std::string& name, PatchageModule* module);
 
-	bool make_connection(FlowCanvas::Connectable* tail,
-	                     FlowCanvas::Connectable* head,
-	                     uint32_t color);
+	bool make_connection(FlowCanvas::Joinable* tail,
+	                     FlowCanvas::Joinable* head,
+	                     uint32_t              color);
 
 	void remove_port(const PortID& id);
 
