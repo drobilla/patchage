@@ -296,7 +296,6 @@ PatchageCanvas::make_connection(FlowCanvas::Connectable* tail,
 {
 	FlowCanvas::Connection* c = new FlowCanvas::Connection(
 		*this, tail, head, color);
-	c->show_handle(true);
 	c->signal_event.connect(
 		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
 		              c));
