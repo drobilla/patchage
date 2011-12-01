@@ -21,6 +21,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <gtkmm.h>
+
 #include "flowcanvas/Port.hpp"
 #include "flowcanvas/Module.hpp"
 
@@ -41,12 +43,27 @@ public:
 	             uint32_t            color)
 		: Port(module, name, is_input, color)
 		, _type(type)
-	{}
+	{
+	}
 
 	virtual ~PatchagePort() {}
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const { return _module->name() + ":" + _name; }
+
+	bool on_click(GdkEventButton* ev) {
+		if (ev->button != 3) {
+			return FlowCanvas::Port::on_click(ev);
+		}
+
+		Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());
+		menu->items().push_back(
+			Gtk::Menu_Helpers::MenuElem(
+				"Disconnect All", sigc::mem_fun(this, &Port::disconnect_all)));
+
+		menu->popup(ev->button, ev->time);
+		return true;
+	}
 
 	PortType type() const { return _type; }
 

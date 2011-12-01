@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <gtkmm/menu_elems.h>
+
 #include "flowcanvas/Module.hpp"
 #include "flowcanvas/Port.hpp"
 
@@ -46,6 +48,8 @@ public:
 	ModuleType type() const { return _type; }
 
 protected:
+	bool on_click(GdkEventButton* ev);
+
 	void add_port(FlowCanvas::Port* port);
 	void remove_port(FlowCanvas::Port* port);
 

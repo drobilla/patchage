@@ -82,6 +82,15 @@ PatchageModule::show_menu(GdkEventButton* ev)
 	return true;
 }
 
+bool
+PatchageModule::on_click(GdkEventButton* ev)
+{
+	if (ev->button == 3) {
+		return show_menu(ev);
+	}
+	return false;
+}
+
 void
 PatchageModule::load_location()
 {
