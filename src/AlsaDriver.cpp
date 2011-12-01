@@ -163,9 +163,8 @@ AlsaDriver::refresh()
 
 				PatchagePort* port2 = _app->canvas()->find_port(PortID(*addr2, true));
 				if (port2 && !_app->canvas()->get_connection(port, port2)) {
-					_app->canvas()->make_connection(port,
-					                                port2,
-					                                port->color() + 0x22222200);
+					_app->canvas()->make_connection(
+						port, port2, port->get_fill_color() + 0x22222200);
 
 					snd_seq_query_subscribe_set_index(
 						subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);

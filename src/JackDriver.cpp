@@ -313,7 +313,8 @@ JackDriver::refresh()
 				}
 
 				if (src && dst && !_app->canvas()->get_connection(src, dst))
-					_app->canvas()->make_connection(src, dst, port1->color() + 0x22222200);
+					_app->canvas()->make_connection(
+						src, dst, port1->get_fill_color() + 0x22222200);
 			}
 
 			jack_free(connected_ports);
