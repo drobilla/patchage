@@ -303,7 +303,7 @@ PatchageCanvas::make_connection(FlowCanvas::Joinable* tail,
 }
 
 bool
-PatchageCanvas::remove_item(FlowCanvas::Item* i)
+PatchageCanvas::remove_item(FlowCanvas::Shape* i)
 {
 	// Remove item from canvas
 	const bool ret = FlowCanvas::Canvas::remove_item(i);
