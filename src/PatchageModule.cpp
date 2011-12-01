@@ -106,7 +106,7 @@ PatchageModule::load_location()
 void
 PatchageModule::store_location()
 {
-	Coord loc(property_x(), property_y());
+	Coord loc(get_x(), get_y());
 	_app->state_manager()->set_module_location(_name, _type, loc);
 }
 
