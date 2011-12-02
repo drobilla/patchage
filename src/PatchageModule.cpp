@@ -26,6 +26,8 @@ PatchageModule::PatchageModule(
 	, _menu(NULL)
 	, _type(type)
 {
+	signal_moved.connect(
+		sigc::mem_fun(this, &PatchageModule::store_location));
 }
 
 PatchageModule::~PatchageModule()
