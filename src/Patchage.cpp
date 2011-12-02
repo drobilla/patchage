@@ -531,8 +531,8 @@ Patchage::save_session(bool close)
 	script << "sleep 3" << endl;
 	script << endl;
 
-	for (FlowCanvas::Canvas::Connections::const_iterator c = _canvas->connections().begin();
-	     c != _canvas->connections().end(); ++c) {
+	for (FlowCanvas::Canvas::Edges::const_iterator c = _canvas->edges().begin();
+	     c != _canvas->edges().end(); ++c) {
 		PatchagePort* src = dynamic_cast<PatchagePort*>((*c)->get_tail());
 		PatchagePort* dst = dynamic_cast<PatchagePort*>((*c)->get_head());
 

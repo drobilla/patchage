@@ -255,7 +255,7 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 }
 
 bool
-PatchageCanvas::on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev)
+PatchageCanvas::on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev)
 {
 	if (ev->type == GDK_BUTTON_PRESS) {
 		switch (ev->button.button) {
@@ -264,7 +264,7 @@ PatchageCanvas::on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev)
 			    && !(ev->button.state & GDK_SHIFT_MASK)) {
 				clear_selection();
 			}
-			select_connection(c);
+			select_edge(c);
 			return true;
 		case 2:
 			disconnect(c->get_tail(), c->get_head());
@@ -278,10 +278,10 @@ bool
 PatchageCanvas::on_event(GdkEvent* ev)
 {
 	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_Delete) {
-		SelectedConnections cs = selected_connections();
+		SelectedEdges cs = selected_edges();
 		clear_selection();
 
-		for (Connections::const_iterator i = cs.begin(); i != cs.end(); ++i) {
+		for (Edges::const_iterator i = cs.begin(); i != cs.end(); ++i) {
 			disconnect((*i)->get_tail(), (*i)->get_head());
 		}
 	}
@@ -294,7 +294,7 @@ PatchageCanvas::make_connection(FlowCanvas::Joinable* tail,
                                 FlowCanvas::Joinable* head,
                                 uint32_t              color)
 {
-	FlowCanvas::Connection* c = new FlowCanvas::Connection(
+	FlowCanvas::Edge* c = new FlowCanvas::Edge(
 		*this, tail, head, color);
 	c->signal_event().connect(
 		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),

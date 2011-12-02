@@ -77,7 +77,7 @@ private:
 	bool remove_item(FlowCanvas::Shape* i);
 
 	bool on_event(GdkEvent* ev);
-	bool on_connection_event(FlowCanvas::Connection* c, GdkEvent* ev);
+	bool on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev);
 
 	typedef std::map<const PortID, PatchagePort*> PortIndex;
 	PortIndex _port_index;
