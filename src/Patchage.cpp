@@ -417,7 +417,7 @@ Patchage::update_state()
 {
 	for (FlowCanvas::Canvas::Items::const_iterator i = _canvas->items().begin();
 	     i != _canvas->items().end(); ++i) {
-		FlowCanvas::Module* module = dynamic_cast<FlowCanvas::Module*>(*i);
+		PatchageModule* module = dynamic_cast<PatchageModule*>(*i);
 		if (module)
 			module->load_location();
 	}
