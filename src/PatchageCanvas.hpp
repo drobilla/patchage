@@ -74,7 +74,7 @@ public:
 private:
 	Patchage* _app;
 
-	bool remove_item(FlowCanvas::Shape* i);
+	bool remove_item(FlowCanvas::Node* i);
 
 	bool on_event(GdkEvent* ev);
 	bool on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev);
