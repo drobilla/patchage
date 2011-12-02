@@ -177,8 +177,8 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 }
 
 void
-PatchageCanvas::connect(FlowCanvas::Joinable* port1,
-                        FlowCanvas::Joinable* port2)
+PatchageCanvas::connect(FlowCanvas::Node* port1,
+                        FlowCanvas::Node* port2)
 {
 	PatchagePort* p1 = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* p2 = dynamic_cast<PatchagePort*>(port2);
@@ -200,8 +200,8 @@ PatchageCanvas::connect(FlowCanvas::Joinable* port1,
 }
 
 void
-PatchageCanvas::disconnect(FlowCanvas::Joinable* port1,
-                           FlowCanvas::Joinable* port2)
+PatchageCanvas::disconnect(FlowCanvas::Node* port1,
+                           FlowCanvas::Node* port2)
 {
 	PatchagePort* input  = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* output = dynamic_cast<PatchagePort*>(port2);
@@ -290,9 +290,9 @@ PatchageCanvas::on_event(GdkEvent* ev)
 }
 
 bool
-PatchageCanvas::make_connection(FlowCanvas::Joinable* tail,
-                                FlowCanvas::Joinable* head,
-                                uint32_t              color)
+PatchageCanvas::make_connection(FlowCanvas::Node* tail,
+                                FlowCanvas::Node* head,
+                                uint32_t          color)
 {
 	FlowCanvas::Edge* c = new FlowCanvas::Edge(
 		*this, tail, head, color);
