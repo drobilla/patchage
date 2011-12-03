@@ -49,7 +49,9 @@ public:
 	virtual ~PatchagePort() {}
 
 	/** Returns the full name of this port, as "modulename:portname" */
-	std::string full_name() const { return _module->name() + ":" + _name; }
+	std::string full_name() const {
+		return std::string(_module->get_label()) + ":" + get_label();
+	}
 
 	bool on_click(GdkEventButton* ev) {
 		if (ev->button != 3) {

@@ -121,27 +121,49 @@ PatchageCanvas::remove_port(const PortID& id)
 	delete port;
 }
 
+struct RemovePortsData {
+	typedef bool (*Predicate)(const PatchagePort*);
+
+	RemovePortsData(Predicate p) : pred(p) {}
+
+	Predicate                 pred;
+	std::set<PatchageModule*> empty;
+};
+
+static void
+remove_ports_matching(FlowCanvasNode* node, void* cdata)
+{
+	if (!FLOW_CANVAS_IS_MODULE(node)) {
+		return;
+	}
+
+	FlowCanvas::Module* cmodule = Glib::wrap(FLOW_CANVAS_MODULE(node));
+	PatchageModule*     pmodule = dynamic_cast<PatchageModule*>(cmodule);
+	if (!pmodule) {
+		return;
+	}
+
+	RemovePortsData* data = (RemovePortsData*)cdata;
+	
+	FlowCanvas::Module::Ports ports = pmodule->ports(); // copy
+	for (FlowCanvas::Module::Ports::iterator p = ports.begin();
+	     p != ports.end(); ++p) {
+		if (data->pred(dynamic_cast<PatchagePort*>(*p))) {
+			delete *p;
+		}
+	}
+
+	if (pmodule->num_ports() == 0) {
+		data->empty.insert(pmodule);
+	}
+}
+	
 void
 PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 {
-	std::set<PatchageModule*> empty;
-	for (Items::const_iterator i = items().begin(); i != items().end(); ++i) {
-		PatchageModule* module = dynamic_cast<PatchageModule*>(*i);
-		if (!module)
-			continue;
+	RemovePortsData data(pred);
 
-		FlowCanvas::Module::Ports ports = module->ports(); // copy
-		for (FlowCanvas::Module::Ports::iterator p = ports.begin();
-		     p != ports.end(); ++p) {
-			if (pred(dynamic_cast<PatchagePort*>(*p))) {
-				delete *p;
-			}
-		}
-
-		if (module->num_ports() == 0) {
-			empty.insert(module);
-		}
-	}
+	for_each_node(remove_ports_matching, &data);
 
 	for (PortIndex::iterator i = _port_index.begin();
 	     i != _port_index.end();) {
@@ -153,8 +175,8 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 		i = next;
 	}
 
-	for (std::set<PatchageModule*>::iterator i = empty.begin();
-	     i != empty.end(); ++i) {
+	for (std::set<PatchageModule*>::iterator i = data.empty.begin();
+	     i != data.empty.end(); ++i) {
 		delete *i;
 	}
 }
@@ -274,19 +296,24 @@ PatchageCanvas::on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev)
 	return false;
 }
 
+static void
+disconnect_edge(FlowCanvasEdge* edge, void* data)
+{
+	PatchageCanvas*   canvas = (PatchageCanvas*)data;
+	FlowCanvas::Edge* edgemm = Glib::wrap(edge);
+	canvas->disconnect(edgemm->get_tail(), edgemm->get_head());
+}
+
 bool
 PatchageCanvas::on_event(GdkEvent* ev)
 {
 	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_Delete) {
-		SelectedEdges cs = selected_edges();
+		for_each_selected_edge(disconnect_edge, this);
 		clear_selection();
-
-		for (Edges::const_iterator i = cs.begin(); i != cs.end(); ++i) {
-			disconnect((*i)->get_tail(), (*i)->get_head());
-		}
+		return true;
 	}
 
-	return false;
+	return Canvas::on_event(ev);
 }
 
 bool
@@ -315,8 +342,8 @@ PatchageCanvas::remove_item(FlowCanvas::Node* i)
 		return ret;
 
 	// Remove module from cache
-	for (ModuleIndex::iterator i = _module_index.find(module->name());
-	     i != _module_index.end() && i->first == module->name(); ++i) {
+	for (ModuleIndex::iterator i = _module_index.find(module->get_label());
+	     i != _module_index.end() && i->first == module->get_label(); ++i) {
 		if (i->second == module) {
 			_module_index.erase(i);
 			return true;

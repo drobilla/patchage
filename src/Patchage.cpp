@@ -412,15 +412,22 @@ Patchage::warning_msg(const std::string& msg)
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
+static void
+load_module_location(FlowCanvasNode* node, void* data)
+{
+	if (FLOW_CANVAS_IS_MODULE(node)) {
+		FlowCanvas::Module* cmodule = Glib::wrap(FLOW_CANVAS_MODULE(node));
+		PatchageModule* pmodule = dynamic_cast<PatchageModule*>(cmodule);
+		if (pmodule) {
+			pmodule->load_location();
+		}
+	}
+}
+	
 void
 Patchage::update_state()
 {
-	for (FlowCanvas::Canvas::Items::const_iterator i = _canvas->items().begin();
-	     i != _canvas->items().end(); ++i) {
-		PatchageModule* module = dynamic_cast<PatchageModule*>(*i);
-		if (module)
-			module->load_location();
-	}
+	_canvas->for_each_node(load_module_location, NULL);
 }
 
 /** Update the sensitivity status of menus to reflect the present.
@@ -485,6 +492,23 @@ Patchage::show_open_session_dialog()
 	}
 }
 
+static void
+print_edge(FlowCanvasEdge* edge, void* data)
+{
+	std::ofstream*    script = (std::ofstream*)data;
+	FlowCanvas::Edge* edgemm = Glib::wrap(edge);
+
+	PatchagePort* src = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
+	PatchagePort* dst = dynamic_cast<PatchagePort*>((edgemm)->get_head());
+
+	if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
+		return;
+	}
+
+	(*script) << "jack_connect '" << src->full_name()
+	          << "' '" << dst->full_name() << "' &" << endl;
+}
+
 void
 Patchage::save_session(bool close)
 {
@@ -531,18 +555,7 @@ Patchage::save_session(bool close)
 	script << "sleep 3" << endl;
 	script << endl;
 
-	for (FlowCanvas::Canvas::Edges::const_iterator c = _canvas->edges().begin();
-	     c != _canvas->edges().end(); ++c) {
-		PatchagePort* src = dynamic_cast<PatchagePort*>((*c)->get_tail());
-		PatchagePort* dst = dynamic_cast<PatchagePort*>((*c)->get_head());
-
-		if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
-			continue;
-		}
-
-		script << "jack_connect '" << src->full_name()
-		       << "' '" << dst->full_name() << "' &" << endl;
-	}
+	_canvas->for_each_edge(print_edge, &script);
 
 	script.close();
 	g_chmod(script_path.c_str(), 0740);

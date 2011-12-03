@@ -148,3 +148,15 @@ PatchageModule::menu_disconnect_all()
 	for (Ports::iterator p = _ports.begin(); p != _ports.end(); ++p)
 		(*p)->disconnect_all();
 }
+
+PatchagePort*
+PatchageModule::get_port(const std::string& name)
+{
+	for (Ports::const_iterator p = _ports.begin(); p != _ports.end(); ++p) {
+		if ((*p)->get_label() == name) {
+			return dynamic_cast<PatchagePort*>(*p);
+		}
+	}
+	
+	return NULL;
+}

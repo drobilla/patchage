@@ -27,6 +27,7 @@
 #include "StateManager.hpp"
 
 class Patchage;
+class PatchagePort;
 
 class PatchageModule : public FlowCanvas::Module
 {
@@ -39,6 +40,8 @@ public:
 
 	bool show_menu(GdkEventButton* ev);
 	void update_menu();
+
+	PatchagePort* get_port(const std::string& name);
 
 	void load_location();
 	void menu_disconnect_all();
