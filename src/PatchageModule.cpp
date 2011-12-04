@@ -131,14 +131,16 @@ PatchageModule::join()
 void
 PatchageModule::add_port(FlowCanvas::Port* port)
 {
-	FlowCanvas::Module::add_port(port);
+	std::cerr << "FIXME: add port" << std::endl;
+	//FlowCanvas::Module::add_port(port);
 	update_menu();
 }
 
 void
 PatchageModule::remove_port(FlowCanvas::Port* port)
 {
-	FlowCanvas::Module::remove_port(port);
+	std::cerr << "FIXME: remove port" << std::endl;
+	//FlowCanvas::Module::remove_port(port);
 	update_menu();
 }
 
@@ -146,7 +148,7 @@ void
 PatchageModule::menu_disconnect_all()
 {
 	for (iterator p = begin(); p != end(); ++p)
-		(*p)->disconnect_all();
+		(*p)->disconnect();
 }
 
 PatchagePort*

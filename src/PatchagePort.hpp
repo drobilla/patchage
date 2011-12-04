@@ -61,7 +61,7 @@ public:
 		Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());
 		menu->items().push_back(
 			Gtk::Menu_Helpers::MenuElem(
-				"Disconnect All", sigc::mem_fun(this, &Port::disconnect_all)));
+				"Disconnect All", sigc::mem_fun(this, &Port::disconnect)));
 
 		menu->popup(ev->button, ev->time);
 		return true;
