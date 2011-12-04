@@ -45,7 +45,7 @@ PatchageModule::update_menu()
 	if (_type == InputOutput) {
 		bool has_in  = false;
 		bool has_out = false;
-		for (Ports::const_iterator p = _ports.begin(); p != _ports.end(); ++p) {
+		for (const_iterator p = begin(); p != end(); ++p) {
 			if ((*p)->is_input()) {
 				has_in = true;
 			} else {
@@ -145,14 +145,14 @@ PatchageModule::remove_port(FlowCanvas::Port* port)
 void
 PatchageModule::menu_disconnect_all()
 {
-	for (Ports::iterator p = _ports.begin(); p != _ports.end(); ++p)
+	for (iterator p = begin(); p != end(); ++p)
 		(*p)->disconnect_all();
 }
 
 PatchagePort*
 PatchageModule::get_port(const std::string& name)
 {
-	for (Ports::const_iterator p = _ports.begin(); p != _ports.end(); ++p) {
+	for (iterator p = begin(); p != end(); ++p) {
 		if ((*p)->get_label() == name) {
 			return dynamic_cast<PatchagePort*>(*p);
 		}

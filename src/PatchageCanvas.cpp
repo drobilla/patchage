@@ -133,6 +133,16 @@ struct RemovePortsData {
 };
 
 static void
+delete_port_if_matches(FlowCanvasPort* port, void* cdata)
+{
+	RemovePortsData* data = (RemovePortsData*)cdata;
+	PatchagePort* pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
+	if (pport && data->pred(pport)) {
+		delete pport;
+	}
+}
+
+static void
 remove_ports_matching(FlowCanvasNode* node, void* cdata)
 {
 	if (!FLOW_CANVAS_IS_MODULE(node)) {
@@ -146,14 +156,8 @@ remove_ports_matching(FlowCanvasNode* node, void* cdata)
 	}
 
 	RemovePortsData* data = (RemovePortsData*)cdata;
-	
-	FlowCanvas::Module::Ports ports = pmodule->ports(); // copy
-	for (FlowCanvas::Module::Ports::iterator p = ports.begin();
-	     p != ports.end(); ++p) {
-		if (data->pred(dynamic_cast<PatchagePort*>(*p))) {
-			delete *p;
-		}
-	}
+
+	pmodule->for_each_port(delete_port_if_matches, data);
 
 	if (pmodule->num_ports() == 0) {
 		data->empty.insert(pmodule);
