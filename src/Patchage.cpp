@@ -32,6 +32,7 @@
 #include <gtkmm/treemodel.h>
 
 #include "flowcanvas/Module.hpp"
+#include "flowcanvas/Edge.hpp"
 
 #include "patchage-config.h"
 #include "UIFile.hpp"

@@ -27,6 +27,8 @@
   #include "AlsaDriver.hpp"
 #endif
 
+#include "flowcanvas/Edge.hpp"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
