@@ -79,7 +79,7 @@ PatchageCanvas::find_port(const PortID& id)
 
 	PortIndex::iterator i = _port_index.find(id);
 	if (i != _port_index.end()) {
-		assert(i->second->module());
+		assert(i->second->get_module());
 		return i->second;
 	}
 

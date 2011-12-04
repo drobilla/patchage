@@ -50,7 +50,7 @@ public:
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const {
-		return std::string(_module->get_label()) + ":" + get_label();
+		return std::string(get_module()->get_label()) + ":" + get_label();
 	}
 
 	bool on_click(GdkEventButton* ev) {
