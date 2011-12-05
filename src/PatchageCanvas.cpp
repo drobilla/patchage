@@ -68,7 +68,6 @@ PatchageCanvas::remove_module(const string& name)
 {
 	ModuleIndex::iterator i = _module_index.find(name);
 	while (i != _module_index.end()) {
-		delete i->second;
 		_module_index.erase(i);
 		i = _module_index.find(name);
 	}
@@ -335,28 +334,17 @@ PatchageCanvas::make_connection(FlowCanvas::Node* tail,
 	return true;
 }
 
-bool
-PatchageCanvas::remove_item(FlowCanvasNode* i)
+void
+PatchageCanvas::remove_module(PatchageModule* module)
 {
-	// Remove item from canvas
-	const bool ret = FlowCanvas::Canvas::remove_item(i);
-	if (!ret)
-		return ret;
-
-	PatchageModule* const module = dynamic_cast<PatchageModule*>(Glib::wrap(i));
-	if (!module)
-		return ret;
-
 	// Remove module from cache
 	for (ModuleIndex::iterator i = _module_index.find(module->get_label());
 	     i != _module_index.end() && i->first == module->get_label(); ++i) {
 		if (i->second == module) {
 			_module_index.erase(i);
-			return true;
+			return;
 		}
 	}
-
-	return ret;
 }
 
 void

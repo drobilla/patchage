@@ -45,6 +45,7 @@ public:
 	PatchagePort*   find_port(const PortID& id);
 
 	void remove_module(const std::string& name);
+	void remove_module(PatchageModule* module);
 
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
@@ -73,8 +74,6 @@ public:
 
 private:
 	Patchage* _app;
-
-	bool remove_item(FlowCanvasNode* i);
 
 	bool on_event(GdkEvent* ev);
 	bool on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev);

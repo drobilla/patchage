@@ -32,6 +32,7 @@ PatchageModule::PatchageModule(
 
 PatchageModule::~PatchageModule()
 {
+	_app->canvas()->remove_module(this);
 	delete _menu;
 	_menu = NULL;
 }
