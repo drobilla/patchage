@@ -131,18 +131,18 @@ PatchageModule::join()
 }
 
 void
-PatchageModule::add_port(FlowCanvas::Port* port)
+PatchageModule::add_port(Ganv::Port* port)
 {
 	std::cerr << "FIXME: add port" << std::endl;
-	//FlowCanvas::Module::add_port(port);
+	//Ganv::Module::add_port(port);
 	update_menu();
 }
 
 void
-PatchageModule::remove_port(FlowCanvas::Port* port)
+PatchageModule::remove_port(Ganv::Port* port)
 {
 	std::cerr << "FIXME: remove port" << std::endl;
-	//FlowCanvas::Module::remove_port(port);
+	//Ganv::Module::remove_port(port);
 	update_menu();
 }
 

@@ -56,7 +56,7 @@ def configure(conf):
                       atleast_version='2.14.0', mandatory=True)
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
                       atleast_version='2.12.0', mandatory=True)
-    autowaf.check_pkg(conf, 'flowcanvas-1', uselib_store='FLOWCANVAS',
+    autowaf.check_pkg(conf, 'ganv-1', uselib_store='GANV',
                       atleast_version='1.0.0', mandatory=True)
 
     if Options.platform == 'darwin':
@@ -129,7 +129,7 @@ def build(bld):
     prog.includes = ['.', 'src']
     prog.target = out_base + bld.env['APP_INSTALL_NAME']
     prog.install_path = '${BINDIR}'
-    autowaf.use_lib(bld, prog, 'DBUS FLOWCANVAS DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
+    autowaf.use_lib(bld, prog, 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
             src/Patchage.cpp
             src/PatchageCanvas.cpp

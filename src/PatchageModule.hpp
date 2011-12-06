@@ -21,18 +21,22 @@
 
 #include <gtkmm/menu_elems.h>
 
-#include "flowcanvas/Module.hpp"
-#include "flowcanvas/Port.hpp"
+#include "ganv/Module.hpp"
+#include "ganv/Port.hpp"
 
 #include "StateManager.hpp"
 
 class Patchage;
 class PatchagePort;
 
-class PatchageModule : public FlowCanvas::Module
+class PatchageModule : public Ganv::Module
 {
 public:
-	PatchageModule(Patchage* app, const std::string& name, ModuleType type, double x=0, double y=0);
+	PatchageModule(Patchage*          app,
+	               const std::string& name,
+	               ModuleType         type,
+	               double             x = 0,
+	               double             y = 0);
 	~PatchageModule();
 
 	void split();
@@ -53,8 +57,8 @@ public:
 protected:
 	bool on_click(GdkEventButton* ev);
 
-	void add_port(FlowCanvas::Port* port);
-	void remove_port(FlowCanvas::Port* port);
+	void add_port(Ganv::Port* port);
+	void remove_port(Ganv::Port* port);
 
 	Patchage*   _app;
 	Gtk::Menu*  _menu;

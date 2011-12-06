@@ -28,7 +28,7 @@
 
 class Patchage;
 class PatchageEvent;
-class PatchageFlowCanvas;
+class PatchageCanvas;
 class PatchagePort;
 class PatchageModule;
 

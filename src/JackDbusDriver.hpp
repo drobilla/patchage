@@ -28,7 +28,7 @@
 #include "PatchageModule.hpp"
 
 class PatchageEvent;
-class PatchageFlowCanvas;
+class PatchageCanvas;
 class PatchagePort;
 
 class JackDriver : public Driver

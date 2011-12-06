@@ -26,7 +26,7 @@
   #include <alsa/asoundlib.h>
 #endif
 
-#include "flowcanvas/Canvas.hpp"
+#include "ganv/Canvas.hpp"
 
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
@@ -37,7 +37,7 @@ class Patchage;
 class PatchageModule;
 class PatchagePort;
 
-class PatchageCanvas : public FlowCanvas::Canvas {
+class PatchageCanvas : public Ganv::Canvas {
 public:
 	PatchageCanvas(Patchage* _app, int width, int height);
 
@@ -50,11 +50,11 @@ public:
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
 
-	void connect(FlowCanvas::Node* port1,
-	             FlowCanvas::Node* port2);
+	void connect(Ganv::Node* port1,
+	             Ganv::Node* port2);
 
-	void disconnect(FlowCanvas::Node* port1,
-	                FlowCanvas::Node* port2);
+	void disconnect(Ganv::Node* port1,
+	                Ganv::Node* port2);
 
 	void index_port(const PortID& id, PatchagePort* port) {
 		_port_index.insert(std::make_pair(id, port));
@@ -64,8 +64,8 @@ public:
 
 	void add_module(const std::string& name, PatchageModule* module);
 
-	bool make_connection(FlowCanvas::Node* tail,
-	                     FlowCanvas::Node* head,
+	bool make_connection(Ganv::Node* tail,
+	                     Ganv::Node* head,
 	                     uint32_t          color);
 
 	void remove_port(const PortID& id);
@@ -76,7 +76,7 @@ private:
 	Patchage* _app;
 
 	bool on_event(GdkEvent* ev);
-	bool on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev);
+	bool on_connection_event(Ganv::Edge* c, GdkEvent* ev);
 
 	typedef std::map<const PortID, PatchagePort*> PortIndex;
 	PortIndex _port_index;

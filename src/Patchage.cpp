@@ -31,8 +31,8 @@
 #include <gtkmm/stock.h>
 #include <gtkmm/treemodel.h>
 
-#include "flowcanvas/Module.hpp"
-#include "flowcanvas/Edge.hpp"
+#include "ganv/Module.hpp"
+#include "ganv/Edge.hpp"
 
 #include "patchage-config.h"
 #include "UIFile.hpp"
@@ -414,10 +414,10 @@ Patchage::warning_msg(const std::string& msg)
 }
 
 static void
-load_module_location(FlowCanvasNode* node, void* data)
+load_module_location(GanvNode* node, void* data)
 {
-	if (FLOW_CANVAS_IS_MODULE(node)) {
-		FlowCanvas::Module* cmodule = Glib::wrap(FLOW_CANVAS_MODULE(node));
+	if (GANV_IS_MODULE(node)) {
+		Ganv::Module* cmodule = Glib::wrap(GANV_MODULE(node));
 		PatchageModule* pmodule = dynamic_cast<PatchageModule*>(cmodule);
 		if (pmodule) {
 			pmodule->load_location();
@@ -494,10 +494,10 @@ Patchage::show_open_session_dialog()
 }
 
 static void
-print_edge(FlowCanvasEdge* edge, void* data)
+print_edge(GanvEdge* edge, void* data)
 {
-	std::ofstream*    script = (std::ofstream*)data;
-	FlowCanvas::Edge* edgemm = Glib::wrap(edge);
+	std::ofstream* script = (std::ofstream*)data;
+	Ganv::Edge*    edgemm = Glib::wrap(edge);
 
 	PatchagePort* src = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
 	PatchagePort* dst = dynamic_cast<PatchagePort*>((edgemm)->get_head());

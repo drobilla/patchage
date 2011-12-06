@@ -295,14 +295,14 @@ JackDriver::refresh()
 				PatchageModule* client2_module
 					= _app->canvas()->find_module(client2_name, port2_type);
 
-				FlowCanvas::Port* port1 = client1_module->get_port(port1_name);
-				FlowCanvas::Port* port2 = client2_module->get_port(port2_name);
+				Ganv::Port* port1 = client1_module->get_port(port1_name);
+				Ganv::Port* port2 = client2_module->get_port(port2_name);
 
 				if (!port1 || !port2)
 					continue;
 
-				FlowCanvas::Port* src = NULL;
-				FlowCanvas::Port* dst = NULL;
+				Ganv::Port* src = NULL;
+				Ganv::Port* dst = NULL;
 
 				if (port1->is_output() && port2->is_input()) {
 					src = port1;

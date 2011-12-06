@@ -27,7 +27,7 @@
   #include "AlsaDriver.hpp"
 #endif
 
-#include "flowcanvas/Edge.hpp"
+#include "ganv/Edge.hpp"
 
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
@@ -38,7 +38,7 @@ using std::string;
 using boost::format;
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
-	: FlowCanvas::Canvas(width, height)
+	: Ganv::Canvas(width, height)
 	, _app(app)
 {
 }
@@ -132,7 +132,7 @@ struct RemovePortsData {
 };
 
 static void
-delete_port_if_matches(FlowCanvasPort* port, void* cdata)
+delete_port_if_matches(GanvPort* port, void* cdata)
 {
 	RemovePortsData* data = (RemovePortsData*)cdata;
 	PatchagePort* pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
@@ -142,14 +142,14 @@ delete_port_if_matches(FlowCanvasPort* port, void* cdata)
 }
 
 static void
-remove_ports_matching(FlowCanvasNode* node, void* cdata)
+remove_ports_matching(GanvNode* node, void* cdata)
 {
-	if (!FLOW_CANVAS_IS_MODULE(node)) {
+	if (!GANV_IS_MODULE(node)) {
 		return;
 	}
 
-	FlowCanvas::Module* cmodule = Glib::wrap(FLOW_CANVAS_MODULE(node));
-	PatchageModule*     pmodule = dynamic_cast<PatchageModule*>(cmodule);
+	Ganv::Module*   cmodule = Glib::wrap(GANV_MODULE(node));
+	PatchageModule* pmodule = dynamic_cast<PatchageModule*>(cmodule);
 	if (!pmodule) {
 		return;
 	}
@@ -204,8 +204,8 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 }
 
 void
-PatchageCanvas::connect(FlowCanvas::Node* port1,
-                        FlowCanvas::Node* port2)
+PatchageCanvas::connect(Ganv::Node* port1,
+                        Ganv::Node* port2)
 {
 	PatchagePort* p1 = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* p2 = dynamic_cast<PatchagePort*>(port2);
@@ -227,8 +227,8 @@ PatchageCanvas::connect(FlowCanvas::Node* port1,
 }
 
 void
-PatchageCanvas::disconnect(FlowCanvas::Node* port1,
-                           FlowCanvas::Node* port2)
+PatchageCanvas::disconnect(Ganv::Node* port1,
+                           Ganv::Node* port2)
 {
 	PatchagePort* input  = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* output = dynamic_cast<PatchagePort*>(port2);
@@ -282,7 +282,7 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 }
 
 bool
-PatchageCanvas::on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev)
+PatchageCanvas::on_connection_event(Ganv::Edge* c, GdkEvent* ev)
 {
 	if (ev->type == GDK_BUTTON_PRESS) {
 		switch (ev->button.button) {
@@ -302,10 +302,10 @@ PatchageCanvas::on_connection_event(FlowCanvas::Edge* c, GdkEvent* ev)
 }
 
 static void
-disconnect_edge(FlowCanvasEdge* edge, void* data)
+disconnect_edge(GanvEdge* edge, void* data)
 {
-	PatchageCanvas*   canvas = (PatchageCanvas*)data;
-	FlowCanvas::Edge* edgemm = Glib::wrap(edge);
+	PatchageCanvas* canvas = (PatchageCanvas*)data;
+	Ganv::Edge*     edgemm = Glib::wrap(edge);
 	canvas->disconnect(edgemm->get_tail(), edgemm->get_head());
 }
 
@@ -322,11 +322,11 @@ PatchageCanvas::on_event(GdkEvent* ev)
 }
 
 bool
-PatchageCanvas::make_connection(FlowCanvas::Node* tail,
-                                FlowCanvas::Node* head,
+PatchageCanvas::make_connection(Ganv::Node* tail,
+                                Ganv::Node* head,
                                 uint32_t          color)
 {
-	FlowCanvas::Edge* c = new FlowCanvas::Edge(
+	Ganv::Edge* c = new Ganv::Edge(
 		*this, tail, head, color);
 	c->signal_event().connect(
 		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
@@ -352,5 +352,5 @@ PatchageCanvas::destroy()
 {
 	_port_index.clear();
 	_module_index.clear();
-	FlowCanvas::Canvas::destroy();
+	Ganv::Canvas::destroy();
 }

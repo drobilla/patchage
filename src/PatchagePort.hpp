@@ -23,8 +23,8 @@
 
 #include <gtkmm.h>
 
-#include "flowcanvas/Port.hpp"
-#include "flowcanvas/Module.hpp"
+#include "ganv/Port.hpp"
+#include "ganv/Module.hpp"
 
 #include "patchage-config.h"
 #include "PatchageCanvas.hpp"
@@ -33,14 +33,14 @@
 
 /** A Port on a PatchageModule
  */
-class PatchagePort : public FlowCanvas::Port
+class PatchagePort : public Ganv::Port
 {
 public:
-	PatchagePort(FlowCanvas::Module& module,
-	             PortType            type,
-	             const std::string&  name,
-	             bool                is_input,
-	             uint32_t            color)
+	PatchagePort(Ganv::Module&      module,
+	             PortType           type,
+	             const std::string& name,
+	             bool               is_input,
+	             uint32_t           color)
 		: Port(module, name, is_input, color)
 		, _type(type)
 	{
@@ -55,7 +55,7 @@ public:
 
 	bool on_click(GdkEventButton* ev) {
 		if (ev->button != 3) {
-			return FlowCanvas::Port::on_click(ev);
+			return Ganv::Port::on_click(ev);
 		}
 
 		Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());

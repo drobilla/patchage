@@ -46,7 +46,7 @@ class JackDriver;
 class PatchageCanvas;
 class StateManager;
 
-namespace FlowCanvas { class Module; }
+namespace Ganv { class Module; }
 
 class Patchage {
 public:
