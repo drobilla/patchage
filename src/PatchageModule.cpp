@@ -24,6 +24,7 @@ PatchageModule::PatchageModule(
 	: Module(*app->canvas().get(), name, x, y)
 	, _app(app)
 	, _menu(NULL)
+	, _name(name)
 	, _type(type)
 {
 	signal_moved.connect(

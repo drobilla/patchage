@@ -56,9 +56,10 @@ protected:
 	void add_port(FlowCanvas::Port* port);
 	void remove_port(FlowCanvas::Port* port);
 
-	Patchage*  _app;
-	Gtk::Menu* _menu;
-	ModuleType _type;
+	Patchage*   _app;
+	Gtk::Menu*  _menu;
+	std::string _name;
+	ModuleType  _type;
 };
 
 #endif // PATCHAGE_PATCHAGEMODULE_HPP
