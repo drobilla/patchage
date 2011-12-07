@@ -41,6 +41,10 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: Ganv::Canvas(width, height)
 	, _app(app)
 {
+	signal_connect.connect(
+		sigc::mem_fun(this, &PatchageCanvas::connect));
+	signal_disconnect.connect(
+		sigc::mem_fun(this, &PatchageCanvas::disconnect));
 }
 
 PatchageModule*
@@ -291,7 +295,7 @@ PatchageCanvas::on_connection_event(Ganv::Edge* c, GdkEvent* ev)
 			    && !(ev->button.state & GDK_SHIFT_MASK)) {
 				clear_selection();
 			}
-			select_edge(c);
+			c->set_selected(true);
 			return true;
 		case 2:
 			disconnect(c->get_tail(), c->get_head());
@@ -318,7 +322,7 @@ PatchageCanvas::on_event(GdkEvent* ev)
 		return true;
 	}
 
-	return Canvas::on_event(ev);
+	return false;
 }
 
 bool
