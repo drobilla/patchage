@@ -108,7 +108,7 @@ PatchageModule::load_location()
 }
 
 void
-PatchageModule::store_location()
+PatchageModule::store_location(double x, double y)
 {
 	Coord loc(get_x(), get_y());
 	_app->state_manager()->set_module_location(_name, _type, loc);

@@ -50,7 +50,7 @@ public:
 	void load_location();
 	void menu_disconnect_all();
 	void show_dialog() {}
-	void store_location();
+	void store_location(double x, double y);
 
 	ModuleType type() const { return _type; }
 
