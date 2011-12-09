@@ -48,8 +48,6 @@ def configure(conf):
                       mandatory=False)
     autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
                       mandatory=False)
-    autowaf.check_pkg(conf, 'libgnomecanvas-2.0', uselib_store='GNOMECANVAS',
-                      mandatory=True)
     autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD',
                       atleast_version='2.14.0', mandatory=True)
     autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM',
