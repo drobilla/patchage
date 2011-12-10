@@ -55,7 +55,7 @@ public:
 	ModuleType type() const { return _type; }
 
 protected:
-	bool on_click(GdkEventButton* ev);
+	bool on_event(GdkEvent* ev);
 
 	void add_port(Ganv::Port* port);
 	void remove_port(Ganv::Port* port);

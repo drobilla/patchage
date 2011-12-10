@@ -27,7 +27,10 @@ PatchageModule::PatchageModule(
 	, _name(name)
 	, _type(type)
 {
-	signal_moved.connect(
+	signal_event().connect(
+		sigc::mem_fun(this, &PatchageModule::on_event));
+
+	signal_moved().connect(
 		sigc::mem_fun(this, &PatchageModule::store_location));
 }
 
@@ -87,10 +90,10 @@ PatchageModule::show_menu(GdkEventButton* ev)
 }
 
 bool
-PatchageModule::on_click(GdkEventButton* ev)
+PatchageModule::on_event(GdkEvent* ev)
 {
-	if (ev->button == 3) {
-		return show_menu(ev);
+	if (ev->type == GDK_BUTTON_PRESS && ev->button.button == 3) {
+		return show_menu(&ev->button);
 	}
 	return false;
 }
