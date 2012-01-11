@@ -72,8 +72,10 @@ PatchageCanvas::remove_module(const string& name)
 {
 	ModuleIndex::iterator i = _module_index.find(name);
 	while (i != _module_index.end()) {
+		PatchageModule* mod = i->second;
 		_module_index.erase(i);
 		i = _module_index.find(name);
+		delete mod;
 	}
 }
 
