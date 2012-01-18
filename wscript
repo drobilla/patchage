@@ -104,7 +104,7 @@ def configure(conf):
     autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
                     conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
 
-    conf.write_config_header('patchage-config.h', remove=False)
+    conf.write_config_header('patchage_config.h', remove=False)
 
     autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
     autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')

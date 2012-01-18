@@ -20,7 +20,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 
 #ifdef PATCHAGE_LIBJACK
   #include <jack/jack.h>

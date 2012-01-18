@@ -34,7 +34,7 @@
 #include "ganv/Module.hpp"
 #include "ganv/Edge.hpp"
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 #include "UIFile.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"

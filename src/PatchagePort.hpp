@@ -26,7 +26,7 @@
 #include "ganv/Port.hpp"
 #include "ganv/Module.hpp"
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 #include "PatchageCanvas.hpp"
 #include "PortID.hpp"
 #include "StateManager.hpp"

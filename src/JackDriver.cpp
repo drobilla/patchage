@@ -30,7 +30,7 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "Queue.hpp"
-#include "patchage-config.h"
+#include "patchage_config.h"
 
 using std::endl;
 using std::string;

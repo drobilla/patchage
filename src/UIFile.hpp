@@ -24,7 +24,7 @@
 
 #include <gtkmm/builder.h>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 #ifdef PATCHAGE_BINLOC
 #include "binary_location.h"
 #endif

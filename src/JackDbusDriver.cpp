@@ -19,7 +19,7 @@
 #include <string>
 #include <set>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 
 #include <glib.h>
 #include <dbus/dbus.h>

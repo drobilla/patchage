@@ -16,7 +16,7 @@
 
 #include <boost/format.hpp>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"

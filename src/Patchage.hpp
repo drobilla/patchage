@@ -38,7 +38,7 @@
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 #include "Widget.hpp"
 
 class AlsaDriver;

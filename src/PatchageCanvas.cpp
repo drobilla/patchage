@@ -16,7 +16,7 @@
 
 #include <boost/format.hpp>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 
 #if defined(HAVE_JACK_DBUS)
   #include "JackDbusDriver.hpp"

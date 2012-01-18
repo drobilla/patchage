@@ -20,7 +20,7 @@
 #include <map>
 #include <string>
 
-#include "patchage-config.h"
+#include "patchage_config.h"
 
 #ifdef HAVE_ALSA
   #include <alsa/asoundlib.h>
