@@ -330,10 +330,9 @@ PatchageCanvas::on_event(GdkEvent* ev)
 bool
 PatchageCanvas::make_connection(Ganv::Node* tail,
                                 Ganv::Node* head,
-                                uint32_t          color)
+                                uint32_t    color)
 {
-	Ganv::Edge* c = new Ganv::Edge(
-		*this, tail, head, color);
+	Ganv::Edge* c = new Ganv::Edge(*this, tail, head, color);
 	c->signal_event().connect(
 		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
 		              c));
