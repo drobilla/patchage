@@ -133,7 +133,7 @@ JackDriver::create_port_view(Patchage*     patchage,
                              const PortID& id)
 {
 	assert(id.type == PortID::JACK_ID);
-	
+
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
 		_app->error_msg((format("Jack: Failed to find port with ID `%1%'.")

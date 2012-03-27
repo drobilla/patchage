@@ -257,7 +257,7 @@ Patchage::Patchage(int argc, char** argv)
 	gtk_osxapplication_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
 	gtk_osxapplication_insert_app_menu_item(
 		osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
-	g_signal_connect(_menubar->gobj(), "can-activate-accel", 
+	g_signal_connect(_menubar->gobj(), "can-activate-accel",
 	                 G_CALLBACK(can_activate_cb), NULL);
 #endif
 }
@@ -424,7 +424,7 @@ load_module_location(GanvNode* node, void* data)
 		}
 	}
 }
-	
+
 void
 Patchage::update_state()
 {
@@ -471,7 +471,7 @@ Patchage::show_open_session_dialog()
 {
 	Gtk::FileChooserDialog dialog(*_main_win, "Open Session",
 	                              Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	
+
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
 	Gtk::Button* open_but = dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
 	open_but->property_has_default() = true;

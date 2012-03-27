@@ -168,7 +168,7 @@ remove_ports_matching(GanvNode* node, void* cdata)
 		data->empty.insert(pmodule);
 	}
 }
-	
+
 void
 PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 {

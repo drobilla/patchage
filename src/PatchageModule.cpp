@@ -164,6 +164,6 @@ PatchageModule::get_port(const std::string& name)
 			return dynamic_cast<PatchagePort*>(*p);
 		}
 	}
-	
+
 	return NULL;
 }

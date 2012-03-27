@@ -53,7 +53,7 @@ public:
 	bool disconnect(
 		PatchagePort* src,
 		PatchagePort* dst);
-	
+
 	size_t get_xruns();
 	void   reset_xruns();
 
