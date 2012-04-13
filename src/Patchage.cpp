@@ -123,7 +123,7 @@ Patchage::Patchage(int argc, char** argv)
 
 	while (argc > 0) {
 		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
-			cout << "Usage: patchage [OPTIONS]" << endl;
+			cout << "Usage: patchage [OPTION]..." << endl;
 			cout << "Visually connect JACK and ALSA Audio/MIDI ports." << endl << endl;
 			cout << "Options:" << endl;
 			cout << "\t-h  --help     Show this help" << endl;
