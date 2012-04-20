@@ -41,6 +41,8 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 	: Ganv::Canvas(width, height)
 	, _app(app)
 {
+	signal_event.connect(
+		sigc::mem_fun(this, &PatchageCanvas::on_event));
 	signal_connect.connect(
 		sigc::mem_fun(this, &PatchageCanvas::connect));
 	signal_disconnect.connect(
