@@ -158,17 +158,17 @@ AlsaDriver::refresh()
 			snd_seq_query_subscribe_set_index(subsinfo, 0);
 			while (!snd_seq_query_port_subscribers(_seq, subsinfo)) {
 				const snd_seq_addr_t* addr2 = snd_seq_query_subscribe_get_addr(subsinfo);
-				if (!addr2)
-					continue;
-
-				PatchagePort* port2 = _app->canvas()->find_port(PortID(*addr2, true));
-				if (port2 && !_app->canvas()->get_edge(port, port2)) {
-					_app->canvas()->make_connection(
-						port, port2, port->get_fill_color() + 0x22222200);
-
-					snd_seq_query_subscribe_set_index(
-						subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);
+				if (addr2) {
+					const PortID id2(*addr2, true);
+					PatchagePort* port2 = _app->canvas()->find_port(id2);
+					if (port2 && !_app->canvas()->get_edge(port, port2)) {
+						_app->canvas()->make_connection(
+							port, port2, port->get_fill_color() + 0x22222200);
+					}
 				}
+
+				snd_seq_query_subscribe_set_index(
+					subsinfo, snd_seq_query_subscribe_get_index(subsinfo) + 1);
 			}
 		}
 	}
