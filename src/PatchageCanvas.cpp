@@ -289,26 +289,6 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 		out_module->set_partner(in_module);
 }
 
-bool
-PatchageCanvas::on_connection_event(Ganv::Edge* c, GdkEvent* ev)
-{
-	if (ev->type == GDK_BUTTON_PRESS) {
-		switch (ev->button.button) {
-		case 1:
-			if (!(ev->button.state & GDK_CONTROL_MASK)
-			    && !(ev->button.state & GDK_SHIFT_MASK)) {
-				clear_selection();
-			}
-			c->set_selected(true);
-			return true;
-		case 2:
-			disconnect(c->get_tail(), c->get_head());
-			return true;
-		}
-	}
-	return false;
-}
-
 static void
 disconnect_edge(GanvEdge* edge, void* data)
 {
@@ -334,10 +314,7 @@ PatchageCanvas::make_connection(Ganv::Node* tail,
                                 Ganv::Node* head,
                                 uint32_t    color)
 {
-	Ganv::Edge* c = new Ganv::Edge(*this, tail, head, color);
-	c->signal_event().connect(
-		sigc::bind<0>(sigc::mem_fun(*this, &PatchageCanvas::on_connection_event),
-		              c));
+	new Ganv::Edge(*this, tail, head, color);
 	return true;
 }
 
