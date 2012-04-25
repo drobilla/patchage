@@ -622,7 +622,7 @@ Patchage::on_zoom_out()
 void
 Patchage::on_zoom_normal()
 {
-	_canvas->set_zoom_and_font_size(1.0, _canvas->get_default_font_size());
+	_canvas->set_scale(1.0, _canvas->get_default_font_size());
 }
 
 void
