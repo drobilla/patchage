@@ -21,7 +21,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <gtkmm.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/menushell.h>
 
 #include "ganv/Port.hpp"
 #include "ganv/Module.hpp"
