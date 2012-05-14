@@ -19,7 +19,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <sstream>
 
 #include <glib.h>
 #include <glib/gstdio.h>
