@@ -123,10 +123,10 @@ def build(bld):
         out_base = 'Patchage.app/Contents/'
 
     # Program
-    prog = bld(features = 'cxx cxxprogram')
-    prog.includes = ['.', 'src']
-    prog.target = out_base + bld.env['APP_INSTALL_NAME']
-    prog.install_path = '${BINDIR}'
+    prog = bld(features     = 'cxx cxxprogram',
+               includes     = ['.', 'src'],
+               target       = out_base + bld.env['APP_INSTALL_NAME'],
+               install_path = '${BINDIR}')
     autowaf.use_lib(bld, prog, 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
             src/Patchage.cpp
