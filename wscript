@@ -66,7 +66,7 @@ def configure(conf):
     # Check for dladdr
     conf.check(function_name='dladdr',
                header_name='dlfcn.h',
-               cflags='-D_GNU_SOURCE',
+               defines=['_GNU_SOURCE'],
                lib=['dl'],
                define_name='HAVE_DLADDR',
                mandatory=False)
