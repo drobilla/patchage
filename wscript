@@ -25,19 +25,18 @@ def options(opt):
     autowaf.set_options(opt)
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
-                    help="Patchage install name. [Default: '" + APPNAME + "']")
+                    help='Patchage install name. [Default: '' + APPNAME + '']')
     opt.add_option('--patchage-human-name', type='string', default=APP_HUMAN_NAME,
                     dest='patchage_human_name',
-                    help="Patchage human name [Default: '" + APP_HUMAN_NAME + "']")
-    opt.add_option('--jack-dbus', action='store_true', default=False, dest='jack_dbus',
-                    help="Use Jack via D-Bus [Default: False (use libjack)]")
-    opt.add_option('--no-jack-session', action='store_true', default=False,
-                    dest='no_jack_session',
-                    help="Do not build JACK session support")
-    opt.add_option('--no-alsa', action='store_true', default=False, dest='no_alsa',
-                    help="Do not build Alsa Sequencer support")
-    opt.add_option('--no-binloc', action='store_true', default=False, dest='no_binloc',
-                    help="Do not try to read files from executable's parent directory")
+                    help='Patchage human name [Default: '' + APP_HUMAN_NAME + '']')
+    opt.add_option('--jack-dbus', action='store_true', dest='jack_dbus',
+                    help='Use Jack via D-Bus [Default: False (use libjack)]')
+    opt.add_option('--no-jack-session', action='store_true', dest='no_jack_session',
+                    help='Do not build JACK session support')
+    opt.add_option('--no-alsa', action='store_true', dest='no_alsa',
+                    help='Do not build Alsa Sequencer support')
+    opt.add_option('--no-binloc', action='store_true', dest='no_binloc',
+                    help='Do not try to read files from executable location')
 
 def configure(conf):
     conf.load('compiler_cxx')
@@ -97,17 +96,17 @@ def configure(conf):
     autowaf.check_header(conf, 'cxx', 'boost/shared_ptr.hpp')
     autowaf.check_header(conf, 'cxx', 'boost/weak_ptr.hpp')
 
-    conf.env['PATCHAGE_VERSION'] = PATCHAGE_VERSION
+    conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
 
-    conf.env['APP_INSTALL_NAME'] = Options.options.patchage_install_name
-    conf.env['APP_HUMAN_NAME'] = Options.options.patchage_human_name
+    conf.env.APP_INSTALL_NAME = Options.options.patchage_install_name
+    conf.env.APP_HUMAN_NAME = Options.options.patchage_human_name
     autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
-                    conf.env['DATADIR'], conf.env['APP_INSTALL_NAME']))
+                    conf.env.DATADIR, conf.env.APP_INSTALL_NAME))
 
     conf.write_config_header('patchage_config.h', remove=False)
 
-    autowaf.display_msg(conf, "Install name", "'" + conf.env['APP_INSTALL_NAME'] + "'", 'CYAN')
-    autowaf.display_msg(conf, "App human name", "'" + conf.env['APP_HUMAN_NAME'] + "'", 'CYAN')
+    autowaf.display_msg(conf, "Install name", "'" + conf.env.APP_INSTALL_NAME + "'", 'CYAN')
+    autowaf.display_msg(conf, "App human name", "'" + conf.env.APP_HUMAN_NAME + "'", 'CYAN')
     autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
     autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
@@ -125,7 +124,7 @@ def build(bld):
     # Program
     prog = bld(features     = 'cxx cxxprogram',
                includes     = ['.', 'src'],
-               target       = out_base + bld.env['APP_INSTALL_NAME'],
+               target       = out_base + bld.env.APP_INSTALL_NAME,
                install_path = '${BINDIR}')
     autowaf.use_lib(bld, prog, 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
@@ -155,7 +154,7 @@ def build(bld):
     bld(features         = 'subst',
         source           = 'src/patchage.ui',
         target           = out_base + 'patchage.ui',
-        install_path     = '${DATADIR}/' + bld.env['APP_INSTALL_NAME'],
+        install_path     = '${DATADIR}/' + bld.env.APP_INSTALL_NAME,
         chmod            = Utils.O644,
         PATCHAGE_VERSION = PATCHAGE_VERSION)
 
@@ -165,9 +164,9 @@ def build(bld):
         target           = 'patchage.desktop',
         install_path     = '${DATADIR}/applications',
         chmod            = Utils.O644,
-        BINDIR           = os.path.normpath(bld.env['BINDIR']),
-        APP_INSTALL_NAME = bld.env['APP_INSTALL_NAME'],
-        APP_HUMAN_NAME   = bld.env['APP_HUMAN_NAME'])
+        BINDIR           = os.path.normpath(bld.env.BINDIR),
+        APP_INSTALL_NAME = bld.env.APP_INSTALL_NAME,
+        APP_HUMAN_NAME   = bld.env.APP_HUMAN_NAME)
 
     if Options.platform == 'darwin':
         # Property list
@@ -195,13 +194,13 @@ def build(bld):
     for s in icon_sizes:
         d = '%dx%d' % (s, s)
         bld.install_as(
-                os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', d, 'apps',
-                                bld.env['APP_INSTALL_NAME'] + '.png'),
+                os.path.join(bld.env.DATADIR, 'icons', 'hicolor', d, 'apps',
+                                bld.env.APP_INSTALL_NAME + '.png'),
                 'icons/' + d + '/patchage.png')
 
     bld.install_as(
-            os.path.join(bld.env['DATADIR'], 'icons', 'hicolor', 'scalable', 'apps',
-                            bld.env['APP_INSTALL_NAME'] + '.svg'),
+            os.path.join(bld.env.DATADIR, 'icons', 'hicolor', 'scalable', 'apps',
+                            bld.env.APP_INSTALL_NAME + '.svg'),
             'icons/scalable/patchage.svg')
 
     bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
