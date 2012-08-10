@@ -23,12 +23,12 @@
 #include "PatchageEvent.hpp"
 #include "Driver.hpp"
 #if defined(HAVE_JACK_DBUS)
-  #include "JackDbusDriver.hpp"
+#    include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-  #include "JackDriver.hpp"
+#    include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
-  #include "AlsaDriver.hpp"
+#    include "AlsaDriver.hpp"
 #endif
 
 using std::endl;
