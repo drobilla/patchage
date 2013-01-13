@@ -66,11 +66,11 @@ public:
 
 	bool make_connection(Ganv::Node* tail,
 	                     Ganv::Node* head,
-	                     uint32_t          color);
+	                     uint32_t    color);
 
 	void remove_port(const PortID& id);
 
-	void destroy();
+	void clear();
 
 private:
 	Patchage* _app;

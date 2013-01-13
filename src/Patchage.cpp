@@ -351,11 +351,8 @@ Patchage::zoom(double z)
 void
 Patchage::refresh()
 {
-	assert(_canvas);
-
-	if (_enable_refresh) {
-
-		_canvas->destroy();
+	if (_canvas && _enable_refresh) {
+		_canvas->clear();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver)

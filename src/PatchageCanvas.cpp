@@ -332,9 +332,9 @@ PatchageCanvas::remove_module(PatchageModule* module)
 }
 
 void
-PatchageCanvas::destroy()
+PatchageCanvas::clear()
 {
 	_port_index.clear();
 	_module_index.clear();
-	Ganv::Canvas::destroy();
+	Ganv::Canvas::clear();
 }
