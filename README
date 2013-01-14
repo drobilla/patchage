@@ -1,8 +1,7 @@
 Patchage
---------
+========
 
-Patchage is a modular patch bay for audio and MIDI systems
-based on JACK and ALSA.
+Patchage is a modular patch bay for Jack and ALSA based audio/MIDI systems.
 
 For more information, see <http://drobilla.net/software/patchage>.
  
