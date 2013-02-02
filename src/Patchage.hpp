@@ -53,7 +53,7 @@ public:
 	Patchage(int argc, char** argv);
 	~Patchage();
 
-	boost::shared_ptr<PatchageCanvas> canvas() const { return _canvas; }
+	const boost::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
 	Gtk::Window* window() { return _main_win.get(); }
 
