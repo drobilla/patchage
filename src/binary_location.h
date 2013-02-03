@@ -34,7 +34,9 @@ binary_location()
 	const int ret = dladdr((void*)&binary_location, &dli);
 	if (ret) {
 		char* const bin_loc = (char*)calloc(PATH_MAX, 1);
-		realpath(dli.dli_fname, bin_loc);
+		if (!realpath(dli.dli_fname, bin_loc)) {
+			return NULL;
+		}
 		return bin_loc;
 	}
 	return NULL;
