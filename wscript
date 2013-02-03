@@ -94,7 +94,9 @@ def configure(conf):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
     # Boost headers
+    autowaf.check_header(conf, 'cxx', 'boost/format.hpp')
     autowaf.check_header(conf, 'cxx', 'boost/shared_ptr.hpp')
+    autowaf.check_header(conf, 'cxx', 'boost/utility.hpp')
     autowaf.check_header(conf, 'cxx', 'boost/weak_ptr.hpp')
 
     conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
