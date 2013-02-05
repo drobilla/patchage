@@ -88,7 +88,7 @@ PatchageEvent::execute(Patchage* patchage)
 			patchage->error_msg((format("Unable to find port `%1%' to connect")
 			                     % _port_1).str());
 		else if (!port_2)
-			patchage->error_msg((format("Unable to find port `%1' to connect")
+			patchage->error_msg((format("Unable to find port `%1%' to connect")
 			                     % _port_2).str());
 		else
 			patchage->canvas()->make_connection(
@@ -100,10 +100,10 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
-			patchage->error_msg((format("Unable to find port `%1' to disconnect")
+			patchage->error_msg((format("Unable to find port `%1%' to disconnect")
 			                     % _port_1).str());
 		else if (!port_2)
-			patchage->error_msg((format("Unable to find port `%1' to disconnect")
+			patchage->error_msg((format("Unable to find port `%1%' to disconnect")
 			                     % _port_2).str());
 		else
 			patchage->canvas()->remove_edge(port_1, port_2);
