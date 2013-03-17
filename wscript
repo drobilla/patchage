@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Licensed under the GNU GPL v3 or later, see COPYING file for details.
-# Copyright 2008-2010 David Robillard
+# Copyright 2008-2013 David Robillard
 # Copyright 2008 Nedko Arnaudov
 
 import os

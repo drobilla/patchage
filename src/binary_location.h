@@ -1,5 +1,5 @@
 /* Find the location of the program in the filesytem.
- * Copyright 2008-2011 David Robillard <http://drobilla.net>
+ * Copyright 2008-2013 David Robillard <http://drobilla.net>
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software

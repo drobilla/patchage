@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2011 David Robillard <http://drobilla.net>
+ * Copyright 2007-2013 David Robillard <http://drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
