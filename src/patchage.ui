@@ -8,7 +8,7 @@
     <property name="transient_for">main_win</property>
     <property name="program_name">Patchage</property>
     <property name="version">@PATCHAGE_VERSION@</property>
-    <property name="copyright" translatable="yes">© 2005-2011 David Robillard
+    <property name="copyright" translatable="yes">© 2005-2013 David Robillard
 © 2008 Nedko Arnaudov</property>
     <property name="comments" translatable="yes">A JACK and ALSA front-end.</property>
     <property name="website">http://drobilla.net/software/patchage</property>
