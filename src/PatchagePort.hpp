@@ -45,6 +45,8 @@ public:
 		: Port(module, name, is_input, color)
 		, _type(type)
 	{
+		signal_event().connect(
+			sigc::mem_fun(this, &PatchagePort::on_event));
 	}
 
 	virtual ~PatchagePort() {}
@@ -54,17 +56,17 @@ public:
 		return std::string(get_module()->get_label()) + ":" + get_label();
 	}
 
-	bool on_click(GdkEventButton* ev) {
-		if (ev->button != 3) {
-			return Ganv::Port::on_click(ev);
+	bool on_event(GdkEvent* ev) {
+		if (ev->type != GDK_BUTTON_PRESS || ev->button.button != 3) {
+			return false;
 		}
 
 		Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());
 		menu->items().push_back(
 			Gtk::Menu_Helpers::MenuElem(
-				"Disconnect All", sigc::mem_fun(this, &Port::disconnect)));
+				"Disconnect", sigc::mem_fun(this, &Port::disconnect)));
 
-		menu->popup(ev->button, ev->time);
+		menu->popup(ev->button.button, ev->button.time);
 		return true;
 	}
 
