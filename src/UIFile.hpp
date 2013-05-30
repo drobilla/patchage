@@ -61,8 +61,7 @@ public:
 		}
 
 		std::stringstream ss;
-		ss << "Unable to find " << base_name << ".ui in " << loc
-		   << " or " << PATCHAGE_DATA_DIR << std::endl;
+		ss << "Unable to find " << base_name << std::endl;
 		throw std::runtime_error(ss.str());
 		return Glib::RefPtr<Gtk::Builder>();
 	}
