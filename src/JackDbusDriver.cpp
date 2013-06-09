@@ -137,10 +137,9 @@ JackDriver::on_jack_disappeared()
 
 /** Handle signals we have subscribed for in attach(). */
 DBusHandlerResult
-JackDriver::dbus_message_hook(
-	DBusConnection* connection,
-	DBusMessage*    message,
-	void*           jack_driver)
+JackDriver::dbus_message_hook(DBusConnection* connection,
+                              DBusMessage*    message,
+                              void*           jack_driver)
 {
 	const char*   client2_name;
 	const char*   client_name;
@@ -494,11 +493,10 @@ JackDriver::is_attached() const
 }
 
 void
-JackDriver::add_port(
-	PatchageModule*    module,
-	PortType           type,
-	const std::string& name,
-	bool               is_input)
+JackDriver::add_port(PatchageModule*    module,
+                     PortType           type,
+                     const std::string& name,
+                     bool               is_input)
 {
 	if (module->get_port(name)) {
 		return;
@@ -513,13 +511,12 @@ JackDriver::add_port(
 }
 
 void
-JackDriver::add_port(
-	dbus_uint64_t client_id,
-	const char*   client_name,
-	dbus_uint64_t port_id,
-	const char*   port_name,
-	dbus_uint32_t port_flags,
-	dbus_uint32_t port_type)
+JackDriver::add_port(dbus_uint64_t client_id,
+                     const char*   client_name,
+                     dbus_uint64_t port_id,
+                     const char*   port_name,
+                     dbus_uint32_t port_flags,
+                     dbus_uint32_t port_type)
 {
 	PortType local_port_type;
 
@@ -550,11 +547,10 @@ JackDriver::add_port(
 }
 
 void
-JackDriver::remove_port(
-	dbus_uint64_t client_id,
-	const char*   client_name,
-	dbus_uint64_t port_id,
-	const char*   port_name)
+JackDriver::remove_port(dbus_uint64_t client_id,
+                        const char*   client_name,
+                        dbus_uint64_t port_id,
+                        const char*   port_name)
 {
 	PatchagePort* port = _app->canvas()->find_port_by_name(client_name, port_name);
 	if (!port) {
@@ -562,7 +558,7 @@ JackDriver::remove_port(
 		return;
 	}
 
-	PatchageModule* module = dynamic_cast<PatchageModule*>(port->module());
+	PatchageModule* module = dynamic_cast<PatchageModule*>(port->get_module());
 
 	delete port;
 
@@ -571,7 +567,7 @@ JackDriver::remove_port(
 		delete module;
 	}
 
-	if (_app->canvas()->items().empty()) {
+	if (_app->canvas()->empty()) {
 		if (_server_started) {
 			signal_detached.emit();
 		}
@@ -597,16 +593,15 @@ JackDriver::find_or_create_module(
 }
 
 void
-JackDriver::connect_ports(
-	dbus_uint64_t connection_id,
-	dbus_uint64_t client1_id,
-	const char*   client1_name,
-	dbus_uint64_t port1_id,
-	const char*   port1_name,
-	dbus_uint64_t client2_id,
-	const char*   client2_name,
-	dbus_uint64_t port2_id,
-	const char*   port2_name)
+JackDriver::connect_ports(dbus_uint64_t connection_id,
+                          dbus_uint64_t client1_id,
+                          const char*   client1_name,
+                          dbus_uint64_t port1_id,
+                          const char*   port1_name,
+                          dbus_uint64_t client2_id,
+                          const char*   client2_name,
+                          dbus_uint64_t port2_id,
+                          const char*   port2_name)
 {
 	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
@@ -620,20 +615,19 @@ JackDriver::connect_ports(
 		return;
 	}
 
-	_app->canvas()->make_connection(port1, port2, port1->color() + 0x22222200);
+	_app->canvas()->connect(port1, port2);
 }
 
 void
-JackDriver::disconnect_ports(
-	dbus_uint64_t connection_id,
-	dbus_uint64_t client1_id,
-	const char*   client1_name,
-	dbus_uint64_t port1_id,
-	const char*   port1_name,
-	dbus_uint64_t client2_id,
-	const char*   client2_name,
-	dbus_uint64_t port2_id,
-	const char*   port2_name)
+JackDriver::disconnect_ports(dbus_uint64_t connection_id,
+                             dbus_uint64_t client1_id,
+                             const char*   client1_name,
+                             dbus_uint64_t port1_id,
+                             const char*   port1_name,
+                             dbus_uint64_t client2_id,
+                             const char*   client2_name,
+                             dbus_uint64_t port2_id,
+                             const char*   port2_name)
 {
 	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
@@ -647,7 +641,7 @@ JackDriver::disconnect_ports(
 		return;
 	}
 
-	_app->canvas()->remove_connection(port1, port2);
+	_app->canvas()->disconnect(port1, port2);
 }
 
 void
@@ -815,21 +809,15 @@ JackDriver::refresh()
 }
 
 bool
-JackDriver::connect(
-	PatchagePort* src,
-	PatchagePort* dst)
+JackDriver::connect(PatchagePort* src,
+                    PatchagePort* dst)
 {
-	const char*  client1_name;
-	const char*  port1_name;
-	const char*  client2_name;
-	const char*  port2_name;
+	const char* client1_name = src->get_module()->get_label();
+	const char* port1_name   = src->get_label();
+	const char* client2_name = dst->get_module()->get_label();
+	const char* port2_name   = dst->get_label();
+
 	DBusMessage* reply_ptr;
-
-	client1_name = src->module()->name().c_str();
-	port1_name   = src->name().c_str();
-	client2_name = dst->module()->name().c_str();
-	port2_name   = dst->name().c_str();
-
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "ConnectPortsByName", &reply_ptr,
 				DBUS_TYPE_STRING, &client1_name,
 				DBUS_TYPE_STRING, &port1_name,
@@ -844,21 +832,15 @@ JackDriver::connect(
 }
 
 bool
-JackDriver::disconnect(
-	PatchagePort* src,
-	PatchagePort* dst)
+JackDriver::disconnect(PatchagePort* src,
+                       PatchagePort* dst)
 {
-	const char*  client1_name;
-	const char*  port1_name;
-	const char*  client2_name;
-	const char*  port2_name;
+	const char* client1_name = src->get_module()->get_label();
+	const char* port1_name   = src->get_label();
+	const char* client2_name = dst->get_module()->get_label();
+	const char* port2_name   = dst->get_label();
+
 	DBusMessage* reply_ptr;
-
-	client1_name = src->module()->name().c_str();
-	port1_name   = src->name().c_str();
-	client2_name = dst->module()->name().c_str();
-	port2_name   = dst->name().c_str();
-
 	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "DisconnectPortsByName", &reply_ptr,
 				DBUS_TYPE_STRING, &client1_name,
 				DBUS_TYPE_STRING, &port1_name,
@@ -1004,11 +986,11 @@ JackDriver::reset_xruns()
 }
 
 PatchagePort*
-JackDriver::create_port_view(
-	Patchage* patchage,
-	const PortID& id)
+JackDriver::create_port_view(Patchage*     patchage,
+                             const PortID& id)
 {
 	assert(false);  // we dont use events at all
+	return NULL;
 }
 
 void

@@ -139,11 +139,7 @@ def build(bld):
             src/main.cpp
     '''
     if bld.is_defined('HAVE_JACK_DBUS'):
-        prog.source += '''
-                src/JackDbusDriver.cpp
-        '''
-    if bld.is_defined('HAVE_JACK_DBUS'):
-        prog.source += ' src/DBus.cpp '
+        prog.source += ' src/JackDbusDriver.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
         prog.source += ' src/JackDriver.cpp '
         prog.uselib += ' JACK NEWJACK '

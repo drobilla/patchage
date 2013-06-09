@@ -56,9 +56,8 @@ public:
 	                std::string&  module_name,
 	                std::string&  port_name);
 
-	PatchagePort* create_port_view(
-			Patchage*     patchage,
-			const PortID& id);
+	PatchagePort* create_port_view(Patchage*     patchage,
+	                               const PortID& id);
 
 	bool connect(PatchagePort* src,
 	             PatchagePort* dst);
