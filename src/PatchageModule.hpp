@@ -57,9 +57,6 @@ public:
 protected:
 	bool on_event(GdkEvent* ev);
 
-	void add_port(Ganv::Port* port);
-	void remove_port(Ganv::Port* port);
-
 	Patchage*   _app;
 	Gtk::Menu*  _menu;
 	std::string _name;

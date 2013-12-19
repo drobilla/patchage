@@ -167,6 +167,9 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 	PatchagePort* port = create_port(*parent, jack_port, id);
 	port->show();
+	if (port->is_input()) {
+		parent->set_is_source(false);
+	}
 
 	return port;
 }

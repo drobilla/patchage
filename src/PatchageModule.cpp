@@ -32,6 +32,9 @@ PatchageModule::PatchageModule(
 
 	signal_moved().connect(
 		sigc::mem_fun(this, &PatchageModule::store_location));
+
+	// Set as source by default, turned off if input ports added
+	set_is_source(true);
 }
 
 PatchageModule::~PatchageModule()
@@ -131,22 +134,6 @@ PatchageModule::join()
 	assert(_type != InputOutput);
 	_app->state_manager()->set_module_split(_name, false);
 	_app->refresh();
-}
-
-void
-PatchageModule::add_port(Ganv::Port* port)
-{
-	std::cerr << "FIXME: add port" << std::endl;
-	//Ganv::Module::add_port(port);
-	update_menu();
-}
-
-void
-PatchageModule::remove_port(Ganv::Port* port)
-{
-	std::cerr << "FIXME: remove port" << std::endl;
-	//Ganv::Module::remove_port(port);
-	update_menu();
 }
 
 void
