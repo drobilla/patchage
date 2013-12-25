@@ -39,8 +39,8 @@ def options(opt):
                     help='Do not try to read files from executable location')
 
 def configure(conf):
-    conf.load('compiler_cxx')
     conf.line_just = 44
+    conf.load('compiler_cxx')
     autowaf.configure(conf)
     autowaf.display_header('Patchage Configuration')
 
