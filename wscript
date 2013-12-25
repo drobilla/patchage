@@ -40,13 +40,13 @@ def options(opt):
 
 def configure(conf):
     conf.load('compiler_cxx')
-    conf.line_just = 40
+    conf.line_just = 44
     autowaf.configure(conf)
+    autowaf.display_header('Patchage Configuration')
 
     conf.check_cxx(cxxflags=["-std=c++0x"])
     conf.env.append_unique('CXXFLAGS', ['-std=c++0x'])
 
-    autowaf.display_header('Patchage Configuration')
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
                       mandatory=False)
     autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
