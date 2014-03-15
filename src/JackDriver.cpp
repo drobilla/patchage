@@ -186,7 +186,7 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
 		port_type = JACK_MIDI;
 	} else {
-		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2'.")
+		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.")
 		                   % jack_port_name(port) % type_str).str());
 		return NULL;
 	}

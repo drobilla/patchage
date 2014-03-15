@@ -121,11 +121,6 @@ void
 PatchageCanvas::remove_port(const PortID& id)
 {
 	PatchagePort* const port = find_port(id);
-	if (!port) {
-		_app->error_msg((format("Failed to find port with ID `%1' to remove.")
-		                 % id).str());
-	}
-
 	_port_index.erase(id);
 	delete port;
 }
