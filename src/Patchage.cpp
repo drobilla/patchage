@@ -26,6 +26,7 @@
 
 #include <gtkmm/button.h>
 #include <gtkmm/filechooserdialog.h>
+#include <gtkmm/messagedialog.h>
 #include <gtkmm/menuitem.h>
 #include <gtkmm/stock.h>
 #include <gtkmm/treemodel.h>
@@ -89,6 +90,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
 	, INIT_WIDGET(_menu_file_quit)
+	, INIT_WIDGET(_menu_draw)
 	, INIT_WIDGET(_menu_help_about)
 	, INIT_WIDGET(_menu_jack_connect)
 	, INIT_WIDGET(_menu_jack_disconnect)
@@ -181,6 +183,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_store_positions));
 	_menu_file_quit->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_quit));
+	_menu_draw->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_draw));
 	_menu_view_refresh->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_arrange->signal_activate().connect(
@@ -646,6 +650,35 @@ Patchage::on_quit()
 #endif
 	_main_win->hide();
 	_canvas.reset();
+}
+
+void
+Patchage::on_draw()
+{
+	Gtk::FileChooserDialog dialog("Draw to DOT", Gtk::FILE_CHOOSER_ACTION_SAVE);
+	dialog.set_transient_for(*_main_win);
+	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+
+	Gtk::Button* save_button = dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
+	save_button->property_has_default() = true;
+
+	if (dialog.run() == Gtk::RESPONSE_OK) {
+		std::string filename = dialog.get_filename();
+		if (filename.find(".") == std::string::npos)
+			filename += ".dot";
+
+		if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
+			Gtk::MessageDialog dialog(
+				std::string("File exists!  Overwrite ") + filename + "?",
+				true, Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+			dialog.set_transient_for(*_main_win);
+			if (dialog.run() != Gtk::RESPONSE_YES) {
+				return;
+			}
+		}
+
+		_canvas->export_dot(filename.c_str());
+	}
 }
 
 void

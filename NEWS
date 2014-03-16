@@ -1,13 +1,14 @@
-patchage (UNRELEASED) stable;
+patchage (UNRELEASED) unstable;
 
   * Make it possible to remove connections by middle-clicking on their
     handle, or selecting them and pressing delete.
   * Remove Raul dependency.
-  * Update to use latest FlowCanvas (significant performance improvements).
+  * Switch from FlowCanvas to Ganv (much improved looks and performance).
   * Remove LASH support and aggressively simplify UI.
   * Fix font configuration on OSX.
   * Use Mac style key bindings on OSX.
   * Integrate with Mac menu bar on OSX.
+  * Support for DOT export for rendering with GraphViz.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 
