@@ -31,7 +31,6 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "PortID.hpp"
-#include "StateManager.hpp"
 
 class Patchage;
 class PatchageModule;

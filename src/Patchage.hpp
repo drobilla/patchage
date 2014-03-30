@@ -44,7 +44,7 @@
 class AlsaDriver;
 class JackDriver;
 class PatchageCanvas;
-class StateManager;
+class Configuration;
 
 namespace Ganv { class Module; }
 
@@ -57,10 +57,10 @@ public:
 
 	Gtk::Window* window() { return _main_win.get(); }
 
-	StateManager* state_manager() const { return _state_manager; }
-	JackDriver*   jack_driver()   const { return _jack_driver; }
+	Configuration* configuration() const { return _configuration; }
+	JackDriver*    jack_driver()   const { return _jack_driver; }
 #ifdef HAVE_ALSA
-	AlsaDriver*   alsa_driver()   const { return _alsa_driver; }
+	AlsaDriver*    alsa_driver()   const { return _alsa_driver; }
 #endif
 #ifdef PATCHAGE_JACK_SESSION
 	void show_open_session_dialog();
@@ -124,8 +124,8 @@ protected:
 
 	boost::shared_ptr<PatchageCanvas> _canvas;
 
-	JackDriver*   _jack_driver;
-	StateManager* _state_manager;
+	JackDriver*    _jack_driver;
+	Configuration* _configuration;
 
 	Gtk::Main* _gtk_main;
 

@@ -24,7 +24,7 @@
 #include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
 
-#include "StateManager.hpp"
+#include "Configuration.hpp"
 
 class Patchage;
 class PatchagePort;

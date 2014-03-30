@@ -131,11 +131,11 @@ def build(bld):
                install_path = '${BINDIR}')
     autowaf.use_lib(bld, prog, 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
+            src/Configuration.cpp
             src/Patchage.cpp
             src/PatchageCanvas.cpp
             src/PatchageEvent.cpp
             src/PatchageModule.cpp
-            src/StateManager.cpp
             src/main.cpp
     '''
     if bld.is_defined('HAVE_JACK_DBUS'):

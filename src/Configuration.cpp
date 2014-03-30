@@ -23,10 +23,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include "StateManager.hpp"
+#include "Configuration.hpp"
 #include "Patchage.hpp"
 
-StateManager::StateManager()
+Configuration::Configuration()
 	: _window_location(0, 0)
 	, _window_size(640, 480)
 	, _zoom(1.0)
@@ -34,7 +34,7 @@ StateManager::StateManager()
 }
 
 bool
-StateManager::get_module_location(const std::string& name, ModuleType type, Coord& loc)
+Configuration::get_module_location(const std::string& name, ModuleType type, Coord& loc)
 {
 	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
@@ -56,7 +56,7 @@ StateManager::get_module_location(const std::string& name, ModuleType type, Coor
 }
 
 void
-StateManager::set_module_location(const std::string& name, ModuleType type, Coord loc)
+Configuration::set_module_location(const std::string& name, ModuleType type, Coord loc)
 {
 	std::map<std::string, ModuleSettings>::iterator i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
@@ -86,7 +86,7 @@ StateManager::set_module_location(const std::string& name, ModuleType type, Coor
  * to allow driver's to request terminal ports get split by default).
  */
 bool
-StateManager::get_module_split(const std::string& name, bool default_val) const
+Configuration::get_module_split(const std::string& name, bool default_val) const
 {
 	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
@@ -97,7 +97,7 @@ StateManager::get_module_split(const std::string& name, bool default_val) const
 }
 
 void
-StateManager::set_module_split(const std::string& name, bool split)
+Configuration::set_module_split(const std::string& name, bool split)
 {
 	_module_settings[name].split = split;
 }
@@ -131,7 +131,7 @@ get_filenames()
 }
 
 void
-StateManager::load()
+Configuration::load()
 {
 	// Try to find a readable configuration file
 	const std::vector<std::string> filenames = get_filenames();
@@ -219,7 +219,7 @@ write_module_position(std::ofstream&     os,
 }
 
 void
-StateManager::save()
+Configuration::save()
 {
 	// Try to find a writable configuration file
 	const std::vector<std::string> filenames = get_filenames();
@@ -262,19 +262,19 @@ StateManager::save()
 }
 
 float
-StateManager::get_zoom()
+Configuration::get_zoom()
 {
 	return _zoom;
 }
 
 void
-StateManager::set_zoom(float zoom)
+Configuration::set_zoom(float zoom)
 {
 	_zoom = zoom;
 }
 
 int
-StateManager::get_port_color(PortType type)
+Configuration::get_port_color(PortType type)
 {
 	// Darkest tango palette colour, with S -= 6, V -= 6, w/ transparency
 

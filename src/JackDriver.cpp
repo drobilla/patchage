@@ -147,7 +147,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 	port_names(id, module_name, port_name);
 
 	ModuleType type = InputOutput;
-	if (_app->state_manager()->get_module_split(
+	if (_app->configuration()->get_module_split(
 		    module_name, (jack_flags & JackPortIsTerminal))) {
 		if (jack_flags & JackPortIsInput) {
 			type = Input;
@@ -194,7 +194,7 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	PatchagePort* ret(
 		new PatchagePort(parent, port_type, jack_port_short_name(port),
 		                 (jack_port_flags(port) & JackPortIsInput),
-		                 _app->state_manager()->get_port_color(port_type)));
+		                 _app->configuration()->get_port_color(port_type)));
 
 	if (id.type != PortID::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
@@ -248,8 +248,9 @@ JackDriver::refresh()
 		client1_name = client1_name.substr(0, client1_name.find(":"));
 
 		ModuleType type = InputOutput;
-		if (_app->state_manager()->get_module_split(client1_name,
-					(jack_port_flags(port) & JackPortIsTerminal))) {
+		if (_app->configuration()->get_module_split(
+			    client1_name,
+			    (jack_port_flags(port) & JackPortIsTerminal))) {
 			if (jack_port_flags(port) & JackPortIsInput) {
 				type = Input;
 			} else {

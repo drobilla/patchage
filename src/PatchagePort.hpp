@@ -27,10 +27,10 @@
 #include "ganv/Port.hpp"
 #include "ganv/Module.hpp"
 
-#include "patchage_config.h"
+#include "Configuration.hpp"
 #include "PatchageCanvas.hpp"
 #include "PortID.hpp"
-#include "StateManager.hpp"
+#include "patchage_config.h"
 
 /** A Port on a PatchageModule
  */

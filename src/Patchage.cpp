@@ -39,7 +39,7 @@
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
-#include "StateManager.hpp"
+#include "Configuration.hpp"
 
 #if defined(HAVE_JACK_DBUS)
     #include "JackDbusDriver.hpp"
@@ -82,7 +82,7 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver(NULL)
 #endif
 	, _jack_driver(NULL)
-	, _state_manager(NULL)
+	, _configuration(NULL)
 	, INIT_WIDGET(_about_win)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
@@ -119,7 +119,7 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver_autoattach(true)
 #endif
 {
-	_state_manager = new StateManager();
+	_configuration = new Configuration();
 	_canvas = boost::shared_ptr<PatchageCanvas>(new PatchageCanvas(this, 1600*2, 1200*2));
 
 	while (argc > 0) {
@@ -220,15 +220,15 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->widget().show();
 	_main_win->present();
 
-	_state_manager->load();
+	_configuration->load();
 
 	_main_win->resize(
-		static_cast<int>(_state_manager->get_window_size().x),
-		static_cast<int>(_state_manager->get_window_size().y));
+		static_cast<int>(_configuration->get_window_size().x),
+		static_cast<int>(_configuration->get_window_size().y));
 
 	_main_win->move(
-		static_cast<int>(_state_manager->get_window_location().x),
-		static_cast<int>(_state_manager->get_window_location().y));
+		static_cast<int>(_configuration->get_window_location().x),
+		static_cast<int>(_configuration->get_window_location().y));
 
 	_about_win->set_transient_for(*_main_win);
 
@@ -272,7 +272,7 @@ Patchage::Patchage(int argc, char** argv)
 Patchage::~Patchage()
 {
 	store_window_location();
-	_state_manager->save();
+	_configuration->save();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
@@ -281,7 +281,7 @@ Patchage::~Patchage()
 	delete _alsa_driver;
 #endif
 
-	delete _state_manager;
+	delete _configuration;
 
 	_about_win.destroy();
 	_messages_win.destroy();
@@ -355,7 +355,7 @@ Patchage::idle_callback()
 void
 Patchage::zoom(double z)
 {
-	_state_manager->set_zoom(z);
+	_configuration->set_zoom(z);
 	_canvas->set_zoom(z);
 }
 
@@ -377,8 +377,6 @@ Patchage::refresh()
 	}
 }
 
-/** Update the stored window location and size in the StateManager (in memory).
- */
 void
 Patchage::store_window_location()
 {
@@ -391,8 +389,8 @@ Patchage::store_window_location()
 	Coord window_size;
 	window_size.x = size_x;
 	window_size.y = size_y;
-	_state_manager->set_window_location(window_location);
-	_state_manager->set_window_size(window_size);
+	_configuration->set_window_location(window_location);
+	_configuration->set_window_size(window_size);
 }
 
 void

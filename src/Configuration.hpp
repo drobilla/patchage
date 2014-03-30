@@ -14,8 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_STATEMANAGER_HPP
-#define PATCHAGE_STATEMANAGER_HPP
+#ifndef PATCHAGE_CONFIGURATION_HPP
+#define PATCHAGE_CONFIGURATION_HPP
 
 #include <string>
 #include <list>
@@ -33,10 +33,10 @@ struct Coord {
 	double y;
 };
 
-class StateManager
+class Configuration
 {
 public:
-	StateManager();
+	Configuration();
 
 	void load();
 	void save();
@@ -73,4 +73,4 @@ private:
 	float _zoom;
 };
 
-#endif // PATCHAGE_STATEMANAGER_HPP
+#endif // PATCHAGE_CONFIGURATION_HPP

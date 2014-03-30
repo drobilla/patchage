@@ -268,11 +268,11 @@ AlsaDriver::create_port_view_internal(
 	bool split = false;
 	if (is_duplex) {
 		split = true;
-		if (!_app->state_manager()->get_module_split(client_name, !is_application)) {
-			_app->state_manager()->set_module_split(client_name, true);
+		if (!_app->configuration()->get_module_split(client_name, !is_application)) {
+			_app->configuration()->set_module_split(client_name, true);
 		}
 	} else {
-		split = _app->state_manager()->get_module_split(client_name, !is_application);
+		split = _app->configuration()->get_module_split(client_name, !is_application);
 	}
 
 	/*cout << "ALSA PORT: " << client_name << " : " << port_name
@@ -312,7 +312,7 @@ AlsaDriver::create_port(PatchageModule& parent,
 {
 	PatchagePort* ret = new PatchagePort(
 		parent, ALSA_MIDI, name, is_input,
-		_app->state_manager()->get_port_color(ALSA_MIDI));
+		_app->configuration()->get_port_color(ALSA_MIDI));
 
 	dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(
 		PortID(addr, is_input), ret);
