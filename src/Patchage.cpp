@@ -104,6 +104,9 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
 	, INIT_WIDGET(_menu_zoom_normal)
+	, INIT_WIDGET(_menu_increase_font_size)
+	, INIT_WIDGET(_menu_decrease_font_size)
+	, INIT_WIDGET(_menu_normal_font_size)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
@@ -199,6 +202,12 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_zoom_out));
 	_menu_zoom_normal->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_zoom_normal));
+	_menu_increase_font_size->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_increase_font_size));
+	_menu_decrease_font_size->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_decrease_font_size));
+	_menu_normal_font_size->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_normal_font_size));
 
 	_messages_clear_but->signal_clicked().connect(
 			sigc::mem_fun(this, &Patchage::on_messages_clear));
@@ -610,19 +619,37 @@ Patchage::on_help_about()
 void
 Patchage::on_zoom_in()
 {
-	_canvas->set_font_size(_canvas->get_font_size() + 1.0);
+	_canvas->set_zoom(_canvas->get_zoom() + 0.1);
 }
 
 void
 Patchage::on_zoom_out()
 {
-	_canvas->set_font_size(_canvas->get_font_size() - 1.0);
+	_canvas->set_zoom(_canvas->get_zoom() - 0.1);
 }
 
 void
 Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom(1.0);
+}
+
+void
+Patchage::on_increase_font_size()
+{
+	_canvas->set_font_size(_canvas->get_font_size() + 1.0);
+}
+
+void
+Patchage::on_decrease_font_size()
+{
+	_canvas->set_font_size(_canvas->get_font_size() - 1.0);
+}
+
+void
+Patchage::on_normal_font_size()
+{
+	_canvas->set_font_size(_canvas->get_default_font_size());
 }
 
 void

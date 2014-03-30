@@ -98,6 +98,9 @@ protected:
 	void on_zoom_in();
 	void on_zoom_out();
 	void on_zoom_normal();
+	void on_increase_font_size();
+	void on_decrease_font_size();
+	void on_normal_font_size();
 
 	bool on_scroll(GdkEventScroll* ev);
 
@@ -149,6 +152,9 @@ protected:
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
+	Widget<Gtk::MenuItem>       _menu_increase_font_size;
+	Widget<Gtk::MenuItem>       _menu_decrease_font_size;
+	Widget<Gtk::MenuItem>       _menu_normal_font_size;
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
