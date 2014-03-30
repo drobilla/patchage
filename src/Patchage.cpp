@@ -97,7 +97,6 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_open_session)
 	, INIT_WIDGET(_menu_save_session)
 	, INIT_WIDGET(_menu_save_close_session)
-	, INIT_WIDGET(_menu_store_positions)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
 	, INIT_WIDGET(_menu_view_refresh)
@@ -120,8 +119,6 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver_autoattach(true)
 #endif
 {
-	_settings_filename = getenv("HOME");
-	_settings_filename += "/.patchagerc";
 	_state_manager = new StateManager();
 	_canvas = boost::shared_ptr<PatchageCanvas>(new PatchageCanvas(this, 1600*2, 1200*2));
 
@@ -182,8 +179,6 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_alsa_disconnect->set_sensitive(false);
 #endif
 
-	_menu_store_positions->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_store_positions));
 	_menu_file_quit->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_quit));
 	_menu_draw->signal_activate().connect(
@@ -225,7 +220,7 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->widget().show();
 	_main_win->present();
 
-	_state_manager->load(_settings_filename);
+	_state_manager->load();
 
 	_main_win->resize(
 		static_cast<int>(_state_manager->get_window_size().x),
@@ -276,6 +271,9 @@ Patchage::Patchage(int argc, char** argv)
 
 Patchage::~Patchage()
 {
+	store_window_location();
+	_state_manager->save();
+
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
 #endif
@@ -712,13 +710,6 @@ void
 Patchage::on_show_messages()
 {
 	_messages_win->present();
-}
-
-void
-Patchage::on_store_positions()
-{
-	store_window_location();
-	_state_manager->save(_settings_filename);
 }
 
 bool

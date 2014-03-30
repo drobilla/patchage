@@ -9,6 +9,7 @@ patchage (UNRELEASED) unstable;
   * Use Mac style key bindings on OSX.
   * Integrate with Mac menu bar on OSX.
   * Support for DOT export for rendering with GraphViz.
+  * Use XDG_CONFIG_HOME instead of ~/.patchagerc
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 

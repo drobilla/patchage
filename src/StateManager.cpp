@@ -14,18 +14,17 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ctype.h>
 #include <stdlib.h>
 
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
+#include <vector>
 
 #include "StateManager.hpp"
 #include "Patchage.hpp"
-
-using std::endl;
-using std::map;
-using std::string;
 
 StateManager::StateManager()
 	: _window_location(0, 0)
@@ -35,65 +34,49 @@ StateManager::StateManager()
 }
 
 bool
-StateManager::get_module_location(const string& name, ModuleType type, Coord& loc)
+StateManager::get_module_location(const std::string& name, ModuleType type, Coord& loc)
 {
-	map<string, ModuleSettings>::const_iterator i = _module_settings.find(name);
-	if (i == _module_settings.end())
+	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
+	if (i == _module_settings.end()) {
 		return false;
-
-	const ModuleSettings& settings = (*i).second;
-
-	switch (type) {
-	case Input:
-		if (settings.input_location) {
-			loc = *settings.input_location;
-			return true;
-		}
-		break;
-	case Output:
-		if (settings.output_location) {
-			loc = *settings.output_location;
-			return true;
-		}
-		break;
-	case InputOutput:
-		if (settings.inout_location) {
-			loc = *settings.inout_location;
-			return true;
-		}
-		break;
-	default:
-		throw std::runtime_error("Invalid module type");
 	}
 
-	return false;
+	const ModuleSettings& settings = (*i).second;
+	if (type == Input && settings.input_location) {
+		loc = *settings.input_location;
+	} else if (type == Output && settings.output_location) {
+		loc = *settings.output_location;
+	} else if (type == InputOutput && settings.inout_location) {
+		loc = *settings.inout_location;
+	} else {
+		return false;
+	}
+
+	return true;
 }
 
 void
-StateManager::set_module_location(const string& name, ModuleType type, Coord loc)
+StateManager::set_module_location(const std::string& name, ModuleType type, Coord loc)
 {
-retry:
-	map<string, ModuleSettings>::iterator i = _module_settings.find(name);
+	std::map<std::string, ModuleSettings>::iterator i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
-		// no mapping exists, insert new element and set its split type, then retry to retrieve reference to it
-		_module_settings[name].split = type != InputOutput;
-		goto retry;
+		i = _module_settings.insert(
+			std::make_pair(name, ModuleSettings(type != InputOutput))).first;
 	}
 
-	ModuleSettings& settings_ref = (*i).second;
-
+	ModuleSettings& settings = (*i).second;
 	switch (type) {
 	case Input:
-		settings_ref.input_location = loc;
+		settings.input_location = loc;
 		break;
 	case Output:
-		settings_ref.output_location = loc;
+		settings.output_location = loc;
 		break;
 	case InputOutput:
-		settings_ref.inout_location = loc;
+		settings.inout_location = loc;
 		break;
 	default:
-		throw std::runtime_error("Invalid module type");
+		break;  // shouldn't reach here
 	}
 }
 
@@ -103,142 +86,179 @@ retry:
  * to allow driver's to request terminal ports get split by default).
  */
 bool
-StateManager::get_module_split(const string& name, bool default_val) const
+StateManager::get_module_split(const std::string& name, bool default_val) const
 {
-	map<string, ModuleSettings>::const_iterator i = _module_settings.find(name);
-	if (i == _module_settings.end())
+	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
+	if (i == _module_settings.end()) {
 		return default_val;
+	}
 
 	return (*i).second.split;
 }
 
 void
-StateManager::set_module_split(const string& name, bool split)
+StateManager::set_module_split(const std::string& name, bool split)
 {
 	_module_settings[name].split = split;
 }
 
-void
-StateManager::load(const string& filename)
+/** Return a vector of filenames in descending order by preference. */
+static std::vector<std::string>
+get_filenames()
 {
-	_module_settings.clear();
+	std::vector<std::string> filenames;
+	std::string prefix;
 
-	std::ifstream is;
-	is.open(filename.c_str(), std::ios::in);
+	const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
+	const char* home            = getenv("HOME");
 
-	if ( ! is.good())
+	// XDG spec
+	if (xdg_config_home) {
+		filenames.push_back(std::string(xdg_config_home) + "/patchagerc");
+	} else if (home) {
+		filenames.push_back(std::string(home) + "/.config/patchagerc");
+	}
+
+	// Old location
+	if (home) {
+		filenames.push_back(std::string(home) + "/.patchagerc");
+	}
+
+	// Current directory (bundle or last-ditch effort)
+	filenames.push_back("patchagerc");
+
+	return filenames;
+}
+
+void
+StateManager::load()
+{
+	// Try to find a readable configuration file
+	const std::vector<std::string> filenames = get_filenames();
+	std::ifstream                  file;
+	for (size_t i = 0; i < filenames.size(); ++i) {
+		file.open(filenames[i].c_str(), std::ios::in);
+		if (file.good()) {
+			std::cout << "Loading configuration from " << filenames[i] << std::endl;
+			break;
+		}
+	}
+
+	if (!file.good()) {
+		std::cout << "No configuration file present" << std::endl;
 		return;
-
-	std::cout << "Loading configuration file " << filename << std::endl;
-
-	string s;
-
-	is >> s;
-	if (s == "window_location") {
-		is >> s;
-		_window_location.x = atoi(s.c_str());
-		is >> s;
-		_window_location.y = atoi(s.c_str());
 	}
 
-	is >> s;
-	if (s == "window_size") {
-		is >> s;
-		_window_size.x = atoi(s.c_str());
-		is >> s;
-		_window_size.y = atoi(s.c_str());
-	}
-
-	is >> s;
-	if (s != "zoom_level") {
-		std::string msg = "Corrupt settings file: expected \"zoom_level\", found \"";
-		msg.append(s).append("\"");
-		throw std::runtime_error(msg);
-	}
-
-	is >> s;
-	_zoom = atof(s.c_str());
-
-	Coord loc;
-	ModuleType type;
-	string name;
-
-	while (1) {
-		is >> s;
-		if (is.eof()) break;
-
-		// Old versions didn't quote, so need to support both :/
-		if (s[0] == '\"') {
-			if (s.length() > 1 && s[s.length()-1] == '\"') {
-				name = s.substr(1, s.length()-2);
-			} else {
-				name = s.substr(1);
-				is >> s;
-				while (s[s.length()-1] != '\"') {
-					name.append(" ").append(s);
-					is >> s;
-				}
-				name.append(" ").append(s.substr(0, s.length()-1));
-			}
+	_module_settings.clear();
+	while (file.good()) {
+		std::string key;
+		if (file.peek() == '\"') {
+			/* Old versions ommitted the module_position key and listed
+			   positions starting with module name in quotes. */
+			key = "module_position";
 		} else {
-			name = s;
+			file >> key;
 		}
 
-		is >> s;
-		if (s == "input") type = Input;
-		else if (s == "output") type = Output;
-		else if (s == "inputoutput") type = InputOutput;
-		else throw std::runtime_error("Corrupt settings file.");
+		if (key == "window_location") {
+			file >> _window_location.x >> _window_location.y;
+		} else if (key == "window_size") {
+			file >> _window_size.x >> _window_size.y;
+		} else if (key == "zoom_level") {
+			file >> _zoom;
+		} else if (key == "module_position" || key[0] == '\"') {
 
-		is >> s;
-		loc.x = atoi(s.c_str());
-		is >> s;
-		loc.y = atoi(s.c_str());
+			Coord       loc;
+			std::string name;
+			file.ignore(1, '\"');
+			std::getline(file, name, '\"');
 
-		set_module_location(name, type, loc);
+			ModuleType  type;
+			std::string type_str;
+			file >> type_str;
+			if (type_str == "input") {
+				type = Input;
+			} else if (type_str == "output") {
+				type = Output;
+			} else if (type_str == "inputoutput") {
+				type = InputOutput;
+			} else {
+				std::cerr << "error: bad position type `" << type_str
+				          << "' for module `" << name << "'" << std::endl;
+				file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				continue;
+			}
+
+			file >> loc.x;
+			file >> loc.y;
+
+			set_module_location(name, type, loc);
+		} else {
+			std::cerr << "warning: unknown configuration key `" << key << "'"
+			          << std::endl;
+			file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+
+		// Skip trailing whitespace, including newline
+		while (file.good() && isspace(file.peek())) {
+			file.ignore(1);
+		}
 	}
 
-	is.close();
+	file.close();
 }
 
 static inline void
-write_module_settings_entry(
-	std::ofstream& os,
-	const string& name,
-	const char * type,
-	const Coord& loc)
+write_module_position(std::ofstream&     os,
+                      const std::string& name,
+                      const char*        type,
+                      const Coord&       loc)
 {
-	os << "\"" << name << "\"" << " " << type << " " << loc.x << " " << loc.y << std::endl;
+	os << "module_position \"" << name << "\""
+	   << " " << type << " " << loc.x << " " << loc.y << std::endl;
 }
 
 void
-StateManager::save(const string& filename)
+StateManager::save()
 {
-	std::ofstream os;
-	os.open(filename.c_str(), std::ios::out);
+	// Try to find a writable configuration file
+	const std::vector<std::string> filenames = get_filenames();
+	std::ofstream                  file;
+	for (size_t i = 0; i < filenames.size(); ++i) {
+		file.open(filenames[i].c_str(), std::ios::out);
+		if (file.good()) {
+			std::cout << "Writing configuration to " << filenames[i] << std::endl;
+			break;
+		}
+	}
 
-	os << "window_location " << _window_location.x << " " << _window_location.y << std::endl;
-	os << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
-	os << "zoom_level " << _zoom << std::endl;
+	if (!file.good()) {
+		std::cout << "Unable to open configuration file to write" << std::endl;
+		return;
+	}
 
-	for (map<string, ModuleSettings>::iterator i = _module_settings.begin();
-			i != _module_settings.end(); ++i) {
+	file << "window_location " << _window_location.x << " " << _window_location.y << std::endl;
+	file << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
+	file << "zoom_level " << _zoom << std::endl;
+
+	for (std::map<std::string, ModuleSettings>::iterator i = _module_settings.begin();
+	     i != _module_settings.end(); ++i) {
 		const ModuleSettings& settings = (*i).second;
-		const string& name = (*i).first;
+		const std::string&         name     = (*i).first;
 
 		if (settings.split) {
 			if (settings.input_location && settings.output_location) {
-				write_module_settings_entry(os, name, "input", *settings.input_location);
-				write_module_settings_entry(os, name, "output", *settings.output_location);
+				write_module_position(file, name, "input", *settings.input_location);
+				write_module_position(file, name, "output", *settings.output_location);
 			}
 		} else {
 			if (settings.input_location && settings.inout_location) {
-				write_module_settings_entry(os, name, "inputoutput", *settings.inout_location);
+				write_module_position(file, name, "inputoutput", *settings.inout_location);
 			}
 		}
 	}
 
-	os.close();
+	file.close();
 }
 
 float

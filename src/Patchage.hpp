@@ -129,8 +129,6 @@ protected:
 
 	Gtk::Main* _gtk_main;
 
-	std::string _settings_filename;
-
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
@@ -145,7 +143,6 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_open_session;
 	Widget<Gtk::MenuItem>       _menu_save_session;
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
-	Widget<Gtk::MenuItem>       _menu_store_positions;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::MenuItem>       _menu_view_messages;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;

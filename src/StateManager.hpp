@@ -38,8 +38,8 @@ class StateManager
 public:
 	StateManager();
 
-	void load(const std::string& filename);
-	void save(const std::string& filename);
+	void load();
+	void save();
 
 	bool get_module_location(const std::string& name, ModuleType type, Coord& loc);
 	void set_module_location(const std::string& name, ModuleType type, Coord loc);
@@ -59,14 +59,15 @@ public:
 
 private:
 	struct ModuleSettings {
-		ModuleSettings() : split(false) {}
+		ModuleSettings(bool s=false) : split(s) {}
 		boost::optional<Coord> input_location;
 		boost::optional<Coord> output_location;
 		boost::optional<Coord> inout_location;
-		bool split;
+		bool                   split;
 	};
 
-	std::map<std::string,ModuleSettings> _module_settings;
+	std::map<std::string, ModuleSettings> _module_settings;
+
 	Coord _window_location;
 	Coord _window_size;
 	float _zoom;
