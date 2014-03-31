@@ -37,6 +37,7 @@ Configuration::Configuration()
 	: _window_location(0, 0)
 	, _window_size(640, 480)
 	, _zoom(1.0)
+	, _font_size(12.0)
 {
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x244678FF;
 	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI] = 0x960909FF;
@@ -176,6 +177,8 @@ Configuration::load()
 			file >> _window_size.x >> _window_size.y;
 		} else if (key == "zoom_level") {
 			file >> _zoom;
+		} else if (key == "font_size") {
+			file >> _font_size;
 		} else if (key == "port_color") {
 			std::string type_name;
 			uint32_t    rgba;
@@ -271,6 +274,7 @@ Configuration::save()
 	file << "window_location " << _window_location.x << " " << _window_location.y << std::endl;
 	file << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
 	file << "zoom_level " << _zoom << std::endl;
+	file << "font_size " << _font_size << std::endl;
 
 	file << std::hex << std::uppercase;
 	for (int i = 0; i < N_PORT_TYPES; ++i) {

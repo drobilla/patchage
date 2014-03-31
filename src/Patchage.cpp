@@ -226,7 +226,10 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->widget().show();
 	_main_win->present();
 
+	_conf->set_font_size(_canvas->get_default_font_size());
 	_conf->load();
+	_canvas->set_zoom(_conf->get_zoom());
+	_canvas->set_font_size(_conf->get_font_size());
 
 	_main_win->resize(
 		static_cast<int>(_conf->get_window_size().x),
@@ -283,6 +286,7 @@ Patchage::Patchage(int argc, char** argv)
 Patchage::~Patchage()
 {
 	store_window_location();
+	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
 	_conf->save();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -626,37 +630,47 @@ Patchage::on_help_about()
 void
 Patchage::on_zoom_in()
 {
-	_canvas->set_zoom(_canvas->get_zoom() + 0.1);
+	const float zoom = _canvas->get_zoom() * 1.25;
+	_canvas->set_zoom(zoom);
+	_conf->set_zoom(zoom);
 }
 
 void
 Patchage::on_zoom_out()
 {
-	_canvas->set_zoom(_canvas->get_zoom() - 0.1);
+	const float zoom = _canvas->get_zoom() * 0.75;
+	_canvas->set_zoom(zoom);
+	_conf->set_zoom(zoom);
 }
 
 void
 Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom(1.0);
+	_conf->set_zoom(1.0);
 }
 
 void
 Patchage::on_increase_font_size()
 {
-	_canvas->set_font_size(_canvas->get_font_size() + 1.0);
+	const float points = _canvas->get_font_size() + 1.0;
+	_canvas->set_font_size(points);
+	_conf->set_font_size(points);
 }
 
 void
 Patchage::on_decrease_font_size()
 {
-	_canvas->set_font_size(_canvas->get_font_size() - 1.0);
+	const float points = _canvas->get_font_size() - 1.0;
+	_canvas->set_font_size(points);
+	_conf->set_font_size(points);
 }
 
 void
 Patchage::on_normal_font_size()
 {
 	_canvas->set_font_size(_canvas->get_default_font_size());
+	_conf->set_font_size(_canvas->get_default_font_size());
 }
 
 static inline guint

@@ -51,8 +51,10 @@ public:
 	void set_module_split(const std::string& name, bool split);
 	bool get_module_split(const std::string& name, bool default_val) const;
 
-	float get_zoom()           { return _zoom; }
-	void  set_zoom(float zoom) { _zoom = zoom; }
+	float get_zoom() const               { return _zoom; }
+	void  set_zoom(float zoom)           { _zoom = zoom; }
+	float get_font_size() const          { return _font_size; }
+	void  set_font_size(float font_size) { _font_size = font_size; }
 
 	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
 	void     set_port_color(PortType type, uint32_t rgba) {
@@ -81,6 +83,7 @@ private:
 	Coord _window_location;
 	Coord _window_size;
 	float _zoom;
+	float _font_size;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP
