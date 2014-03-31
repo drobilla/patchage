@@ -106,7 +106,7 @@ PatchageModule::load_location()
 {
 	Coord loc;
 
-	if (_app->configuration()->get_module_location(_name, _type, loc))
+	if (_app->conf()->get_module_location(_name, _type, loc))
 		move_to(loc.x, loc.y);
 	else
 		move_to(20 + rand() % 640,
@@ -117,14 +117,14 @@ void
 PatchageModule::store_location(double x, double y)
 {
 	Coord loc(get_x(), get_y());
-	_app->configuration()->set_module_location(_name, _type, loc);
+	_app->conf()->set_module_location(_name, _type, loc);
 }
 
 void
 PatchageModule::split()
 {
 	assert(_type == InputOutput);
-	_app->configuration()->set_module_split(_name, true);
+	_app->conf()->set_module_split(_name, true);
 	_app->refresh();
 }
 
@@ -132,7 +132,7 @@ void
 PatchageModule::join()
 {
 	assert(_type != InputOutput);
-	_app->configuration()->set_module_split(_name, false);
+	_app->conf()->set_module_split(_name, false);
 	_app->refresh();
 }
 

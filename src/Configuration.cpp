@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -26,11 +27,20 @@
 #include "Configuration.hpp"
 #include "Patchage.hpp"
 
+static const char* port_type_names[N_PORT_TYPES] = {
+	"JACK_AUDIO",
+	"JACK_MIDI",
+	"ALSA_MIDI"
+};
+
 Configuration::Configuration()
 	: _window_location(0, 0)
 	, _window_size(640, 480)
 	, _zoom(1.0)
 {
+	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x244678FF;
+	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI] = 0x960909FF;
+	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI] = 0x4A8A0EFF;
 }
 
 bool
@@ -166,6 +176,27 @@ Configuration::load()
 			file >> _window_size.x >> _window_size.y;
 		} else if (key == "zoom_level") {
 			file >> _zoom;
+		} else if (key == "port_color") {
+			std::string type_name;
+			uint32_t    rgba;
+			file >> type_name;
+			file.ignore(1, '#');
+			file >> std::hex >> std::uppercase;
+			file >> rgba;
+			file >> std::dec >> std::nouppercase;
+
+			bool found = false;
+			for (int i = 0; i < N_PORT_TYPES; ++i) {
+				if (type_name == port_type_names[i]) {
+					_port_colors[i] = rgba;
+					found           = true;
+					break;
+				}
+			}
+			if (!found) {
+				std::cerr << "error: color for unknown port type `"
+				          << type_name << "'" << std::endl;
+			}
 		} else if (key == "module_position" || key[0] == '\"') {
 
 			Coord       loc;
@@ -241,50 +272,28 @@ Configuration::save()
 	file << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
 	file << "zoom_level " << _zoom << std::endl;
 
+	file << std::hex << std::uppercase;
+	for (int i = 0; i < N_PORT_TYPES; ++i) {
+		if (_port_colors[i] != _default_port_colors[i]) {
+			file << "port_color " << port_type_names[i] << " " << _port_colors[i] << std::endl;
+		}
+	}
+	file << std::dec << std::nouppercase;
+		
 	for (std::map<std::string, ModuleSettings>::iterator i = _module_settings.begin();
 	     i != _module_settings.end(); ++i) {
 		const ModuleSettings& settings = (*i).second;
-		const std::string&         name     = (*i).first;
+		const std::string&    name     = (*i).first;
 
 		if (settings.split) {
 			if (settings.input_location && settings.output_location) {
 				write_module_position(file, name, "input", *settings.input_location);
 				write_module_position(file, name, "output", *settings.output_location);
 			}
-		} else {
-			if (settings.input_location && settings.inout_location) {
-				write_module_position(file, name, "inputoutput", *settings.inout_location);
-			}
+		} else if (settings.inout_location) {
+			write_module_position(file, name, "inputoutput", *settings.inout_location);
 		}
 	}
 
 	file.close();
 }
-
-float
-Configuration::get_zoom()
-{
-	return _zoom;
-}
-
-void
-Configuration::set_zoom(float zoom)
-{
-	_zoom = zoom;
-}
-
-int
-Configuration::get_port_color(PortType type)
-{
-	// Darkest tango palette colour, with S -= 6, V -= 6, w/ transparency
-
-	if (type == JACK_AUDIO)
-		return 0x244678FF;
-	else if (type == JACK_MIDI)
-		return 0x960909FF;
-	else if (type == ALSA_MIDI)
-		return 0x4A8A0EFF;
-	else
-		return 0xFF0000FF;
-}
-

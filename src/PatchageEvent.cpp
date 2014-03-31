@@ -92,7 +92,7 @@ PatchageEvent::execute(Patchage* patchage)
 			                     % _port_2).str());
 		else
 			patchage->canvas()->make_connection(
-				port_1, port_2, port_1->get_fill_color() + 0x22222200);
+				port_1, port_2, port_1->get_fill_color());
 
 	} else if (_type == DISCONNECTION) {
 

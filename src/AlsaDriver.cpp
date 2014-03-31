@@ -163,7 +163,7 @@ AlsaDriver::refresh()
 					PatchagePort* port2 = _app->canvas()->find_port(id2);
 					if (port2 && !_app->canvas()->get_edge(port, port2)) {
 						_app->canvas()->make_connection(
-							port, port2, port->get_fill_color() + 0x22222200);
+							port, port2, port->get_fill_color());
 					}
 				}
 
@@ -268,11 +268,11 @@ AlsaDriver::create_port_view_internal(
 	bool split = false;
 	if (is_duplex) {
 		split = true;
-		if (!_app->configuration()->get_module_split(client_name, !is_application)) {
-			_app->configuration()->set_module_split(client_name, true);
+		if (!_app->conf()->get_module_split(client_name, !is_application)) {
+			_app->conf()->set_module_split(client_name, true);
 		}
 	} else {
-		split = _app->configuration()->get_module_split(client_name, !is_application);
+		split = _app->conf()->get_module_split(client_name, !is_application);
 	}
 
 	/*cout << "ALSA PORT: " << client_name << " : " << port_name
@@ -312,7 +312,7 @@ AlsaDriver::create_port(PatchageModule& parent,
 {
 	PatchagePort* ret = new PatchagePort(
 		parent, ALSA_MIDI, name, is_input,
-		_app->configuration()->get_port_color(ALSA_MIDI));
+		_app->conf()->get_port_color(ALSA_MIDI));
 
 	dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(
 		PortID(addr, is_input), ret);

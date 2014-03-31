@@ -34,12 +34,13 @@
 #include "ganv/Module.hpp"
 #include "ganv/Edge.hpp"
 
-#include "patchage_config.h"
-#include "UIFile.hpp"
+#include "Configuration.hpp"
+#include "Legend.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
-#include "Configuration.hpp"
+#include "UIFile.hpp"
+#include "patchage_config.h"
 
 #if defined(HAVE_JACK_DBUS)
     #include "JackDbusDriver.hpp"
@@ -82,10 +83,11 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver(NULL)
 #endif
 	, _jack_driver(NULL)
-	, _configuration(NULL)
+	, _conf(NULL)
 	, INIT_WIDGET(_about_win)
 	, INIT_WIDGET(_main_scrolledwin)
 	, INIT_WIDGET(_main_win)
+	, INIT_WIDGET(_main_vbox)
 	, INIT_WIDGET(_menubar)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
@@ -99,6 +101,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_save_close_session)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
+	, INIT_WIDGET(_menu_view_legend)
 	, INIT_WIDGET(_menu_view_refresh)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
@@ -110,6 +113,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
 	, INIT_WIDGET(_status_text)
+	, _legend(NULL)
 	, _attach(true)
 	, _driver_detached(false)
 	, _refresh(false)
@@ -119,7 +123,7 @@ Patchage::Patchage(int argc, char** argv)
 	, _alsa_driver_autoattach(true)
 #endif
 {
-	_configuration = new Configuration();
+	_conf   = new Configuration();
 	_canvas = boost::shared_ptr<PatchageCanvas>(new PatchageCanvas(this, 1600*2, 1200*2));
 
 	while (argc > 0) {
@@ -189,6 +193,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_messages->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
+	_menu_view_legend->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_view_legend));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
 	_menu_zoom_in->signal_activate().connect(
@@ -220,16 +226,21 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->widget().show();
 	_main_win->present();
 
-	_configuration->load();
+	_conf->load();
 
 	_main_win->resize(
-		static_cast<int>(_configuration->get_window_size().x),
-		static_cast<int>(_configuration->get_window_size().y));
+		static_cast<int>(_conf->get_window_size().x),
+		static_cast<int>(_conf->get_window_size().y));
 
 	_main_win->move(
-		static_cast<int>(_configuration->get_window_location().x),
-		static_cast<int>(_configuration->get_window_location().y));
+		static_cast<int>(_conf->get_window_location().x),
+		static_cast<int>(_conf->get_window_location().y));
 
+	_legend = new Legend(*_conf);
+	_legend->signal_color_changed.connect(
+		sigc::mem_fun(this, &Patchage::on_legend_color_change));
+	_main_vbox->pack_end(*Gtk::manage(_legend), false, false);
+	
 	_about_win->set_transient_for(*_main_win);
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -272,7 +283,7 @@ Patchage::Patchage(int argc, char** argv)
 Patchage::~Patchage()
 {
 	store_window_location();
-	_configuration->save();
+	_conf->save();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
@@ -281,7 +292,7 @@ Patchage::~Patchage()
 	delete _alsa_driver;
 #endif
 
-	delete _configuration;
+	delete _conf;
 
 	_about_win.destroy();
 	_messages_win.destroy();
@@ -355,7 +366,7 @@ Patchage::idle_callback()
 void
 Patchage::zoom(double z)
 {
-	_configuration->set_zoom(z);
+	_conf->set_zoom(z);
 	_canvas->set_zoom(z);
 }
 
@@ -389,8 +400,8 @@ Patchage::store_window_location()
 	Coord window_size;
 	window_size.x = size_x;
 	window_size.y = size_y;
-	_configuration->set_window_location(window_location);
-	_configuration->set_window_size(window_size);
+	_conf->set_window_location(window_location);
+	_conf->set_window_size(window_size);
 }
 
 void
@@ -422,10 +433,10 @@ static void
 load_module_location(GanvNode* node, void* data)
 {
 	if (GANV_IS_MODULE(node)) {
-		Ganv::Module* cmodule = Glib::wrap(GANV_MODULE(node));
-		PatchageModule* pmodule = dynamic_cast<PatchageModule*>(cmodule);
-		if (pmodule) {
-			pmodule->load_location();
+		Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
+		PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+		if (pmod) {
+			pmod->load_location();
 		}
 	}
 }
@@ -648,6 +659,65 @@ Patchage::on_normal_font_size()
 	_canvas->set_font_size(_canvas->get_default_font_size());
 }
 
+static inline guint
+highlight_color(guint c, guint delta)
+{
+	const guint max_char = 255;
+	const guint r        = MIN((c >> 24) + delta, max_char);
+	const guint g        = MIN(((c >> 16) & 0xFF) + delta, max_char);
+	const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
+	const guint a        = c & 0xFF;
+
+	return ((((guint)(r)) << 24) |
+	        (((guint)(g)) << 16) |
+	        (((guint)(b)) << 8) |
+	        (((guint)(a))));
+}
+
+static void
+update_port_colors(GanvNode* node, void* data)
+{
+	Patchage* patchage = (Patchage*)data;
+	if (!GANV_IS_MODULE(node)) {
+		return;
+	}
+
+	Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
+	PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+	if (!pmod) {
+		return;
+	}
+
+	for (PatchageModule::iterator i = pmod->begin(); i != pmod->end(); ++i) {
+		PatchagePort* port = dynamic_cast<PatchagePort*>(*i);
+		if (port) {
+			const uint32_t rgba = patchage->conf()->get_port_color(port->type());
+			port->set_fill_color(rgba);
+			port->set_border_color(highlight_color(rgba, 0x20));
+		}
+	}
+}
+
+static void
+update_edge_color(GanvEdge* edge, void* data)
+{
+	Patchage*   patchage = (Patchage*)data;
+	Ganv::Edge* edgemm   = Glib::wrap(edge);
+
+	PatchagePort* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
+	if (tail) {
+		edgemm->set_color(patchage->conf()->get_port_color(tail->type()));
+	}
+}
+
+void
+Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba)
+{
+	_conf->set_port_color((PortType)id, rgba);
+	_canvas->for_each_node(update_port_colors, this);
+	_canvas->for_each_edge(update_edge_color, this);
+}
+
 void
 Patchage::on_messages_clear()
 {
@@ -708,6 +778,16 @@ void
 Patchage::on_show_messages()
 {
 	_messages_win->present();
+}
+
+void
+Patchage::on_view_legend()
+{
+	if (_menu_view_legend->get_active()) {
+		_legend->show();
+	} else {
+		_legend->hide();
+	}
 }
 
 bool

@@ -1,15 +1,16 @@
 patchage (UNRELEASED) unstable;
 
-  * Make it possible to remove connections by middle-clicking on their
+  * Allow removing connections by selecting their handle and pressing delete.
     handle, or selecting them and pressing delete.
   * Remove Raul dependency.
   * Switch from FlowCanvas to Ganv (much improved looks and performance).
-  * Remove LASH support and aggressively simplify UI.
+  * Remove LASH support and simplify UI.
   * Fix font configuration on OSX.
   * Use Mac style key bindings on OSX.
   * Integrate with Mac menu bar on OSX.
   * Support for DOT export for rendering with GraphViz.
-  * Use XDG_CONFIG_HOME instead of ~/.patchagerc
+  * Use XDG_CONFIG_HOME instead of ~/.patchagerc.
+  * Make port colours configurable.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 

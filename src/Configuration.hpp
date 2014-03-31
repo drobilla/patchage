@@ -17,6 +17,8 @@
 #ifndef PATCHAGE_CONFIGURATION_HPP
 #define PATCHAGE_CONFIGURATION_HPP
 
+#include <stdint.h>
+
 #include <string>
 #include <list>
 #include <map>
@@ -26,6 +28,8 @@
 enum ModuleType { Input, Output, InputOutput };
 
 enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI };
+
+#define N_PORT_TYPES 3
 
 struct Coord {
 	Coord(double x_=0, double y_=0) : x(x_), y(y_) {}
@@ -47,10 +51,13 @@ public:
 	void set_module_split(const std::string& name, bool split);
 	bool get_module_split(const std::string& name, bool default_val) const;
 
-	float get_zoom();
-	void  set_zoom(float zoom);
+	float get_zoom()           { return _zoom; }
+	void  set_zoom(float zoom) { _zoom = zoom; }
 
-	int get_port_color(PortType type);
+	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
+	void     set_port_color(PortType type, uint32_t rgba) {
+		_port_colors[type] = rgba;
+	}
 
 	Coord get_window_location()          { return _window_location; }
 	void  set_window_location(Coord loc) { _window_location = loc; }
@@ -67,6 +74,9 @@ private:
 	};
 
 	std::map<std::string, ModuleSettings> _module_settings;
+
+	uint32_t _default_port_colors[N_PORT_TYPES];
+	uint32_t _port_colors[N_PORT_TYPES];
 
 	Coord _window_location;
 	Coord _window_size;

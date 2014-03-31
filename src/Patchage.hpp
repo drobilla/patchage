@@ -40,6 +40,7 @@
 
 #include "patchage_config.h"
 #include "Widget.hpp"
+#include "Legend.hpp"
 
 class AlsaDriver;
 class JackDriver;
@@ -57,10 +58,10 @@ public:
 
 	Gtk::Window* window() { return _main_win.get(); }
 
-	Configuration* configuration() const { return _configuration; }
-	JackDriver*    jack_driver()   const { return _jack_driver; }
+	Configuration* conf()        const { return _conf; }
+	JackDriver*    jack_driver() const { return _jack_driver; }
 #ifdef HAVE_ALSA
-	AlsaDriver*    alsa_driver()   const { return _alsa_driver; }
+	AlsaDriver*    alsa_driver() const { return _alsa_driver; }
 #endif
 #ifdef PATCHAGE_JACK_SESSION
 	void show_open_session_dialog();
@@ -94,6 +95,7 @@ protected:
 	void on_quit();
 	void on_draw();
 	void on_show_messages();
+	void on_view_legend();
 	void on_store_positions();
 	void on_zoom_in();
 	void on_zoom_out();
@@ -101,6 +103,7 @@ protected:
 	void on_increase_font_size();
 	void on_decrease_font_size();
 	void on_normal_font_size();
+	void on_legend_color_change(int id, const std::string& label, uint32_t rgba);
 
 	bool on_scroll(GdkEventScroll* ev);
 
@@ -125,13 +128,14 @@ protected:
 	boost::shared_ptr<PatchageCanvas> _canvas;
 
 	JackDriver*    _jack_driver;
-	Configuration* _configuration;
+	Configuration* _conf;
 
 	Gtk::Main* _gtk_main;
 
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
+	Widget<Gtk::VBox>           _main_vbox;
 	Widget<Gtk::MenuBar>        _menubar;
 	Widget<Gtk::MenuItem>       _menu_alsa_connect;
 	Widget<Gtk::MenuItem>       _menu_alsa_disconnect;
@@ -145,6 +149,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::MenuItem>       _menu_view_messages;
+	Widget<Gtk::CheckMenuItem>  _menu_view_legend;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
@@ -156,6 +161,7 @@ protected:
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
 	Widget<Gtk::TextView>       _status_text;
+	Legend*                     _legend;
 
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;
