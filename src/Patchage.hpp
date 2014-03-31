@@ -100,6 +100,7 @@ protected:
 	void on_zoom_in();
 	void on_zoom_out();
 	void on_zoom_normal();
+	void on_zoom_full();
 	void on_increase_font_size();
 	void on_decrease_font_size();
 	void on_normal_font_size();
@@ -154,6 +155,7 @@ protected:
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;
+	Widget<Gtk::ImageMenuItem>  _menu_zoom_full;
 	Widget<Gtk::MenuItem>       _menu_increase_font_size;
 	Widget<Gtk::MenuItem>       _menu_decrease_font_size;
 	Widget<Gtk::MenuItem>       _menu_normal_font_size;

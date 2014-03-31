@@ -106,6 +106,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
 	, INIT_WIDGET(_menu_zoom_normal)
+	, INIT_WIDGET(_menu_zoom_full)
 	, INIT_WIDGET(_menu_increase_font_size)
 	, INIT_WIDGET(_menu_decrease_font_size)
 	, INIT_WIDGET(_menu_normal_font_size)
@@ -203,6 +204,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_zoom_out));
 	_menu_zoom_normal->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_zoom_normal));
+	_menu_zoom_full->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_zoom_full));
 	_menu_increase_font_size->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_increase_font_size));
 	_menu_decrease_font_size->signal_activate().connect(
@@ -648,6 +651,13 @@ Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom(1.0);
 	_conf->set_zoom(1.0);
+}
+
+void
+Patchage::on_zoom_full()
+{
+	_canvas->zoom_full();
+	_conf->set_zoom(_canvas->get_zoom());
 }
 
 void
