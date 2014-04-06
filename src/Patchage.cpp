@@ -92,7 +92,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
 	, INIT_WIDGET(_menu_file_quit)
-	, INIT_WIDGET(_menu_draw)
+	, INIT_WIDGET(_menu_export_dot)
 	, INIT_WIDGET(_menu_help_about)
 	, INIT_WIDGET(_menu_jack_connect)
 	, INIT_WIDGET(_menu_jack_disconnect)
@@ -187,8 +187,8 @@ Patchage::Patchage(int argc, char** argv)
 
 	_menu_file_quit->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_quit));
-	_menu_draw->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_draw));
+	_menu_export_dot->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_export_dot));
 	_menu_view_refresh->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_human_names->signal_activate().connect(
@@ -798,9 +798,9 @@ Patchage::on_quit()
 }
 
 void
-Patchage::on_draw()
+Patchage::on_export_dot()
 {
-	Gtk::FileChooserDialog dialog("Draw to DOT", Gtk::FILE_CHOOSER_ACTION_SAVE);
+	Gtk::FileChooserDialog dialog("Export to DOT", Gtk::FILE_CHOOSER_ACTION_SAVE);
 	dialog.set_transient_for(*_main_win);
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
 

@@ -95,7 +95,7 @@ protected:
 	void on_messages_clear();
 	void on_messages_close();
 	void on_quit();
-	void on_draw();
+	void on_export_dot();
 	void on_show_messages();
 	void on_view_legend();
 	void on_store_positions();
@@ -144,7 +144,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_alsa_connect;
 	Widget<Gtk::MenuItem>       _menu_alsa_disconnect;
 	Widget<Gtk::MenuItem>       _menu_file_quit;
-	Widget<Gtk::MenuItem>       _menu_draw;
+	Widget<Gtk::MenuItem>       _menu_export_dot;
 	Widget<Gtk::MenuItem>       _menu_help_about;
 	Widget<Gtk::MenuItem>       _menu_jack_connect;
 	Widget<Gtk::MenuItem>       _menu_jack_disconnect;
