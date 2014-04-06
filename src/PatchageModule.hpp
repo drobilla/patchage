@@ -52,7 +52,8 @@ public:
 	void show_dialog() {}
 	void store_location(double x, double y);
 
-	ModuleType type() const { return _type; }
+	ModuleType         type() const { return _type; }
+	const std::string& name() const { return _name; }
 
 protected:
 	bool on_event(GdkEvent* ev);

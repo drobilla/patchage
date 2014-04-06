@@ -29,6 +29,7 @@
 
 #include "Configuration.hpp"
 #include "PatchageCanvas.hpp"
+#include "PatchageModule.hpp"
 #include "PortID.hpp"
 #include "patchage_config.h"
 
@@ -40,10 +41,17 @@ public:
 	PatchagePort(Ganv::Module&      module,
 	             PortType           type,
 	             const std::string& name,
+	             const std::string& human_name,
 	             bool               is_input,
-	             uint32_t           color)
-		: Port(module, name, is_input, color)
+	             uint32_t           color,
+	             bool               show_human_name)
+		: Port(module,
+		       (show_human_name && !human_name.empty()) ? human_name : name,
+		       is_input,
+		       color)
 		, _type(type)
+		, _name(name)
+		, _human_name(human_name)
 	{
 		signal_event().connect(
 			sigc::mem_fun(this, &PatchagePort::on_event));
@@ -53,9 +61,18 @@ public:
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const {
-		return std::string(get_module()->get_label()) + ":" + get_label();
+		PatchageModule* pmod = dynamic_cast<PatchageModule*>(get_module());
+		return std::string(pmod->name()) + ":" + _name;
 	}
 
+	void show_human_name(bool human) {
+		if (human && !_human_name.empty()) {
+			set_label(_human_name.c_str());
+		} else {
+			set_label(_name.c_str());
+		}
+	}
+		
 	bool on_event(GdkEvent* ev) {
 		if (ev->type != GDK_BUTTON_PRESS || ev->button.button != 3) {
 			return false;
@@ -70,10 +87,14 @@ public:
 		return true;
 	}
 
-	PortType type() const { return _type; }
+	PortType           type()       const { return _type; }
+	const std::string& name()       const { return _name; }
+	const std::string& human_name() const { return _human_name; }
 
 private:
-	PortType _type;
+	PortType    _type;
+	std::string _name;
+	std::string _human_name;
 };
 
 #endif // PATCHAGE_PATCHAGEPORT_HPP

@@ -84,6 +84,11 @@ def configure(conf):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
             if not Options.options.no_jack_session:
                 autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
+            conf.check(function_name='jack_get_property',
+                       header_name='jack/metadata.h',
+                       define_name='HAVE_JACK_METADATA',
+                       uselib='JACK',
+                       mandatory=False)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
@@ -113,6 +118,7 @@ def configure(conf):
     autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
     autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
+    autowaf.display_msg(conf, "Jack Metadata", conf.is_defined('HAVE_JACK_METADATA'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
     if Options.platform == 'darwin':
         autowaf.display_msg(conf, "Mac Integration", conf.is_defined('HAVE_GTK_OSX'))

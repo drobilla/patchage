@@ -103,6 +103,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_view_messages)
 	, INIT_WIDGET(_menu_view_legend)
 	, INIT_WIDGET(_menu_view_refresh)
+	, INIT_WIDGET(_menu_view_human_names)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
 	, INIT_WIDGET(_menu_zoom_normal)
@@ -190,6 +191,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_draw));
 	_menu_view_refresh->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::refresh));
+	_menu_view_human_names->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_view_human_names));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_messages->signal_activate().connect(
@@ -628,6 +631,31 @@ Patchage::on_help_about()
 {
 	_about_win->run();
 	_about_win->hide();
+}
+
+static void
+update_labels(GanvNode* node, void* data)
+{
+	const bool human_names = *(const bool*)data;
+	if (GANV_IS_MODULE(node)) {
+		Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
+		PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+		if (pmod) {
+			for (Ganv::Port* gport : *gmod) {
+				PatchagePort* pport = dynamic_cast<PatchagePort*>(gport);
+				if (pport) {
+					pport->show_human_name(human_names);
+				}
+			}
+		}
+	}
+}
+
+void
+Patchage::on_view_human_names()
+{
+	bool human_names = show_human_names();
+	_canvas->for_each_node(update_labels, &human_names);
 }
 
 void

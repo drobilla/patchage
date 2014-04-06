@@ -311,8 +311,9 @@ AlsaDriver::create_port(PatchageModule& parent,
                         const string& name, bool is_input, snd_seq_addr_t addr)
 {
 	PatchagePort* ret = new PatchagePort(
-		parent, ALSA_MIDI, name, is_input,
-		_app->conf()->get_port_color(ALSA_MIDI));
+		parent, ALSA_MIDI, name, "", is_input,
+		_app->conf()->get_port_color(ALSA_MIDI),
+		_app->show_human_names());
 
 	dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(
 		PortID(addr, is_input), ret);

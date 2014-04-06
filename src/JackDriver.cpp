@@ -31,6 +31,9 @@
 #include "PatchageModule.hpp"
 #include "Queue.hpp"
 #include "patchage_config.h"
+#ifdef HAVE_JACK_METADATA
+#include <jack/metadata.h>
+#endif
 
 using std::endl;
 using std::string;
@@ -191,10 +194,24 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 		return NULL;
 	}
 
+	std::string label;
+#ifdef HAVE_JACK_METADATA
+	const jack_uuid_t uuid        = jack_port_uuid(port);
+	char*             pretty_name = NULL;
+	char*             type        = NULL;
+	jack_get_property(uuid, JACK_METADATA_PRETTY_NAME, &pretty_name, &type);
+	if (pretty_name) {
+		label = pretty_name;
+	}
+	jack_free(pretty_name);
+	jack_free(type);
+#endif
+
 	PatchagePort* ret(
-		new PatchagePort(parent, port_type, jack_port_short_name(port),
+		new PatchagePort(parent, port_type, jack_port_short_name(port), label,
 		                 (jack_port_flags(port) & JackPortIsInput),
-		                 _app->conf()->get_port_color(port_type)));
+		                 _app->conf()->get_port_color(port_type),
+		                 _app->show_human_names()));
 
 	if (id.type != PortID::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);

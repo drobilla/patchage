@@ -11,6 +11,7 @@ patchage (UNRELEASED) unstable;
   * Support for DOT export for rendering with GraphViz.
   * Use XDG_CONFIG_HOME instead of ~/.patchagerc.
   * Make port colours configurable.
+  * Support port pretty names via new Jack metadata API.
 
  -- David Robillard <d@drobilla.net>  (UNRELEASED)
 

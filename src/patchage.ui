@@ -900,6 +900,23 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparatorMenuItem" id="menuitem0">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu_view_human_names">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Human Names</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <accelerator key="H" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="menuitem1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
