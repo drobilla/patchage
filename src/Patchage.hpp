@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <gtkmm/aboutdialog.h>
+#include <gtkmm/alignment.h>
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/checkmenuitem.h>
@@ -35,6 +36,8 @@
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
+#include <gtkmm/toolbar.h>
+#include <gtkmm/toolbutton.h>
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
@@ -97,7 +100,7 @@ protected:
 	void on_quit();
 	void on_export_dot();
 	void on_show_messages();
-	void on_view_legend();
+	void on_view_toolbar();
 	void on_store_positions();
 	void on_view_human_names();
 	void on_zoom_in();
@@ -113,7 +116,9 @@ protected:
 
 	void zoom(double z);
 	bool idle_callback();
+	void clear_load();
 	bool update_load();
+	void update_toolbar();
 
 	void buffer_size_changed();
 
@@ -153,7 +158,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::MenuItem>       _menu_view_messages;
-	Widget<Gtk::CheckMenuItem>  _menu_view_legend;
+	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::CheckMenuItem>  _menu_view_human_names;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
@@ -166,6 +171,11 @@ protected:
 	Widget<Gtk::Button>         _messages_clear_but;
 	Widget<Gtk::Button>         _messages_close_but;
 	Widget<Gtk::Dialog>         _messages_win;
+	Widget<Gtk::Toolbar>        _toolbar;
+	Widget<Gtk::ToolButton>     _clear_load_but;
+	Widget<Gtk::ProgressBar>    _xrun_progress;
+	Widget<Gtk::Label>          _latency_label;
+	Widget<Gtk::Alignment>      _legend_alignment;
 	Widget<Gtk::TextView>       _status_text;
 	Legend*                     _legend;
 

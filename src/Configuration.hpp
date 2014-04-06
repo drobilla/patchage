@@ -56,6 +56,9 @@ public:
 	float get_font_size() const          { return _font_size; }
 	void  set_font_size(float font_size) { _font_size = font_size; }
 
+	float get_show_toolbar() const             { return _show_toolbar; }
+	void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
+
 	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
 	void     set_port_color(PortType type, uint32_t rgba) {
 		_port_colors[type] = rgba;
@@ -84,6 +87,7 @@ private:
 	Coord _window_size;
 	float _zoom;
 	float _font_size;
+	bool  _show_toolbar;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP

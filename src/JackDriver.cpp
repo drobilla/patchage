@@ -86,14 +86,6 @@ JackDriver::attach(bool launch_daemon)
 			signal_attached.emit();
 			std::stringstream ss;
 			_app->info_msg("Jack: Attached.");
-			const jack_nframes_t buffer_size = this->buffer_size();
-			const jack_nframes_t sample_rate = this->sample_rate();
-			if (sample_rate != 0) {
-				const int latency_ms = lrintf((buffer_size * 1000 / (float)sample_rate));
-				ss << "Jack: Latency: " << buffer_size << " frames @ "
-				   << (sample_rate / 1000) << "kHz (" << latency_ms << "ms).";
-				_app->info_msg(ss.str());
-			}
 		} else {
 			_app->error_msg("Jack: Client activation failed.");
 			_is_activated = false;
@@ -463,9 +455,6 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 	++me->_xruns;
 	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
 
-	me->_app->warning_msg((format("Jack: xrun of %1%ms.")
-	                       % me->_xrun_delay).str());
-
 	jack_reset_max_delayed_usecs(me->_client);
 
 	return 0;
@@ -497,6 +486,34 @@ JackDriver::reset_xruns()
 {
 	_xruns      = 0;
 	_xrun_delay = 0;
+}
+
+float
+JackDriver::get_max_dsp_load()
+{
+	float max_load = 0.0f;
+	if (_client) {
+		const float max_delay = jack_get_max_delayed_usecs(_client);
+		const float rate      = sample_rate();
+		const float size      = buffer_size();
+		const float period    = size / rate * 1000000; // usec
+
+		if (max_delay > period) {
+			max_load = 1.0;
+			jack_reset_max_delayed_usecs(_client);
+		} else {
+			max_load = max_delay / period;
+		}
+	}
+	return max_load;
+}
+
+void
+JackDriver::reset_max_dsp_load()
+{
+	if (_client) {
+		jack_reset_max_delayed_usecs(_client);
+	}
 }
 
 bool

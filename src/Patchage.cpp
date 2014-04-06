@@ -101,7 +101,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_save_close_session)
 	, INIT_WIDGET(_menu_view_arrange)
 	, INIT_WIDGET(_menu_view_messages)
-	, INIT_WIDGET(_menu_view_legend)
+	, INIT_WIDGET(_menu_view_toolbar)
 	, INIT_WIDGET(_menu_view_refresh)
 	, INIT_WIDGET(_menu_view_human_names)
 	, INIT_WIDGET(_menu_zoom_in)
@@ -114,6 +114,11 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_messages_clear_but)
 	, INIT_WIDGET(_messages_close_but)
 	, INIT_WIDGET(_messages_win)
+	, INIT_WIDGET(_toolbar)
+	, INIT_WIDGET(_clear_load_but)
+	, INIT_WIDGET(_xrun_progress)
+	, INIT_WIDGET(_latency_label)
+	, INIT_WIDGET(_legend_alignment)
 	, INIT_WIDGET(_status_text)
 	, _legend(NULL)
 	, _attach(true)
@@ -164,6 +169,9 @@ Patchage::Patchage(int argc, char** argv)
 	_main_scrolledwin->signal_scroll_event().connect(
 		sigc::mem_fun(this, &Patchage::on_scroll));
 
+	_clear_load_but->signal_clicked().connect(
+		sigc::mem_fun(this, &Patchage::clear_load));
+
 #ifdef PATCHAGE_JACK_SESSION
 	_menu_open_session->signal_activate().connect(
 		sigc::mem_fun(this, &Patchage::show_open_session_dialog));
@@ -197,8 +205,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_messages->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_show_messages));
-	_menu_view_legend->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_legend));
+	_menu_view_toolbar->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_view_toolbar));
 	_menu_help_about->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_help_about));
 	_menu_zoom_in->signal_activate().connect(
@@ -248,8 +256,9 @@ Patchage::Patchage(int argc, char** argv)
 	_legend = new Legend(*_conf);
 	_legend->signal_color_changed.connect(
 		sigc::mem_fun(this, &Patchage::on_legend_color_change));
-	_main_vbox->pack_end(*Gtk::manage(_legend), false, false);
-	
+	_legend_alignment->add(*Gtk::manage(_legend));
+	_legend->show_all();
+
 	_about_win->set_transient_for(*_main_win);
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -268,6 +277,7 @@ Patchage::Patchage(int argc, char** argv)
 
 	connect_widgets();
 	update_state();
+	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
 
 	_canvas->widget().grab_focus();
 
@@ -328,6 +338,7 @@ Patchage::attach()
 	_enable_refresh = true;
 
 	refresh();
+	update_toolbar();
 }
 
 bool
@@ -369,6 +380,53 @@ Patchage::idle_callback()
 
 	_refresh         = false;
 	_driver_detached = false;
+
+	// Update load every 5 idle callbacks
+	static int count = 0;
+	if (++count == 5) {
+		update_load();
+		count = 0;
+	}
+
+	return true;
+}
+
+void
+Patchage::update_toolbar()
+{
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
+	if (_jack_driver->is_attached()) {
+		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
+		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
+		if (sample_rate != 0) {
+			const int latency_ms = lrintf(buffer_size * 1000 / (float)sample_rate);
+			std::stringstream ss;
+			ss << buffer_size << " frames @ "
+			   << (sample_rate / 1000) << "kHz (" << latency_ms << "ms)";
+			_latency_label->set_label(ss.str());
+			_latency_label->set_visible(true);
+			return;
+		}
+	}
+#endif
+	_latency_label->set_visible(false);
+}
+
+bool
+Patchage::update_load()
+{
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
+	if (_jack_driver->is_attached()) {
+		char buf[8];
+		snprintf(tmp_buf, sizeof(tmp_buf), "%u", _jack_driver->get_xruns());
+		_xrun_progress->set_text(std::string(tmp_buf) + " Dropouts");
+
+		const float max_dsp_load = _jack_driver->get_max_dsp_load();
+		if (max_dsp_load != last_max_dsp_load) {
+			_xrun_progress->set_fraction(max_dsp_load);
+		}
+	}
+#endif
 
 	return true;
 }
@@ -412,6 +470,16 @@ Patchage::store_window_location()
 	window_size.y = size_y;
 	_conf->set_window_location(window_location);
 	_conf->set_window_size(window_size);
+}
+
+void
+Patchage::clear_load()
+{
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
+	_xrun_progress->set_fraction(0.0);
+	_jack_driver->reset_xruns();
+	_jack_driver->reset_max_dsp_load();
+#endif
 }
 
 void
@@ -833,13 +901,14 @@ Patchage::on_show_messages()
 }
 
 void
-Patchage::on_view_legend()
+Patchage::on_view_toolbar()
 {
-	if (_menu_view_legend->get_active()) {
-		_legend->show();
+	if (_menu_view_toolbar->get_active()) {
+		_toolbar->show();
 	} else {
-		_legend->hide();
+		_toolbar->hide();
 	}
+	_conf->set_show_toolbar(_menu_view_toolbar->get_active());
 }
 
 bool
