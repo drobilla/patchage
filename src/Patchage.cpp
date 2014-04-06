@@ -111,14 +111,13 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_increase_font_size)
 	, INIT_WIDGET(_menu_decrease_font_size)
 	, INIT_WIDGET(_menu_normal_font_size)
-	, INIT_WIDGET(_messages_clear_but)
-	, INIT_WIDGET(_messages_close_but)
-	, INIT_WIDGET(_messages_win)
 	, INIT_WIDGET(_toolbar)
 	, INIT_WIDGET(_clear_load_but)
 	, INIT_WIDGET(_xrun_progress)
 	, INIT_WIDGET(_latency_label)
 	, INIT_WIDGET(_legend_alignment)
+	, INIT_WIDGET(_main_paned)
+	, INIT_WIDGET(_log_scrolledwindow)
 	, INIT_WIDGET(_status_text)
 	, _legend(NULL)
 	, _attach(true)
@@ -204,7 +203,7 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_messages->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_show_messages));
+			sigc::mem_fun(this, &Patchage::on_view_messages));
 	_menu_view_toolbar->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_view_toolbar));
 	_menu_help_about->signal_activate().connect(
@@ -224,17 +223,12 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_normal_font_size->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_normal_font_size));
 
-	_messages_clear_but->signal_clicked().connect(
-			sigc::mem_fun(this, &Patchage::on_messages_clear));
-	_messages_close_but->signal_clicked().connect(
-			sigc::mem_fun(this, &Patchage::on_messages_close));
-
 	_error_tag = Gtk::TextTag::create();
-	_error_tag->property_foreground() = "#FF0000";
+	_error_tag->property_foreground() = "#CC0000";
 	_status_text->get_buffer()->get_tag_table()->add(_error_tag);
 
 	_warning_tag = Gtk::TextTag::create();
-	_warning_tag->property_foreground() = "#FFFF00";
+	_warning_tag->property_foreground() = "#E6B200";
 	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
 
 	_canvas->widget().show();
@@ -278,6 +272,7 @@ Patchage::Patchage(int argc, char** argv)
 	connect_widgets();
 	update_state();
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
+	_main_paned->set_position(42);
 
 	_canvas->widget().grab_focus();
 
@@ -315,8 +310,6 @@ Patchage::~Patchage()
 	delete _conf;
 
 	_about_win.destroy();
-	_messages_win.destroy();
-
 	_xml.reset();
 }
 
@@ -482,16 +475,16 @@ void
 Patchage::error_msg(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert_with_tag(buffer->end(), msg + "\n", _error_tag);
+	buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _error_tag);
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
-	_messages_win->present();
+	_menu_view_messages->set_active(true);
 }
 
 void
 Patchage::info_msg(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert(buffer->end(), msg + "\n");
+	buffer->insert(buffer->end(), std::string("\n") + msg);
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
@@ -499,7 +492,7 @@ void
 Patchage::warning_msg(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert_with_tag(buffer->end(), msg + "\n", _warning_tag);
+	buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _warning_tag);
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
@@ -835,20 +828,6 @@ Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba
 }
 
 void
-Patchage::on_messages_clear()
-{
-	_status_text->get_buffer()->erase(
-			_status_text->get_buffer()->begin(),
-			_status_text->get_buffer()->end());
-}
-
-void
-Patchage::on_messages_close()
-{
-	_messages_win->hide();
-}
-
-void
 Patchage::on_quit()
 {
 #ifdef HAVE_ALSA
@@ -891,9 +870,13 @@ Patchage::on_export_dot()
 }
 
 void
-Patchage::on_show_messages()
+Patchage::on_view_messages()
 {
-	_messages_win->present();
+	if (_menu_view_messages->get_active()) {
+		_log_scrolledwindow->show();
+	} else {
+		_log_scrolledwindow->hide();
+	}
 }
 
 void

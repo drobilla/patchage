@@ -33,6 +33,7 @@
 #include <gtkmm/main.h>
 #include <gtkmm/menubar.h>
 #include <gtkmm/menuitem.h>
+#include <gtkmm/paned.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
@@ -95,11 +96,9 @@ protected:
 
 	void on_arrange();
 	void on_help_about();
-	void on_messages_clear();
-	void on_messages_close();
 	void on_quit();
 	void on_export_dot();
-	void on_show_messages();
+	void on_view_messages();
 	void on_view_toolbar();
 	void on_store_positions();
 	void on_view_human_names();
@@ -157,7 +156,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_save_session;
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
-	Widget<Gtk::MenuItem>       _menu_view_messages;
+	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
 	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::CheckMenuItem>  _menu_view_human_names;
@@ -168,14 +167,13 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_increase_font_size;
 	Widget<Gtk::MenuItem>       _menu_decrease_font_size;
 	Widget<Gtk::MenuItem>       _menu_normal_font_size;
-	Widget<Gtk::Button>         _messages_clear_but;
-	Widget<Gtk::Button>         _messages_close_but;
-	Widget<Gtk::Dialog>         _messages_win;
 	Widget<Gtk::Toolbar>        _toolbar;
 	Widget<Gtk::ToolButton>     _clear_load_but;
 	Widget<Gtk::ProgressBar>    _xrun_progress;
 	Widget<Gtk::Label>          _latency_label;
 	Widget<Gtk::Alignment>      _legend_alignment;
+	Widget<Gtk::Paned>          _main_paned;
+	Widget<Gtk::ScrolledWindow> _log_scrolledwindow;
 	Widget<Gtk::TextView>       _status_text;
 	Legend*                     _legend;
 
