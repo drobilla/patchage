@@ -418,13 +418,9 @@ Patchage::update_load()
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {
 		char buf[8];
-		snprintf(tmp_buf, sizeof(tmp_buf), "%u", _jack_driver->get_xruns());
-		_xrun_progress->set_text(std::string(tmp_buf) + " Dropouts");
-
-		const float max_dsp_load = _jack_driver->get_max_dsp_load();
-		if (max_dsp_load != last_max_dsp_load) {
-			_xrun_progress->set_fraction(max_dsp_load);
-		}
+		snprintf(buf, sizeof(buf), "%u", _jack_driver->get_xruns());
+		_xrun_progress->set_text(std::string(buf) + " Dropouts");
+		_xrun_progress->set_fraction(_jack_driver->get_max_dsp_load());
 	}
 #endif
 
