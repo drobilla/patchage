@@ -40,9 +40,9 @@ Configuration::Configuration()
 	, _font_size(12.0)
 	, _show_toolbar(true)
 {
-	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x244678FF;
-	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI] = 0x960909FF;
-	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI] = 0x4A8A0EFF;
+	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x3E5E00FF;
+	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI] = 0x650300FF;
+	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI] = 0x2D0043FF;
 }
 
 bool
