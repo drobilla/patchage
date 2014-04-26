@@ -106,7 +106,7 @@ PatchageEvent::execute(Patchage* patchage)
 			patchage->error_msg((format("Unable to find port `%1%' to disconnect")
 			                     % _port_2).str());
 		else
-			patchage->canvas()->remove_edge(port_1, port_2);
+			patchage->canvas()->remove_edge_between(port_1, port_2);
 	}
 }
 
