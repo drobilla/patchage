@@ -31,8 +31,8 @@ def options(opt):
                     help='Patchage human name [Default: '' + APP_HUMAN_NAME + '']')
     opt.add_option('--jack-dbus', action='store_true', dest='jack_dbus',
                     help='Use Jack via D-Bus [Default: False (use libjack)]')
-    opt.add_option('--no-jack-session', action='store_true', dest='no_jack_session',
-                    help='Do not build JACK session support')
+    opt.add_option('--jack-session-manage', action='store_true', dest='jack_session_manage',
+                    help='Include experimental JACK session management (save/restore) support')
     opt.add_option('--no-alsa', action='store_true', dest='no_alsa',
                     help='Do not build Alsa Sequencer support')
     opt.add_option('--no-binloc', action='store_true', dest='no_binloc',
@@ -82,7 +82,7 @@ def configure(conf):
                           atleast_version='0.120.0', mandatory=False)
         if conf.is_defined('HAVE_JACK'):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
-            if not Options.options.no_jack_session:
+            if Options.options.jack_session_manage:
                 autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
             conf.check(function_name='jack_get_property',
                        header_name='jack/metadata.h',
@@ -117,7 +117,7 @@ def configure(conf):
     autowaf.display_msg(conf, "App human name", "'" + conf.env.APP_HUMAN_NAME + "'", 'CYAN')
     autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
-    autowaf.display_msg(conf, "Jack Session", conf.is_defined('PATCHAGE_JACK_SESSION'))
+    autowaf.display_msg(conf, "Jack Session Management", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Jack Metadata", conf.is_defined('HAVE_JACK_METADATA'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
     if Options.platform == 'darwin':

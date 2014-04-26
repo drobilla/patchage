@@ -179,7 +179,9 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_save_close_session->signal_activate().connect(
 		sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
 #else
-	_menu_open_session->set_sensitive(false);
+	_menu_open_session->hide();
+	_menu_save_session->hide();
+	_menu_save_close_session->hide();
 #endif
 
 #ifdef HAVE_ALSA
@@ -837,7 +839,6 @@ Patchage::on_quit()
 	_jack_driver->detach();
 #endif
 	_main_win->hide();
-	_canvas.reset();
 }
 
 void
