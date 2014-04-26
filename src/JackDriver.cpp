@@ -158,7 +158,11 @@ JackDriver::create_port_view(Patchage*     patchage,
 		patchage->canvas()->add_module(module_name, parent);
 	}
 
-	assert(!parent->get_port(port_name));
+	if (parent->get_port(port_name)) {
+		_app->error_msg((format("Jack: Module `%1%' already has port `%2%'.")
+		                 % module_name % port_name).str());
+		return NULL;
+	}
 
 	PatchagePort* port = create_port(*parent, jack_port, id);
 	port->show();
