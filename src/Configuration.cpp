@@ -182,6 +182,8 @@ Configuration::load()
 			file >> _font_size;
 		} else if (key == "show_toolbar") {
 			file >> _show_toolbar;
+		} else if (key == "sprung_layout") {
+			file >> _sprung_layout;
 		} else if (key == "port_color") {
 			std::string type_name;
 			uint32_t    rgba;
@@ -279,6 +281,7 @@ Configuration::save()
 	file << "zoom_level " << _zoom << std::endl;
 	file << "font_size " << _font_size << std::endl;
 	file << "show_toolbar " << _show_toolbar << std::endl;
+	file << "sprung_layout " << _sprung_layout << std::endl;
 
 	file << std::hex << std::uppercase;
 	for (int i = 0; i < N_PORT_TYPES; ++i) {

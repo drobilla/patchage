@@ -888,10 +888,10 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Toolbar</property>
+                        <property name="label" translatable="yes">Tool_bar</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <accelerator key="t" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                        <accelerator key="b" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -1026,6 +1026,17 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                         <property name="use_stock">False</property>
                         <accelerator key="G" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="on_menu_view_arrange" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu_view_sprung_layout">
+                        <property name="use_action_appearance">False</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Sprung Layou_t</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">False</property>
+                        <accelerator key="t" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                   </object>

@@ -59,6 +59,9 @@ public:
 	float get_show_toolbar() const             { return _show_toolbar; }
 	void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
 
+	float get_sprung_layout() const              { return _sprung_layout; }
+	void  set_sprung_layout(float sprung_layout) { _sprung_layout = sprung_layout; }
+
 	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
 	void     set_port_color(PortType type, uint32_t rgba) {
 		_port_colors[type] = rgba;
@@ -88,6 +91,7 @@ private:
 	float _zoom;
 	float _font_size;
 	bool  _show_toolbar;
+	bool  _sprung_layout;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP

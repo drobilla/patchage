@@ -95,6 +95,7 @@ protected:
 	void connect_widgets();
 
 	void on_arrange();
+	void on_sprung_layout_toggled();
 	void on_help_about();
 	void on_quit();
 	void on_export_dot();
@@ -156,6 +157,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_save_session;
 	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
+	Widget<Gtk::CheckMenuItem>  _menu_view_sprung_layout;
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
 	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;

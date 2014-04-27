@@ -100,6 +100,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_save_session)
 	, INIT_WIDGET(_menu_save_close_session)
 	, INIT_WIDGET(_menu_view_arrange)
+	, INIT_WIDGET(_menu_view_sprung_layout)
 	, INIT_WIDGET(_menu_view_messages)
 	, INIT_WIDGET(_menu_view_toolbar)
 	, INIT_WIDGET(_menu_view_refresh)
@@ -204,6 +205,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_view_human_names));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
+	_menu_view_sprung_layout->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_sprung_layout_toggled));
 	_menu_view_messages->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_view_messages));
 	_menu_view_toolbar->signal_activate().connect(
@@ -224,6 +227,13 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::on_decrease_font_size));
 	_menu_normal_font_size->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_normal_font_size));
+
+	if (_canvas->supports_sprung_layout()) {
+		_menu_view_sprung_layout->set_active(true);
+	} else {
+		_menu_view_sprung_layout->set_active(false);
+		_menu_view_sprung_layout->set_sensitive(false);
+	}
 
 	_error_tag = Gtk::TextTag::create();
 	_error_tag->property_foreground() = "#CC0000";
@@ -274,6 +284,7 @@ Patchage::Patchage(int argc, char** argv)
 	connect_widgets();
 	update_state();
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
+	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
 	_main_paned->set_position(42);
 
 	_canvas->widget().grab_focus();
@@ -680,9 +691,18 @@ Patchage::menu_alsa_disconnect()
 void
 Patchage::on_arrange()
 {
-	assert(_canvas);
+	if (_canvas) {
+		_canvas->arrange();
+	}
+}
 
-	_canvas->arrange();
+void
+Patchage::on_sprung_layout_toggled()
+{
+	const bool sprung = _menu_view_sprung_layout->get_active();
+
+	_canvas->set_sprung_layout(sprung);
+	_conf->set_sprung_layout(sprung);
 }
 
 void
