@@ -9,7 +9,7 @@ from waflib.extras import autowaf as autowaf
 import waflib.Options as Options, waflib.Utils as Utils
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '0.6.0'
+PATCHAGE_VERSION = '1.0.0'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
@@ -58,7 +58,7 @@ def configure(conf):
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
                       atleast_version='2.12.0', mandatory=True)
     autowaf.check_pkg(conf, 'ganv-1', uselib_store='GANV',
-                      atleast_version='1.2.1', mandatory=True)
+                      atleast_version='1.4.0', mandatory=True)
 
     if Options.platform == 'darwin':
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
