@@ -1,7 +1,6 @@
-patchage (UNRELEASED) unstable;
+patchage (1.0.0) stable;
 
   * Allow removing connections by selecting their handle and pressing delete.
-    handle, or selecting them and pressing delete.
   * Remove Raul dependency.
   * Switch from FlowCanvas to Ganv (much improved looks and performance).
   * Remove LASH support and simplify UI.
@@ -13,7 +12,7 @@ patchage (UNRELEASED) unstable;
   * Make port colours configurable.
   * Support port pretty names via new Jack metadata API.
 
- -- David Robillard <d@drobilla.net>  (UNRELEASED)
+ -- David Robillard <d@drobilla.net>  Sun, 27 Apr 2014 23:46:10 -0400
 
 patchage (0.5.0) stable;
 
