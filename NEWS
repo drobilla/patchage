@@ -1,3 +1,9 @@
+patchage (1.0.1) unstable;
+
+  * Support Jack CV and OSC via metadata.
+
+ -- David Robillard <d@drobilla.net>  Mon, 05 May 2014 16:28:59 +0200
+
 patchage (1.0.0) stable;
 
   * Allow removing connections by selecting their handle and pressing delete.

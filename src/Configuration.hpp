@@ -27,9 +27,9 @@
 
 enum ModuleType { Input, Output, InputOutput };
 
-enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI };
+enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI, JACK_OSC, JACK_CV };
 
-#define N_PORT_TYPES 3
+#define N_PORT_TYPES 5
 
 struct Coord {
 	Coord(double x_=0, double y_=0) : x(x_), y(y_) {}

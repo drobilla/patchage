@@ -9,7 +9,7 @@ from waflib.extras import autowaf as autowaf
 import waflib.Options as Options, waflib.Utils as Utils
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '1.0.0'
+PATCHAGE_VERSION = '1.0.1'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'

@@ -215,8 +215,11 @@ PatchageCanvas::connect(Ganv::Node* port1,
 	if (!p1 || !p2)
 		return;
 
-	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO)
-			|| ((p1->type() == JACK_MIDI && p2->type() == JACK_MIDI))) {
+	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO) ||
+	    (p1->type() == JACK_MIDI  && p2->type() == JACK_MIDI) |
+		(p1->type() == JACK_AUDIO && p2->type() == JACK_CV) ||
+		(p1->type() == JACK_CV    && p2->type() == JACK_CV) ||
+		(p1->type() == JACK_OSC   && p2->type() == JACK_OSC)) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->connect(p1, p2);
 #endif
@@ -250,17 +253,19 @@ PatchageCanvas::disconnect(Ganv::Node* port1,
 		return;
 	}
 
-	if ((input->type() == JACK_AUDIO && output->type() == JACK_AUDIO)
-			|| (input->type() == JACK_MIDI && output->type() == JACK_MIDI)) {
+	if (input->type() == JACK_AUDIO ||
+	    input->type() == JACK_MIDI ||
+	    input->type() == JACK_CV ||
+	    input->type() == JACK_OSC) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->disconnect(output, input);
 #endif
 #ifdef HAVE_ALSA
-	} else if (input->type() == ALSA_MIDI && output->type() == ALSA_MIDI) {
+	} else if (input->type() == ALSA_MIDI) {
 		_app->alsa_driver()->disconnect(output, input);
 #endif
 	} else {
-		_app->error_msg("Attempt to disconnect ports with mismatched types.");
+		_app->error_msg("Attempt to disconnect ports with strange types.");
 	}
 }
 

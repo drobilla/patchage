@@ -30,7 +30,9 @@
 static const char* port_type_names[N_PORT_TYPES] = {
 	"JACK_AUDIO",
 	"JACK_MIDI",
-	"ALSA_MIDI"
+	"ALSA_MIDI",
+	"JACK_OSC",
+	"JACK_CV"
 };
 
 Configuration::Configuration()
@@ -41,8 +43,10 @@ Configuration::Configuration()
 	, _show_toolbar(true)
 {
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x3E5E00FF;
-	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI] = 0x650300FF;
-	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI] = 0x2D0043FF;
+	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0x650300FF;
+	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI]  = 0x2D0043FF;
+	_port_colors[JACK_OSC]   = _default_port_colors[JACK_OSC]   = 0x4100FEFF;
+	_port_colors[JACK_CV]    = _default_port_colors[JACK_CV]    = 0x005E4EFF;
 }
 
 bool
