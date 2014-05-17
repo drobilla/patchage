@@ -216,7 +216,7 @@ PatchageCanvas::connect(Ganv::Node* port1,
 		return;
 
 	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO) ||
-	    (p1->type() == JACK_MIDI  && p2->type() == JACK_MIDI) |
+	    (p1->type() == JACK_MIDI  && p2->type() == JACK_MIDI) ||
 		(p1->type() == JACK_AUDIO && p2->type() == JACK_CV) ||
 		(p1->type() == JACK_CV    && p2->type() == JACK_CV) ||
 		(p1->type() == JACK_OSC   && p2->type() == JACK_OSC)) {
