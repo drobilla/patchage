@@ -186,11 +186,11 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 
 	const char* const type_str    = jack_port_type(port);
 	char*             pretty_name = NULL;
-	char*             datatype    = NULL;
 	PortType          port_type;
 	
 #ifdef HAVE_JACK_METADATA
-	const jack_uuid_t uuid = jack_port_uuid(port);
+	char*             datatype = NULL;
+	const jack_uuid_t uuid     = jack_port_uuid(port);
 	jack_get_property(uuid, JACK_METADATA_PRETTY_NAME, &pretty_name, &datatype);
 #endif
 
