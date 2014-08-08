@@ -42,9 +42,7 @@ AlsaDriver::~AlsaDriver()
 	detach();
 }
 
-/** Attach to ALSA.
- * @a launch_daemon is ignored, as ALSA has no daemon to launch/connect to.
- */
+/** Attach to ALSA. */
 void
 AlsaDriver::attach(bool /*launch_daemon*/)
 {

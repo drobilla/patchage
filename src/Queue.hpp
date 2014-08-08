@@ -118,7 +118,7 @@ Queue<T>::front() const
 
 /** Push an item onto the back of the Queue - realtime-safe, not thread-safe.
  *
- * @returns true if @a elem was successfully pushed onto the queue,
+ * @returns true if `elem` was successfully pushed onto the queue,
  * false otherwise (queue is full).
  */
 template <typename T>

@@ -98,7 +98,7 @@ Configuration::set_module_location(const std::string& name, ModuleType type, Coo
 
 /** Returns whether or not this module should be split.
  *
- * If nothing is known about the given module, @a default_val is returned (this is
+ * If nothing is known about the given module, `default_val` is returned (this is
  * to allow driver's to request terminal ports get split by default).
  */
 bool
