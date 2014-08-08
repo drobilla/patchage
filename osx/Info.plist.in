@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>patchage</string>
 	<key>CFBundleGetInfoString</key>
-	<string>@PATCHAGE_VERSION@, Copyright © 2013 David Robillard</string>
+	<string>@PATCHAGE_VERSION@, Copyright © 2014 David Robillard</string>
 	<key>CFBundleIconFile</key>
 	<string>Patchage</string>
 	<key>CFBundleIdentifier</key>
