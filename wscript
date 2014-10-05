@@ -60,7 +60,7 @@ def configure(conf):
     autowaf.check_pkg(conf, 'ganv-1', uselib_store='GANV',
                       atleast_version='1.4.0', mandatory=True)
 
-    if Options.platform == 'darwin':
+    if conf.env.DEST_OS == 'darwin':
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
                           atleast_version='1.0.0', mandatory=True)
         if conf.is_defined('HAVE_GTK_OSX'):
@@ -120,14 +120,14 @@ def configure(conf):
     autowaf.display_msg(conf, "Jack Session Management", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Jack Metadata", conf.is_defined('HAVE_JACK_METADATA'))
     autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
-    if Options.platform == 'darwin':
+    if conf.env.DEST_OS == 'darwin':
         autowaf.display_msg(conf, "Mac Integration", conf.is_defined('HAVE_GTK_OSX'))
         
     print('')
 
 def build(bld):
     out_base = ''
-    if Options.platform == 'darwin':
+    if bld.env.DEST_OS == 'darwin':
         out_base = 'Patchage.app/Contents/'
 
     # Program
@@ -173,7 +173,7 @@ def build(bld):
         APP_INSTALL_NAME = bld.env.APP_INSTALL_NAME,
         APP_HUMAN_NAME   = bld.env.APP_HUMAN_NAME)
 
-    if Options.platform == 'darwin':
+    if bld.env.DEST_OS == 'darwin':
         # Property list
         bld(features         = 'subst',
             source           = 'osx/Info.plist.in',
