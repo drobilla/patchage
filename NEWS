@@ -2,8 +2,9 @@ patchage (1.0.1) unstable;
 
   * Support Jack CV and OSC via metadata.
   * Configure based on compiler target OS for cross-compilation.
+  * Fix compilation with Jack DBus.
 
- -- David Robillard <d@drobilla.net>  Sat, 04 Oct 2014 23:07:45 -0400
+ -- David Robillard <d@drobilla.net>  Wed, 19 Nov 2014 13:42:09 -0500
 
 patchage (1.0.0) stable;
 

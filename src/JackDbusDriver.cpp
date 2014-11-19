@@ -56,6 +56,7 @@
 JackDriver::JackDriver(Patchage* app)
 	: _app(app)
 	, _dbus_connection(0)
+	, _max_dsp_load(0)
 	, _server_responding(false)
 	, _server_started(false)
 	, _graph_version(0)
@@ -506,8 +507,10 @@ JackDriver::add_port(PatchageModule*    module,
 		*module,
 		type,
 		name,
+		"",  // TODO: pretty name
 		is_input,
-		_app->state_manager()->get_port_color(type));
+		_app->conf()->get_port_color(type),
+		_app->show_human_names());
 }
 
 void
@@ -533,7 +536,7 @@ JackDriver::add_port(dbus_uint64_t client_id,
 	}
 
 	ModuleType type = InputOutput;
-	if (_app->state_manager()->get_module_split(client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
+	if (_app->conf()->get_module_split(client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
 		if (port_flags & JACKDBUS_PORT_FLAG_INPUT) {
 			type = Input;
 		} else {
@@ -983,6 +986,45 @@ JackDriver::reset_xruns()
 	}
 
 	dbus_message_unref(reply_ptr);
+}
+
+float
+JackDriver::get_max_dsp_load()
+{
+	DBusMessage* reply_ptr;
+	double       load;
+
+	if (_server_responding && !_server_started) {
+		return 0.0;
+	}
+
+	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetLoad", &reply_ptr, DBUS_TYPE_INVALID)) {
+		return 0.0;
+	}
+
+	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_DOUBLE, &load, DBUS_TYPE_INVALID)) {
+		dbus_message_unref(reply_ptr);
+		dbus_error_free(&_dbus_error);
+		error_msg("decoding reply of GetLoad failed.");
+		return 0.0;
+	}
+
+	dbus_message_unref(reply_ptr);
+
+	load /= 100.0; // convert from percent to [0..1]
+
+	if (load > _max_dsp_load) {
+		_max_dsp_load = load;
+	}
+
+	return _max_dsp_load;
+}
+
+
+void
+JackDriver::reset_max_dsp_load()
+{
+	_max_dsp_load = 0.0;
 }
 
 PatchagePort*

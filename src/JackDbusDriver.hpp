@@ -56,6 +56,8 @@ public:
 
 	size_t get_xruns();
 	void   reset_xruns();
+	float  get_max_dsp_load();
+	void   reset_max_dsp_load();
 
 	float          sample_rate();
 	jack_nframes_t buffer_size();
@@ -148,6 +150,7 @@ private:
 	Patchage*       _app;
 	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;
+	float           _max_dsp_load;
 
 	bool _server_responding;
 	bool _server_started;
