@@ -63,7 +63,7 @@ def configure(conf):
     if conf.env.DEST_OS == 'darwin':
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
                           atleast_version='1.0.0', mandatory=True)
-        if conf.is_defined('HAVE_GTK_OSX'):
+        if conf.env.HAVE_GTK_OSX:
             autowaf.define(conf, 'PATCHAGE_GTK_OSX', 1)
 
     # Check for dladdr
@@ -75,12 +75,12 @@ def configure(conf):
                mandatory=False)
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
-    if Options.options.jack_dbus and conf.is_defined('HAVE_DBUS') and conf.is_defined('HAVE_DBUS_GLIB'):
+    if Options.options.jack_dbus and conf.env.HAVE_DBUS and conf.env.HAVE_DBUS_GLIB:
         autowaf.define(conf, 'HAVE_JACK_DBUS', 1)
     else:
         autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
                           atleast_version='0.120.0', mandatory=False)
-        if conf.is_defined('HAVE_JACK'):
+        if conf.env.HAVE_JACK:
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
             if Options.options.jack_session_manage:
                 autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
@@ -115,13 +115,13 @@ def configure(conf):
 
     autowaf.display_msg(conf, "Install name", "'" + conf.env.APP_INSTALL_NAME + "'", 'CYAN')
     autowaf.display_msg(conf, "App human name", "'" + conf.env.APP_HUMAN_NAME + "'", 'CYAN')
-    autowaf.display_msg(conf, "Jack (D-Bus)", conf.is_defined('HAVE_JACK_DBUS'))
+    autowaf.display_msg(conf, "Jack (D-Bus)", bool(conf.env.HAVE_JACK_DBUS))
     autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
     autowaf.display_msg(conf, "Jack Session Management", conf.is_defined('PATCHAGE_JACK_SESSION'))
     autowaf.display_msg(conf, "Jack Metadata", conf.is_defined('HAVE_JACK_METADATA'))
-    autowaf.display_msg(conf, "Alsa Sequencer", conf.is_defined('HAVE_ALSA'))
+    autowaf.display_msg(conf, "Alsa Sequencer", bool(conf.env.HAVE_ALSA))
     if conf.env.DEST_OS == 'darwin':
-        autowaf.display_msg(conf, "Mac Integration", conf.is_defined('HAVE_GTK_OSX'))
+        autowaf.display_msg(conf, "Mac Integration", bool(conf.env.HAVE_GTK_OSX))
         
     print('')
 
@@ -144,12 +144,12 @@ def build(bld):
             src/PatchageModule.cpp
             src/main.cpp
     '''
-    if bld.is_defined('HAVE_JACK_DBUS'):
+    if bld.env.HAVE_JACK_DBUS:
         prog.source += ' src/JackDbusDriver.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
         prog.source += ' src/JackDriver.cpp '
         prog.uselib += ' JACK NEWJACK '
-    if bld.is_defined('HAVE_ALSA'):
+    if bld.env.HAVE_ALSA:
         prog.source += ' src/AlsaDriver.cpp '
         prog.uselib += ' ALSA '
     if bld.is_defined('PATCHAGE_BINLOC'):
