@@ -28,42 +28,16 @@
 
 #include "Patchage.hpp"
 
-#ifdef __APPLE__
-void
-set_bundle_environment()
-{
-	char* binloc_c = binary_location();
-	std::string binloc(binloc_c);
-	free(binloc_c);
-
-	const std::string bundle_path = binloc.substr(0, binloc.find_last_of('/'));
-
-	const std::string lib_path(bundle_path + "/lib");
-	setenv("GTK_PATH", lib_path.c_str(), 1);
-	setenv("DYLD_LIBRARY_PATH", lib_path.c_str(), 1);
-
-	chdir(bundle_path.c_str());
-	const std::string pangorc_path(bundle_path + "/Resources/pangorc");
-	setenv("PANGO_RC_FILE", pangorc_path.c_str(), 1);
-
-	const std::string fonts_conf_path(bundle_path + "/Resources/fonts.conf");
-	setenv("FONTCONFIG_FILE", fonts_conf_path.c_str(), 1);
-
-	const char* path_c = getenv("PATH");
-	std::string path = "/opt/local/bin";
-	if (path_c)
-		path += std::string(":") + path_c;
-	setenv("PATH", path.c_str(), 1);
-
-	gtk_rc_parse((bundle_path + "/Resources/gtkrc").c_str());
-}
-#endif
-
 int
 main(int argc, char** argv)
 {
 #ifdef __APPLE__
-	set_bundle_environment();
+	const std::string binary     = binary_location();
+	const std::string bundle     = binary.substr(0, binary.find_last_of('/'));
+	const std::string gtkrc_path = bundle + "/Resources/gtkrc";
+	if (Glib::file_test(gtkrc_path, Glib::FILE_TEST_EXISTS)) {
+		gtk_rc_parse(gtkrc_path.c_str());
+	}
 #endif
 
 	try {

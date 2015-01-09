@@ -62,7 +62,7 @@ def configure(conf):
 
     if conf.env.DEST_OS == 'darwin':
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
-                          atleast_version='1.0.0', mandatory=True)
+                          atleast_version='1.0.0', mandatory=False)
         if conf.env.HAVE_GTK_OSX:
             autowaf.define(conf, 'PATCHAGE_GTK_OSX', 1)
 
@@ -99,10 +99,10 @@ def configure(conf):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
 
     # Boost headers
-    autowaf.check_header(conf, 'cxx', 'boost/format.hpp')
-    autowaf.check_header(conf, 'cxx', 'boost/shared_ptr.hpp')
-    autowaf.check_header(conf, 'cxx', 'boost/utility.hpp')
-    autowaf.check_header(conf, 'cxx', 'boost/weak_ptr.hpp')
+    conf.check_cxx(header_name='boost/format.hpp')
+    conf.check_cxx(header_name='boost/shared_ptr.hpp')
+    conf.check_cxx(header_name='boost/utility.hpp')
+    conf.check_cxx(header_name='boost/weak_ptr.hpp')
 
     conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
 
@@ -187,7 +187,7 @@ def build(bld):
             target = out_base + 'Resources/Patchage.icns')
 
         # Gtk/Pango/etc configuration files
-        for i in ['pangorc', 'pango.modules', 'gtkrc', 'fonts.conf']:
+        for i in ['pangorc', 'pango.modules', 'gtkrc']:
             bld(rule   = 'cp ${SRC} ${TGT}',
                 source = 'osx/' + i,
                 target = out_base + 'Resources/' + i)

@@ -26,6 +26,14 @@
 	<dict>
 		<key>DYLD_LIBRARY_PATH</key>
 		<string>lib</string>
+		<key>GTK_PATH</key>
+		<string>lib</string>
+		<key>FONTCONFIG_FILE</key>
+		<string>Resources/fonts.conf</string>
+		<key>PANGO_RC_FILE</key>
+		<string>Resources/pangorc</string>
+		<key>GTK2_RC_FILES</key>
+		<string>Resources/gtkrc</string>
 	</dict>
 </dict>
 </plist>

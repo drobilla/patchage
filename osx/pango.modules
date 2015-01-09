@@ -1,2 +1,2 @@
-lib/modules/pango-basic-atsui.so BasicScriptEngineATSUI PangoEngineShape PangoRenderATSUI common:
-lib/modules/pango-basic-fc.so BasicScriptEngineFc PangoEngineShape PangoRenderFc latin:* cyrillic:* greek:* armenian:* georgian:* runic:* ogham:* bopomofo:* cherokee:* coptic:* deseret:* ethiopic:* gothic:* han:* hiragana:* katakana:* old-italic:* canadian-aboriginal:* yi:* braille:* cypriot:* limbu:* osmanya:* shavian:* linear-b:* ugaritic:* glagolitic:* cuneiform:* phoenician:* common:
+lib/modules/pango-basic-coretext.so BasicScriptEngineCoreText PangoEngineShape PangoRenderCoreText common:
+lib/modules/pango-basic-fc.so BasicScriptEngineFc PangoEngineShape PangoRenderFc common:

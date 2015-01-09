@@ -23,20 +23,21 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-/** Return the absolute path of the binary.
- * Returned value must be freed by caller.
- */
-static char*
+#include <string>
+
+/** Return the absolute path of the binary. */
+static std::string
 binary_location()
 {
-	Dl_info dli;
+	Dl_info     dli;
+	std::string loc;
 	const int ret = dladdr((void*)&binary_location, &dli);
 	if (ret) {
 		char* const bin_loc = (char*)calloc(PATH_MAX, 1);
-		if (!realpath(dli.dli_fname, bin_loc)) {
-			return NULL;
+		if (realpath(dli.dli_fname, bin_loc)) {
+			loc = bin_loc;
 		}
-		return bin_loc;
+		free(bin_loc);
 	}
-	return NULL;
+	return loc;
 }

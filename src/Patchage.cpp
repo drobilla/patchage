@@ -295,15 +295,15 @@ Patchage::Patchage(int argc, char** argv)
 
 #ifdef PATCHAGE_GTK_OSX
 	// Set up Mac menu bar
-	GtkOSXApplication* osxapp;
-	gtk_osxapplication_ready(osxapp);
-
+	GtkosxApplication* osxapp = (GtkosxApplication*)g_object_new(
+		GTKOSX_TYPE_APPLICATION, NULL);
 	_menubar->hide();
-	gtk_osxapplication_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
-	gtk_osxapplication_insert_app_menu_item(
+	gtkosx_application_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
+	gtkosx_application_insert_app_menu_item(
 		osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
 	g_signal_connect(_menubar->gobj(), "can-activate-accel",
 	                 G_CALLBACK(can_activate_cb), NULL);
+	gtkosx_application_ready(osxapp);
 #endif
 }
 
