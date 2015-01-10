@@ -12,6 +12,8 @@
 	<string>@PATCHAGE_VERSION@, Copyright © 2014 David Robillard</string>
 	<key>CFBundleIconFile</key>
 	<string>Patchage</string>
+	<key>CFBundleIconFile</key>
+	<string>Patchage.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.drobilla.Patchage</string>
 	<key>CFBundleName</key>
@@ -32,8 +34,6 @@
 		<string>Resources/fonts.conf</string>
 		<key>PANGO_RC_FILE</key>
 		<string>Resources/pangorc</string>
-		<key>GTK2_RC_FILES</key>
-		<string>Resources/gtkrc</string>
 	</dict>
 </dict>
 </plist>
