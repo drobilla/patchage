@@ -61,6 +61,15 @@ can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
 {
   return gtk_widget_is_sensitive(widget);
 }
+
+static void
+terminate_cb(GtkosxApplication* app, gpointer data)
+{
+	Patchage* patchage = (Patchage*)data;
+	patchage->save();
+	Gtk::Main::quit();
+}
+
 #endif
 
 #ifdef HAVE_ALSA
@@ -304,21 +313,20 @@ Patchage::Patchage(int argc, char** argv)
 	GtkosxApplication* osxapp = (GtkosxApplication*)g_object_new(
 		GTKOSX_TYPE_APPLICATION, NULL);
 	_menubar->hide();
+	_menu_file_quit->hide();
 	gtkosx_application_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
 	gtkosx_application_insert_app_menu_item(
 		osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
 	g_signal_connect(_menubar->gobj(), "can-activate-accel",
 	                 G_CALLBACK(can_activate_cb), NULL);
+	g_signal_connect(osxapp, "NSApplicationWillTerminate",
+	                 G_CALLBACK(terminate_cb), this);	
 	gtkosx_application_ready(osxapp);
 #endif
 }
 
 Patchage::~Patchage()
 {
-	store_window_location();
-	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
-	_conf->save();
-
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	delete _jack_driver;
 #endif
@@ -856,8 +864,17 @@ Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba
 }
 
 void
+Patchage::save()
+{
+	store_window_location();
+	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
+	_conf->save();
+}
+
+void
 Patchage::on_quit()
 {
+	save();
 #ifdef HAVE_ALSA
 	_alsa_driver->detach();
 #endif

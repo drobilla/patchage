@@ -76,6 +76,7 @@ public:
 	Glib::RefPtr<Gtk::Builder> xml() { return _xml; }
 
 	void attach();
+	void save();
 	void quit() { _main_win->hide(); }
 
 	void        refresh();
