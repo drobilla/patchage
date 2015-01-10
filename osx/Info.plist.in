@@ -30,6 +30,10 @@
 		<string>lib</string>
 		<key>GTK_PATH</key>
 		<string>lib</string>
+		<key>GTK_DATA_PREFIX</key>
+		<string>Resources</string>
+		<key>XDG_DATA_DIRS</key>
+		<string>Resources</string>
 		<key>FONTCONFIG_FILE</key>
 		<string>Resources/fonts.conf</string>
 		<key>PANGO_RC_FILE</key>
