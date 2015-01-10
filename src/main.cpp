@@ -52,6 +52,11 @@ set_bundle_environment()
 		setenv("FONTCONFIG_FILE", fonts_conf_path.c_str(), 1);
 	}
 
+	const std::string loaders_cache_path(bundle + "/Resources/loaders.cache");
+	if (Glib::file_test(loaders_cache_path, Glib::FILE_TEST_EXISTS)) {
+		setenv("GDK_PIXBUF_MODULE_FILE", loaders_cache_path.c_str(), 1);
+	}
+
 	const std::string gtkrc_path(bundle + "/Resources/gtkrc");
 	if (Glib::file_test(gtkrc_path, Glib::FILE_TEST_EXISTS)) {
 		gtk_rc_parse(gtkrc_path.c_str());
