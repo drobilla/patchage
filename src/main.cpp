@@ -32,8 +32,7 @@
 void
 set_bundle_environment()
 {
-	const std::string binary   = binary_location();
-	const std::string bundle   = binary.substr(0, binary.find_last_of('/'));
+	const std::string bundle   = bundle_location();
 	const std::string lib_path = bundle + "/lib";
 	if (!Glib::file_test(lib_path, Glib::FILE_TEST_EXISTS)) {
 		// If lib does not exist, we have not been bundleified, do nothing

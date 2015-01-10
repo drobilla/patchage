@@ -160,6 +160,12 @@ Patchage::Patchage(int argc, char** argv)
 	_about_win->property_program_name() = "Patchage";
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
+#ifdef __APPLE__
+	// This doesn't seem to work after bundleification for some reason...
+	_about_win->set_logo(
+		Gdk::Pixbuf::create_from_file(
+			bundle_location() + "/Resources/Patchage.icns"));
+#endif
 
 	_main_scrolledwin->add(_canvas->widget());
 

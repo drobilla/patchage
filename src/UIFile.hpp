@@ -41,9 +41,8 @@ public:
 	static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name) {
 		std::string ui_filename;
 #ifdef PATCHAGE_BINLOC
-		std::string bundle = binary_location();
+		const std::string bundle = bundle_location();
 		if (!bundle.empty()) {
-			bundle = bundle.substr(0, bundle.find_last_of("/"));
 			ui_filename = bundle + "/" + base_name + ".ui";
 			if (is_readable(ui_filename)) {
 				std::cout << "Loading UI file " << ui_filename << std::endl;

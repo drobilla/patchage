@@ -41,3 +41,14 @@ binary_location()
 	}
 	return loc;
 }
+
+/** Return the absolute path of the bundle (binary parent directory). */
+static std::string
+bundle_location()
+{
+	const std::string binary = binary_location();
+	if (binary.empty()) {
+		return "";
+	}
+	return binary.substr(0, binary.find_last_of('/'));
+}
