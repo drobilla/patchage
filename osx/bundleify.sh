@@ -23,6 +23,12 @@ mkdir -p "$bundle/Contents/lib/gtk-2.0/engines"
 cp $prefix/lib/gtk-2.0/2.10.0/engines/libquartz.so  $bundle/Contents/lib/gtk-2.0/engines
 cp $prefix/lib/pango/1.8.0/modules/*basic*.so $bundle/Contents/lib/modules
 
+# Copy GdkPixbuf loaders
+for fmt in icns png; do
+    cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
+       $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
+done
+
 # Copy libraries depended on by the executable to bundle
 libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
 for l in $libs; do
@@ -30,13 +36,13 @@ for l in $libs; do
 done
 
 # Add libraries depended on by those libraries
-reclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
+reclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
 for l in $reclibs; do
 	cp $l $bundle/Contents/lib
 done
 
 # ... and libraries depended on by those libraries (yes, this should be done more sanely)
-recreclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
+recreclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
 for l in $recreclibs; do
 	cp $l $bundle/Contents/lib
 done

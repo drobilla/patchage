@@ -1,0 +1,11 @@
+"@executable_path/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-icns.so"
+"icns" 4 "gdk-pixbuf" "The ICNS image format" "GPL"
+"image/x-icns" ""
+"icns" ""
+"icns" "" 100
+
+"@executable_path/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so"
+"png" 5 "gdk-pixbuf" "The PNG image format" "LGPL"
+"image/png" ""
+"png" ""
+"\211PNG\r\n\032\n" "" 100
