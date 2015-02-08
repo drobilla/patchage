@@ -62,6 +62,12 @@ public:
 	float get_sprung_layout() const              { return _sprung_layout; }
 	void  set_sprung_layout(float sprung_layout) { _sprung_layout = sprung_layout; }
 
+	bool  get_show_messages() const             { return _show_messages; }
+	void  set_show_messages(bool show_messages) { _show_messages = show_messages; }
+
+	int  get_messages_height() const          { return _messages_height; }
+	void set_messages_height(int height) { _messages_height = height; }
+
 	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
 	void     set_port_color(PortType type, uint32_t rgba) {
 		_port_colors[type] = rgba;
@@ -92,6 +98,8 @@ private:
 	float _font_size;
 	bool  _show_toolbar;
 	bool  _sprung_layout;
+	bool  _show_messages;
+	int   _messages_height;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP

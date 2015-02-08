@@ -41,6 +41,8 @@ Configuration::Configuration()
 	, _zoom(1.0)
 	, _font_size(12.0)
 	, _show_toolbar(true)
+	, _show_messages(false)
+	, _messages_height(0)
 {
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x3E5E00FF;
 	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0x650300FF;
@@ -188,6 +190,10 @@ Configuration::load()
 			file >> _show_toolbar;
 		} else if (key == "sprung_layout") {
 			file >> _sprung_layout;
+		} else if (key == "show_messages") {
+			file >> _show_messages;
+		} else if (key == "messages_height") {
+			file >> _messages_height;
 		} else if (key == "port_color") {
 			std::string type_name;
 			uint32_t    rgba;
@@ -286,6 +292,8 @@ Configuration::save()
 	file << "font_size " << _font_size << std::endl;
 	file << "show_toolbar " << _show_toolbar << std::endl;
 	file << "sprung_layout " << _sprung_layout << std::endl;
+	file << "show_messages " << _show_messages << std::endl;
+	file << "messages_height " << _messages_height << std::endl;
 
 	file << std::hex << std::uppercase;
 	for (int i = 0; i < N_PORT_TYPES; ++i) {

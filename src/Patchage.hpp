@@ -112,6 +112,7 @@ protected:
 	void on_decrease_font_size();
 	void on_normal_font_size();
 	void on_legend_color_change(int id, const std::string& label, uint32_t rgba);
+	void on_messages_resized(Gtk::Allocation& alloc);
 
 	bool on_scroll(GdkEventScroll* ev);
 
@@ -183,6 +184,7 @@ protected:
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;
 
+	bool _pane_initialized;
 	bool _attach;
 	bool _driver_detached;
 	bool _refresh;

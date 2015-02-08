@@ -1,8 +1,9 @@
 patchage (1.0.1) unstable;
 
   * Support Jack CV and OSC via metadata.
-  * Configure based on compiler target OS for cross-compilation.
+  * Add support for exporting canvas as PDF.
   * Save window size and position when closed via window manager.
+  * Configure based on compiler target OS for cross-compilation.
   * Fix compilation with Jack DBus.
 
  -- David Robillard <d@drobilla.net>  Sun, 08 Feb 2015 06:36:55 -0500

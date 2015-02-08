@@ -137,6 +137,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_log_scrolledwindow)
 	, INIT_WIDGET(_status_text)
 	, _legend(NULL)
+	, _pane_initialized(false)
 	, _attach(true)
 	, _driver_detached(false)
 	, _refresh(false)
@@ -193,6 +194,9 @@ Patchage::Patchage(int argc, char** argv)
 
 	_clear_load_but->signal_clicked().connect(
 		sigc::mem_fun(this, &Patchage::clear_load));
+
+	_status_text->signal_size_allocate().connect(
+		sigc::mem_fun(this, &Patchage::on_messages_resized));
 
 #ifdef PATCHAGE_JACK_SESSION
 	_menu_open_session->signal_activate().connect(
@@ -257,12 +261,17 @@ Patchage::Patchage(int argc, char** argv)
 		_menu_view_sprung_layout->set_sensitive(false);
 	}
 
+	for (int s = Gtk::STATE_NORMAL; s <= Gtk::STATE_INSENSITIVE; ++s) {
+		_status_text->modify_base((Gtk::StateType)s, Gdk::Color("#000000"));
+		_status_text->modify_text((Gtk::StateType)s, Gdk::Color("#FFFFFF"));
+	}
+
 	_error_tag = Gtk::TextTag::create();
 	_error_tag->property_foreground() = "#CC0000";
 	_status_text->get_buffer()->get_tag_table()->add(_error_tag);
 
 	_warning_tag = Gtk::TextTag::create();
-	_warning_tag->property_foreground() = "#E6B200";
+	_warning_tag->property_foreground() = "#C4A000";
 	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
 
 	_canvas->widget().show();
@@ -307,7 +316,10 @@ Patchage::Patchage(int argc, char** argv)
 	update_state();
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
-	_main_paned->set_position(42);
+	_status_text->set_pixels_inside_wrap(2);
+	_status_text->set_left_margin(4);
+	_status_text->set_right_margin(4);
+	_status_text->set_pixels_below_lines(2);
 
 	g_signal_connect(_main_win->gobj(), "configure-event",
 	                 G_CALLBACK(configure_cb), this);
@@ -377,6 +389,7 @@ Patchage::idle_callback()
 	// Initial run, attach
 	if (_attach) {
 		attach();
+		_menu_view_messages->set_active(_conf->get_show_messages());
 		_attach = false;
 	}
 
@@ -874,6 +887,13 @@ Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba
 }
 
 void
+Patchage::on_messages_resized(Gtk::Allocation& alloc)
+{
+	const int max_pos = _main_paned->get_allocation().get_height();
+	_conf->set_messages_height(max_pos - _main_paned->get_position());
+}
+
+void
 Patchage::save()
 {
 	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
@@ -940,9 +960,25 @@ void
 Patchage::on_view_messages()
 {
 	if (_menu_view_messages->get_active()) {
+		Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
+		if (!_pane_initialized) {
+			int y, line_height;
+			_status_text->get_line_yrange(buffer->begin(), y, line_height);
+			const int pad         = _status_text->get_pixels_inside_wrap();
+			const int max_pos     = _main_paned->get_allocation().get_height();
+			const int min_height  = (line_height + 2 * pad);
+			const int conf_height = _conf->get_messages_height();
+			_main_paned->set_position(max_pos - std::max(conf_height, min_height));
+			_pane_initialized = true;
+		}
+		
 		_log_scrolledwindow->show();
+		_status_text->scroll_to_mark(
+			_status_text->get_buffer()->get_insert(), 0);
+		_conf->set_show_messages(true);
 	} else {
 		_log_scrolledwindow->hide();
+		_conf->set_show_messages(false);
 	}
 }
 
