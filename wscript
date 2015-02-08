@@ -58,7 +58,7 @@ def configure(conf):
     autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
                       atleast_version='2.12.0', mandatory=True)
     autowaf.check_pkg(conf, 'ganv-1', uselib_store='GANV',
-                      atleast_version='1.4.0', mandatory=True)
+                      atleast_version='1.5.0', mandatory=True)
 
     if conf.env.DEST_OS == 'darwin':
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',

@@ -108,7 +108,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_alsa_connect)
 	, INIT_WIDGET(_menu_alsa_disconnect)
 	, INIT_WIDGET(_menu_file_quit)
-	, INIT_WIDGET(_menu_export_dot)
+	, INIT_WIDGET(_menu_export_image)
 	, INIT_WIDGET(_menu_help_about)
 	, INIT_WIDGET(_menu_jack_connect)
 	, INIT_WIDGET(_menu_jack_disconnect)
@@ -219,8 +219,8 @@ Patchage::Patchage(int argc, char** argv)
 
 	_menu_file_quit->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_quit));
-	_menu_export_dot->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_export_dot));
+	_menu_export_image->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_export_image));
 	_menu_view_refresh->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_human_names->signal_activate().connect(
@@ -893,31 +893,46 @@ Patchage::on_quit()
 }
 
 void
-Patchage::on_export_dot()
+Patchage::on_export_image()
 {
-	Gtk::FileChooserDialog dialog("Export to DOT", Gtk::FILE_CHOOSER_ACTION_SAVE);
-	dialog.set_transient_for(*_main_win);
+	Gtk::FileChooserDialog dialog("Export Image", Gtk::FILE_CHOOSER_ACTION_SAVE);
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+	dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
+	dialog.set_default_response(Gtk::RESPONSE_OK);
+	dialog.set_transient_for(*_main_win);
 
-	Gtk::Button* save_button = dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
-	save_button->property_has_default() = true;
+	typedef std::map<std::string, std::string> Types;
+	Types types;
+	types["*.dot"] = "Graphviz DOT";
+	types["*.pdf"] = "Portable Document Format";
+	types["*.ps"]  = "PostScript";
+	types["*.svg"] = "Scalable Vector Graphics";
+	for (Types::const_iterator t = types.begin(); t != types.end(); ++t) {
+		Gtk::FileFilter filt;
+		filt.add_pattern(t->first);
+		filt.set_name(t->second);
+		dialog.add_filter(filt);
+	}
+
+	Gtk::CheckButton* bg_but = new Gtk::CheckButton("Draw _Background", true);
+	Gtk::Alignment*   extra  = new Gtk::Alignment(1.0, 0.5, 0.0, 0.0);
+	bg_but->set_active(true);
+	extra->add(*Gtk::manage(bg_but));
+	extra->show_all();
+	dialog.set_extra_widget(*Gtk::manage(extra));
 
 	if (dialog.run() == Gtk::RESPONSE_OK) {
-		std::string filename = dialog.get_filename();
-		if (filename.find(".") == std::string::npos)
-			filename += ".dot";
-
+		const std::string filename = dialog.get_filename();
 		if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
-			Gtk::MessageDialog dialog(
+			Gtk::MessageDialog confirm(
 				std::string("File exists!  Overwrite ") + filename + "?",
 				true, Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
-			dialog.set_transient_for(*_main_win);
-			if (dialog.run() != Gtk::RESPONSE_YES) {
+			confirm.set_transient_for(dialog);
+			if (confirm.run() != Gtk::RESPONSE_YES) {
 				return;
 			}
 		}
-
-		_canvas->export_dot(filename.c_str());
+		_canvas->export_image(filename.c_str(), bg_but->get_active());
 	}
 }
 

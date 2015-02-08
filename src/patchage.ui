@@ -765,12 +765,13 @@ Nedko Arnaudov &lt;nedko@arnaudov.name&gt;</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menu_export_dot">
+                      <object class="GtkMenuItem" id="menu_export_image">
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Export DOT...</property>
+                        <property name="label" translatable="yes">_Export Image...</property>
                         <property name="use_underline">True</property>
+                        <accelerator key="e" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
