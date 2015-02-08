@@ -79,6 +79,7 @@ main(int argc, char** argv)
 
 	Patchage patchage(argc, argv);
 	app.run(*patchage.window());
+	patchage.save();
 
 	} catch (std::exception& e) {
 		std::cerr << "patchage: error: " << e.what() << std::endl;

@@ -53,6 +53,10 @@
     #include <jack/session.h>
 #endif
 
+#ifdef HAVE_ALSA
+    #include "AlsaDriver.hpp"
+#endif
+
 #ifdef PATCHAGE_GTK_OSX
     #include <gtkosxapplication.h>
 
@@ -72,17 +76,20 @@ terminate_cb(GtkosxApplication* app, gpointer data)
 
 #endif
 
-#ifdef HAVE_ALSA
-    #include "AlsaDriver.hpp"
-#endif
-
-using std::cout;
-using std::endl;
-using std::string;
+static bool
+configure_cb(GtkWindow* parentWindow, GdkEvent* event, gpointer data)
+{
+	((Patchage*)data)->store_window_location();
+	return FALSE;
+}
 
 struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
+
+using std::cout;
+using std::endl;
+using std::string;
 
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
@@ -301,6 +308,9 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
 	_main_paned->set_position(42);
+
+	g_signal_connect(_main_win->gobj(), "configure-event",
+	                 G_CALLBACK(configure_cb), this);
 
 	_canvas->widget().grab_focus();
 
@@ -866,7 +876,6 @@ Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba
 void
 Patchage::save()
 {
-	store_window_location();
 	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
 	_conf->save();
 }
@@ -874,7 +883,6 @@ Patchage::save()
 void
 Patchage::on_quit()
 {
-	save();
 #ifdef HAVE_ALSA
 	_alsa_driver->detach();
 #endif
