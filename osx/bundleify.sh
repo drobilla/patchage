@@ -24,6 +24,7 @@ cp $prefix/lib/gtk-2.0/2.10.0/engines/libquartz.so  $bundle/Contents/lib/gtk-2.0
 cp $prefix/lib/pango/1.8.0/modules/*basic*.so $bundle/Contents/lib/modules
 
 # Copy GdkPixbuf loaders
+mkdir -p $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/
 for fmt in icns png; do
     cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
        $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
