@@ -63,9 +63,7 @@ public:
 
 	void add_module(const std::string& name, PatchageModule* module);
 
-	bool make_connection(Ganv::Node* tail,
-	                     Ganv::Node* head,
-	                     uint32_t    color);
+	bool make_connection(Ganv::Node* tail, Ganv::Node* head);
 
 	void remove_port(const PortID& id);
 

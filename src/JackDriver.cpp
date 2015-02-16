@@ -354,8 +354,7 @@ JackDriver::refresh()
 				}
 
 				if (src && dst && !_app->canvas()->get_edge(src, dst))
-					_app->canvas()->make_connection(
-						src, dst, port1->get_fill_color());
+					_app->canvas()->make_connection(src, dst);
 			}
 
 			jack_free(connected_ports);

@@ -310,11 +310,9 @@ PatchageCanvas::on_event(GdkEvent* ev)
 }
 
 bool
-PatchageCanvas::make_connection(Ganv::Node* tail,
-                                Ganv::Node* head,
-                                uint32_t    color)
+PatchageCanvas::make_connection(Ganv::Node* tail, Ganv::Node* head)
 {
-	new Ganv::Edge(*this, tail, head, color);
+	new Ganv::Edge(*this, tail, head);
 	return true;
 }
 

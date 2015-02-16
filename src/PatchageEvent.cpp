@@ -91,8 +91,7 @@ PatchageEvent::execute(Patchage* patchage)
 			patchage->error_msg((format("Unable to find port `%1%' to connect")
 			                     % _port_2).str());
 		else
-			patchage->canvas()->make_connection(
-				port_1, port_2, port_1->get_fill_color());
+			patchage->canvas()->make_connection(port_1, port_2);
 
 	} else if (_type == DISCONNECTION) {
 

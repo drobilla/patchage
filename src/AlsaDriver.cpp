@@ -160,8 +160,7 @@ AlsaDriver::refresh()
 					const PortID id2(*addr2, true);
 					PatchagePort* port2 = _app->canvas()->find_port(id2);
 					if (port2 && !_app->canvas()->get_edge(port, port2)) {
-						_app->canvas()->make_connection(
-							port, port2, port->get_fill_color());
+						_app->canvas()->make_connection(port, port2);
 					}
 				}
 
