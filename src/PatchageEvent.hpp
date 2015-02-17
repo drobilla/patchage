@@ -85,4 +85,3 @@ private:
 };
 
 #endif // PATCHAGE_PATCHAGEEVENT_HPP
-

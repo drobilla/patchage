@@ -38,7 +38,7 @@ set_bundle_environment()
 		// If lib does not exist, we have not been bundleified, do nothing
 		return;
 	}
-	
+
 	setenv("GTK_PATH", lib_path.c_str(), 1);
 	setenv("DYLD_LIBRARY_PATH", lib_path.c_str(), 1);
 
@@ -91,4 +91,3 @@ main(int argc, char** argv)
 
 	return 0;
 }
-

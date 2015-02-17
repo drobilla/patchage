@@ -302,7 +302,7 @@ Configuration::save()
 		}
 	}
 	file << std::dec << std::nouppercase;
-		
+
 	for (std::map<std::string, ModuleSettings>::iterator i = _module_settings.begin();
 	     i != _module_settings.end(); ++i) {
 		const ModuleSettings& settings = (*i).second;

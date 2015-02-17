@@ -1046,4 +1046,3 @@ JackDriver::info_msg(const std::string& msg) const
 {
 	_app->info_msg((std::string)"Jack: " + msg);
 }
-

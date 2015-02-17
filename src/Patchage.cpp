@@ -347,7 +347,7 @@ Patchage::Patchage(int argc, char** argv)
 	g_signal_connect(_menubar->gobj(), "can-activate-accel",
 	                 G_CALLBACK(can_activate_cb), NULL);
 	g_signal_connect(osxapp, "NSApplicationWillTerminate",
-	                 G_CALLBACK(terminate_cb), this);	
+	                 G_CALLBACK(terminate_cb), this);
 	gtkosx_application_ready(osxapp);
 #endif
 }
@@ -976,7 +976,7 @@ Patchage::on_view_messages()
 			_main_paned->set_position(max_pos - std::max(conf_height, min_height));
 			_pane_initialized = true;
 		}
-		
+
 		_log_scrolledwindow->show();
 		_status_text->scroll_to_mark(
 			_status_text->get_buffer()->get_insert(), 0);

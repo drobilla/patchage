@@ -118,4 +118,3 @@ operator<(const PortID& a, const PortID& b)
 }
 
 #endif // PATCHAGE_PORTID_HPP
-

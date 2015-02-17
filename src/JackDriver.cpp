@@ -187,7 +187,7 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	const char* const type_str    = jack_port_type(port);
 	char*             pretty_name = NULL;
 	PortType          port_type;
-	
+
 #ifdef HAVE_JACK_METADATA
 	char*             datatype = NULL;
 	const jack_uuid_t uuid     = jack_port_uuid(port);
@@ -572,4 +572,3 @@ JackDriver::process_events(Patchage* app)
 		_events.pop();
 	}
 }
-

@@ -72,7 +72,7 @@ public:
 			set_label(_name.c_str());
 		}
 	}
-		
+
 	bool on_event(GdkEvent* ev) {
 		if (ev->type != GDK_BUTTON_PRESS || ev->button.button != 3) {
 			return false;

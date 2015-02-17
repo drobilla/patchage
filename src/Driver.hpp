@@ -53,4 +53,3 @@ public:
 };
 
 #endif // PATCHAGE_DRIVER_HPP
-

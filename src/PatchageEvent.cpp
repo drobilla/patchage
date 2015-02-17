@@ -108,4 +108,3 @@ PatchageEvent::execute(Patchage* patchage)
 			patchage->canvas()->remove_edge_between(port_1, port_2);
 	}
 }
-
