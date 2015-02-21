@@ -85,6 +85,17 @@ configure_cb(GtkWindow* parentWindow, GdkEvent* event, gpointer data)
 	return FALSE;
 }
 
+static int
+port_order(const GanvPort* a, const GanvPort* b, void* data)
+{
+	const PatchagePort* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
+	const PatchagePort* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
+	if (pa && pb) {
+		return pa->name().compare(pb->name());
+	}
+	return 0;
+}
+
 struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
@@ -277,6 +288,7 @@ Patchage::Patchage(int argc, char** argv)
 	_conf->load();
 	_canvas->set_zoom(_conf->get_zoom());
 	_canvas->set_font_size(_conf->get_font_size());
+	_canvas->set_port_order(port_order, NULL);
 
 	_main_win->resize(
 		static_cast<int>(_conf->get_window_size().x),
