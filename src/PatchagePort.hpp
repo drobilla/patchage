@@ -38,13 +38,14 @@
 class PatchagePort : public Ganv::Port
 {
 public:
-	PatchagePort(Ganv::Module&      module,
-	             PortType           type,
-	             const std::string& name,
-	             const std::string& human_name,
-	             bool               is_input,
-	             uint32_t           color,
-	             bool               show_human_name)
+	PatchagePort(Ganv::Module&        module,
+	             PortType             type,
+	             const std::string&   name,
+	             const std::string&   human_name,
+	             bool                 is_input,
+	             uint32_t             color,
+	             bool                 show_human_name,
+	             boost::optional<int> order=boost::optional<int>())
 		: Port(module,
 		       (show_human_name && !human_name.empty()) ? human_name : name,
 		       is_input,
@@ -52,6 +53,7 @@ public:
 		, _type(type)
 		, _name(name)
 		, _human_name(human_name)
+		, _order(order)
 	{
 		signal_event().connect(
 			sigc::mem_fun(this, &PatchagePort::on_event));
@@ -87,14 +89,16 @@ public:
 		return true;
 	}
 
-	PortType           type()       const { return _type; }
-	const std::string& name()       const { return _name; }
-	const std::string& human_name() const { return _human_name; }
+	PortType                    type()       const { return _type; }
+	const std::string&          name()       const { return _name; }
+	const std::string&          human_name() const { return _human_name; }
+	const boost::optional<int>& order()      const { return _order; }
 
 private:
-	PortType    _type;
-	std::string _name;
-	std::string _human_name;
+	PortType             _type;
+	std::string          _name;
+	std::string          _human_name;
+	boost::optional<int> _order;
 };
 
 #endif // PATCHAGE_PATCHAGEPORT_HPP

@@ -91,6 +91,13 @@ port_order(const GanvPort* a, const GanvPort* b, void* data)
 	const PatchagePort* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
 	const PatchagePort* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
 	if (pa && pb) {
+		if (pa->order() && pb->order()) {
+			return *pa->order() - *pb->order();
+		} else if (pa->order()) {
+			return -1;
+		} else if (pb->order()) {
+			return 1;
+		}
 		return pa->name().compare(pb->name());
 	}
 	return 0;

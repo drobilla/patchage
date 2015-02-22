@@ -177,6 +177,23 @@ JackDriver::create_port_view(Patchage*     patchage,
 	return port;
 }
 
+static std::string
+get_property(jack_uuid_t subject, const char* key)
+{
+	std::string result;
+
+#ifdef HAVE_JACK_METADATA
+	char* value    = NULL;
+	char* datatype = NULL;
+	if (!jack_get_property(subject, key, &value, &datatype)) {
+		result = value;
+	}
+	jack_free(datatype);
+	jack_free(value);
+#endif
+	return result;
+}
+
 PatchagePort*
 JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 {
@@ -184,59 +201,44 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 		return NULL;
 	}
 
-	const char* const type_str    = jack_port_type(port);
-	char*             pretty_name = NULL;
-	PortType          port_type;
+	const char* const    type_str  = jack_port_type(port);
+	const jack_uuid_t    uuid      = jack_port_uuid(port);
+	const std::string    label     = get_property(uuid, JACK_METADATA_PRETTY_NAME);
+	const std::string    order_str = get_property(uuid, JACKEY_ORDER);
+	boost::optional<int> order;
+	if (!order_str.empty()) {
+		order = atoi(order_str.c_str());
+	}
 
-#ifdef HAVE_JACK_METADATA
-	char*             datatype = NULL;
-	const jack_uuid_t uuid     = jack_port_uuid(port);
-	jack_get_property(uuid, JACK_METADATA_PRETTY_NAME, &pretty_name, &datatype);
-#endif
-
+	PortType port_type;
 	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
-		char* signal_type = NULL;
-#ifdef HAVE_JACK_METADATA
-		jack_get_property(uuid, JACKEY_SIGNAL_TYPE, &signal_type, &datatype);
-		jack_free(datatype);
-#endif
-		if (signal_type && !strcmp(signal_type, "CV")) {
+		port_type = JACK_AUDIO;
+		if (get_property(uuid, JACKEY_SIGNAL_TYPE) == "CV") {
 			port_type = JACK_CV;
-			jack_free(signal_type);
-		} else {
-			port_type = JACK_AUDIO;
 		}
 	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
-		char* event_types = NULL;
-#ifdef HAVE_JACK_METADATA
-		jack_get_property(uuid, JACKEY_EVENT_TYPES, &event_types, &datatype);
-		jack_free(datatype);
-#endif
-		if (event_types && !strcmp(event_types, "OSC")) {
+		port_type = JACK_MIDI;
+		if (get_property(uuid, JACKEY_EVENT_TYPES) == "OSC") {
 			port_type = JACK_OSC;
-			jack_free(event_types);
-		} else {
-			port_type = JACK_MIDI;
 		}
 	} else {
 		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.")
 		                   % jack_port_name(port) % type_str).str());
-		jack_free(pretty_name);
 		return NULL;
 	}
 
 	PatchagePort* ret(
 		new PatchagePort(parent, port_type, jack_port_short_name(port),
-		                 pretty_name ? pretty_name : "",
+		                 label,
 		                 (jack_port_flags(port) & JackPortIsInput),
 		                 _app->conf()->get_port_color(port_type),
-		                 _app->show_human_names()));
+		                 _app->show_human_names(),
+		                 order));
 
 	if (id.type != PortID::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
 	}
 
-	jack_free(pretty_name);
 	return ret;
 }
 
