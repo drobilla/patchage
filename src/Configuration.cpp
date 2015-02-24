@@ -44,11 +44,19 @@ Configuration::Configuration()
 	, _show_messages(false)
 	, _messages_height(0)
 {
+#ifdef PATCHAGE_USE_LIGHT_THEME
+	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0xA4BC8CFF;
+	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0xC89595FF;
+	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI]  = 0x8F7198FF;
+	_port_colors[JACK_OSC]   = _default_port_colors[JACK_OSC]   = 0x7E8EAAFF;
+	_port_colors[JACK_CV]    = _default_port_colors[JACK_CV]    = 0x83AFABFF;
+#else
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x3E5E00FF;
 	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0x650300FF;
 	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI]  = 0x2D0043FF;
 	_port_colors[JACK_OSC]   = _default_port_colors[JACK_OSC]   = 0x4100FEFF;
 	_port_colors[JACK_CV]    = _default_port_colors[JACK_CV]    = 0x005E4EFF;
+#endif
 }
 
 bool

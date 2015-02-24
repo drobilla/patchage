@@ -37,6 +37,8 @@ def options(opt):
                     help='Do not build Alsa Sequencer support')
     opt.add_option('--no-binloc', action='store_true', dest='no_binloc',
                     help='Do not try to read files from executable location')
+    opt.add_option('--light-theme', action='store_true', dest='light_theme',
+                   help='Use light coloured theme')
 
 def configure(conf):
     conf.line_just = 44
@@ -97,6 +99,9 @@ def configure(conf):
     # Find files at binary location if we have dladdr unless --no-binloc
     if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
         autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
+
+    if Options.options.light_theme:
+        autowaf.define(conf, 'PATCHAGE_USE_LIGHT_THEME', 1)
 
     # Boost headers
     conf.check_cxx(header_name='boost/format.hpp')
