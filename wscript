@@ -204,13 +204,13 @@ def build(bld):
     for s in icon_sizes:
         d = '%dx%d' % (s, s)
         bld.install_as(
-                os.path.join(bld.env.DATADIR, 'icons', 'hicolor', d, 'apps',
-                                bld.env.APP_INSTALL_NAME + '.png'),
-                'icons/' + d + '/patchage.png')
+            os.path.join(bld.env.DATADIR, 'icons', 'hicolor', d, 'apps',
+                         bld.env.APP_INSTALL_NAME + '.png'),
+            os.path.join('icons', d, 'patchage.png'))
 
     bld.install_as(
-            os.path.join(bld.env.DATADIR, 'icons', 'hicolor', 'scalable', 'apps',
-                            bld.env.APP_INSTALL_NAME + '.svg'),
-            'icons/scalable/patchage.svg')
+        os.path.join(bld.env.DATADIR, 'icons', 'hicolor', 'scalable', 'apps',
+                     bld.env.APP_INSTALL_NAME + '.svg'),
+        os.path.join('icons', 'scalable', 'patchage.svg'))
 
     bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
