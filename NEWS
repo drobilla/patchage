@@ -8,8 +8,9 @@ patchage (1.0.1) unstable;
   * Restore messages pane visibility and height.
   * Configure based on compiler target OS for cross-compilation.
   * Fix compilation with Jack DBus.
+  * Upgrade to waf 1.8.14
 
- -- David Robillard <d@drobilla.net>  Sat, 21 Feb 2015 17:10:27 -0500
+ -- David Robillard <d@drobilla.net>  Fri, 02 Oct 2015 20:57:23 -0400
 
 patchage (1.0.0) stable;
 
