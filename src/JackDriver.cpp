@@ -570,6 +570,7 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 		_app->error_msg("[JACK] Unable to set buffer size");
 		return false;
 	} else {
+		_buffer_size = size;
 		return true;
 	}
 }

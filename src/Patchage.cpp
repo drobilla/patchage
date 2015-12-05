@@ -28,8 +28,9 @@
 
 #include <gtkmm/button.h>
 #include <gtkmm/filechooserdialog.h>
-#include <gtkmm/messagedialog.h>
+#include <gtkmm/liststore.h>
 #include <gtkmm/menuitem.h>
+#include <gtkmm/messagedialog.h>
 #include <gtkmm/stock.h>
 #include <gtkmm/treemodel.h>
 
@@ -151,6 +152,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_toolbar)
 	, INIT_WIDGET(_clear_load_but)
 	, INIT_WIDGET(_xrun_progress)
+	, INIT_WIDGET(_buf_size_combo)
 	, INIT_WIDGET(_latency_label)
 	, INIT_WIDGET(_legend_alignment)
 	, INIT_WIDGET(_main_paned)
@@ -198,6 +200,16 @@ Patchage::Patchage(int argc, char** argv)
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
 
+	// Create list model for buffer size selector
+	Glib::RefPtr<Gtk::ListStore> buf_size_store = Gtk::ListStore::create(_buf_size_columns);
+	for (size_t i = 32; i <= 4096; i *= 2) {
+		Gtk::TreeModel::Row row = *(buf_size_store->append());
+		row[_buf_size_columns.label] = std::to_string(i);
+	}
+
+	_buf_size_combo->set_model(buf_size_store);
+	_buf_size_combo->pack_start(_buf_size_columns.label);
+
 	_main_scrolledwin->add(_canvas->widget());
 
 	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(10);
@@ -205,10 +217,10 @@ Patchage::Patchage(int argc, char** argv)
 
 	_main_scrolledwin->signal_scroll_event().connect(
 		sigc::mem_fun(this, &Patchage::on_scroll));
-
 	_clear_load_but->signal_clicked().connect(
 		sigc::mem_fun(this, &Patchage::clear_load));
-
+	_buf_size_combo->signal_changed().connect(
+		sigc::mem_fun(this, &Patchage::buffer_size_changed));
 	_status_text->signal_size_allocate().connect(
 		sigc::mem_fun(this, &Patchage::on_messages_resized));
 
@@ -468,10 +480,11 @@ Patchage::update_toolbar()
 		if (sample_rate != 0) {
 			const int latency_ms = lrintf(buffer_size * 1000 / (float)sample_rate);
 			std::stringstream ss;
-			ss << buffer_size << " frames @ "
-			   << (sample_rate / 1000) << "kHz (" << latency_ms << "ms)";
+			ss << " frames @ " << (sample_rate / 1000)
+			   << "kHz (" << latency_ms << "ms)";
 			_latency_label->set_label(ss.str());
 			_latency_label->set_visible(true);
+			_buf_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
 			return;
 		}
 	}
@@ -1022,3 +1035,20 @@ Patchage::on_scroll(GdkEventScroll* ev)
 {
 	return false;
 }
+
+void
+Patchage::buffer_size_changed()
+{
+#if defined(HAVE_JACK) || defined(HAVE_JACK_DBUS)
+	const int selected = _buf_size_combo->get_active_row_number();
+
+	if (selected == -1) {
+		update_toolbar();
+	} else {
+		const jack_nframes_t buffer_size = 1 << (selected + 5);
+		_jack_driver->set_buffer_size(buffer_size);
+		update_toolbar();
+	}
+#endif
+}
+

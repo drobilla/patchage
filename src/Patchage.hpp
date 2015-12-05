@@ -27,6 +27,7 @@
 #include <gtkmm/builder.h>
 #include <gtkmm/button.h>
 #include <gtkmm/checkmenuitem.h>
+#include <gtkmm/combobox.h>
 #include <gtkmm/dialog.h>
 #include <gtkmm/imagemenuitem.h>
 #include <gtkmm/label.h>
@@ -93,6 +94,13 @@ public:
 	bool show_human_names() const { return _menu_view_human_names->get_active(); }
 
 protected:
+	class BufferSizeColumns : public Gtk::TreeModel::ColumnRecord {
+	public:
+		BufferSizeColumns() { add(label); }
+
+		Gtk::TreeModelColumn<Glib::ustring> label;
+	};
+
 	void connect_widgets();
 
 	void on_arrange();
@@ -143,6 +151,8 @@ protected:
 
 	Gtk::Main* _gtk_main;
 
+	BufferSizeColumns _buf_size_columns;
+
 	Widget<Gtk::AboutDialog>    _about_win;
 	Widget<Gtk::ScrolledWindow> _main_scrolledwin;
 	Widget<Gtk::Window>         _main_win;
@@ -174,6 +184,7 @@ protected:
 	Widget<Gtk::Toolbar>        _toolbar;
 	Widget<Gtk::ToolButton>     _clear_load_but;
 	Widget<Gtk::ProgressBar>    _xrun_progress;
+	Widget<Gtk::ComboBox>       _buf_size_combo;
 	Widget<Gtk::Label>          _latency_label;
 	Widget<Gtk::Alignment>      _legend_alignment;
 	Widget<Gtk::Paned>          _main_paned;
