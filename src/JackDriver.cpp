@@ -206,11 +206,13 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	boost::optional<int> order;
 
 #ifdef HAVE_JACK_METADATA
-	const jack_uuid_t uuid      = jack_port_uuid(port);
-	const std::string order_str = get_property(uuid, JACKEY_ORDER);
-	label = get_property(uuid, JACK_METADATA_PRETTY_NAME);
-	if (!order_str.empty()) {
-		order = atoi(order_str.c_str());
+	const jack_uuid_t uuid = jack_port_uuid(port);
+	if (_app->conf()->get_sort_ports()) {
+		const std::string order_str = get_property(uuid, JACKEY_ORDER);
+		label = get_property(uuid, JACK_METADATA_PRETTY_NAME);
+		if (!order_str.empty()) {
+			order = atoi(order_str.c_str());
+		}
 	}
 #endif
 

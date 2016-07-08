@@ -92,6 +92,7 @@ public:
 	void store_window_location();
 
 	bool show_human_names() const { return _menu_view_human_names->get_active(); }
+	bool sort_ports()       const { return _menu_view_sort_ports->get_active(); }
 
 protected:
 	class BufferSizeColumns : public Gtk::TreeModel::ColumnRecord {
@@ -112,6 +113,7 @@ protected:
 	void on_view_toolbar();
 	void on_store_positions();
 	void on_view_human_names();
+	void on_view_sort_ports();
 	void on_zoom_in();
 	void on_zoom_out();
 	void on_zoom_normal();
@@ -174,6 +176,7 @@ protected:
 	Widget<Gtk::CheckMenuItem>  _menu_view_toolbar;
 	Widget<Gtk::MenuItem>       _menu_view_refresh;
 	Widget<Gtk::CheckMenuItem>  _menu_view_human_names;
+	Widget<Gtk::CheckMenuItem>  _menu_view_sort_ports;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_in;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_out;
 	Widget<Gtk::ImageMenuItem>  _menu_zoom_normal;

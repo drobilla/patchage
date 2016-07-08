@@ -65,6 +65,9 @@ public:
 	bool  get_show_messages() const             { return _show_messages; }
 	void  set_show_messages(bool show_messages) { _show_messages = show_messages; }
 
+	bool  get_sort_ports() const          { return _sort_ports; }
+	void  set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
+
 	int  get_messages_height() const          { return _messages_height; }
 	void set_messages_height(int height) { _messages_height = height; }
 
@@ -96,10 +99,11 @@ private:
 	Coord _window_size;
 	float _zoom;
 	float _font_size;
+	int   _messages_height;
 	bool  _show_toolbar;
 	bool  _sprung_layout;
 	bool  _show_messages;
-	int   _messages_height;
+	bool  _sort_ports;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP

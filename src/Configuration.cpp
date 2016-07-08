@@ -40,9 +40,10 @@ Configuration::Configuration()
 	, _window_size(640, 480)
 	, _zoom(1.0)
 	, _font_size(12.0)
+	, _messages_height(0)
 	, _show_toolbar(true)
 	, _show_messages(false)
-	, _messages_height(0)
+	, _sort_ports(true)
 {
 #ifdef PATCHAGE_USE_LIGHT_THEME
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0xA4BC8CFF;
@@ -200,6 +201,8 @@ Configuration::load()
 			file >> _sprung_layout;
 		} else if (key == "show_messages") {
 			file >> _show_messages;
+		} else if (key == "sort_ports") {
+			file >> _sort_ports;
 		} else if (key == "messages_height") {
 			file >> _messages_height;
 		} else if (key == "port_color") {
@@ -224,7 +227,6 @@ Configuration::load()
 				          << type_name << "'" << std::endl;
 			}
 		} else if (key == "module_position" || key[0] == '\"') {
-
 			Coord       loc;
 			std::string name;
 			file.ignore(1, '\"');
@@ -301,6 +303,7 @@ Configuration::save()
 	file << "show_toolbar " << _show_toolbar << std::endl;
 	file << "sprung_layout " << _sprung_layout << std::endl;
 	file << "show_messages " << _show_messages << std::endl;
+	file << "sort_ports " << _sort_ports << std::endl;
 	file << "messages_height " << _messages_height << std::endl;
 
 	file << std::hex << std::uppercase;

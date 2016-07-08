@@ -142,6 +142,7 @@ Patchage::Patchage(int argc, char** argv)
 	, INIT_WIDGET(_menu_view_toolbar)
 	, INIT_WIDGET(_menu_view_refresh)
 	, INIT_WIDGET(_menu_view_human_names)
+	, INIT_WIDGET(_menu_view_sort_ports)
 	, INIT_WIDGET(_menu_zoom_in)
 	, INIT_WIDGET(_menu_zoom_out)
 	, INIT_WIDGET(_menu_zoom_normal)
@@ -255,6 +256,8 @@ Patchage::Patchage(int argc, char** argv)
 			sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_human_names->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_view_human_names));
+	_menu_view_sort_ports->signal_activate().connect(
+			sigc::mem_fun(this, &Patchage::on_view_sort_ports));
 	_menu_view_arrange->signal_activate().connect(
 			sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_sprung_layout->signal_activate().connect(
@@ -307,7 +310,9 @@ Patchage::Patchage(int argc, char** argv)
 	_conf->load();
 	_canvas->set_zoom(_conf->get_zoom());
 	_canvas->set_font_size(_conf->get_font_size());
-	_canvas->set_port_order(port_order, NULL);
+	if (_conf->get_sort_ports()) {
+		_canvas->set_port_order(port_order, NULL);
+	}
 
 	_main_win->resize(
 		static_cast<int>(_conf->get_window_size().x),
@@ -352,6 +357,7 @@ Patchage::Patchage(int argc, char** argv)
 	update_state();
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
+	_menu_view_sort_ports->set_active(_conf->get_sort_ports());
 	_status_text->set_pixels_inside_wrap(2);
 	_status_text->set_left_margin(4);
 	_status_text->set_right_margin(4);
@@ -809,6 +815,15 @@ Patchage::on_view_human_names()
 {
 	bool human_names = show_human_names();
 	_canvas->for_each_node(update_labels, &human_names);
+}
+
+void
+Patchage::on_view_sort_ports()
+{
+	const bool sort_ports = this->sort_ports();
+	_canvas->set_port_order(sort_ports ? port_order : NULL, NULL);
+	_conf->set_sort_ports(sort_ports);
+	refresh();
 }
 
 void
