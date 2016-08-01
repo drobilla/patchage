@@ -157,7 +157,7 @@ def build(bld):
     if bld.env.HAVE_ALSA:
         prog.source += ' src/AlsaDriver.cpp '
         prog.uselib += ' ALSA '
-    if bld.is_defined('PATCHAGE_BINLOC'):
+    if bld.is_defined('PATCHAGE_BINLOC') and bld.is_defined('HAVE_DLADDR'):
         prog.lib = ['dl']
 
     # XML UI definition
