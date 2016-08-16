@@ -1,31 +1,31 @@
 patchage (1.0.1) unstable;
 
-  * Support Jack CV and OSC via metadata.
-  * Add support for exporting canvas as PDF.
-  * Save window size and position when closed via window manager.
-  * Order ports deterministically.
-  * Bring back Jack buffer size selector.
-  * Style messages pane to match canvas.
-  * Restore messages pane visibility and height.
-  * Configure based on compiler target OS for cross-compilation.
-  * Fix compilation with Jack DBus.
+  * Support Jack CV and OSC via metadata
+  * Add support for exporting canvas as PDF
+  * Save window size and position when closed via window manager
+  * Order ports deterministically
+  * Bring back Jack buffer size selector
+  * Style messages pane to match canvas
+  * Restore messages pane visibility and height
+  * Configure based on compiler target OS for cross-compilation
+  * Fix compilation with Jack DBus
   * Upgrade to waf 1.8.14
 
  -- David Robillard <d@drobilla.net>  Fri, 04 Dec 2015 20:20:57 -0500
 
 patchage (1.0.0) stable;
 
-  * Allow removing connections by selecting their handle and pressing delete.
-  * Remove Raul dependency.
-  * Switch from FlowCanvas to Ganv (much improved looks and performance).
-  * Remove LASH support and simplify UI.
-  * Fix font configuration on OSX.
-  * Use Mac style key bindings on OSX.
-  * Integrate with Mac menu bar on OSX.
-  * Support for DOT export for rendering with GraphViz.
-  * Use XDG_CONFIG_HOME instead of ~/.patchagerc.
-  * Make port colours configurable.
-  * Support port pretty names via new Jack metadata API.
+  * Allow removing connections by selecting their handle and pressing delete
+  * Remove Raul dependency
+  * Switch from FlowCanvas to Ganv (much improved looks and performance)
+  * Remove LASH support and simplify UI
+  * Fix font configuration on OSX
+  * Use Mac style key bindings on OSX
+  * Integrate with Mac menu bar on OSX
+  * Support for DOT export for rendering with GraphViz
+  * Use XDG_CONFIG_HOME instead of ~/.patchagerc
+  * Make port colours configurable
+  * Support port pretty names via new Jack metadata API
 
  -- David Robillard <d@drobilla.net>  Sun, 27 Apr 2014 23:46:10 -0400
 

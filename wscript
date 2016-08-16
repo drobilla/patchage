@@ -214,3 +214,14 @@ def build(bld):
         os.path.join('icons', 'scalable', 'patchage.svg'))
 
     bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
+
+def posts(ctx):
+    path = str(ctx.path.abspath())
+    autowaf.news_to_posts(
+        os.path.join(path, 'NEWS'),
+        {'title'        : 'Patchage',
+         'description'  : autowaf.get_blurb(os.path.join(path, 'README')),
+         'dist_pattern' : 'http://download.drobilla.net/patchage-%s.tar.bz2'},
+        { 'Author' : 'drobilla',
+          'Tags'   : 'Hacking, LAD' },
+        os.path.join(out, 'posts'))
