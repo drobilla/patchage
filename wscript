@@ -223,5 +223,5 @@ def posts(ctx):
          'description'  : autowaf.get_blurb(os.path.join(path, 'README')),
          'dist_pattern' : 'http://download.drobilla.net/patchage-%s.tar.bz2'},
         { 'Author' : 'drobilla',
-          'Tags'   : 'Hacking, LAD' },
+          'Tags'   : 'Hacking, LAD, Patchage' },
         os.path.join(out, 'posts'))
