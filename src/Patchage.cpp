@@ -479,6 +479,13 @@ Patchage::idle_callback()
 void
 Patchage::update_toolbar()
 {
+	static bool updating = false;
+	if (updating) {
+		return;
+	} else {
+		updating = true;
+	}
+
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {
 		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
@@ -491,11 +498,13 @@ Patchage::update_toolbar()
 			_latency_label->set_label(ss.str());
 			_latency_label->set_visible(true);
 			_buf_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
+			updating = false;
 			return;
 		}
 	}
 #endif
 	_latency_label->set_visible(false);
+	updating = false;
 }
 
 bool
