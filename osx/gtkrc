@@ -8,12 +8,15 @@ selected_fg_color: #fff
 tooltip_bg_color:  #fafaba
 tooltip_fg_color:  #000"
 
+gtk-font-name         = "Lucida Grande 12"
+gtk-icon-theme-name   = "Tango"
+gtk-menu-popup-delay  = 1
 gtk-button-images     = 0
 gtk-menu-images       = 0
 gtk-toolbar-style     = 0
 gtk-enable-mnemonics  = 0
-gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
-gtk-toolbar-icon-size = large-toolbar
+gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=16,16"
+gtk-toolbar-icon-size = small-toolbar
 gtk-error-bell        = 0
 gtk-show-input-method-menu = 0
 
@@ -47,8 +50,8 @@ style "default"
     GtkWidget::new-tooltip-style = 1
     GtkWidget::focus-line-width = 0
     GtkWidget::focus-padding = 0
-    GtkButton::default-border = { 1, 1, 1, 1 }
-    GtkButton::default-outside-border = { 1, 1, 1, 1 }
+	GtkButton::inner-border = { 8, 8, 0, 0 }
+	GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::child-displacement-x = 0
     GtkButton::child-displacement-y = 0
     GtkCheckButton::indicator-spacing = 3
@@ -61,7 +64,7 @@ style "default"
     GtkNotebook::tab-overlap = 0
     GtkTreeView::allow-rules = 1
     GtkTreeView::expander-size = 14
-    GtkToolbar::internal-padding = 3
+    GtkToolbar::internal-padding = 2
     GtkExpander::expander-size = 14
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkMenuItem::horizontal-padding = 8

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$#" != 3 ]; then
     echo "USAGE: $0 LIB_PREFIX BUNDLE EXE";
@@ -17,38 +17,54 @@ sed -i '' 's/GDK_CONTROL_MASK/GDK_META_MASK/' $bundle/Contents/patchage.ui
 # Copy font configuration files
 cp $prefix/etc/fonts/fonts.conf $bundle/Contents/Resources
 
-# Copy GTK and pango modules to bundle
+# Copy GTK and pango modules
 mkdir -p "$bundle/Contents/lib/modules"
 mkdir -p "$bundle/Contents/lib/gtk-2.0/engines"
 cp $prefix/lib/gtk-2.0/2.10.0/engines/libquartz.so  $bundle/Contents/lib/gtk-2.0/engines
-cp $prefix/lib/pango/1.8.0/modules/*basic*.so $bundle/Contents/lib/modules
+cp $(find /usr/local/Cellar/pango -name '*basic-coretext*') $bundle/Contents/lib/modules
 
 # Copy GdkPixbuf loaders
 mkdir -p $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/
 for fmt in icns png; do
-    cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
-       $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
+   cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
+      $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
 done
+
+chmod -R 755 $bundle/Contents/lib/*
 
 # Copy libraries depended on by the executable to bundle
-libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/opt/local\|/usr/local' | sed 's/(.*//'`"
+libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//'`"
 for l in $libs; do
-	cp $l $bundle/Contents/lib
+	cp $l $bundle/Contents/lib/;
+done
+chmod 755 $bundle/Contents/lib/*
+
+# ... recursively
+while true; do
+    newlibs=$libs
+
+    # Copy all libraries this library depends on to bundle
+	for l in $(find $bundle -name '*.dylib' -or -name '*.so'); do
+		reclibs="`otool -L $l | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//'`"
+		for rl in $reclibs; do
+			cp $rl $bundle/Contents/lib/;
+		done
+	    chmod 755 $bundle/Contents/lib/*
+        newlibs=$(echo "$newlibs"; echo "$reclibs")
+	done
+
+    # Exit once we haven't added any new libraries
+    newlibs=$(echo "$newlibs" | sort | uniq)
+	if [ "$newlibs" = "$libs" ]; then
+		break;
+	fi
+    libs=$newlibs
 done
 
-# Add libraries depended on by those libraries
-reclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
-for l in $reclibs; do
-	cp $l $bundle/Contents/lib
-done
+echo "Bundled libraries:"
+echo "$libs"
 
-# ... and libraries depended on by those libraries (yes, this should be done more sanely)
-recreclibs="`otool -L $bundle/Contents/lib/* $bundle/Contents/lib/gtk-2.0/engines/* $bundle/Contents/lib/modules/* $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/* | grep '\.dylib\|\.so' | grep \"$prefix\|/User\|/opt/local\|/usr/local\" | sed 's/(.*//'`"
-for l in $recreclibs; do
-	cp $l $bundle/Contents/lib
-done
-
-for l in $libs $reclibs $recreclibs; do
+for l in $libs; do
 	lname=`echo $l | sed 's/.*\///'`
 	lid="@executable_path/lib/$lname"
 	lpath="$bundle/Contents/lib/$lname"
