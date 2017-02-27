@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ "$#" != 3 ]; then
-    echo "USAGE: $0 LIB_PREFIX BUNDLE EXE";
-    exit 1;
+	echo "USAGE: $0 LIB_PREFIX BUNDLE EXE";
+	exit 1;
 fi
 
 prefix=$1
@@ -26,8 +26,8 @@ cp $(find /usr/local/Cellar/pango -name '*basic-coretext*') $bundle/Contents/lib
 # Copy GdkPixbuf loaders
 mkdir -p $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/
 for fmt in icns png; do
-   cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
-      $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
+	cp $prefix/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-$fmt.so \
+	   $bundle/Contents/lib/gdk-pixbuf-2.0/2.10.0/loaders/;
 done
 
 chmod -R 755 $bundle/Contents/lib/*
@@ -41,24 +41,24 @@ chmod 755 $bundle/Contents/lib/*
 
 # ... recursively
 while true; do
-    newlibs=$libs
+	newlibs=$libs
 
-    # Copy all libraries this library depends on to bundle
+	# Copy all libraries this library depends on to bundle
 	for l in $(find $bundle -name '*.dylib' -or -name '*.so'); do
 		reclibs="`otool -L $l | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//'`"
 		for rl in $reclibs; do
 			cp $rl $bundle/Contents/lib/;
 		done
-	    chmod 755 $bundle/Contents/lib/*
-        newlibs=$(echo "$newlibs"; echo "$reclibs")
+		chmod 755 $bundle/Contents/lib/*
+		newlibs=$(echo "$newlibs"; echo "$reclibs")
 	done
 
-    # Exit once we haven't added any new libraries
-    newlibs=$(echo "$newlibs" | sort | uniq)
+	# Exit once we haven't added any new libraries
+	newlibs=$(echo "$newlibs" | sort | uniq)
 	if [ "$newlibs" = "$libs" ]; then
 		break;
 	fi
-    libs=$newlibs
+	libs=$newlibs
 done
 
 echo "Bundled libraries:"
