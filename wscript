@@ -45,9 +45,7 @@ def configure(conf):
     conf.load('compiler_cxx')
     autowaf.configure(conf)
     autowaf.display_header('Patchage Configuration')
-
-    conf.check_cxx(cxxflags=["-std=c++0x"])
-    conf.env.append_unique('CXXFLAGS', ['-std=c++0x'])
+    autowaf.set_cxx11_mode(conf)
 
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
                       mandatory=False)
