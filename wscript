@@ -20,25 +20,26 @@ APP_HUMAN_NAME = 'Patchage'
 top = '.'
 out = 'build'
 
-def options(opt):
-    opt.load('compiler_cxx')
-    autowaf.set_options(opt)
+def options(ctx):
+    ctx.load('compiler_cxx')
+    autowaf.set_options(ctx)
+    opt = ctx.get_option_group('Configuration options')
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
-                    help='Patchage install name. [Default: '' + APPNAME + '']')
+                    help='patchage install name. [Default: '' + APPNAME + '']')
     opt.add_option('--patchage-human-name', type='string', default=APP_HUMAN_NAME,
                     dest='patchage_human_name',
-                    help='Patchage human name [Default: '' + APP_HUMAN_NAME + '']')
+                    help='patchage human name [Default: '' + APP_HUMAN_NAME + '']')
     opt.add_option('--jack-dbus', action='store_true', dest='jack_dbus',
-                    help='Use Jack via D-Bus [Default: False (use libjack)]')
+                    help='use Jack via D-Bus [Default: False (use libjack)]')
     opt.add_option('--jack-session-manage', action='store_true', dest='jack_session_manage',
-                    help='Include experimental JACK session management (save/restore) support')
+                    help='include experimental JACK session management (save/restore) support')
     opt.add_option('--no-alsa', action='store_true', dest='no_alsa',
-                    help='Do not build Alsa Sequencer support')
+                    help='do not build Alsa Sequencer support')
     opt.add_option('--no-binloc', action='store_true', dest='no_binloc',
-                    help='Do not try to read files from executable location')
+                    help='do not try to read files from executable location')
     opt.add_option('--light-theme', action='store_true', dest='light_theme',
-                   help='Use light coloured theme')
+                   help='use light coloured theme')
 
 def configure(conf):
     conf.line_just = 44
