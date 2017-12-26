@@ -42,10 +42,9 @@ def options(ctx):
                    help='use light coloured theme')
 
 def configure(conf):
-    conf.line_just = 44
-    conf.load('compiler_cxx')
-    autowaf.configure(conf)
     autowaf.display_header('Patchage Configuration')
+    conf.load('compiler_cxx', cache=True)
+    conf.load('autowaf', cache=True)
 
     autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
                       mandatory=False)
@@ -67,12 +66,12 @@ def configure(conf):
             autowaf.define(conf, 'PATCHAGE_GTK_OSX', 1)
 
     # Check for dladdr
-    conf.check(function_name='dladdr',
-               header_name='dlfcn.h',
-               defines=['_GNU_SOURCE'],
-               lib=['dl'],
-               define_name='HAVE_DLADDR',
-               mandatory=False)
+    autowaf.check_function(conf, 'cxx', 'dladdr',
+                           header_name = 'dlfcn.h',
+                           defines     = ['_GNU_SOURCE'],
+                           lib         = ['dl'],
+                           define_name = 'HAVE_DLADDR',
+                           mandatory   = False)
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
     if Options.options.jack_dbus and conf.env.HAVE_DBUS and conf.env.HAVE_DBUS_GLIB:
@@ -84,11 +83,11 @@ def configure(conf):
             autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
             if Options.options.jack_session_manage:
                 autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
-            conf.check(function_name='jack_get_property',
-                       header_name='jack/metadata.h',
-                       define_name='HAVE_JACK_METADATA',
-                       uselib='JACK',
-                       mandatory=False)
+                autowaf.check_function(conf, 'cxx', 'jack_get_property',
+                                       header_name = 'jack/metadata.h',
+                                       define_name = 'HAVE_JACK_METADATA',
+                                       uselib      = 'JACK',
+                                       mandatory   = False)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
@@ -116,6 +115,7 @@ def configure(conf):
 
     conf.write_config_header('patchage_config.h', remove=False)
 
+    autowaf.display_summary(conf)
     autowaf.display_msg(conf, "Install name", "'" + conf.env.APP_INSTALL_NAME + "'", 'CYAN')
     autowaf.display_msg(conf, "App human name", "'" + conf.env.APP_HUMAN_NAME + "'", 'CYAN')
     autowaf.display_msg(conf, "Jack (D-Bus)", bool(conf.env.HAVE_JACK_DBUS))
