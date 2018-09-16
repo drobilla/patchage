@@ -5,8 +5,8 @@
 
 import os
 
-from waflib.extras import autowaf as autowaf
-import waflib.Options as Options, waflib.Utils as Utils
+from waflib import Options, Utils
+from waflib.extras import autowaf
 
 # Version of this package (even if built as a child)
 PATCHAGE_VERSION = '1.0.1'
@@ -24,22 +24,21 @@ def options(ctx):
     ctx.load('compiler_cxx')
     autowaf.set_options(ctx)
     opt = ctx.get_option_group('Configuration options')
+
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
-                    help='patchage install name. [Default: '' + APPNAME + '']')
+                    help='patchage install name. [default: '' + APPNAME + '']')
     opt.add_option('--patchage-human-name', type='string', default=APP_HUMAN_NAME,
                     dest='patchage_human_name',
-                    help='patchage human name [Default: '' + APP_HUMAN_NAME + '']')
-    opt.add_option('--jack-dbus', action='store_true', dest='jack_dbus',
-                    help='use Jack via D-Bus [Default: False (use libjack)]')
-    opt.add_option('--jack-session-manage', action='store_true', dest='jack_session_manage',
-                    help='include experimental JACK session management (save/restore) support')
-    opt.add_option('--no-alsa', action='store_true', dest='no_alsa',
-                    help='do not build Alsa Sequencer support')
-    opt.add_option('--no-binloc', action='store_true', dest='no_binloc',
-                    help='do not try to read files from executable location')
-    opt.add_option('--light-theme', action='store_true', dest='light_theme',
-                   help='use light coloured theme')
+                    help='patchage human name [default: '' + APP_HUMAN_NAME + '']')
+
+    autowaf.add_flags(
+        opt,
+        {'jack-dbus':           'use Jack via D-Bus',
+         'jack-session-manage': 'include JACK session management support',
+         'no-alsa':             'do not build Alsa Sequencer support',
+         'no-binloc':           'do not try to read files from executable location',
+         'light-theme':         'use light coloured theme'})
 
 def configure(conf):
     autowaf.display_header('Patchage Configuration')
@@ -116,18 +115,18 @@ def configure(conf):
 
     conf.write_config_header('patchage_config.h', remove=False)
 
-    autowaf.display_summary(conf)
-    autowaf.display_msg(conf, "Install name", "'" + conf.env.APP_INSTALL_NAME + "'", 'CYAN')
-    autowaf.display_msg(conf, "App human name", "'" + conf.env.APP_HUMAN_NAME + "'", 'CYAN')
-    autowaf.display_msg(conf, "Jack (D-Bus)", bool(conf.env.HAVE_JACK_DBUS))
-    autowaf.display_msg(conf, "Jack (libjack)", conf.is_defined('PATCHAGE_LIBJACK'))
-    autowaf.display_msg(conf, "Jack Session Management", conf.is_defined('PATCHAGE_JACK_SESSION'))
-    autowaf.display_msg(conf, "Jack Metadata", conf.is_defined('HAVE_JACK_METADATA'))
-    autowaf.display_msg(conf, "Alsa Sequencer", bool(conf.env.HAVE_ALSA))
+    autowaf.display_summary(
+        conf,
+        {'Install name':            conf.env.APP_INSTALL_NAME,
+         'App human name':          conf.env.APP_HUMAN_NAME,
+         'Jack (D-Bus)':            bool(conf.env.HAVE_JACK_DBUS),
+         'Jack (libjack)':          conf.is_defined('PATCHAGE_LIBJACK'),
+         'Jack Session Management': conf.is_defined('PATCHAGE_JACK_SESSION'),
+         'Jack Metadata':           conf.is_defined('HAVE_JACK_METADATA'),
+         'Alsa Sequencer':          bool(conf.env.HAVE_ALSA)})
+
     if conf.env.DEST_OS == 'darwin':
         autowaf.display_msg(conf, "Mac Integration", bool(conf.env.HAVE_GTK_OSX))
-        
-    print('')
 
 def build(bld):
     out_base = ''
