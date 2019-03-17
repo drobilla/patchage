@@ -22,9 +22,8 @@ out = 'build'
 
 def options(ctx):
     ctx.load('compiler_cxx')
-    autowaf.set_options(ctx)
-    opt = ctx.get_option_group('Configuration options')
 
+    opt = ctx.configuration_options()
     opt.add_option('--patchage-install-name', type='string', default=APPNAME,
                     dest='patchage_install_name',
                     help='patchage install name. [default: '' + APPNAME + '']')
@@ -32,7 +31,7 @@ def options(ctx):
                     dest='patchage_human_name',
                     help='patchage human name [default: '' + APP_HUMAN_NAME + '']')
 
-    autowaf.add_flags(
+    ctx.add_flags(
         opt,
         {'jack-dbus':           'use Jack via D-Bus',
          'jack-session-manage': 'include JACK session management support',
@@ -41,7 +40,6 @@ def options(ctx):
          'light-theme':         'use light coloured theme'})
 
 def configure(conf):
-    autowaf.display_header('Patchage Configuration')
     conf.load('compiler_cxx', cache=True)
     conf.load('autowaf', cache=True)
     autowaf.set_cxx_lang(conf, 'c++11')
