@@ -135,8 +135,8 @@ def build(bld):
     prog = bld(features     = 'cxx cxxprogram',
                includes     = ['.', 'src'],
                target       = out_base + bld.env.APP_INSTALL_NAME,
+               uselib       = 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX',
                install_path = '${BINDIR}')
-    autowaf.use_lib(bld, prog, 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX')
     prog.source = '''
             src/Configuration.cpp
             src/Patchage.cpp
