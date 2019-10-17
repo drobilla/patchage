@@ -44,52 +44,46 @@ def configure(conf):
     conf.load('autowaf', cache=True)
     autowaf.set_cxx_lang(conf, 'c++11')
 
-    autowaf.check_pkg(conf, 'dbus-1', uselib_store='DBUS',
-                      mandatory=False)
-    autowaf.check_pkg(conf, 'dbus-glib-1', uselib_store='DBUS_GLIB',
-                      mandatory=False)
-    autowaf.check_pkg(conf, 'gthread-2.0', uselib_store='GTHREAD',
-                      atleast_version='2.14.0', mandatory=True)
-    autowaf.check_pkg(conf, 'glibmm-2.4', uselib_store='GLIBMM',
-                      atleast_version='2.14.0', mandatory=True)
-    autowaf.check_pkg(conf, 'gtkmm-2.4', uselib_store='GTKMM',
-                      atleast_version='2.12.0', mandatory=True)
-    autowaf.check_pkg(conf, 'ganv-1', uselib_store='GANV',
-                      atleast_version='1.5.2', mandatory=True)
+    conf.check_pkg('dbus-1', uselib_store='DBUS', mandatory=False)
+    conf.check_pkg('dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
+    conf.check_pkg('gthread-2.0 >= 2.14.0', uselib_store='GTHREAD')
+    conf.check_pkg('glibmm-2.4 >= 2.14.0', uselib_store='GLIBMM')
+    conf.check_pkg('gtkmm-2.4 >= 2.12.0', uselib_store='GTKMM')
+    conf.check_pkg('ganv-1 >= 1.5.2', uselib_store='GANV')
 
     if conf.env.DEST_OS == 'darwin':
-        autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
-                          atleast_version='1.0.0', mandatory=False)
+        conf.check_pkg('gtk-mac-integration',
+                       uselib_store='GTK_OSX',
+                       mandatory=False)
         if conf.env.HAVE_GTK_OSX:
             conf.define('PATCHAGE_GTK_OSX', 1)
 
     # Check for dladdr
-    autowaf.check_function(conf, 'cxx', 'dladdr',
-                           header_name = 'dlfcn.h',
-                           defines     = ['_GNU_SOURCE'],
-                           lib         = ['dl'],
-                           define_name = 'HAVE_DLADDR',
-                           mandatory   = False)
+    conf.check_function('cxx', 'dladdr',
+                        header_name = 'dlfcn.h',
+                        defines     = ['_GNU_SOURCE'],
+                        lib         = ['dl'],
+                        define_name = 'HAVE_DLADDR',
+                        mandatory   = False)
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
     if Options.options.jack_dbus and conf.env.HAVE_DBUS and conf.env.HAVE_DBUS_GLIB:
         conf.define('HAVE_JACK_DBUS', 1)
     else:
-        autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
-                          atleast_version='0.120.0', mandatory=False)
+        conf.check_pkg('jack >= 0.120.0', uselib_store='JACK', mandatory=False)
         if conf.env.HAVE_JACK:
             conf.define('PATCHAGE_LIBJACK', 1)
             if Options.options.jack_session_manage:
                 conf.define('PATCHAGE_JACK_SESSION', 1)
-                autowaf.check_function(conf, 'cxx', 'jack_get_property',
-                                       header_name = 'jack/metadata.h',
-                                       define_name = 'HAVE_JACK_METADATA',
-                                       uselib      = 'JACK',
-                                       mandatory   = False)
+                conf.check_function('cxx', 'jack_get_property',
+                                    header_name = 'jack/metadata.h',
+                                    define_name = 'HAVE_JACK_METADATA',
+                                    uselib      = 'JACK',
+                                    mandatory   = False)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
-        autowaf.check_pkg(conf, 'alsa', uselib_store='ALSA', mandatory=False)
+        conf.check_pkg('alsa', uselib_store='ALSA', mandatory=False)
 
     # Find files at binary location if we have dladdr unless --no-binloc
     if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
