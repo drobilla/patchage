@@ -61,7 +61,7 @@ def configure(conf):
         autowaf.check_pkg(conf, 'gtk-mac-integration', uselib_store='GTK_OSX',
                           atleast_version='1.0.0', mandatory=False)
         if conf.env.HAVE_GTK_OSX:
-            autowaf.define(conf, 'PATCHAGE_GTK_OSX', 1)
+            conf.define('PATCHAGE_GTK_OSX', 1)
 
     # Check for dladdr
     autowaf.check_function(conf, 'cxx', 'dladdr',
@@ -73,14 +73,14 @@ def configure(conf):
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
     if Options.options.jack_dbus and conf.env.HAVE_DBUS and conf.env.HAVE_DBUS_GLIB:
-        autowaf.define(conf, 'HAVE_JACK_DBUS', 1)
+        conf.define('HAVE_JACK_DBUS', 1)
     else:
         autowaf.check_pkg(conf, 'jack', uselib_store='JACK',
                           atleast_version='0.120.0', mandatory=False)
         if conf.env.HAVE_JACK:
-            autowaf.define(conf, 'PATCHAGE_LIBJACK', 1)
+            conf.define('PATCHAGE_LIBJACK', 1)
             if Options.options.jack_session_manage:
-                autowaf.define(conf, 'PATCHAGE_JACK_SESSION', 1)
+                conf.define('PATCHAGE_JACK_SESSION', 1)
                 autowaf.check_function(conf, 'cxx', 'jack_get_property',
                                        header_name = 'jack/metadata.h',
                                        define_name = 'HAVE_JACK_METADATA',
@@ -93,10 +93,10 @@ def configure(conf):
 
     # Find files at binary location if we have dladdr unless --no-binloc
     if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
-        autowaf.define(conf, 'PATCHAGE_BINLOC', 1)
+        conf.define('PATCHAGE_BINLOC', 1)
 
     if Options.options.light_theme:
-        autowaf.define(conf, 'PATCHAGE_USE_LIGHT_THEME', 1)
+        conf.define('PATCHAGE_USE_LIGHT_THEME', 1)
 
     # Boost headers
     conf.check_cxx(header_name='boost/format.hpp')
@@ -108,8 +108,8 @@ def configure(conf):
 
     conf.env.APP_INSTALL_NAME = Options.options.patchage_install_name
     conf.env.APP_HUMAN_NAME = Options.options.patchage_human_name
-    autowaf.define(conf, 'PATCHAGE_DATA_DIR', os.path.join(
-                    conf.env.DATADIR, conf.env.APP_INSTALL_NAME))
+    conf.define('PATCHAGE_DATA_DIR', os.path.join(
+        conf.env.DATADIR, conf.env.APP_INSTALL_NAME))
 
     conf.write_config_header('patchage_config.h', remove=False)
 
@@ -117,7 +117,7 @@ def configure(conf):
         conf,
         {'Install name':            conf.env.APP_INSTALL_NAME,
          'App human name':          conf.env.APP_HUMAN_NAME,
-         'Jack (D-Bus)':            bool(conf.env.HAVE_JACK_DBUS),
+         'Jack (D-Bus)':            conf.is_defined('HAVE_JACK_DBUS'),
          'Jack (libjack)':          conf.is_defined('PATCHAGE_LIBJACK'),
          'Jack Session Management': conf.is_defined('PATCHAGE_JACK_SESSION'),
          'Jack Metadata':           conf.is_defined('HAVE_JACK_METADATA'),
@@ -145,7 +145,7 @@ def build(bld):
             src/PatchageModule.cpp
             src/main.cpp
     '''
-    if bld.env.HAVE_JACK_DBUS:
+    if bld.is_defined('HAVE_JACK_DBUS'):
         prog.source += ' src/JackDbusDriver.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
         prog.source += ' src/JackDriver.cpp '
