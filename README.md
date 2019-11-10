@@ -2,6 +2,5 @@ Patchage
 ========
 
 Patchage is a modular patch bay for Jack and ALSA based audio/MIDI systems.
-For more information, see <http://drobilla.net/software/patchage>.
  
  -- David Robillard <d@drobilla.net>
