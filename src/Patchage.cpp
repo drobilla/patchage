@@ -14,32 +14,10 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <pthread.h>
-
-#include <cmath>
-#include <fstream>
-
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <gtk/gtkwindow.h>
-
-#include <boost/format.hpp>
-
-#include <gtkmm/button.h>
-#include <gtkmm/filechooserdialog.h>
-#include <gtkmm/liststore.h>
-#include <gtkmm/menuitem.h>
-#include <gtkmm/messagedialog.h>
-#include <gtkmm/stock.h>
-#include <gtkmm/treemodel.h>
-
-#include "ganv/Module.hpp"
-#include "ganv/Edge.hpp"
+#include "Patchage.hpp"
 
 #include "Configuration.hpp"
 #include "Legend.hpp"
-#include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "UIFile.hpp"
@@ -60,8 +38,28 @@
     #include "AlsaDriver.hpp"
 #endif
 
+#include "ganv/Module.hpp"
+#include "ganv/Edge.hpp"
+
+#include <boost/format.hpp>
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <gtk/gtkwindow.h>
+#include <gtkmm/button.h>
+#include <gtkmm/filechooserdialog.h>
+#include <gtkmm/liststore.h>
+#include <gtkmm/menuitem.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/stock.h>
+#include <gtkmm/treemodel.h>
+
+#include <cstdlib>
+#include <cmath>
+#include <fstream>
+
 #ifdef PATCHAGE_GTK_OSX
-    #include <gtkosxapplication.h>
+
+#include <gtkosxapplication.h>
 
 static gboolean
 can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)

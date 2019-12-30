@@ -14,25 +14,26 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <boost/format.hpp>
+#include "PatchageCanvas.hpp"
 
 #include "patchage_config.h"
 
+#include "Patchage.hpp"
+#include "PatchageModule.hpp"
+#include "PatchagePort.hpp"
+
 #if defined(HAVE_JACK_DBUS)
-  #include "JackDbusDriver.hpp"
+    #include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-  #include "JackDriver.hpp"
+    #include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
-  #include "AlsaDriver.hpp"
+    #include "AlsaDriver.hpp"
 #endif
 
 #include "ganv/Edge.hpp"
 
-#include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchageModule.hpp"
-#include "PatchagePort.hpp"
+#include <boost/format.hpp>
 
 using std::string;
 using boost::format;

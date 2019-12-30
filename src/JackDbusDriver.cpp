@@ -14,26 +14,26 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-#include <cstring>
-#include <string>
-#include <set>
+#include "JackDbusDriver.hpp"
 
 #include "patchage_config.h"
 
-#include <glib.h>
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
-
-#include <boost/format.hpp>
-
 #include "Driver.hpp"
-#include "JackDbusDriver.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+
+#include <boost/format.hpp>
+#include <dbus/dbus-glib-lowlevel.h>
+#include <dbus/dbus-glib.h>
+#include <dbus/dbus.h>
+#include <glib.h>
+
+#include <cassert>
+#include <cstring>
+#include <string>
+#include <set>
 
 #define JACKDBUS_SERVICE        "org.jackaudio.service"
 #define JACKDBUS_OBJECT         "/org/jackaudio/Controller"

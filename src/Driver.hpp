@@ -17,9 +17,9 @@
 #ifndef PATCHAGE_DRIVER_HPP
 #define PATCHAGE_DRIVER_HPP
 
-#include <sigc++/sigc++.h>
-
 #include "PatchageEvent.hpp"
+
+#include <sigc++/sigc++.h>
 
 class PatchagePort;
 class PatchageCanvas;

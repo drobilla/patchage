@@ -17,17 +17,18 @@
 #ifndef PATCHAGE_GLADEFILE_HPP
 #define PATCHAGE_GLADEFILE_HPP
 
+#include "patchage_config.h"
+
+#ifdef PATCHAGE_BINLOC
+#    include "binary_location.h"
+#endif
+
+#include <gtkmm/builder.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-
-#include <gtkmm/builder.h>
-
-#include "patchage_config.h"
-#ifdef PATCHAGE_BINLOC
-#include "binary_location.h"
-#endif
 
 class UIFile {
 public:

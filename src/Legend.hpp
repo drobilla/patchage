@@ -17,10 +17,10 @@
 #ifndef PATCHAGE_LEGEND_HPP
 #define PATCHAGE_LEGEND_HPP
 
-#include <gtkmm/colorbutton.h>
-#include <gtkmm/box.h>
-
 #include "Configuration.hpp"
+
+#include <gtkmm/box.h>
+#include <gtkmm/colorbutton.h>
 
 class Legend : public Gtk::HBox {
 public:

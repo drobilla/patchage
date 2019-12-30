@@ -17,14 +17,13 @@
 #ifndef PATCHAGE_JACKDRIVER_HPP
 #define PATCHAGE_JACKDRIVER_HPP
 
-#include <string>
-
-#include <jack/jack.h>
-
-#include <glibmm/thread.h>
-
 #include "Driver.hpp"
 #include "Queue.hpp"
+
+#include <glibmm/thread.h>
+#include <jack/jack.h>
+
+#include <string>
 
 class Patchage;
 class PatchageEvent;

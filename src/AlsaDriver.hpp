@@ -17,16 +17,16 @@
 #ifndef PATCHAGE_ALSADRIVER_HPP
 #define PATCHAGE_ALSADRIVER_HPP
 
-#include <queue>
-#include <set>
-#include <string>
-#include <map>
+#include "Driver.hpp"
+#include "PatchageModule.hpp"
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 
-#include "Driver.hpp"
-#include "PatchageModule.hpp"
+#include <map>
+#include <queue>
+#include <set>
+#include <string>
 
 class Patchage;
 class PatchagePort;

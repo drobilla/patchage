@@ -17,10 +17,6 @@
 #ifndef PATCHAGE_PATCHAGE_HPP
 #define PATCHAGE_PATCHAGE_HPP
 
-#include <set>
-#include <string>
-#include <memory>
-
 #include <gtkmm/aboutdialog.h>
 #include <gtkmm/alignment.h>
 #include <gtkmm/builder.h>
@@ -42,9 +38,13 @@
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
-#include "patchage_config.h"
-#include "Widget.hpp"
 #include "Legend.hpp"
+#include "Widget.hpp"
+#include "patchage_config.h"
+
+#include <memory>
+#include <set>
+#include <string>
 
 class AlsaDriver;
 class JackDriver;

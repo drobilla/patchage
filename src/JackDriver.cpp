@@ -14,27 +14,28 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-#include <cstring>
-#include <set>
-#include <string>
-
-#include <boost/format.hpp>
-
-#include <jack/jack.h>
-#include <jack/statistics.h>
-
 #include "JackDriver.hpp"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "Queue.hpp"
 #include "patchage_config.h"
+
 #ifdef HAVE_JACK_METADATA
 #include <jack/metadata.h>
 #include "jackey.h"
 #endif
+
+#include <boost/format.hpp>
+#include <jack/jack.h>
+#include <jack/statistics.h>
+
+#include <cassert>
+#include <cstring>
+#include <set>
+#include <string>
 
 using std::endl;
 using std::string;

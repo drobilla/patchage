@@ -14,14 +14,15 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <boost/format.hpp>
+#include "PatchageEvent.hpp"
 
 #include "patchage_config.h"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
-#include "PatchageEvent.hpp"
 #include "Driver.hpp"
+
 #if defined(HAVE_JACK_DBUS)
 #    include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
@@ -30,6 +31,8 @@
 #ifdef HAVE_ALSA
 #    include "AlsaDriver.hpp"
 #endif
+
+#include <boost/format.hpp>
 
 using std::endl;
 using boost::format;

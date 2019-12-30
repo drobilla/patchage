@@ -14,18 +14,17 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ctype.h>
-#include <stdlib.h>
+#include "Configuration.hpp"
 
+#include "Patchage.hpp"
+
+#include <cctype>
+#include <cstdlib>
 #include <fstream>
 #include <ios>
 #include <iostream>
 #include <limits>
-#include <stdexcept>
 #include <vector>
-
-#include "Configuration.hpp"
-#include "Patchage.hpp"
 
 static const char* port_type_names[N_PORT_TYPES] = {
 	"JACK_AUDIO",

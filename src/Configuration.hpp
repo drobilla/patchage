@@ -20,7 +20,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <list>
 #include <map>
 
 #include <boost/optional.hpp>

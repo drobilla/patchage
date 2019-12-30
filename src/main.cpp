@@ -15,18 +15,23 @@
  */
 
 #ifdef __APPLE__
-#include <stdlib.h>
-#include <unistd.h>
-#include <string>
-#include <gtk/gtkrc.h>
+
 #include "binary_location.h"
+
+#include <gtk/gtkrc.h>
+
+#include <unistd.h>
+
+#include <cstdlib>
+#include <string>
+
 #endif
 
-#include <iostream>
+#include "Patchage.hpp"
 
 #include <glibmm/exception.h>
 
-#include "Patchage.hpp"
+#include <iostream>
 
 #ifdef __APPLE__
 void

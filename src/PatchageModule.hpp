@@ -17,14 +17,14 @@
 #ifndef PATCHAGE_PATCHAGEMODULE_HPP
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
-#include <string>
-
-#include <gtkmm/menu_elems.h>
+#include "Configuration.hpp"
 
 #include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
 
-#include "Configuration.hpp"
+#include <gtkmm/menu_elems.h>
+
+#include <string>
 
 class Patchage;
 class PatchagePort;

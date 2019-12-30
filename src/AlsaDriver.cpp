@@ -14,18 +14,19 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-#include <set>
-#include <string>
-#include <utility>
-
-#include <boost/format.hpp>
-
 #include "AlsaDriver.hpp"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+
+#include <boost/format.hpp>
+
+#include <cassert>
+#include <set>
+#include <string>
+#include <utility>
 
 using std::endl;
 using std::string;

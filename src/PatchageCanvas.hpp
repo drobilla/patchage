@@ -17,20 +17,21 @@
 #ifndef PATCHAGE_PATCHAGECANVAS_HPP
 #define PATCHAGE_PATCHAGECANVAS_HPP
 
-#include <map>
-#include <string>
-
 #include "patchage_config.h"
-
-#ifdef HAVE_ALSA
-  #include <alsa/asoundlib.h>
-#endif
-
-#include "ganv/Canvas.hpp"
 
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "PortID.hpp"
+
+#include "ganv/Canvas.hpp"
+
+#ifdef HAVE_ALSA
+    #include <alsa/asoundlib.h>
+#endif
+
+#include <map>
+#include <string>
+#include <utility>
 
 class Patchage;
 class PatchageModule;

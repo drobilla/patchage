@@ -14,9 +14,10 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "PatchageModule.hpp"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
-#include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 
 PatchageModule::PatchageModule(

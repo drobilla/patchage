@@ -17,9 +17,9 @@
 #ifndef PATCHAGE_WIDGET_HPP
 #define PATCHAGE_WIDGET_HPP
 
-#include <string>
-
 #include <gtkmm/builder.h>
+
+#include <string>
 
 template <typename W>
 class Widget {

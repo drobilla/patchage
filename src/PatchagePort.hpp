@@ -17,19 +17,20 @@
 #ifndef PATCHAGE_PATCHAGEPORT_HPP
 #define PATCHAGE_PATCHAGEPORT_HPP
 
-#include <string>
-
-#include <gtkmm/menu.h>
-#include <gtkmm/menushell.h>
-
-#include "ganv/Port.hpp"
-#include "ganv/Module.hpp"
+#include "patchage_config.h"
 
 #include "Configuration.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PortID.hpp"
-#include "patchage_config.h"
+
+#include "ganv/Port.hpp"
+#include "ganv/Module.hpp"
+
+#include <gtkmm/menu.h>
+#include <gtkmm/menushell.h>
+
+#include <string>
 
 /** A Port on a PatchageModule
  */

@@ -18,11 +18,11 @@
 	#define _GNU_SOURCE
 #endif
 
-#include <assert.h>
-#include <limits.h>
-#include <stdlib.h>
 #include <dlfcn.h>
 
+#include <cassert>
+#include <climits>
+#include <cstdlib>
 #include <string>
 
 /** Return the absolute path of the binary. */

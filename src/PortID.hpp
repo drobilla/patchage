@@ -17,10 +17,9 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
-#include <cstring>
-#include <iostream>
-
 #include "patchage_config.h"
+
+#include "PatchagePort.hpp"
 
 #ifdef PATCHAGE_LIBJACK
   #include <jack/jack.h>
@@ -29,7 +28,8 @@
   #include <alsa/asoundlib.h>
 #endif
 
-#include "PatchagePort.hpp"
+#include <cstring>
+#include <iostream>
 
 struct PortID {
 	PortID() : type(NULL_PORT_ID) { memset(&id, 0, sizeof(id)); }
