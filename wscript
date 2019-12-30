@@ -99,7 +99,6 @@ def configure(conf):
 
     # Boost headers
     conf.check_cxx(header_name='boost/format.hpp')
-    conf.check_cxx(header_name='boost/utility.hpp')
 
     conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
 

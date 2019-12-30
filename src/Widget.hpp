@@ -19,16 +19,17 @@
 
 #include <string>
 
-#include <boost/utility.hpp>
-
 #include <gtkmm/builder.h>
 
 template <typename W>
-class Widget : public boost::noncopyable {
+class Widget {
 public:
 	Widget(Glib::RefPtr<Gtk::Builder> xml, const std::string& name) {
 		xml->get_widget(name, _me);
 	}
+
+	Widget(const Widget&) = delete;
+	Widget& operator=(const Widget&) = delete;
 
 	void destroy() { delete _me; }
 
