@@ -14,30 +14,31 @@ PATCHAGE_VERSION = '1.0.1'
 # Variables for 'waf dist'
 APPNAME = 'patchage'
 VERSION = PATCHAGE_VERSION
-APP_HUMAN_NAME = 'Patchage'
 
 # Mandatory variables
 top = '.'
 out = 'build'
 
+
 def options(ctx):
     ctx.load('compiler_cxx')
 
     opt = ctx.configuration_options()
-    opt.add_option('--patchage-install-name', type='string', default=APPNAME,
-                    dest='patchage_install_name',
-                    help='patchage install name. [default: '' + APPNAME + '']')
-    opt.add_option('--patchage-human-name', type='string', default=APP_HUMAN_NAME,
-                    dest='patchage_human_name',
-                    help='patchage human name [default: '' + APP_HUMAN_NAME + '']')
+    opt.add_option('--patchage-install-name', type='string',
+                   default=APPNAME,
+                   help='patchage install name')
+    opt.add_option('--patchage-human-name', type='string',
+                   default='Patchage',
+                   help='patchage human name')
 
     ctx.add_flags(
         opt,
         {'jack-dbus':           'use Jack via D-Bus',
          'jack-session-manage': 'include JACK session management support',
          'no-alsa':             'do not build Alsa Sequencer support',
-         'no-binloc':           'do not try to read files from executable location',
+         'no-binloc':           'do not find files from executable location',
          'light-theme':         'use light coloured theme'})
+
 
 def configure(conf):
     conf.load('compiler_cxx', cache=True)
@@ -67,7 +68,11 @@ def configure(conf):
                         mandatory   = False)
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
-    if Options.options.jack_dbus and conf.env.HAVE_DBUS and conf.env.HAVE_DBUS_GLIB:
+    use_jack_dbus = (Options.options.jack_dbus and
+                     conf.env.HAVE_DBUS and
+                     conf.env.HAVE_DBUS_GLIB)
+
+    if use_jack_dbus:
         conf.define('HAVE_JACK_DBUS', 1)
     else:
         conf.check_pkg('jack >= 0.120.0', uselib_store='JACK', mandatory=False)
@@ -118,7 +123,9 @@ def configure(conf):
          'Alsa Sequencer':          bool(conf.env.HAVE_ALSA)})
 
     if conf.env.DEST_OS == 'darwin':
-        autowaf.display_msg(conf, "Mac Integration", bool(conf.env.HAVE_GTK_OSX))
+        autowaf.display_msg(conf, "Mac Integration",
+                            bool(conf.env.HAVE_GTK_OSX))
+
 
 def build(bld):
     out_base = ''
@@ -129,7 +136,7 @@ def build(bld):
     prog = bld(features     = 'cxx cxxprogram',
                includes     = ['.', 'src'],
                target       = out_base + bld.env.APP_INSTALL_NAME,
-               uselib       = 'DBUS GANV DBUS_GLIB GTKMM GNOMECANVAS GTHREAD GTK_OSX',
+               uselib       = 'DBUS GANV DBUS_GLIB GTKMM GTHREAD GTK_OSX',
                install_path = '${BINDIR}')
     prog.source = '''
             src/Configuration.cpp
@@ -205,13 +212,14 @@ def build(bld):
 
     bld.install_files('${MANDIR}/man1', bld.path.ant_glob('doc/*.1'))
 
+
 def posts(ctx):
     path = str(ctx.path.abspath())
     autowaf.news_to_posts(
         os.path.join(path, 'NEWS'),
-        {'title'        : 'Patchage',
-         'description'  : autowaf.get_blurb(os.path.join(path, 'README')),
-         'dist_pattern' : 'http://download.drobilla.net/patchage-%s.tar.bz2'},
-        { 'Author' : 'drobilla',
-          'Tags'   : 'Hacking, LAD, Patchage' },
+        {'title':        'Patchage',
+         'description':  autowaf.get_blurb(os.path.join(path, 'README')),
+         'dist_pattern': 'http://download.drobilla.net/patchage-%s.tar.bz2'},
+        {'Author': 'drobilla',
+         'Tags':   'Hacking, LAD, Patchage'},
         os.path.join(out, 'posts'))
