@@ -19,8 +19,7 @@
 
 #include <set>
 #include <string>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <gtkmm/aboutdialog.h>
 #include <gtkmm/alignment.h>
@@ -59,7 +58,7 @@ public:
 	Patchage(int argc, char** argv);
 	~Patchage();
 
-	const boost::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
+	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
 	Gtk::Window* window() { return _main_win.get(); }
 
@@ -146,7 +145,7 @@ protected:
 	void save_session(bool close);
 #endif
 
-	boost::shared_ptr<PatchageCanvas> _canvas;
+	std::shared_ptr<PatchageCanvas> _canvas;
 
 	JackDriver*    _jack_driver;
 	Configuration* _conf;

@@ -99,9 +99,7 @@ def configure(conf):
 
     # Boost headers
     conf.check_cxx(header_name='boost/format.hpp')
-    conf.check_cxx(header_name='boost/shared_ptr.hpp')
     conf.check_cxx(header_name='boost/utility.hpp')
-    conf.check_cxx(header_name='boost/weak_ptr.hpp')
 
     conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
 

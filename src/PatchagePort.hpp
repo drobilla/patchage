@@ -19,8 +19,6 @@
 
 #include <string>
 
-#include <boost/shared_ptr.hpp>
-
 #include <gtkmm/menu.h>
 #include <gtkmm/menushell.h>
 

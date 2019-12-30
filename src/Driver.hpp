@@ -17,7 +17,6 @@
 #ifndef PATCHAGE_DRIVER_HPP
 #define PATCHAGE_DRIVER_HPP
 
-#include <boost/shared_ptr.hpp>
 #include <sigc++/sigc++.h>
 
 #include "PatchageEvent.hpp"

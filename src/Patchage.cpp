@@ -171,7 +171,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 {
 	_conf   = new Configuration();
-	_canvas = boost::shared_ptr<PatchageCanvas>(new PatchageCanvas(this, 1600*2, 1200*2));
+	_canvas = std::make_shared<PatchageCanvas>(this, 1600*2, 1200*2);
 
 	while (argc > 0) {
 		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
