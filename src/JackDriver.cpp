@@ -37,7 +37,6 @@
 #include <set>
 #include <string>
 
-using std::string;
 using boost::format;
 
 JackDriver::JackDriver(Patchage* app)
@@ -142,7 +141,7 @@ JackDriver::create_port_view(Patchage*     patchage,
 
 	const int jack_flags = jack_port_flags(jack_port);
 
-	string module_name, port_name;
+	std::string module_name, port_name;
 	port_names(id, module_name, port_name);
 
 	ModuleType type = InputOutput;
@@ -284,11 +283,11 @@ JackDriver::refresh()
 		return;
 	}
 
-	string client1_name;
-	string port1_name;
-	string client2_name;
-	string port2_name;
-	size_t colon;
+	std::string client1_name;
+	std::string port1_name;
+	std::string client2_name;
+	std::string port2_name;
+	size_t      colon;
 
 	// Add all ports
 	for (int i = 0; ports[i]; ++i) {
@@ -379,8 +378,8 @@ JackDriver::refresh()
 
 bool
 JackDriver::port_names(const PortID& id,
-                       string&       module_name,
-                       string&       port_name)
+                       std::string&  module_name,
+                       std::string&  port_name)
 {
 	jack_port_t* jack_port = NULL;
 
@@ -393,7 +392,7 @@ JackDriver::port_names(const PortID& id,
 		return false;
 	}
 
-	const string full_name = jack_port_name(jack_port);
+	const std::string full_name = jack_port_name(jack_port);
 
 	module_name = full_name.substr(0, full_name.find(":"));
 	port_name   = full_name.substr(full_name.find(":")+1);
@@ -415,10 +414,10 @@ JackDriver::connect(PatchagePort* src_port,
 	int result = jack_connect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->info_msg(string("Jack: Connected ")
+		_app->info_msg(std::string("Jack: Connected ")
 			+ src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->error_msg(string("Jack: Unable to connect ")
+		_app->error_msg(std::string("Jack: Unable to connect ")
 			+ src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
@@ -438,10 +437,10 @@ JackDriver::disconnect(PatchagePort* const src_port,
 	int result = jack_disconnect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->info_msg(string("Jack: Disconnected ")
+		_app->info_msg(std::string("Jack: Disconnected ")
 			+ src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->error_msg(string("Jack: Unable to disconnect ")
+		_app->error_msg(std::string("Jack: Unable to disconnect ")
 			+ src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);

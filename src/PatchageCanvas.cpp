@@ -35,7 +35,6 @@
 
 #include <boost/format.hpp>
 
-using std::string;
 using boost::format;
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
@@ -51,7 +50,7 @@ PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
 }
 
 PatchageModule*
-PatchageCanvas::find_module(const string& name, ModuleType type)
+PatchageCanvas::find_module(const std::string& name, ModuleType type)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(name);
 	if (i == _module_index.end())
@@ -71,7 +70,7 @@ PatchageCanvas::find_module(const string& name, ModuleType type)
 }
 
 void
-PatchageCanvas::remove_module(const string& name)
+PatchageCanvas::remove_module(const std::string& name)
 {
 	ModuleIndex::iterator i = _module_index.find(name);
 	while (i != _module_index.end()) {
@@ -100,8 +99,8 @@ PatchageCanvas::find_port(const PortID& id)
 		if (!jack_port)
 			return NULL;
 
-		string module_name;
-		string port_name;
+		std::string module_name;
+		std::string port_name;
 		_app->jack_driver()->port_names(id, module_name, port_name);
 
 		PatchageModule* module = find_module(

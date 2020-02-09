@@ -106,10 +106,6 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
 
-using std::cout;
-using std::endl;
-using std::string;
-
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
@@ -173,12 +169,12 @@ Patchage::Patchage(int argc, char** argv)
 
 	while (argc > 0) {
 		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
-			cout << "Usage: patchage [OPTION]..." << endl;
-			cout << "Visually connect JACK and ALSA Audio/MIDI ports." << endl << endl;
-			cout << "Options:" << endl;
-			cout << "\t-h  --help     Show this help" << endl;
-			cout << "\t-A  --no-alsa  Do not automatically attach to ALSA" << endl;
-			cout << "\t-J  --no-jack  Do not automatically attack to JACK" << endl;
+			std::cout << "Usage: patchage [OPTION]...\n";
+			std::cout << "Visually connect JACK and ALSA Audio/MIDI ports.\n\n";
+			std::cout << "Options:\n";
+			std::cout << "\t-h  --help     Show this help\n";
+			std::cout << "\t-A  --no-alsa  Do not automatically attach to ALSA\n";
+			std::cout << "\t-J  --no-jack  Do not automatically attack to JACK\n";
 			exit(0);
 #ifdef HAVE_ALSA
 		} else if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
@@ -690,7 +686,7 @@ print_edge(GanvEdge* edge, void* data)
 	}
 
 	(*script) << "jack_connect '" << src->full_name()
-	          << "' '" << dst->full_name() << "' &" << endl;
+	          << "' '" << dst->full_name() << "' &\n";
 }
 
 void
@@ -722,7 +718,7 @@ Patchage::save_session(bool close)
 
 	const std::string script_path = path + "jack-session";
 	std::ofstream script(script_path.c_str());
-	script << "#!/bin/sh" << endl << endl;
+	script << "#!/bin/sh\n\n";
 
 	const std::string var("${SESSION_DIR}");
 	for (int c = 0; cmd[c].uuid; ++c) {
@@ -732,12 +728,10 @@ Patchage::save_session(bool close)
 			command.replace(index, var.length(), cmd[c].client_name);
 		}
 
-		script << command << " &" << endl;
+		script << command << " &\n";
 	}
 
-	script << endl;
-	script << "sleep 3" << endl;
-	script << endl;
+	script << "\nsleep 3\n\n";
 
 	_canvas->for_each_edge(print_edge, &script);
 

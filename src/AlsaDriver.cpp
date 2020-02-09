@@ -28,7 +28,6 @@
 #include <string>
 #include <utility>
 
-using std::string;
 using boost::format;
 
 AlsaDriver::AlsaDriver(Patchage* app)
@@ -241,11 +240,11 @@ AlsaDriver::create_port_view_internal(
 	snd_seq_port_info_set_port(pinfo, addr.port);
 	snd_seq_get_any_port_info(_seq, addr.client, addr.port, pinfo);
 
-	const string client_name    = snd_seq_client_info_get_name(cinfo);
-	const string port_name      = snd_seq_port_info_get_name(pinfo);
-	bool         is_input       = false;
-	bool         is_duplex      = false;
-	bool         is_application = true;
+	const std::string client_name    = snd_seq_client_info_get_name(cinfo);
+	const std::string port_name      = snd_seq_port_info_get_name(pinfo);
+	bool              is_input       = false;
+	bool              is_duplex      = false;
+	bool              is_application = true;
 
 	int caps = snd_seq_port_info_get_capability(pinfo);
 	int type = snd_seq_port_info_get_type(pinfo);
@@ -299,8 +298,10 @@ AlsaDriver::create_port_view_internal(
 }
 
 PatchagePort*
-AlsaDriver::create_port(PatchageModule& parent,
-                        const string& name, bool is_input, snd_seq_addr_t addr)
+AlsaDriver::create_port(PatchageModule&    parent,
+                        const std::string& name,
+                        bool               is_input,
+                        snd_seq_addr_t     addr)
 {
 	PatchagePort* ret = new PatchagePort(
 		parent, ALSA_MIDI, name, "", is_input,
@@ -405,10 +406,10 @@ AlsaDriver::connect(PatchagePort* src_port,
 	}
 
 	if (result)
-		_app->info_msg(string("Alsa: Connected ")
+		_app->info_msg(std::string("Alsa: Connected ")
 		               + src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->error_msg(string("Alsa: Unable to connect ")
+		_app->error_msg(std::string("Alsa: Unable to connect ")
 		                + src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
@@ -449,13 +450,13 @@ AlsaDriver::disconnect(PatchagePort* src_port,
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		_app->error_msg(string("Alsa: Unable to disconnect ")
+		_app->error_msg(std::string("Alsa: Unable to disconnect ")
 		                + src_port->full_name() + " => " + dst_port->full_name()
 		                + "(" + snd_strerror(ret) + ")");
 		return false;
 	}
 
-	_app->info_msg(string("Alsa: Disconnected ")
+	_app->info_msg(std::string("Alsa: Disconnected ")
 	               + src_port->full_name() + " => " + dst_port->full_name());
 
 	return true;
