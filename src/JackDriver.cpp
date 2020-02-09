@@ -37,7 +37,6 @@
 #include <set>
 #include <string>
 
-using std::endl;
 using std::string;
 using boost::format;
 

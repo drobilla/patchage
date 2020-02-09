@@ -28,7 +28,6 @@
 #include <string>
 #include <utility>
 
-using std::endl;
 using std::string;
 using boost::format;
 
@@ -272,11 +271,6 @@ AlsaDriver::create_port_view_internal(
 	} else {
 		split = _app->conf()->get_module_split(client_name, !is_application);
 	}
-
-	/*cout << "ALSA PORT: " << client_name << " : " << port_name
-	  << " is_application = " << is_application
-	  << " is_duplex = " << is_duplex
-	  << " split = " << split << endl;*/
 
 	if (!split) {
 		m = find_or_create_module(_app, addr.client, client_name, InputOutput);

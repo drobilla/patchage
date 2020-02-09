@@ -34,7 +34,6 @@
 
 #include <boost/format.hpp>
 
-using std::endl;
 using boost::format;
 
 void
