@@ -25,7 +25,8 @@ class PatchagePort;
 class PatchageCanvas;
 
 /** Trival driver base class */
-class Driver {
+class Driver
+{
 public:
 	virtual ~Driver() {}
 
@@ -38,14 +39,12 @@ public:
 	virtual void refresh() = 0;
 	virtual void destroy_all() {}
 
-	virtual PatchagePort* create_port_view(Patchage*     patchage,
-	                                       const PortID& id) = 0;
+	virtual PatchagePort*
+	create_port_view(Patchage* patchage, const PortID& id) = 0;
 
-	virtual bool connect(PatchagePort* src_port,
-	                     PatchagePort* dst_port) = 0;
+	virtual bool connect(PatchagePort* src_port, PatchagePort* dst_port) = 0;
 
-	virtual bool disconnect(PatchagePort* src_port,
-	                        PatchagePort* dst_port) = 0;
+	virtual bool disconnect(PatchagePort* src_port, PatchagePort* dst_port) = 0;
 
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;

@@ -19,19 +19,35 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <map>
+#include <string>
 
 #include <boost/optional.hpp>
 
-enum ModuleType { Input, Output, InputOutput };
+enum ModuleType
+{
+	Input,
+	Output,
+	InputOutput
+};
 
-enum PortType { JACK_AUDIO, JACK_MIDI, ALSA_MIDI, JACK_OSC, JACK_CV };
+enum PortType
+{
+	JACK_AUDIO,
+	JACK_MIDI,
+	ALSA_MIDI,
+	JACK_OSC,
+	JACK_CV
+};
 
 #define N_PORT_TYPES 5
 
-struct Coord {
-	Coord(double x_=0, double y_=0) : x(x_), y(y_) {}
+struct Coord
+{
+	Coord(double x_ = 0, double y_ = 0)
+	    : x(x_)
+	    , y(y_)
+	{}
 	double x;
 	double y;
 };
@@ -44,45 +60,58 @@ public:
 	void load();
 	void save();
 
-	bool get_module_location(const std::string& name, ModuleType type, Coord& loc);
-	void set_module_location(const std::string& name, ModuleType type, Coord loc);
+	bool
+	get_module_location(const std::string& name, ModuleType type, Coord& loc);
+
+	void
+	set_module_location(const std::string& name, ModuleType type, Coord loc);
 
 	void set_module_split(const std::string& name, bool split);
 	bool get_module_split(const std::string& name, bool default_val) const;
 
-	float get_zoom() const               { return _zoom; }
-	void  set_zoom(float zoom)           { _zoom = zoom; }
-	float get_font_size() const          { return _font_size; }
+	float get_zoom() const { return _zoom; }
+	void  set_zoom(float zoom) { _zoom = zoom; }
+	float get_font_size() const { return _font_size; }
 	void  set_font_size(float font_size) { _font_size = font_size; }
 
-	float get_show_toolbar() const             { return _show_toolbar; }
+	float get_show_toolbar() const { return _show_toolbar; }
 	void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
 
-	float get_sprung_layout() const              { return _sprung_layout; }
-	void  set_sprung_layout(float sprung_layout) { _sprung_layout = sprung_layout; }
+	float get_sprung_layout() const { return _sprung_layout; }
+	void  set_sprung_layout(float sprung_layout)
+	{
+		_sprung_layout = sprung_layout;
+	}
 
-	bool  get_show_messages() const             { return _show_messages; }
-	void  set_show_messages(bool show_messages) { _show_messages = show_messages; }
+	bool get_show_messages() const { return _show_messages; }
+	void set_show_messages(bool show_messages)
+	{
+		_show_messages = show_messages;
+	}
 
-	bool  get_sort_ports() const          { return _sort_ports; }
-	void  set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
+	bool get_sort_ports() const { return _sort_ports; }
+	void set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
 
-	int  get_messages_height() const          { return _messages_height; }
+	int  get_messages_height() const { return _messages_height; }
 	void set_messages_height(int height) { _messages_height = height; }
 
 	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
-	void     set_port_color(PortType type, uint32_t rgba) {
+	void     set_port_color(PortType type, uint32_t rgba)
+	{
 		_port_colors[type] = rgba;
 	}
 
-	Coord get_window_location()          { return _window_location; }
+	Coord get_window_location() { return _window_location; }
 	void  set_window_location(Coord loc) { _window_location = loc; }
-	Coord get_window_size()              { return _window_size; }
-	void  set_window_size(Coord size)    { _window_size = size; }
+	Coord get_window_size() { return _window_size; }
+	void  set_window_size(Coord size) { _window_size = size; }
 
 private:
-	struct ModuleSettings {
-		ModuleSettings(bool s=false) : split(s) {}
+	struct ModuleSettings
+	{
+		ModuleSettings(bool s = false)
+		    : split(s)
+		{}
 		boost::optional<Coord> input_location;
 		boost::optional<Coord> output_location;
 		boost::optional<Coord> inout_location;

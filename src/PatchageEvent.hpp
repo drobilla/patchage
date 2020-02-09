@@ -23,10 +23,10 @@
 #include "PortID.hpp"
 
 #ifdef PATCHAGE_LIBJACK
-    #include <jack/jack.h>
+#	include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA
-    #include <alsa/asoundlib.h>
+#	include <alsa/asoundlib.h>
 #endif
 
 #include <cstring>
@@ -35,9 +35,11 @@ class Patchage;
 
 /** A Driver event to be processed by the GUI thread.
  */
-class PatchageEvent {
+class PatchageEvent
+{
 public:
-	enum Type {
+	enum Type
+	{
 		NULL_EVENT = 0,
 		REFRESH,
 		CLIENT_CREATION,
@@ -48,29 +50,29 @@ public:
 		DISCONNECTION
 	};
 
-	explicit PatchageEvent(Type type=NULL_EVENT)
-		: _str(NULL)
-		, _type(type)
+	explicit PatchageEvent(Type type = NULL_EVENT)
+	    : _str(NULL)
+	    , _type(type)
 	{}
 
 	PatchageEvent(Type type, const char* str)
-		: _str(g_strdup(str))
-		, _type(type)
+	    : _str(g_strdup(str))
+	    , _type(type)
 	{}
 
-	template <typename P>
+	template<typename P>
 	PatchageEvent(Type type, P port)
-		: _str(NULL)
-		, _port_1(port)
-		, _type(type)
+	    : _str(NULL)
+	    , _port_1(port)
+	    , _type(type)
 	{}
 
-	template <typename P>
+	template<typename P>
 	PatchageEvent(Type type, P port_1, P port_2)
-		: _str(NULL)
-		, _port_1(port_1, false)
-		, _port_2(port_2, true)
-		, _type(type)
+	    : _str(NULL)
+	    , _port_1(port_1, false)
+	    , _port_2(port_2, true)
+	    , _type(type)
 	{}
 
 	void execute(Patchage* patchage);

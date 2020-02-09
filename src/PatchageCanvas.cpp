@@ -23,12 +23,12 @@
 #include "PatchagePort.hpp"
 
 #if defined(HAVE_JACK_DBUS)
-    #include "JackDbusDriver.hpp"
+#	include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-    #include "JackDriver.hpp"
+#	include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
-    #include "AlsaDriver.hpp"
+#	include "AlsaDriver.hpp"
 #endif
 
 #include "ganv/Edge.hpp"
@@ -38,15 +38,12 @@
 using boost::format;
 
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
-	: Ganv::Canvas(width, height)
-	, _app(app)
+    : Ganv::Canvas(width, height)
+    , _app(app)
 {
-	signal_event.connect(
-		sigc::mem_fun(this, &PatchageCanvas::on_event));
-	signal_connect.connect(
-		sigc::mem_fun(this, &PatchageCanvas::connect));
-	signal_disconnect.connect(
-		sigc::mem_fun(this, &PatchageCanvas::disconnect));
+	signal_event.connect(sigc::mem_fun(this, &PatchageCanvas::on_event));
+	signal_connect.connect(sigc::mem_fun(this, &PatchageCanvas::connect));
+	signal_disconnect.connect(sigc::mem_fun(this, &PatchageCanvas::disconnect));
 }
 
 PatchageModule*
@@ -57,7 +54,9 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 		return NULL;
 
 	PatchageModule* io_module = NULL;
-	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == name; ++j) {
+	for (ModuleIndex::const_iterator j = i;
+	     j != _module_index.end() && j->first == name;
+	     ++j) {
 		if (j->second->type() == type) {
 			return j->second;
 		} else if (j->second->type() == InputOutput) {
@@ -65,7 +64,7 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 		}
 	}
 
-	// Return InputOutput module for Input or Output (or NULL if not found at all)
+	// Return InputOutput module for Input or Output (or NULL if not found)
 	return io_module;
 }
 
@@ -95,7 +94,8 @@ PatchageCanvas::find_port(const PortID& id)
 #ifdef PATCHAGE_LIBJACK
 	// Alsa ports are always indexed (or don't exist at all)
 	if (id.type == PortID::JACK_ID) {
-		jack_port_t* jack_port = jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
+		jack_port_t* jack_port =
+		    jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
 		if (!jack_port)
 			return NULL;
 
@@ -104,7 +104,8 @@ PatchageCanvas::find_port(const PortID& id)
 		_app->jack_driver()->port_names(id, module_name, port_name);
 
 		PatchageModule* module = find_module(
-			module_name, (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
+		    module_name,
+		    (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
 		if (module)
 			pp = dynamic_cast<PatchagePort*>(module->get_port(port_name));
@@ -125,10 +126,13 @@ PatchageCanvas::remove_port(const PortID& id)
 	delete port;
 }
 
-struct RemovePortsData {
+struct RemovePortsData
+{
 	typedef bool (*Predicate)(const PatchagePort*);
 
-	RemovePortsData(Predicate p) : pred(p) {}
+	RemovePortsData(Predicate p)
+	    : pred(p)
+	{}
 
 	Predicate                 pred;
 	std::set<PatchageModule*> empty;
@@ -137,8 +141,8 @@ struct RemovePortsData {
 static void
 delete_port_if_matches(GanvPort* port, void* cdata)
 {
-	RemovePortsData* data = (RemovePortsData*)cdata;
-	PatchagePort* pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
+	RemovePortsData* data  = (RemovePortsData*)cdata;
+	PatchagePort*    pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
 	if (pport && data->pred(pport)) {
 		delete pport;
 	}
@@ -173,8 +177,7 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 
 	for_each_node(remove_ports_matching, &data);
 
-	for (PortIndex::iterator i = _port_index.begin();
-	     i != _port_index.end();) {
+	for (PortIndex::iterator i = _port_index.begin(); i != _port_index.end();) {
 		PortIndex::iterator next = i;
 		++next;
 		if (pred(i->second)) {
@@ -184,7 +187,8 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 	}
 
 	for (std::set<PatchageModule*>::iterator i = data.empty.begin();
-	     i != data.empty.end(); ++i) {
+	     i != data.empty.end();
+	     ++i) {
 		delete *i;
 	}
 }
@@ -197,8 +201,11 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 	if (i == _module_index.end())
 		return NULL;
 
-	for (ModuleIndex::const_iterator j = i; j != _module_index.end() && j->first == client_name; ++j) {
-		PatchagePort* port = dynamic_cast<PatchagePort*>(j->second->get_port(port_name));
+	for (ModuleIndex::const_iterator j = i;
+	     j != _module_index.end() && j->first == client_name;
+	     ++j) {
+		PatchagePort* port =
+		    dynamic_cast<PatchagePort*>(j->second->get_port(port_name));
 		if (port)
 			return port;
 	}
@@ -207,8 +214,7 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 }
 
 void
-PatchageCanvas::connect(Ganv::Node* port1,
-                        Ganv::Node* port2)
+PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 {
 	PatchagePort* p1 = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* p2 = dynamic_cast<PatchagePort*>(port2);
@@ -216,10 +222,10 @@ PatchageCanvas::connect(Ganv::Node* port1,
 		return;
 
 	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO) ||
-	    (p1->type() == JACK_MIDI  && p2->type() == JACK_MIDI) ||
-		(p1->type() == JACK_AUDIO && p2->type() == JACK_CV) ||
-		(p1->type() == JACK_CV    && p2->type() == JACK_CV) ||
-		(p1->type() == JACK_OSC   && p2->type() == JACK_OSC)) {
+	    (p1->type() == JACK_MIDI && p2->type() == JACK_MIDI) ||
+	    (p1->type() == JACK_AUDIO && p2->type() == JACK_CV) ||
+	    (p1->type() == JACK_CV && p2->type() == JACK_CV) ||
+	    (p1->type() == JACK_OSC && p2->type() == JACK_OSC)) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->connect(p1, p2);
 #endif
@@ -233,8 +239,7 @@ PatchageCanvas::connect(Ganv::Node* port1,
 }
 
 void
-PatchageCanvas::disconnect(Ganv::Node* port1,
-                           Ganv::Node* port2)
+PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 {
 	PatchagePort* input  = dynamic_cast<PatchagePort*>(port1);
 	PatchagePort* output = dynamic_cast<PatchagePort*>(port2);
@@ -244,8 +249,8 @@ PatchageCanvas::disconnect(Ganv::Node* port1,
 	if (input->is_output() && output->is_input()) {
 		// Damn, guessed wrong
 		PatchagePort* swap = input;
-		input = output;
-		output = swap;
+		input              = output;
+		output             = swap;
 	}
 
 	if (!input || !output || input->is_output() || output->is_input()) {
@@ -253,10 +258,8 @@ PatchageCanvas::disconnect(Ganv::Node* port1,
 		return;
 	}
 
-	if (input->type() == JACK_AUDIO ||
-	    input->type() == JACK_MIDI ||
-	    input->type() == JACK_CV ||
-	    input->type() == JACK_OSC) {
+	if (input->type() == JACK_AUDIO || input->type() == JACK_MIDI ||
+	    input->type() == JACK_CV || input->type() == JACK_OSC) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->disconnect(output, input);
 #endif
@@ -275,7 +278,7 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 	_module_index.insert(std::make_pair(name, module));
 
 	// Join partners, if applicable
-	PatchageModule* in_module = NULL;
+	PatchageModule* in_module  = NULL;
 	PatchageModule* out_module = NULL;
 	if (module->type() == Input) {
 		in_module  = module;
@@ -321,7 +324,8 @@ PatchageCanvas::remove_module(PatchageModule* module)
 {
 	// Remove module from cache
 	for (ModuleIndex::iterator i = _module_index.find(module->get_label());
-	     i != _module_index.end() && i->first == module->get_label(); ++i) {
+	     i != _module_index.end() && i->first == module->get_label();
+	     ++i) {
 		if (i->second == module) {
 			_module_index.erase(i);
 			return;

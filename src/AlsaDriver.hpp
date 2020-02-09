@@ -47,15 +47,11 @@ public:
 	void refresh();
 	void destroy_all();
 
-	PatchagePort* create_port_view(
-			Patchage*     patchage,
-			const PortID& id);
+	PatchagePort* create_port_view(Patchage* patchage, const PortID& id);
 
-	bool connect(PatchagePort* src_port,
-	             PatchagePort* dst_port);
+	bool connect(PatchagePort* src_port, PatchagePort* dst_port);
 
-	bool disconnect(PatchagePort* src_port,
-	                PatchagePort* dst_port);
+	bool disconnect(PatchagePort* src_port, PatchagePort* dst_port);
 
 	void print_addr(snd_seq_addr_t addr);
 
@@ -68,25 +64,20 @@ private:
 
 	PatchageModule* find_module(uint8_t client_id, ModuleType type);
 
-	PatchageModule*
-	find_or_create_module(
-			Patchage*          patchage,
-			uint8_t            client_id,
-			const std::string& client_name,
-			ModuleType         type);
+	PatchageModule* find_or_create_module(Patchage*          patchage,
+	                                      uint8_t            client_id,
+	                                      const std::string& client_name,
+	                                      ModuleType         type);
 
-	void
-	create_port_view_internal(
-			Patchage*        patchage,
-			snd_seq_addr_t   addr,
-			PatchageModule*& parent,
-			PatchagePort*&   port);
+	void create_port_view_internal(Patchage*        patchage,
+	                               snd_seq_addr_t   addr,
+	                               PatchageModule*& parent,
+	                               PatchagePort*&   port);
 
-	PatchagePort* create_port(
-		PatchageModule&    parent,
-		const std::string& name,
-		bool               is_input,
-		snd_seq_addr_t     addr);
+	PatchagePort* create_port(PatchageModule&    parent,
+	                          const std::string& name,
+	                          bool               is_input,
+	                          snd_seq_addr_t     addr);
 
 	Patchage*  _app;
 	snd_seq_t* _seq;
@@ -95,22 +86,25 @@ private:
 	Glib::Mutex               _events_mutex;
 	std::queue<PatchageEvent> _events;
 
-	struct SeqAddrComparator {
-		bool operator() (const snd_seq_addr_t& a, const snd_seq_addr_t& b) const {
-			return ((a.client < b.client) || ((a.client == b.client) && a.port < b.port));
+	struct SeqAddrComparator
+	{
+		bool operator()(const snd_seq_addr_t& a, const snd_seq_addr_t& b) const
+		{
+			return ((a.client < b.client) ||
+			        ((a.client == b.client) && a.port < b.port));
 		}
 	};
 
 	typedef std::set<snd_seq_addr_t, SeqAddrComparator> Ignored;
-	Ignored _ignored;
+	Ignored                                             _ignored;
 
 	typedef std::multimap<uint8_t, PatchageModule*> Modules;
-	Modules _modules;
+	Modules                                         _modules;
 
 	typedef std::map<PatchagePort*, PortID> PortAddrs;
-	PortAddrs _port_addrs;
+	PortAddrs                               _port_addrs;
 
-	bool ignore(const snd_seq_addr_t& addr, bool add=true);
+	bool ignore(const snd_seq_addr_t& addr, bool add = true);
 };
 
 #endif // PATCHAGE_ALSADRIVER_HPP

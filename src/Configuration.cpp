@@ -26,43 +26,44 @@
 #include <limits>
 #include <vector>
 
-static const char* port_type_names[N_PORT_TYPES] = {
-	"JACK_AUDIO",
-	"JACK_MIDI",
-	"ALSA_MIDI",
-	"JACK_OSC",
-	"JACK_CV"
-};
+static const char* port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
+                                                    "JACK_MIDI",
+                                                    "ALSA_MIDI",
+                                                    "JACK_OSC",
+                                                    "JACK_CV"};
 
 Configuration::Configuration()
-	: _window_location(0, 0)
-	, _window_size(640, 480)
-	, _zoom(1.0)
-	, _font_size(12.0)
-	, _messages_height(0)
-	, _show_toolbar(true)
-	, _show_messages(false)
-	, _sort_ports(true)
+    : _window_location(0, 0)
+    , _window_size(640, 480)
+    , _zoom(1.0)
+    , _font_size(12.0)
+    , _messages_height(0)
+    , _show_toolbar(true)
+    , _show_messages(false)
+    , _sort_ports(true)
 {
 #ifdef PATCHAGE_USE_LIGHT_THEME
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0xA4BC8CFF;
-	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0xC89595FF;
-	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI]  = 0x8F7198FF;
-	_port_colors[JACK_OSC]   = _default_port_colors[JACK_OSC]   = 0x7E8EAAFF;
-	_port_colors[JACK_CV]    = _default_port_colors[JACK_CV]    = 0x83AFABFF;
+	_port_colors[JACK_MIDI] = _default_port_colors[JACK_MIDI] = 0xC89595FF;
+	_port_colors[ALSA_MIDI] = _default_port_colors[ALSA_MIDI] = 0x8F7198FF;
+	_port_colors[JACK_OSC] = _default_port_colors[JACK_OSC] = 0x7E8EAAFF;
+	_port_colors[JACK_CV] = _default_port_colors[JACK_CV] = 0x83AFABFF;
 #else
 	_port_colors[JACK_AUDIO] = _default_port_colors[JACK_AUDIO] = 0x3E5E00FF;
-	_port_colors[JACK_MIDI]  = _default_port_colors[JACK_MIDI]  = 0x650300FF;
-	_port_colors[ALSA_MIDI]  = _default_port_colors[ALSA_MIDI]  = 0x2D0043FF;
-	_port_colors[JACK_OSC]   = _default_port_colors[JACK_OSC]   = 0x4100FEFF;
-	_port_colors[JACK_CV]    = _default_port_colors[JACK_CV]    = 0x005E4EFF;
+	_port_colors[JACK_MIDI] = _default_port_colors[JACK_MIDI] = 0x650300FF;
+	_port_colors[ALSA_MIDI] = _default_port_colors[ALSA_MIDI] = 0x2D0043FF;
+	_port_colors[JACK_OSC] = _default_port_colors[JACK_OSC] = 0x4100FEFF;
+	_port_colors[JACK_CV] = _default_port_colors[JACK_CV] = 0x005E4EFF;
 #endif
 }
 
 bool
-Configuration::get_module_location(const std::string& name, ModuleType type, Coord& loc)
+Configuration::get_module_location(const std::string& name,
+                                   ModuleType         type,
+                                   Coord&             loc)
 {
-	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
+	std::map<std::string, ModuleSettings>::const_iterator i =
+	    _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		return false;
 	}
@@ -82,12 +83,17 @@ Configuration::get_module_location(const std::string& name, ModuleType type, Coo
 }
 
 void
-Configuration::set_module_location(const std::string& name, ModuleType type, Coord loc)
+Configuration::set_module_location(const std::string& name,
+                                   ModuleType         type,
+                                   Coord              loc)
 {
-	std::map<std::string, ModuleSettings>::iterator i = _module_settings.find(name);
+	std::map<std::string, ModuleSettings>::iterator i =
+	    _module_settings.find(name);
 	if (i == _module_settings.end()) {
-		i = _module_settings.insert(
-			std::make_pair(name, ModuleSettings(type != InputOutput))).first;
+		i = _module_settings
+		        .insert(
+		            std::make_pair(name, ModuleSettings(type != InputOutput)))
+		        .first;
 	}
 
 	ModuleSettings& settings = (*i).second;
@@ -102,19 +108,20 @@ Configuration::set_module_location(const std::string& name, ModuleType type, Coo
 		settings.inout_location = loc;
 		break;
 	default:
-		break;  // shouldn't reach here
+		break; // shouldn't reach here
 	}
 }
 
 /** Returns whether or not this module should be split.
  *
- * If nothing is known about the given module, `default_val` is returned (this is
- * to allow driver's to request terminal ports get split by default).
+ * If nothing is known about the given module, `default_val` is returned (this
+ * is to allow driver's to request terminal ports get split by default).
  */
 bool
 Configuration::get_module_split(const std::string& name, bool default_val) const
 {
-	std::map<std::string, ModuleSettings>::const_iterator i = _module_settings.find(name);
+	std::map<std::string, ModuleSettings>::const_iterator i =
+	    _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		return default_val;
 	}
@@ -133,7 +140,7 @@ static std::vector<std::string>
 get_filenames()
 {
 	std::vector<std::string> filenames;
-	std::string prefix;
+	std::string              prefix;
 
 	const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
 	const char* home            = getenv("HOME");
@@ -165,7 +172,8 @@ Configuration::load()
 	for (size_t i = 0; i < filenames.size(); ++i) {
 		file.open(filenames[i].c_str(), std::ios::in);
 		if (file.good()) {
-			std::cout << "Loading configuration from " << filenames[i] << std::endl;
+			std::cout << "Loading configuration from " << filenames[i]
+			          << std::endl;
 			break;
 		}
 	}
@@ -222,8 +230,8 @@ Configuration::load()
 				}
 			}
 			if (!found) {
-				std::cerr << "error: color for unknown port type `"
-				          << type_name << "'" << std::endl;
+				std::cerr << "error: color for unknown port type `" << type_name
+				          << "'" << std::endl;
 			}
 		} else if (key == "module_position" || key[0] == '\"') {
 			Coord       loc;
@@ -285,7 +293,8 @@ Configuration::save()
 	for (size_t i = 0; i < filenames.size(); ++i) {
 		file.open(filenames[i].c_str(), std::ios::out);
 		if (file.good()) {
-			std::cout << "Writing configuration to " << filenames[i] << std::endl;
+			std::cout << "Writing configuration to " << filenames[i]
+			          << std::endl;
 			break;
 		}
 	}
@@ -295,8 +304,10 @@ Configuration::save()
 		return;
 	}
 
-	file << "window_location " << _window_location.x << " " << _window_location.y << std::endl;
-	file << "window_size " << _window_size.x << " " << _window_size.y << std::endl;
+	file << "window_location " << _window_location.x << " "
+	     << _window_location.y << std::endl;
+	file << "window_size " << _window_size.x << " " << _window_size.y
+	     << std::endl;
 	file << "zoom_level " << _zoom << std::endl;
 	file << "font_size " << _font_size << std::endl;
 	file << "show_toolbar " << _show_toolbar << std::endl;
@@ -308,23 +319,29 @@ Configuration::save()
 	file << std::hex << std::uppercase;
 	for (int i = 0; i < N_PORT_TYPES; ++i) {
 		if (_port_colors[i] != _default_port_colors[i]) {
-			file << "port_color " << port_type_names[i] << " " << _port_colors[i] << std::endl;
+			file << "port_color " << port_type_names[i] << " "
+			     << _port_colors[i] << std::endl;
 		}
 	}
 	file << std::dec << std::nouppercase;
 
-	for (std::map<std::string, ModuleSettings>::iterator i = _module_settings.begin();
-	     i != _module_settings.end(); ++i) {
+	for (std::map<std::string, ModuleSettings>::iterator i =
+	         _module_settings.begin();
+	     i != _module_settings.end();
+	     ++i) {
 		const ModuleSettings& settings = (*i).second;
 		const std::string&    name     = (*i).first;
 
 		if (settings.split) {
 			if (settings.input_location && settings.output_location) {
-				write_module_position(file, name, "input", *settings.input_location);
-				write_module_position(file, name, "output", *settings.output_location);
+				write_module_position(
+				    file, name, "input", *settings.input_location);
+				write_module_position(
+				    file, name, "output", *settings.output_location);
 			}
 		} else if (settings.inout_location) {
-			write_module_position(file, name, "inputoutput", *settings.inout_location);
+			write_module_position(
+			    file, name, "inputoutput", *settings.inout_location);
 		}
 	}
 

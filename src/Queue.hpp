@@ -20,7 +20,7 @@
 #include <cassert>
 
 /** Realtime-safe single-reader single-writer queue */
-template <typename T>
+template<typename T>
 class Queue
 {
 public:
@@ -44,23 +44,23 @@ public:
 	inline void pop();
 
 private:
-	std::atomic<size_t> _front;    ///< Index to front of queue
-	std::atomic<size_t> _back;     ///< Index to back of queue (one past end)
-	const size_t        _size;     ///< Size of `_objects` (at most _size-1)
-	T* const            _objects;  ///< Fixed array containing queued elements
+	std::atomic<size_t> _front;   ///< Index to front of queue
+	std::atomic<size_t> _back;    ///< Index to back of queue (one past end)
+	const size_t        _size;    ///< Size of `_objects` (at most _size-1)
+	T* const            _objects; ///< Fixed array containing queued elements
 };
 
 template<typename T>
 Queue<T>::Queue(size_t size)
-	: _front(0)
-	, _back(0)
-	, _size(size + 1)
-	, _objects(new T[_size])
+    : _front(0)
+    , _back(0)
+    , _size(size + 1)
+    , _objects(new T[_size])
 {
 	assert(size > 1);
 }
 
-template <typename T>
+template<typename T>
 Queue<T>::~Queue()
 {
 	delete[] _objects;
@@ -68,7 +68,7 @@ Queue<T>::~Queue()
 
 /** Return whether or not the queue is empty.
  */
-template <typename T>
+template<typename T>
 inline bool
 Queue<T>::empty() const
 {
@@ -77,7 +77,7 @@ Queue<T>::empty() const
 
 /** Return whether or not the queue is full.
  */
-template <typename T>
+template<typename T>
 inline bool
 Queue<T>::full() const
 {
@@ -86,7 +86,7 @@ Queue<T>::full() const
 
 /** Return the element at the front of the queue without removing it
  */
-template <typename T>
+template<typename T>
 inline T&
 Queue<T>::front() const
 {
@@ -98,16 +98,16 @@ Queue<T>::front() const
  * @returns true if `elem` was successfully pushed onto the queue,
  * false otherwise (queue is full).
  */
-template <typename T>
+template<typename T>
 inline bool
 Queue<T>::push(const T& elem)
 {
 	if (full()) {
 		return false;
 	} else {
-		unsigned back = _back.load();
+		unsigned back  = _back.load();
 		_objects[back] = elem;
-		_back = (back + 1) % _size;
+		_back          = (back + 1) % _size;
 		return true;
 	}
 }
@@ -118,7 +118,7 @@ Queue<T>::push(const T& elem)
  *
  * @returns the element popped.
  */
-template <typename T>
+template<typename T>
 inline void
 Queue<T>::pop()
 {
@@ -128,4 +128,4 @@ Queue<T>::pop()
 	_front = (_front.load() + 1) % (_size);
 }
 
-#endif  // QUEUE_HPP_INCLUDED
+#endif // QUEUE_HPP_INCLUDED

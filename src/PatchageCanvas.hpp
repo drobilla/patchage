@@ -26,7 +26,7 @@
 #include "ganv/Canvas.hpp"
 
 #ifdef HAVE_ALSA
-    #include <alsa/asoundlib.h>
+#	include <alsa/asoundlib.h>
 #endif
 
 #include <map>
@@ -37,7 +37,8 @@ class Patchage;
 class PatchageModule;
 class PatchagePort;
 
-class PatchageCanvas : public Ganv::Canvas {
+class PatchageCanvas : public Ganv::Canvas
+{
 public:
 	PatchageCanvas(Patchage* _app, int width, int height);
 
@@ -50,13 +51,12 @@ public:
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
 
-	void connect(Ganv::Node* port1,
-	             Ganv::Node* port2);
+	void connect(Ganv::Node* port1, Ganv::Node* port2);
 
-	void disconnect(Ganv::Node* port1,
-	                Ganv::Node* port2);
+	void disconnect(Ganv::Node* port1, Ganv::Node* port2);
 
-	void index_port(const PortID& id, PatchagePort* port) {
+	void index_port(const PortID& id, PatchagePort* port)
+	{
 		_port_index.insert(std::make_pair(id, port));
 	}
 
@@ -77,10 +77,10 @@ private:
 	bool on_connection_event(Ganv::Edge* c, GdkEvent* ev);
 
 	typedef std::map<const PortID, PatchagePort*> PortIndex;
-	PortIndex _port_index;
+	PortIndex                                     _port_index;
 
 	typedef std::multimap<const std::string, PatchageModule*> ModuleIndex;
-	ModuleIndex _module_index;
+	ModuleIndex                                               _module_index;
 };
 
 #endif // PATCHAGE_PATCHAGECANVAS_HPP

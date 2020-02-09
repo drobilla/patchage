@@ -24,8 +24,8 @@
 #include "patchage_config.h"
 
 #ifdef HAVE_JACK_METADATA
-#include <jack/metadata.h>
-#include "jackey.h"
+#	include "jackey.h"
+#	include <jack/metadata.h>
 #endif
 
 #include <boost/format.hpp>
@@ -40,12 +40,12 @@
 using boost::format;
 
 JackDriver::JackDriver(Patchage* app)
-	: _app(app)
-	, _client(NULL)
-	, _events(128)
-	, _xruns(0)
-	, _xrun_delay(0)
-	, _is_activated(false)
+    : _app(app)
+    , _client(NULL)
+    , _events(128)
+    , _xruns(0)
+    , _xrun_delay(0)
+    , _is_activated(false)
 {
 	_last_pos.frame = 0;
 	_last_pos.valid = (jack_position_bits_t)0;
@@ -65,7 +65,8 @@ JackDriver::attach(bool launch_daemon)
 	if (_client)
 		return;
 
-	jack_options_t options = (!launch_daemon) ? JackNoStartServer : JackNullOption;
+	jack_options_t options =
+	    (!launch_daemon) ? JackNoStartServer : JackNullOption;
 	_client = jack_client_open("Patchage", options, NULL);
 	if (_client == NULL) {
 		_app->error_msg("Jack: Unable to create client.");
@@ -74,8 +75,10 @@ JackDriver::attach(bool launch_daemon)
 		jack_client_t* const client = _client;
 
 		jack_on_shutdown(client, jack_shutdown_cb, this);
-		jack_set_client_registration_callback(client, jack_client_registration_cb, this);
-		jack_set_port_registration_callback(client, jack_port_registration_cb, this);
+		jack_set_client_registration_callback(
+		    client, jack_client_registration_cb, this);
+		jack_set_port_registration_callback(
+		    client, jack_port_registration_cb, this);
 		jack_set_port_connect_callback(client, jack_port_connect_cb, this);
 		jack_set_xrun_callback(client, jack_xrun_cb, this);
 
@@ -110,10 +113,8 @@ JackDriver::detach()
 static bool
 is_jack_port(const PatchagePort* port)
 {
-	return (port->type() == JACK_AUDIO ||
-	        port->type() == JACK_MIDI ||
-	        port->type() == JACK_OSC ||
-	        port->type() == JACK_CV);
+	return (port->type() == JACK_AUDIO || port->type() == JACK_MIDI ||
+	        port->type() == JACK_OSC || port->type() == JACK_CV);
 }
 
 /** Destroy all JACK (canvas) ports.
@@ -127,15 +128,15 @@ JackDriver::destroy_all()
 }
 
 PatchagePort*
-JackDriver::create_port_view(Patchage*     patchage,
-                             const PortID& id)
+JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
 	assert(id.type == PortID::JACK_ID);
 
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
-		_app->error_msg((format("Jack: Failed to find port with ID `%1%'.")
-		                 % id).str());;
+		_app->error_msg(
+		    (format("Jack: Failed to find port with ID `%1%'.") % id).str());
+		;
 		return NULL;
 	}
 
@@ -145,8 +146,8 @@ JackDriver::create_port_view(Patchage*     patchage,
 	port_names(id, module_name, port_name);
 
 	ModuleType type = InputOutput;
-	if (_app->conf()->get_module_split(
-		    module_name, (jack_flags & JackPortIsTerminal))) {
+	if (_app->conf()->get_module_split(module_name,
+	                                   (jack_flags & JackPortIsTerminal))) {
 		if (jack_flags & JackPortIsInput) {
 			type = Input;
 		} else {
@@ -162,8 +163,9 @@ JackDriver::create_port_view(Patchage*     patchage,
 	}
 
 	if (parent->get_port(port_name)) {
-		_app->error_msg((format("Jack: Module `%1%' already has port `%2%'.")
-		                 % module_name % port_name).str());
+		_app->error_msg((format("Jack: Module `%1%' already has port `%2%'.") %
+		                 module_name % port_name)
+		                    .str());
 		return NULL;
 	}
 
@@ -232,18 +234,21 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 		}
 #endif
 	} else {
-		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.")
-		                   % jack_port_name(port) % type_str).str());
+		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.") %
+		                   jack_port_name(port) % type_str)
+		                      .str());
 		return NULL;
 	}
 
 	PatchagePort* ret(
-		new PatchagePort(parent, port_type, jack_port_short_name(port),
-		                 label,
-		                 (jack_port_flags(port) & JackPortIsInput),
-		                 _app->conf()->get_port_color(port_type),
-		                 _app->show_human_names(),
-		                 order));
+	    new PatchagePort(parent,
+	                     port_type,
+	                     jack_port_short_name(port),
+	                     label,
+	                     (jack_port_flags(port) & JackPortIsInput),
+	                     _app->conf()->get_port_color(port_type),
+	                     _app->show_human_names(),
+	                     order));
 
 	if (id.type != PortID::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
@@ -298,8 +303,7 @@ JackDriver::refresh()
 
 		ModuleType type = InputOutput;
 		if (_app->conf()->get_module_split(
-			    client1_name,
-			    (jack_port_flags(port) & JackPortIsTerminal))) {
+		        client1_name, (jack_port_flags(port) & JackPortIsTerminal))) {
 			if (jack_port_flags(port) & JackPortIsInput) {
 				type = Input;
 			} else {
@@ -322,31 +326,33 @@ JackDriver::refresh()
 	// Add all connections
 	for (int i = 0; ports[i]; ++i) {
 		port = jack_port_by_name(_client, ports[i]);
-		const char** connected_ports = jack_port_get_all_connections(_client, port);
+		const char** connected_ports =
+		    jack_port_get_all_connections(_client, port);
 
 		client1_name = ports[i];
 		colon        = client1_name.find(':');
 		port1_name   = client1_name.substr(colon + 1);
 		client1_name = client1_name.substr(0, colon);
 
-		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput)
-			? Input : Output;
+		const ModuleType port1_type =
+		    (jack_port_flags(port) & JackPortIsInput) ? Input : Output;
 
-		PatchageModule* client1_module
-			= _app->canvas()->find_module(client1_name, port1_type);
+		PatchageModule* client1_module =
+		    _app->canvas()->find_module(client1_name, port1_type);
 
 		if (connected_ports) {
 			for (int j = 0; connected_ports[j]; ++j) {
 
 				client2_name = connected_ports[j];
 				colon        = client2_name.find(':');
-				port2_name   = client2_name.substr(colon+1);
+				port2_name   = client2_name.substr(colon + 1);
 				client2_name = client2_name.substr(0, colon);
 
-				const ModuleType port2_type = (port1_type == Input) ? Output : Input;
+				const ModuleType port2_type =
+				    (port1_type == Input) ? Output : Input;
 
-				PatchageModule* client2_module
-					= _app->canvas()->find_module(client2_name, port2_type);
+				PatchageModule* client2_module =
+				    _app->canvas()->find_module(client2_name, port2_type);
 
 				Ganv::Port* port1 = client1_module->get_port(port1_name);
 				Ganv::Port* port2 = client2_module->get_port(port2_name);
@@ -395,7 +401,7 @@ JackDriver::port_names(const PortID& id,
 	const std::string full_name = jack_port_name(jack_port);
 
 	module_name = full_name.substr(0, full_name.find(":"));
-	port_name   = full_name.substr(full_name.find(":")+1);
+	port_name   = full_name.substr(full_name.find(":") + 1);
 
 	return true;
 }
@@ -405,20 +411,20 @@ JackDriver::port_names(const PortID& id,
  * \return Whether connection succeeded.
  */
 bool
-JackDriver::connect(PatchagePort* src_port,
-                    PatchagePort* dst_port)
+JackDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 {
 	if (_client == NULL)
 		return false;
 
-	int result = jack_connect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
+	int result = jack_connect(
+	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->info_msg(std::string("Jack: Connected ")
-			+ src_port->full_name() + " => " + dst_port->full_name());
+		_app->info_msg(std::string("Jack: Connected ") + src_port->full_name() +
+		               " => " + dst_port->full_name());
 	else
-		_app->error_msg(std::string("Jack: Unable to connect ")
-			+ src_port->full_name() + " => " + dst_port->full_name());
+		_app->error_msg(std::string("Jack: Unable to connect ") +
+		                src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
 }
@@ -434,20 +440,23 @@ JackDriver::disconnect(PatchagePort* const src_port,
 	if (_client == NULL)
 		return false;
 
-	int result = jack_disconnect(_client, src_port->full_name().c_str(), dst_port->full_name().c_str());
+	int result = jack_disconnect(
+	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0)
-		_app->info_msg(std::string("Jack: Disconnected ")
-			+ src_port->full_name() + " => " + dst_port->full_name());
+		_app->info_msg(std::string("Jack: Disconnected ") +
+		               src_port->full_name() + " => " + dst_port->full_name());
 	else
-		_app->error_msg(std::string("Jack: Unable to disconnect ")
-			+ src_port->full_name() + " => " + dst_port->full_name());
+		_app->error_msg(std::string("Jack: Unable to disconnect ") +
+		                src_port->full_name() + " => " + dst_port->full_name());
 
 	return (!result);
 }
 
 void
-JackDriver::jack_client_registration_cb(const char* name, int registered, void* jack_driver)
+JackDriver::jack_client_registration_cb(const char* name,
+                                        int         registered,
+                                        void*       jack_driver)
 {
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
@@ -455,12 +464,15 @@ JackDriver::jack_client_registration_cb(const char* name, int registered, void* 
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_CREATION, name));
 	} else {
-		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_DESTRUCTION, name));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::CLIENT_DESTRUCTION, name));
 	}
 }
 
 void
-JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, void* jack_driver)
+JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
+                                      int            registered,
+                                      void*          jack_driver)
 {
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
@@ -468,12 +480,16 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id, int registered, vo
 	if (registered) {
 		me->_events.push(PatchageEvent(PatchageEvent::PORT_CREATION, port_id));
 	} else {
-		me->_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION, port_id));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::PORT_DESTRUCTION, port_id));
 	}
 }
 
 void
-JackDriver::jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* jack_driver)
+JackDriver::jack_port_connect_cb(jack_port_id_t src,
+                                 jack_port_id_t dst,
+                                 int            connect,
+                                 void*          jack_driver)
 {
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
@@ -506,7 +522,7 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	me->_app->info_msg("Jack: Shutdown.");
 	Glib::Mutex::Lock lock(me->_shutdown_mutex);
-	me->_client = NULL;
+	me->_client       = NULL;
 	me->_is_activated = false;
 	me->signal_detached.emit();
 }

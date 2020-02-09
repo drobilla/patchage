@@ -51,9 +51,12 @@ class JackDriver;
 class PatchageCanvas;
 class Configuration;
 
-namespace Ganv { class Module; }
+namespace Ganv {
+class Module;
+}
 
-class Patchage {
+class Patchage
+{
 public:
 	Patchage(int argc, char** argv);
 	~Patchage();
@@ -62,10 +65,10 @@ public:
 
 	Gtk::Window* window() { return _main_win.get(); }
 
-	Configuration* conf()        const { return _conf; }
+	Configuration* conf() const { return _conf; }
 	JackDriver*    jack_driver() const { return _jack_driver; }
 #ifdef HAVE_ALSA
-	AlsaDriver*    alsa_driver() const { return _alsa_driver; }
+	AlsaDriver* alsa_driver() const { return _alsa_driver; }
 #endif
 #ifdef PATCHAGE_JACK_SESSION
 	void show_open_session_dialog();
@@ -80,7 +83,7 @@ public:
 	void quit() { _main_win->hide(); }
 
 	void        refresh();
-	inline void queue_refresh()   { _refresh = true; }
+	inline void queue_refresh() { _refresh = true; }
 	inline void driver_detached() { _driver_detached = true; }
 
 	void info_msg(const std::string& msg);
@@ -90,11 +93,15 @@ public:
 	void update_state();
 	void store_window_location();
 
-	bool show_human_names() const { return _menu_view_human_names->get_active(); }
-	bool sort_ports()       const { return _menu_view_sort_ports->get_active(); }
+	bool show_human_names() const
+	{
+		return _menu_view_human_names->get_active();
+	}
+	bool sort_ports() const { return _menu_view_sort_ports->get_active(); }
 
 protected:
-	class BufferSizeColumns : public Gtk::TreeModel::ColumnRecord {
+	class BufferSizeColumns : public Gtk::TreeModel::ColumnRecord
+	{
 	public:
 		BufferSizeColumns() { add(label); }
 
@@ -120,7 +127,8 @@ protected:
 	void on_increase_font_size();
 	void on_decrease_font_size();
 	void on_normal_font_size();
-	void on_legend_color_change(int id, const std::string& label, uint32_t rgba);
+	void
+	     on_legend_color_change(int id, const std::string& label, uint32_t rgba);
 	void on_messages_resized(Gtk::Allocation& alloc);
 
 	bool on_scroll(GdkEventScroll* ev);
@@ -137,8 +145,8 @@ protected:
 
 #ifdef HAVE_ALSA
 	AlsaDriver* _alsa_driver;
-	void menu_alsa_connect();
-	void menu_alsa_disconnect();
+	void        menu_alsa_connect();
+	void        menu_alsa_disconnect();
 #endif
 
 #ifdef PATCHAGE_JACK_SESSION

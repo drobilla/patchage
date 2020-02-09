@@ -55,14 +55,11 @@ public:
 	                std::string&  module_name,
 	                std::string&  port_name);
 
-	PatchagePort* create_port_view(Patchage*     patchage,
-	                               const PortID& id);
+	PatchagePort* create_port_view(Patchage* patchage, const PortID& id);
 
-	bool connect(PatchagePort* src,
-	             PatchagePort* dst);
+	bool connect(PatchagePort* src, PatchagePort* dst);
 
-	bool disconnect(PatchagePort* src,
-	                PatchagePort* dst);
+	bool disconnect(PatchagePort* src, PatchagePort* dst);
 
 	uint32_t get_xruns() { return _xruns; }
 	void     reset_xruns();
@@ -78,16 +75,19 @@ public:
 	void process_events(Patchage* app);
 
 private:
-	PatchagePort* create_port(
-		PatchageModule& parent,
-		jack_port_t*    port,
-		PortID          id);
+	PatchagePort*
+	create_port(PatchageModule& parent, jack_port_t* port, PortID id);
 
 	void shutdown();
 
-	static void jack_client_registration_cb(const char* name, int registered, void* me);
-	static void jack_port_registration_cb(jack_port_id_t port_id, int registered, void* me);
-	static void jack_port_connect_cb(jack_port_id_t src, jack_port_id_t dst, int connect, void* me);
+	static void
+	jack_client_registration_cb(const char* name, int registered, void* me);
+	static void
+	            jack_port_registration_cb(jack_port_id_t port_id, int registered, void* me);
+	static void jack_port_connect_cb(jack_port_id_t src,
+	                                 jack_port_id_t dst,
+	                                 int            connect,
+	                                 void*          me);
 	static int  jack_xrun_cb(void* me);
 	static void jack_shutdown_cb(void* me);
 
@@ -102,7 +102,7 @@ private:
 	jack_nframes_t  _buffer_size;
 	uint32_t        _xruns;
 	float           _xrun_delay;
-	bool            _is_activated :1;
+	bool            _is_activated : 1;
 };
 
 #endif // PATCHAGE_JACKDRIVER_HPP

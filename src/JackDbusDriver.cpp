@@ -32,8 +32,8 @@
 
 #include <cassert>
 #include <cstring>
-#include <string>
 #include <set>
+#include <string>
 
 #define JACKDBUS_SERVICE        "org.jackaudio.service"
 #define JACKDBUS_OBJECT         "/org/jackaudio/Controller"
@@ -54,12 +54,12 @@
 //#define USE_FULL_REFRESH
 
 JackDriver::JackDriver(Patchage* app)
-	: _app(app)
-	, _dbus_connection(0)
-	, _max_dsp_load(0)
-	, _server_responding(false)
-	, _server_started(false)
-	, _graph_version(0)
+    : _app(app)
+    , _dbus_connection(0)
+    , _max_dsp_load(0)
+    , _server_responding(false)
+    , _server_started(false)
+    , _graph_version(0)
 {
 	dbus_error_init(&_dbus_error);
 }
@@ -93,7 +93,7 @@ void
 JackDriver::update_attached()
 {
 	bool was_attached = _server_started;
-	_server_started = is_started();
+	_server_started   = is_started();
 
 	if (!_server_responding) {
 		if (was_attached) {
@@ -125,7 +125,8 @@ JackDriver::on_jack_disappeared()
 {
 	info_msg("JACK disappeared.");
 
-	// we are not calling update_attached() here, because it will activate jackdbus
+	// we are not calling update_attached() here, because it will activate
+	// jackdbus
 
 	_server_responding = false;
 
@@ -162,14 +163,21 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_dbus_connection);
 
-	if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
-		if (!dbus_message_get_args( message, &me->_dbus_error,
-					DBUS_TYPE_STRING, &object_name,
-					DBUS_TYPE_STRING, &old_owner,
-					DBUS_TYPE_STRING, &new_owner,
-					DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"NameOwnerChanged signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_STRING,
+		                           &object_name,
+		                           DBUS_TYPE_STRING,
+		                           &old_owner,
+		                           DBUS_TYPE_STRING,
+		                           &new_owner,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "NameOwnerChanged signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -182,12 +190,17 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 	}
 
 #if defined(USE_FULL_REFRESH)
-	if (dbus_message_is_signal(message, JACKDBUS_IFACE_PATCHBAY, "GraphChanged")) {
-		if (!dbus_message_get_args(message, &me->_dbus_error,
-					DBUS_TYPE_UINT64, &new_graph_version,
-					DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"GraphChanged signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, JACKDBUS_IFACE_PATCHBAY, "GraphChanged")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_UINT64,
+		                           &new_graph_version,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "GraphChanged signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -201,21 +214,32 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 			me->refresh_internal(false);
 		}
 
-    return DBUS_HANDLER_RESULT_HANDLED;
+		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 #else
-	if (dbus_message_is_signal(message, JACKDBUS_IFACE_PATCHBAY, "PortAppeared")) {
-		if (!dbus_message_get_args( message, &me->_dbus_error,
-					DBUS_TYPE_UINT64, &new_graph_version,
-					DBUS_TYPE_UINT64, &client_id,
-					DBUS_TYPE_STRING, &client_name,
-					DBUS_TYPE_UINT64, &port_id,
-					DBUS_TYPE_STRING, &port_name,
-					DBUS_TYPE_UINT32, &port_flags,
-					DBUS_TYPE_UINT32, &port_type,
-					DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"PortAppeared signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, JACKDBUS_IFACE_PATCHBAY, "PortAppeared")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_UINT64,
+		                           &new_graph_version,
+		                           DBUS_TYPE_UINT64,
+		                           &client_id,
+		                           DBUS_TYPE_STRING,
+		                           &client_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port_id,
+		                           DBUS_TYPE_STRING,
+		                           &port_name,
+		                           DBUS_TYPE_UINT32,
+		                           &port_flags,
+		                           DBUS_TYPE_UINT32,
+		                           &port_type,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "PortAppeared signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -225,21 +249,31 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 			me->signal_attached.emit();
 		}
 
-		me->add_port(client_id, client_name, port_id, port_name, port_flags, port_type);
+		me->add_port(
+		    client_id, client_name, port_id, port_name, port_flags, port_type);
 
-	    return DBUS_HANDLER_RESULT_HANDLED;
+		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 
-	if (dbus_message_is_signal(message, JACKDBUS_IFACE_PATCHBAY, "PortDisappeared")) {
-		if (!dbus_message_get_args( message, &me->_dbus_error,
-					DBUS_TYPE_UINT64, &new_graph_version,
-					DBUS_TYPE_UINT64, &client_id,
-					DBUS_TYPE_STRING, &client_name,
-					DBUS_TYPE_UINT64, &port_id,
-					DBUS_TYPE_STRING, &port_name,
-					DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"PortDisappeared signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, JACKDBUS_IFACE_PATCHBAY, "PortDisappeared")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_UINT64,
+		                           &new_graph_version,
+		                           DBUS_TYPE_UINT64,
+		                           &client_id,
+		                           DBUS_TYPE_STRING,
+		                           &client_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port_id,
+		                           DBUS_TYPE_STRING,
+		                           &port_name,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "PortDisappeared signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -251,24 +285,38 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 
 		me->remove_port(client_id, client_name, port_id, port_name);
 
-	    return DBUS_HANDLER_RESULT_HANDLED;
+		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 
-	if (dbus_message_is_signal(message, JACKDBUS_IFACE_PATCHBAY, "PortsConnected")) {
-		if (!dbus_message_get_args(message, &me->_dbus_error,
-				DBUS_TYPE_UINT64, &new_graph_version,
-				DBUS_TYPE_UINT64, &client_id,
-				DBUS_TYPE_STRING, &client_name,
-				DBUS_TYPE_UINT64, &port_id,
-				DBUS_TYPE_STRING, &port_name,
-				DBUS_TYPE_UINT64, &client2_id,
-				DBUS_TYPE_STRING, &client2_name,
-				DBUS_TYPE_UINT64, &port2_id,
-				DBUS_TYPE_STRING, &port2_name,
-				DBUS_TYPE_UINT64, &connection_id,
-				DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"PortsConnected signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, JACKDBUS_IFACE_PATCHBAY, "PortsConnected")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_UINT64,
+		                           &new_graph_version,
+		                           DBUS_TYPE_UINT64,
+		                           &client_id,
+		                           DBUS_TYPE_STRING,
+		                           &client_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port_id,
+		                           DBUS_TYPE_STRING,
+		                           &port_name,
+		                           DBUS_TYPE_UINT64,
+		                           &client2_id,
+		                           DBUS_TYPE_STRING,
+		                           &client2_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port2_id,
+		                           DBUS_TYPE_STRING,
+		                           &port2_name,
+		                           DBUS_TYPE_UINT64,
+		                           &connection_id,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "PortsConnected signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -278,31 +326,48 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 			me->signal_attached.emit();
 		}
 
-		me->connect_ports(
-			connection_id,
-			client_id, client_name,
-			port_id, port_name,
-			client2_id, client2_name,
-			port2_id, port2_name);
+		me->connect_ports(connection_id,
+		                  client_id,
+		                  client_name,
+		                  port_id,
+		                  port_name,
+		                  client2_id,
+		                  client2_name,
+		                  port2_id,
+		                  port2_name);
 
-    	return DBUS_HANDLER_RESULT_HANDLED;
+		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 
-	if (dbus_message_is_signal(message, JACKDBUS_IFACE_PATCHBAY, "PortsDisconnected")) {
-		if (!dbus_message_get_args(message, &me->_dbus_error,
-					DBUS_TYPE_UINT64, &new_graph_version,
-					DBUS_TYPE_UINT64, &client_id,
-					DBUS_TYPE_STRING, &client_name,
-					DBUS_TYPE_UINT64, &port_id,
-					DBUS_TYPE_STRING, &port_name,
-					DBUS_TYPE_UINT64, &client2_id,
-					DBUS_TYPE_STRING, &client2_name,
-					DBUS_TYPE_UINT64, &port2_id,
-					DBUS_TYPE_STRING, &port2_name,
-					DBUS_TYPE_UINT64, &connection_id,
-					DBUS_TYPE_INVALID)) {
-			me->error_msg(str(boost::format("dbus_message_get_args() failed to extract "
-					"PortsConnected signal arguments (%s)") % me->_dbus_error.message));
+	if (dbus_message_is_signal(
+	        message, JACKDBUS_IFACE_PATCHBAY, "PortsDisconnected")) {
+		if (!dbus_message_get_args(message,
+		                           &me->_dbus_error,
+		                           DBUS_TYPE_UINT64,
+		                           &new_graph_version,
+		                           DBUS_TYPE_UINT64,
+		                           &client_id,
+		                           DBUS_TYPE_STRING,
+		                           &client_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port_id,
+		                           DBUS_TYPE_STRING,
+		                           &port_name,
+		                           DBUS_TYPE_UINT64,
+		                           &client2_id,
+		                           DBUS_TYPE_STRING,
+		                           &client2_name,
+		                           DBUS_TYPE_UINT64,
+		                           &port2_id,
+		                           DBUS_TYPE_STRING,
+		                           &port2_name,
+		                           DBUS_TYPE_UINT64,
+		                           &connection_id,
+		                           DBUS_TYPE_INVALID)) {
+			me->error_msg(
+			    str(boost::format("dbus_message_get_args() failed to extract "
+			                      "PortsConnected signal arguments (%s)") %
+			        me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -312,14 +377,17 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 			me->signal_attached.emit();
 		}
 
-		me->disconnect_ports(
-			connection_id,
-			client_id, client_name,
-			port_id, port_name,
-			client2_id, client2_name,
-			port2_id, port2_name);
+		me->disconnect_ports(connection_id,
+		                     client_id,
+		                     client_name,
+		                     port_id,
+		                     port_name,
+		                     client2_id,
+		                     client2_name,
+		                     port2_id,
+		                     port2_name);
 
-	    return DBUS_HANDLER_RESULT_HANDLED;
+		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 #endif
 
@@ -327,22 +395,19 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 }
 
 bool
-JackDriver::call(
-	bool          response_expected,
-	const char*   iface,
-	const char*   method,
-	DBusMessage** reply_ptr_ptr,
-	int           in_type, ...)
+JackDriver::call(bool          response_expected,
+                 const char*   iface,
+                 const char*   method,
+                 DBusMessage** reply_ptr_ptr,
+                 int           in_type,
+                 ...)
 {
 	DBusMessage* request_ptr;
 	DBusMessage* reply_ptr;
-	va_list ap;
+	va_list      ap;
 
 	request_ptr = dbus_message_new_method_call(
-		JACKDBUS_SERVICE,
-		JACKDBUS_OBJECT,
-		iface,
-		method);
+	    JACKDBUS_SERVICE, JACKDBUS_OBJECT, iface, method);
 	if (!request_ptr) {
 		throw std::runtime_error("dbus_message_new_method_call() returned 0");
 	}
@@ -354,21 +419,26 @@ JackDriver::call(
 	va_end(ap);
 
 	// send message and get a handle for a reply
-	reply_ptr = dbus_connection_send_with_reply_and_block(_dbus_connection, request_ptr,
-			JACKDBUS_CALL_DEFAULT_TIMEOUT, &_dbus_error);
+	reply_ptr =
+	    dbus_connection_send_with_reply_and_block(_dbus_connection,
+	                                              request_ptr,
+	                                              JACKDBUS_CALL_DEFAULT_TIMEOUT,
+	                                              &_dbus_error);
 
 	dbus_message_unref(request_ptr);
 
 	if (!reply_ptr) {
 		if (response_expected) {
-			error_msg(str(boost::format("no reply from server when calling method '%s'"
-					", error is '%s'") % method % _dbus_error.message));
+			error_msg(str(
+			    boost::format("no reply from server when calling method '%s'"
+			                  ", error is '%s'") %
+			    method % _dbus_error.message));
 		}
 		_server_responding = false;
 		dbus_error_free(&_dbus_error);
 	} else {
 		_server_responding = true;
-		*reply_ptr_ptr = reply_ptr;
+		*reply_ptr_ptr     = reply_ptr;
 	}
 
 	return reply_ptr;
@@ -378,15 +448,21 @@ bool
 JackDriver::is_started()
 {
 	DBusMessage* reply_ptr;
-	dbus_bool_t started;
+	dbus_bool_t  started;
 
-	if (!call(false, JACKDBUS_IFACE_CONTROL, "IsStarted", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(false,
+	          JACKDBUS_IFACE_CONTROL,
+	          "IsStarted",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error,
-				DBUS_TYPE_BOOLEAN, &started,
-				DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_BOOLEAN,
+	                           &started,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of IsStarted failed.");
@@ -403,7 +479,11 @@ JackDriver::start_server()
 {
 	DBusMessage* reply_ptr;
 
-	if (!call(false, JACKDBUS_IFACE_CONTROL, "StartServer", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(false,
+	          JACKDBUS_IFACE_CONTROL,
+	          "StartServer",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return;
 	}
 
@@ -417,7 +497,11 @@ JackDriver::stop_server()
 {
 	DBusMessage* reply_ptr;
 
-	if (!call(false, JACKDBUS_IFACE_CONTROL, "StopServer", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(false,
+	          JACKDBUS_IFACE_CONTROL,
+	          "StopServer",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return;
 	}
 
@@ -443,14 +527,32 @@ JackDriver::attach(bool launch_daemon)
 
 	dbus_connection_setup_with_g_main(_dbus_connection, NULL);
 
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" DBUS_INTERFACE_DBUS "',member=NameOwnerChanged,arg0='org.jackaudio.service'", NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" DBUS_INTERFACE_DBUS
+	                   "',member=NameOwnerChanged,arg0='org.jackaudio.service'",
+	                   NULL);
 #if defined(USE_FULL_REFRESH)
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY "',member=GraphChanged", NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
+	                   "',member=GraphChanged",
+	                   NULL);
 #else
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY "',member=PortAppeared", NULL);
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY "',member=PortDisappeared", NULL);
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY "',member=PortsConnected", NULL);
-	dbus_bus_add_match(_dbus_connection, "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY "',member=PortsDisconnected", NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
+	                   "',member=PortAppeared",
+	                   NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
+	                   "',member=PortDisappeared",
+	                   NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
+	                   "',member=PortsConnected",
+	                   NULL);
+	dbus_bus_add_match(_dbus_connection,
+	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
+	                   "',member=PortsDisconnected",
+	                   NULL);
 #endif
 	dbus_connection_add_filter(_dbus_connection, dbus_message_hook, this, NULL);
 
@@ -487,14 +589,13 @@ JackDriver::add_port(PatchageModule*    module,
 		return;
 	}
 
-	new PatchagePort(
-		*module,
-		type,
-		name,
-		"",  // TODO: pretty name
-		is_input,
-		_app->conf()->get_port_color(type),
-		_app->show_human_names());
+	new PatchagePort(*module,
+	                 type,
+	                 name,
+	                 "", // TODO: pretty name
+	                 is_input,
+	                 _app->conf()->get_port_color(type),
+	                 _app->show_human_names());
 }
 
 void
@@ -520,7 +621,8 @@ JackDriver::add_port(dbus_uint64_t client_id,
 	}
 
 	ModuleType type = InputOutput;
-	if (_app->conf()->get_module_split(client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
+	if (_app->conf()->get_module_split(
+	        client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
 		if (port_flags & JACKDBUS_PORT_FLAG_INPUT) {
 			type = Input;
 		} else {
@@ -530,7 +632,10 @@ JackDriver::add_port(dbus_uint64_t client_id,
 
 	PatchageModule* module = find_or_create_module(type, client_name);
 
-	add_port(module, local_port_type, port_name, port_flags & JACKDBUS_PORT_FLAG_INPUT);
+	add_port(module,
+	         local_port_type,
+	         port_name,
+	         port_flags & JACKDBUS_PORT_FLAG_INPUT);
 }
 
 void
@@ -539,7 +644,8 @@ JackDriver::remove_port(dbus_uint64_t client_id,
                         dbus_uint64_t port_id,
                         const char*   port_name)
 {
-	PatchagePort* port = _app->canvas()->find_port_by_name(client_name, port_name);
+	PatchagePort* port =
+	    _app->canvas()->find_port_by_name(client_name, port_name);
 	if (!port) {
 		error_msg("Unable to remove unknown port");
 		return;
@@ -564,9 +670,7 @@ JackDriver::remove_port(dbus_uint64_t client_id,
 }
 
 PatchageModule*
-JackDriver::find_or_create_module(
-	ModuleType type,
-	const std::string& name)
+JackDriver::find_or_create_module(ModuleType type, const std::string& name)
 {
 	PatchageModule* module = _app->canvas()->find_module(name, type);
 
@@ -590,15 +694,19 @@ JackDriver::connect_ports(dbus_uint64_t connection_id,
                           dbus_uint64_t port2_id,
                           const char*   port2_name)
 {
-	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
+	PatchagePort* port1 =
+	    _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((std::string)"Unable to connect unknown port '" + port1_name + "' of client '" + client1_name + "'");
+		error_msg((std::string) "Unable to connect unknown port '" +
+		          port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	PatchagePort* port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
+	PatchagePort* port2 =
+	    _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((std::string)"Unable to connect unknown port '" + port2_name + "' of client '" + client2_name + "'");
+		error_msg((std::string) "Unable to connect unknown port '" +
+		          port2_name + "' of client '" + client2_name + "'");
 		return;
 	}
 
@@ -616,15 +724,19 @@ JackDriver::disconnect_ports(dbus_uint64_t connection_id,
                              dbus_uint64_t port2_id,
                              const char*   port2_name)
 {
-	PatchagePort* port1 = _app->canvas()->find_port_by_name(client1_name, port1_name);
+	PatchagePort* port1 =
+	    _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((std::string)"Unable to disconnect unknown port '" + port1_name + "' of client '" + client1_name + "'");
+		error_msg((std::string) "Unable to disconnect unknown port '" +
+		          port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
 
-	PatchagePort* port2 = _app->canvas()->find_port_by_name(client2_name, port2_name);
+	PatchagePort* port2 =
+	    _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((std::string)"Unable to disconnect unknown port '" + port2_name + "' of client '" + client2_name + "'");
+		error_msg((std::string) "Unable to disconnect unknown port '" +
+		          port2_name + "' of client '" + client2_name + "'");
 		return;
 	}
 
@@ -662,7 +774,13 @@ JackDriver::refresh_internal(bool force)
 		version = _graph_version;
 	}
 
-	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "GetGraph", &reply_ptr, DBUS_TYPE_UINT64, &version, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_PATCHBAY,
+	          "GetGraph",
+	          &reply_ptr,
+	          DBUS_TYPE_UINT64,
+	          &version,
+	          DBUS_TYPE_INVALID)) {
 		error_msg("GetGraph() failed.");
 		return;
 	}
@@ -670,7 +788,8 @@ JackDriver::refresh_internal(bool force)
 	reply_signature = dbus_message_get_signature(reply_ptr);
 
 	if (strcmp(reply_signature, "ta(tsa(tsuu))a(tstststst)") != 0) {
-		error_msg((std::string)"GetGraph() reply signature mismatch. " + reply_signature);
+		error_msg((std::string) "GetGraph() reply signature mismatch. " +
+		          reply_signature);
 		goto unref;
 	}
 
@@ -688,8 +807,9 @@ JackDriver::refresh_internal(bool force)
 	_graph_version = version;
 
 	for (dbus_message_iter_recurse(&iter, &clients_array_iter);
-			 dbus_message_iter_get_arg_type(&clients_array_iter) != DBUS_TYPE_INVALID;
-			 dbus_message_iter_next(&clients_array_iter)) {
+	     dbus_message_iter_get_arg_type(&clients_array_iter) !=
+	     DBUS_TYPE_INVALID;
+	     dbus_message_iter_next(&clients_array_iter)) {
 		dbus_message_iter_recurse(&clients_array_iter, &client_struct_iter);
 
 		dbus_message_iter_get_basic(&client_struct_iter, &client_id);
@@ -699,8 +819,9 @@ JackDriver::refresh_internal(bool force)
 		dbus_message_iter_next(&client_struct_iter);
 
 		for (dbus_message_iter_recurse(&client_struct_iter, &ports_array_iter);
-				 dbus_message_iter_get_arg_type(&ports_array_iter) != DBUS_TYPE_INVALID;
-				 dbus_message_iter_next(&ports_array_iter)) {
+		     dbus_message_iter_get_arg_type(&ports_array_iter) !=
+		     DBUS_TYPE_INVALID;
+		     dbus_message_iter_next(&ports_array_iter)) {
 			dbus_message_iter_recurse(&ports_array_iter, &port_struct_iter);
 
 			dbus_message_iter_get_basic(&port_struct_iter, &port_id);
@@ -715,7 +836,12 @@ JackDriver::refresh_internal(bool force)
 			dbus_message_iter_get_basic(&port_struct_iter, &port_type);
 			dbus_message_iter_next(&port_struct_iter);
 
-			add_port(client_id, client_name, port_id, port_name, port_flags, port_type);
+			add_port(client_id,
+			         client_name,
+			         port_id,
+			         port_name,
+			         port_flags,
+			         port_type);
 		}
 
 		dbus_message_iter_next(&client_struct_iter);
@@ -724,9 +850,11 @@ JackDriver::refresh_internal(bool force)
 	dbus_message_iter_next(&iter);
 
 	for (dbus_message_iter_recurse(&iter, &connections_array_iter);
-			 dbus_message_iter_get_arg_type(&connections_array_iter) != DBUS_TYPE_INVALID;
-			 dbus_message_iter_next(&connections_array_iter)) {
-		dbus_message_iter_recurse(&connections_array_iter, &connection_struct_iter);
+	     dbus_message_iter_get_arg_type(&connections_array_iter) !=
+	     DBUS_TYPE_INVALID;
+	     dbus_message_iter_next(&connections_array_iter)) {
+		dbus_message_iter_recurse(&connections_array_iter,
+		                          &connection_struct_iter);
 
 		dbus_message_iter_get_basic(&connection_struct_iter, &client_id);
 		dbus_message_iter_next(&connection_struct_iter);
@@ -755,12 +883,15 @@ JackDriver::refresh_internal(bool force)
 		dbus_message_iter_get_basic(&connection_struct_iter, &connection_id);
 		dbus_message_iter_next(&connection_struct_iter);
 
-		connect_ports(
-			connection_id,
-			client_id, client_name,
-			port_id, port_name,
-			client2_id, client2_name,
-			port2_id, port2_name);
+		connect_ports(connection_id,
+		              client_id,
+		              client_name,
+		              port_id,
+		              port_name,
+		              client2_id,
+		              client2_name,
+		              port2_id,
+		              port2_name);
 	}
 
 unref:
@@ -774,8 +905,7 @@ JackDriver::refresh()
 }
 
 bool
-JackDriver::connect(PatchagePort* src,
-                    PatchagePort* dst)
+JackDriver::connect(PatchagePort* src, PatchagePort* dst)
 {
 	const char* client1_name = src->get_module()->get_label();
 	const char* port1_name   = src->get_label();
@@ -783,12 +913,19 @@ JackDriver::connect(PatchagePort* src,
 	const char* port2_name   = dst->get_label();
 
 	DBusMessage* reply_ptr;
-	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "ConnectPortsByName", &reply_ptr,
-				DBUS_TYPE_STRING, &client1_name,
-				DBUS_TYPE_STRING, &port1_name,
-				DBUS_TYPE_STRING, &client2_name,
-				DBUS_TYPE_STRING, &port2_name,
-				DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_PATCHBAY,
+	          "ConnectPortsByName",
+	          &reply_ptr,
+	          DBUS_TYPE_STRING,
+	          &client1_name,
+	          DBUS_TYPE_STRING,
+	          &port1_name,
+	          DBUS_TYPE_STRING,
+	          &client2_name,
+	          DBUS_TYPE_STRING,
+	          &port2_name,
+	          DBUS_TYPE_INVALID)) {
 		error_msg("ConnectPortsByName() failed.");
 		return false;
 	}
@@ -797,8 +934,7 @@ JackDriver::connect(PatchagePort* src,
 }
 
 bool
-JackDriver::disconnect(PatchagePort* src,
-                       PatchagePort* dst)
+JackDriver::disconnect(PatchagePort* src, PatchagePort* dst)
 {
 	const char* client1_name = src->get_module()->get_label();
 	const char* port1_name   = src->get_label();
@@ -806,12 +942,19 @@ JackDriver::disconnect(PatchagePort* src,
 	const char* port2_name   = dst->get_label();
 
 	DBusMessage* reply_ptr;
-	if (!call(true, JACKDBUS_IFACE_PATCHBAY, "DisconnectPortsByName", &reply_ptr,
-				DBUS_TYPE_STRING, &client1_name,
-				DBUS_TYPE_STRING, &port1_name,
-				DBUS_TYPE_STRING, &client2_name,
-				DBUS_TYPE_STRING, &port2_name,
-				DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_PATCHBAY,
+	          "DisconnectPortsByName",
+	          &reply_ptr,
+	          DBUS_TYPE_STRING,
+	          &client1_name,
+	          DBUS_TYPE_STRING,
+	          &port1_name,
+	          DBUS_TYPE_STRING,
+	          &client2_name,
+	          DBUS_TYPE_STRING,
+	          &port2_name,
+	          DBUS_TYPE_INVALID)) {
 		error_msg("DisconnectPortsByName() failed.");
 		return false;
 	}
@@ -822,18 +965,26 @@ JackDriver::disconnect(PatchagePort* src,
 jack_nframes_t
 JackDriver::buffer_size()
 {
-	DBusMessage* reply_ptr;
+	DBusMessage*  reply_ptr;
 	dbus_uint32_t buffer_size;
 
 	if (_server_responding && !_server_started) {
 		goto fail;
 	}
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetBufferSize", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetBufferSize",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		goto fail;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_UINT32, &buffer_size, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_UINT32,
+	                           &buffer_size,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of GetBufferSize failed.");
@@ -851,12 +1002,18 @@ fail:
 bool
 JackDriver::set_buffer_size(jack_nframes_t size)
 {
-	DBusMessage* reply_ptr;
+	DBusMessage*  reply_ptr;
 	dbus_uint32_t buffer_size;
 
 	buffer_size = size;
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "SetBufferSize", &reply_ptr, DBUS_TYPE_UINT32, &buffer_size, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "SetBufferSize",
+	          &reply_ptr,
+	          DBUS_TYPE_UINT32,
+	          &buffer_size,
+	          DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
@@ -869,13 +1026,21 @@ float
 JackDriver::sample_rate()
 {
 	DBusMessage* reply_ptr;
-	double sample_rate;
+	double       sample_rate;
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetSampleRate", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetSampleRate",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_DOUBLE, &sample_rate, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_DOUBLE,
+	                           &sample_rate,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of GetSampleRate failed.");
@@ -894,13 +1059,19 @@ JackDriver::is_realtime() const
 	dbus_bool_t  realtime;
 
 	JackDriver* me = const_cast<JackDriver*>(this);
-	if (!me->call(true, JACKDBUS_IFACE_CONTROL, "IsRealtime",
-	              &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!me->call(true,
+	              JACKDBUS_IFACE_CONTROL,
+	              "IsRealtime",
+	              &reply_ptr,
+	              DBUS_TYPE_INVALID)) {
 		return false;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &me->_dbus_error, DBUS_TYPE_BOOLEAN,
-	                           &realtime, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &me->_dbus_error,
+	                           DBUS_TYPE_BOOLEAN,
+	                           &realtime,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&me->_dbus_error);
 		error_msg("decoding reply of IsRealtime failed.");
@@ -922,11 +1093,19 @@ JackDriver::get_xruns()
 		return 0;
 	}
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetXruns", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetXruns",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return 0;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_UINT32, &xruns, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_UINT32,
+	                           &xruns,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of GetXruns failed.");
@@ -943,7 +1122,11 @@ JackDriver::reset_xruns()
 {
 	DBusMessage* reply_ptr;
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "ResetXruns", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "ResetXruns",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return;
 	}
 
@@ -960,11 +1143,19 @@ JackDriver::get_max_dsp_load()
 		return 0.0;
 	}
 
-	if (!call(true, JACKDBUS_IFACE_CONTROL, "GetLoad", &reply_ptr, DBUS_TYPE_INVALID)) {
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetLoad",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
 		return 0.0;
 	}
 
-	if (!dbus_message_get_args(reply_ptr, &_dbus_error, DBUS_TYPE_DOUBLE, &load, DBUS_TYPE_INVALID)) {
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_DOUBLE,
+	                           &load,
+	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of GetLoad failed.");
@@ -982,7 +1173,6 @@ JackDriver::get_max_dsp_load()
 	return _max_dsp_load;
 }
 
-
 void
 JackDriver::reset_max_dsp_load()
 {
@@ -990,21 +1180,20 @@ JackDriver::reset_max_dsp_load()
 }
 
 PatchagePort*
-JackDriver::create_port_view(Patchage*     patchage,
-                             const PortID& id)
+JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
-	assert(false);  // we dont use events at all
+	assert(false); // we dont use events at all
 	return NULL;
 }
 
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-	_app->error_msg((std::string)"Jack: " + msg);
+	_app->error_msg((std::string) "Jack: " + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-	_app->info_msg((std::string)"Jack: " + msg);
+	_app->info_msg((std::string) "Jack: " + msg);
 }

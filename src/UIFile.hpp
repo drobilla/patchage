@@ -20,7 +20,7 @@
 #include "patchage_config.h"
 
 #ifdef PATCHAGE_BINLOC
-#    include "binary_location.h"
+#	include "binary_location.h"
 #endif
 
 #include <gtkmm/builder.h>
@@ -30,16 +30,19 @@
 #include <sstream>
 #include <string>
 
-class UIFile {
+class UIFile
+{
 public:
-	inline static bool is_readable(const std::string& filename) {
+	inline static bool is_readable(const std::string& filename)
+	{
 		std::ifstream fs(filename.c_str());
-		const bool fail = fs.fail();
+		const bool    fail = fs.fail();
 		fs.close();
 		return !fail;
 	}
 
-	static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name) {
+	static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name)
+	{
 		std::string ui_filename;
 #ifdef PATCHAGE_BINLOC
 		const std::string bundle = bundle_location();

@@ -18,18 +18,18 @@
 
 #include "patchage_config.h"
 
+#include "Driver.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
-#include "Driver.hpp"
 
 #if defined(HAVE_JACK_DBUS)
-#    include "JackDbusDriver.hpp"
+#	include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-#    include "JackDriver.hpp"
+#	include "JackDriver.hpp"
 #endif
 #ifdef HAVE_ALSA
-#    include "AlsaDriver.hpp"
+#	include "AlsaDriver.hpp"
 #endif
 
 #include <boost/format.hpp>
@@ -69,12 +69,12 @@ PatchageEvent::execute(Patchage* patchage)
 			PatchagePort* port = driver->create_port_view(patchage, _port_1);
 			if (!port) {
 				patchage->error_msg(
-					(format("Unable to create view for port `%1%'")
-					 % _port_1).str());
+				    (format("Unable to create view for port `%1%'") % _port_1)
+				        .str());
 			}
 		} else {
 			patchage->error_msg(
-				(format("Unknown type for port `%1%'") % _port_1).str());
+			    (format("Unknown type for port `%1%'") % _port_1).str());
 		}
 
 	} else if (_type == PORT_DESTRUCTION) {
@@ -87,11 +87,13 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
-			patchage->error_msg((format("Unable to find port `%1%' to connect")
-			                     % _port_1).str());
+			patchage->error_msg(
+			    (format("Unable to find port `%1%' to connect") % _port_1)
+			        .str());
 		else if (!port_2)
-			patchage->error_msg((format("Unable to find port `%1%' to connect")
-			                     % _port_2).str());
+			patchage->error_msg(
+			    (format("Unable to find port `%1%' to connect") % _port_2)
+			        .str());
 		else
 			patchage->canvas()->make_connection(port_1, port_2);
 
@@ -101,11 +103,13 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1)
-			patchage->error_msg((format("Unable to find port `%1%' to disconnect")
-			                     % _port_1).str());
+			patchage->error_msg(
+			    (format("Unable to find port `%1%' to disconnect") % _port_1)
+			        .str());
 		else if (!port_2)
-			patchage->error_msg((format("Unable to find port `%1%' to disconnect")
-			                     % _port_2).str());
+			patchage->error_msg(
+			    (format("Unable to find port `%1%' to disconnect") % _port_2)
+			        .str());
 		else
 			patchage->canvas()->remove_edge_between(port_1, port_2);
 	}

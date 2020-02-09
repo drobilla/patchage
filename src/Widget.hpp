@@ -21,10 +21,12 @@
 
 #include <string>
 
-template <typename W>
-class Widget {
+template<typename W>
+class Widget
+{
 public:
-	Widget(Glib::RefPtr<Gtk::Builder> xml, const std::string& name) {
+	Widget(Glib::RefPtr<Gtk::Builder> xml, const std::string& name)
+	{
 		xml->get_widget(name, _me);
 	}
 
@@ -33,12 +35,12 @@ public:
 
 	void destroy() { delete _me; }
 
-	W*       get()              { return _me; }
-	const W* get() const        { return _me; }
-	W*       operator->()       { return _me; }
+	W*       get() { return _me; }
+	const W* get() const { return _me; }
+	W*       operator->() { return _me; }
 	const W* operator->() const { return _me; }
-	W&       operator*()        { return *_me; }
-	const W& operator*() const  { return *_me; }
+	W&       operator*() { return *_me; }
+	const W& operator*() const { return *_me; }
 
 private:
 	W* _me;

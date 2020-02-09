@@ -15,16 +15,14 @@
  */
 
 #ifdef __APPLE__
+#	include "binary_location.h"
 
-#include "binary_location.h"
+#	include <gtk/gtkrc.h>
 
-#include <gtk/gtkrc.h>
+#	include <unistd.h>
 
-#include <unistd.h>
-
-#include <cstdlib>
-#include <string>
-
+#	include <cstdlib>
+#	include <string>
 #endif
 
 #include "Patchage.hpp"
@@ -78,13 +76,13 @@ main(int argc, char** argv)
 
 	try {
 
-	Glib::thread_init();
+		Glib::thread_init();
 
-	Gtk::Main app(argc, argv);
+		Gtk::Main app(argc, argv);
 
-	Patchage patchage(argc, argv);
-	app.run(*patchage.window());
-	patchage.save();
+		Patchage patchage(argc, argv);
+		app.run(*patchage.window());
+		patchage.save();
 
 	} catch (std::exception& e) {
 		std::cerr << "patchage: error: " << e.what() << std::endl;

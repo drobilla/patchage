@@ -24,8 +24,8 @@
 #include "PatchageModule.hpp"
 #include "PortID.hpp"
 
-#include "ganv/Port.hpp"
 #include "ganv/Module.hpp"
+#include "ganv/Port.hpp"
 
 #include <gtkmm/menu.h>
 #include <gtkmm/menushell.h>
@@ -44,29 +44,30 @@ public:
 	             bool                 is_input,
 	             uint32_t             color,
 	             bool                 show_human_name,
-	             boost::optional<int> order=boost::optional<int>())
-		: Port(module,
-		       (show_human_name && !human_name.empty()) ? human_name : name,
-		       is_input,
-		       color)
-		, _type(type)
-		, _name(name)
-		, _human_name(human_name)
-		, _order(order)
+	             boost::optional<int> order = boost::optional<int>())
+	    : Port(module,
+	           (show_human_name && !human_name.empty()) ? human_name : name,
+	           is_input,
+	           color)
+	    , _type(type)
+	    , _name(name)
+	    , _human_name(human_name)
+	    , _order(order)
 	{
-		signal_event().connect(
-			sigc::mem_fun(this, &PatchagePort::on_event));
+		signal_event().connect(sigc::mem_fun(this, &PatchagePort::on_event));
 	}
 
 	virtual ~PatchagePort() {}
 
 	/** Returns the full name of this port, as "modulename:portname" */
-	std::string full_name() const {
+	std::string full_name() const
+	{
 		PatchageModule* pmod = dynamic_cast<PatchageModule*>(get_module());
 		return std::string(pmod->name()) + ":" + _name;
 	}
 
-	void show_human_name(bool human) {
+	void show_human_name(bool human)
+	{
 		if (human && !_human_name.empty()) {
 			set_label(_human_name.c_str());
 		} else {
@@ -74,24 +75,24 @@ public:
 		}
 	}
 
-	bool on_event(GdkEvent* ev) {
+	bool on_event(GdkEvent* ev)
+	{
 		if (ev->type != GDK_BUTTON_PRESS || ev->button.button != 3) {
 			return false;
 		}
 
 		Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());
-		menu->items().push_back(
-			Gtk::Menu_Helpers::MenuElem(
-				"Disconnect", sigc::mem_fun(this, &Port::disconnect)));
+		menu->items().push_back(Gtk::Menu_Helpers::MenuElem(
+		    "Disconnect", sigc::mem_fun(this, &Port::disconnect)));
 
 		menu->popup(ev->button.button, ev->button.time);
 		return true;
 	}
 
-	PortType                    type()       const { return _type; }
-	const std::string&          name()       const { return _name; }
+	PortType                    type() const { return _type; }
+	const std::string&          name() const { return _name; }
 	const std::string&          human_name() const { return _human_name; }
-	const boost::optional<int>& order()      const { return _order; }
+	const boost::optional<int>& order() const { return _order; }
 
 private:
 	PortType             _type;

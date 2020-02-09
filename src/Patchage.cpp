@@ -24,22 +24,22 @@
 #include "patchage_config.h"
 
 #if defined(HAVE_JACK_DBUS)
-    #include "JackDbusDriver.hpp"
+#	include "JackDbusDriver.hpp"
 #elif defined(PATCHAGE_LIBJACK)
-    #include "JackDriver.hpp"
-    #include <jack/statistics.h>
+#	include "JackDriver.hpp"
+#	include <jack/statistics.h>
 #endif
 
 #ifdef PATCHAGE_JACK_SESSION
-    #include <jack/session.h>
+#	include <jack/session.h>
 #endif
 
 #ifdef HAVE_ALSA
-    #include "AlsaDriver.hpp"
+#	include "AlsaDriver.hpp"
 #endif
 
-#include "ganv/Module.hpp"
 #include "ganv/Edge.hpp"
+#include "ganv/Module.hpp"
 
 #include <boost/format.hpp>
 #include <glib.h>
@@ -53,18 +53,18 @@
 #include <gtkmm/stock.h>
 #include <gtkmm/treemodel.h>
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <fstream>
 
 #ifdef PATCHAGE_GTK_OSX
 
-#include <gtkosxapplication.h>
+#	include <gtkosxapplication.h>
 
 static gboolean
 can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
 {
-  return gtk_widget_is_sensitive(widget);
+	return gtk_widget_is_sensitive(widget);
 }
 
 static void
@@ -102,70 +102,71 @@ port_order(const GanvPort* a, const GanvPort* b, void* data)
 	return 0;
 }
 
-struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord {
+struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord
+{
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
 
 #define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
-	: _xml(UIFile::open("patchage"))
+    : _xml(UIFile::open("patchage"))
 #ifdef HAVE_ALSA
-	, _alsa_driver(NULL)
+    , _alsa_driver(NULL)
 #endif
-	, _jack_driver(NULL)
-	, _conf(NULL)
-	, INIT_WIDGET(_about_win)
-	, INIT_WIDGET(_main_scrolledwin)
-	, INIT_WIDGET(_main_win)
-	, INIT_WIDGET(_main_vbox)
-	, INIT_WIDGET(_menubar)
-	, INIT_WIDGET(_menu_alsa_connect)
-	, INIT_WIDGET(_menu_alsa_disconnect)
-	, INIT_WIDGET(_menu_file_quit)
-	, INIT_WIDGET(_menu_export_image)
-	, INIT_WIDGET(_menu_help_about)
-	, INIT_WIDGET(_menu_jack_connect)
-	, INIT_WIDGET(_menu_jack_disconnect)
-	, INIT_WIDGET(_menu_open_session)
-	, INIT_WIDGET(_menu_save_session)
-	, INIT_WIDGET(_menu_save_close_session)
-	, INIT_WIDGET(_menu_view_arrange)
-	, INIT_WIDGET(_menu_view_sprung_layout)
-	, INIT_WIDGET(_menu_view_messages)
-	, INIT_WIDGET(_menu_view_toolbar)
-	, INIT_WIDGET(_menu_view_refresh)
-	, INIT_WIDGET(_menu_view_human_names)
-	, INIT_WIDGET(_menu_view_sort_ports)
-	, INIT_WIDGET(_menu_zoom_in)
-	, INIT_WIDGET(_menu_zoom_out)
-	, INIT_WIDGET(_menu_zoom_normal)
-	, INIT_WIDGET(_menu_zoom_full)
-	, INIT_WIDGET(_menu_increase_font_size)
-	, INIT_WIDGET(_menu_decrease_font_size)
-	, INIT_WIDGET(_menu_normal_font_size)
-	, INIT_WIDGET(_toolbar)
-	, INIT_WIDGET(_clear_load_but)
-	, INIT_WIDGET(_xrun_progress)
-	, INIT_WIDGET(_buf_size_combo)
-	, INIT_WIDGET(_latency_label)
-	, INIT_WIDGET(_legend_alignment)
-	, INIT_WIDGET(_main_paned)
-	, INIT_WIDGET(_log_scrolledwindow)
-	, INIT_WIDGET(_status_text)
-	, _legend(NULL)
-	, _pane_initialized(false)
-	, _attach(true)
-	, _driver_detached(false)
-	, _refresh(false)
-	, _enable_refresh(true)
-	, _jack_driver_autoattach(true)
+    , _jack_driver(NULL)
+    , _conf(NULL)
+    , INIT_WIDGET(_about_win)
+    , INIT_WIDGET(_main_scrolledwin)
+    , INIT_WIDGET(_main_win)
+    , INIT_WIDGET(_main_vbox)
+    , INIT_WIDGET(_menubar)
+    , INIT_WIDGET(_menu_alsa_connect)
+    , INIT_WIDGET(_menu_alsa_disconnect)
+    , INIT_WIDGET(_menu_file_quit)
+    , INIT_WIDGET(_menu_export_image)
+    , INIT_WIDGET(_menu_help_about)
+    , INIT_WIDGET(_menu_jack_connect)
+    , INIT_WIDGET(_menu_jack_disconnect)
+    , INIT_WIDGET(_menu_open_session)
+    , INIT_WIDGET(_menu_save_session)
+    , INIT_WIDGET(_menu_save_close_session)
+    , INIT_WIDGET(_menu_view_arrange)
+    , INIT_WIDGET(_menu_view_sprung_layout)
+    , INIT_WIDGET(_menu_view_messages)
+    , INIT_WIDGET(_menu_view_toolbar)
+    , INIT_WIDGET(_menu_view_refresh)
+    , INIT_WIDGET(_menu_view_human_names)
+    , INIT_WIDGET(_menu_view_sort_ports)
+    , INIT_WIDGET(_menu_zoom_in)
+    , INIT_WIDGET(_menu_zoom_out)
+    , INIT_WIDGET(_menu_zoom_normal)
+    , INIT_WIDGET(_menu_zoom_full)
+    , INIT_WIDGET(_menu_increase_font_size)
+    , INIT_WIDGET(_menu_decrease_font_size)
+    , INIT_WIDGET(_menu_normal_font_size)
+    , INIT_WIDGET(_toolbar)
+    , INIT_WIDGET(_clear_load_but)
+    , INIT_WIDGET(_xrun_progress)
+    , INIT_WIDGET(_buf_size_combo)
+    , INIT_WIDGET(_latency_label)
+    , INIT_WIDGET(_legend_alignment)
+    , INIT_WIDGET(_main_paned)
+    , INIT_WIDGET(_log_scrolledwindow)
+    , INIT_WIDGET(_status_text)
+    , _legend(NULL)
+    , _pane_initialized(false)
+    , _attach(true)
+    , _driver_detached(false)
+    , _refresh(false)
+    , _enable_refresh(true)
+    , _jack_driver_autoattach(true)
 #ifdef HAVE_ALSA
-	, _alsa_driver_autoattach(true)
+    , _alsa_driver_autoattach(true)
 #endif
 {
 	_conf   = new Configuration();
-	_canvas = std::make_shared<PatchageCanvas>(this, 1600*2, 1200*2);
+	_canvas = std::make_shared<PatchageCanvas>(this, 1600 * 2, 1200 * 2);
 
 	while (argc > 0) {
 		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
@@ -173,8 +174,10 @@ Patchage::Patchage(int argc, char** argv)
 			std::cout << "Visually connect JACK and ALSA Audio/MIDI ports.\n\n";
 			std::cout << "Options:\n";
 			std::cout << "\t-h  --help     Show this help\n";
-			std::cout << "\t-A  --no-alsa  Do not automatically attach to ALSA\n";
-			std::cout << "\t-J  --no-jack  Do not automatically attack to JACK\n";
+			std::cout
+			    << "\t-A  --no-alsa  Do not automatically attach to ALSA\n";
+			std::cout
+			    << "\t-J  --no-jack  Do not automatically attack to JACK\n";
 			exit(0);
 #ifdef HAVE_ALSA
 		} else if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
@@ -191,14 +194,15 @@ Patchage::Patchage(int argc, char** argv)
 	}
 
 	Glib::set_application_name("Patchage");
-	_about_win->property_program_name() = "Patchage";
+	_about_win->property_program_name()   = "Patchage";
 	_about_win->property_logo_icon_name() = "patchage";
 	gtk_window_set_default_icon_name("patchage");
 
 	// Create list model for buffer size selector
-	Glib::RefPtr<Gtk::ListStore> buf_size_store = Gtk::ListStore::create(_buf_size_columns);
+	Glib::RefPtr<Gtk::ListStore> buf_size_store =
+	    Gtk::ListStore::create(_buf_size_columns);
 	for (size_t i = 32; i <= 4096; i *= 2) {
-		Gtk::TreeModel::Row row = *(buf_size_store->append());
+		Gtk::TreeModel::Row row      = *(buf_size_store->append());
 		row[_buf_size_columns.label] = std::to_string(i);
 	}
 
@@ -207,25 +211,27 @@ Patchage::Patchage(int argc, char** argv)
 
 	_main_scrolledwin->add(_canvas->widget());
 
-	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(10);
-	_main_scrolledwin->property_vadjustment().get_value()->set_step_increment(10);
+	_main_scrolledwin->property_hadjustment().get_value()->set_step_increment(
+	    10);
+	_main_scrolledwin->property_vadjustment().get_value()->set_step_increment(
+	    10);
 
 	_main_scrolledwin->signal_scroll_event().connect(
-		sigc::mem_fun(this, &Patchage::on_scroll));
+	    sigc::mem_fun(this, &Patchage::on_scroll));
 	_clear_load_but->signal_clicked().connect(
-		sigc::mem_fun(this, &Patchage::clear_load));
+	    sigc::mem_fun(this, &Patchage::clear_load));
 	_buf_size_combo->signal_changed().connect(
-		sigc::mem_fun(this, &Patchage::buffer_size_changed));
+	    sigc::mem_fun(this, &Patchage::buffer_size_changed));
 	_status_text->signal_size_allocate().connect(
-		sigc::mem_fun(this, &Patchage::on_messages_resized));
+	    sigc::mem_fun(this, &Patchage::on_messages_resized));
 
 #ifdef PATCHAGE_JACK_SESSION
 	_menu_open_session->signal_activate().connect(
-		sigc::mem_fun(this, &Patchage::show_open_session_dialog));
+	    sigc::mem_fun(this, &Patchage::show_open_session_dialog));
 	_menu_save_session->signal_activate().connect(
-		sigc::mem_fun(this, &Patchage::show_save_session_dialog));
+	    sigc::mem_fun(this, &Patchage::show_save_session_dialog));
 	_menu_save_close_session->signal_activate().connect(
-		sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
+	    sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
 #else
 	_menu_open_session->hide();
 	_menu_save_session->hide();
@@ -234,48 +240,48 @@ Patchage::Patchage(int argc, char** argv)
 
 #ifdef HAVE_ALSA
 	_menu_alsa_connect->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::menu_alsa_connect));
+	    sigc::mem_fun(this, &Patchage::menu_alsa_connect));
 	_menu_alsa_disconnect->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::menu_alsa_disconnect));
+	    sigc::mem_fun(this, &Patchage::menu_alsa_disconnect));
 #else
 	_menu_alsa_connect->set_sensitive(false);
 	_menu_alsa_disconnect->set_sensitive(false);
 #endif
 
 	_menu_file_quit->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_quit));
+	    sigc::mem_fun(this, &Patchage::on_quit));
 	_menu_export_image->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_export_image));
+	    sigc::mem_fun(this, &Patchage::on_export_image));
 	_menu_view_refresh->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::refresh));
+	    sigc::mem_fun(this, &Patchage::refresh));
 	_menu_view_human_names->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_human_names));
+	    sigc::mem_fun(this, &Patchage::on_view_human_names));
 	_menu_view_sort_ports->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_sort_ports));
+	    sigc::mem_fun(this, &Patchage::on_view_sort_ports));
 	_menu_view_arrange->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_arrange));
+	    sigc::mem_fun(this, &Patchage::on_arrange));
 	_menu_view_sprung_layout->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_sprung_layout_toggled));
+	    sigc::mem_fun(this, &Patchage::on_sprung_layout_toggled));
 	_menu_view_messages->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_messages));
+	    sigc::mem_fun(this, &Patchage::on_view_messages));
 	_menu_view_toolbar->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_view_toolbar));
+	    sigc::mem_fun(this, &Patchage::on_view_toolbar));
 	_menu_help_about->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_help_about));
+	    sigc::mem_fun(this, &Patchage::on_help_about));
 	_menu_zoom_in->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_zoom_in));
+	    sigc::mem_fun(this, &Patchage::on_zoom_in));
 	_menu_zoom_out->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_zoom_out));
+	    sigc::mem_fun(this, &Patchage::on_zoom_out));
 	_menu_zoom_normal->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_zoom_normal));
+	    sigc::mem_fun(this, &Patchage::on_zoom_normal));
 	_menu_zoom_full->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_zoom_full));
+	    sigc::mem_fun(this, &Patchage::on_zoom_full));
 	_menu_increase_font_size->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_increase_font_size));
+	    sigc::mem_fun(this, &Patchage::on_increase_font_size));
 	_menu_decrease_font_size->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_decrease_font_size));
+	    sigc::mem_fun(this, &Patchage::on_decrease_font_size));
 	_menu_normal_font_size->signal_activate().connect(
-			sigc::mem_fun(this, &Patchage::on_normal_font_size));
+	    sigc::mem_fun(this, &Patchage::on_normal_font_size));
 
 	if (_canvas->supports_sprung_layout()) {
 		_menu_view_sprung_layout->set_active(true);
@@ -289,11 +295,11 @@ Patchage::Patchage(int argc, char** argv)
 		_status_text->modify_text((Gtk::StateType)s, Gdk::Color("#FFFFFF"));
 	}
 
-	_error_tag = Gtk::TextTag::create();
+	_error_tag                        = Gtk::TextTag::create();
 	_error_tag->property_foreground() = "#CC0000";
 	_status_text->get_buffer()->get_tag_table()->add(_error_tag);
 
-	_warning_tag = Gtk::TextTag::create();
+	_warning_tag                        = Gtk::TextTag::create();
 	_warning_tag->property_foreground() = "#C4A000";
 	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
 
@@ -308,26 +314,23 @@ Patchage::Patchage(int argc, char** argv)
 		_canvas->set_port_order(port_order, NULL);
 	}
 
-	_main_win->resize(
-		static_cast<int>(_conf->get_window_size().x),
-		static_cast<int>(_conf->get_window_size().y));
+	_main_win->resize(static_cast<int>(_conf->get_window_size().x),
+	                  static_cast<int>(_conf->get_window_size().y));
 
-	_main_win->move(
-		static_cast<int>(_conf->get_window_location().x),
-		static_cast<int>(_conf->get_window_location().y));
+	_main_win->move(static_cast<int>(_conf->get_window_location().x),
+	                static_cast<int>(_conf->get_window_location().y));
 
 	_legend = new Legend(*_conf);
 	_legend->signal_color_changed.connect(
-		sigc::mem_fun(this, &Patchage::on_legend_color_change));
+	    sigc::mem_fun(this, &Patchage::on_legend_color_change));
 	_legend_alignment->add(*Gtk::manage(_legend));
 	_legend->show_all();
 
 	_about_win->set_transient_for(*_main_win);
 #ifdef __APPLE__
 	try {
-		_about_win->set_logo(
-			Gdk::Pixbuf::create_from_file(
-				bundle_location() + "/Resources/Patchage.icns"));
+		_about_win->set_logo(Gdk::Pixbuf::create_from_file(
+		    bundle_location() + "/Resources/Patchage.icns"));
 	} catch (const Glib::Exception& e) {
 		error_msg((boost::format("failed to set logo (%s)") % e.what()).str());
 	}
@@ -335,12 +338,13 @@ Patchage::Patchage(int argc, char** argv)
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver = new JackDriver(this);
-	_jack_driver->signal_detached.connect(sigc::mem_fun(this, &Patchage::driver_detached));
+	_jack_driver->signal_detached.connect(
+	    sigc::mem_fun(this, &Patchage::driver_detached));
 
-	_menu_jack_connect->signal_activate().connect(sigc::bind(
-			sigc::mem_fun(_jack_driver, &JackDriver::attach), true));
+	_menu_jack_connect->signal_activate().connect(
+	    sigc::bind(sigc::mem_fun(_jack_driver, &JackDriver::attach), true));
 	_menu_jack_disconnect->signal_activate().connect(
-			sigc::mem_fun(_jack_driver, &JackDriver::detach));
+	    sigc::mem_fun(_jack_driver, &JackDriver::detach));
 #endif
 
 #ifdef HAVE_ALSA
@@ -357,28 +361,30 @@ Patchage::Patchage(int argc, char** argv)
 	_status_text->set_right_margin(4);
 	_status_text->set_pixels_below_lines(2);
 
-	g_signal_connect(_main_win->gobj(), "configure-event",
-	                 G_CALLBACK(configure_cb), this);
+	g_signal_connect(
+	    _main_win->gobj(), "configure-event", G_CALLBACK(configure_cb), this);
 
 	_canvas->widget().grab_focus();
 
 	// Idle callback, check if we need to refresh
 	Glib::signal_timeout().connect(
-			sigc::mem_fun(this, &Patchage::idle_callback), 100);
+	    sigc::mem_fun(this, &Patchage::idle_callback), 100);
 
 #ifdef PATCHAGE_GTK_OSX
 	// Set up Mac menu bar
-	GtkosxApplication* osxapp = (GtkosxApplication*)g_object_new(
-		GTKOSX_TYPE_APPLICATION, NULL);
+	GtkosxApplication* osxapp =
+	    (GtkosxApplication*)g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
 	_menubar->hide();
 	_menu_file_quit->hide();
 	gtkosx_application_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
 	gtkosx_application_insert_app_menu_item(
-		osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
-	g_signal_connect(_menubar->gobj(), "can-activate-accel",
-	                 G_CALLBACK(can_activate_cb), NULL);
-	g_signal_connect(osxapp, "NSApplicationWillTerminate",
-	                 G_CALLBACK(terminate_cb), this);
+	    osxapp, GTK_WIDGET(_menu_help_about->gobj()), 0);
+	g_signal_connect(_menubar->gobj(),
+	                 "can-activate-accel",
+	                 G_CALLBACK(can_activate_cb),
+	                 NULL);
+	g_signal_connect(
+	    osxapp, "NSApplicationWillTerminate", G_CALLBACK(terminate_cb), this);
 	gtkosx_application_ready(osxapp);
 #endif
 }
@@ -485,13 +491,15 @@ Patchage::update_toolbar()
 		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
 		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
 		if (sample_rate != 0) {
-			const int latency_ms = lrintf(buffer_size * 1000 / (float)sample_rate);
+			const int latency_ms =
+			    lrintf(buffer_size * 1000 / (float)sample_rate);
 			std::stringstream ss;
-			ss << " frames @ " << (sample_rate / 1000)
-			   << "kHz (" << latency_ms << "ms)";
+			ss << " frames @ " << (sample_rate / 1000) << "kHz (" << latency_ms
+			   << "ms)";
 			_latency_label->set_label(ss.str());
 			_latency_label->set_visible(true);
-			_buf_size_combo->set_active((int)log2f(_jack_driver->buffer_size()) - 5);
+			_buf_size_combo->set_active(
+			    (int)log2f(_jack_driver->buffer_size()) - 5);
 			updating = false;
 			return;
 		}
@@ -588,7 +596,8 @@ void
 Patchage::warning_msg(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _warning_tag);
+	buffer->insert_with_tag(
+	    buffer->end(), std::string("\n") + msg, _warning_tag);
 	_status_text->scroll_to_mark(buffer->get_insert(), 0);
 }
 
@@ -619,28 +628,36 @@ Patchage::connect_widgets()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver->signal_attached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive), false));
+	    sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive),
+	    false));
 	_jack_driver->signal_attached.connect(
-			sigc::mem_fun(this, &Patchage::refresh));
+	    sigc::mem_fun(this, &Patchage::refresh));
 	_jack_driver->signal_attached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive), true));
+	    sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive),
+	    true));
 
 	_jack_driver->signal_detached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive), true));
+	    sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive),
+	    true));
 	_jack_driver->signal_detached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive), false));
+	    sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive),
+	    false));
 #endif
 
 #ifdef HAVE_ALSA
 	_alsa_driver->signal_attached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive), false));
+	    sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive),
+	    false));
 	_alsa_driver->signal_attached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive), true));
+	    sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive),
+	    true));
 
 	_alsa_driver->signal_detached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive), true));
+	    sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive),
+	    true));
 	_alsa_driver->signal_detached.connect(sigc::bind(
-			sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive), false));
+	    sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive),
+	    false));
 #endif
 }
 
@@ -648,11 +665,12 @@ Patchage::connect_widgets()
 void
 Patchage::show_open_session_dialog()
 {
-	Gtk::FileChooserDialog dialog(*_main_win, "Open Session",
-	                              Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	Gtk::FileChooserDialog dialog(
+	    *_main_win, "Open Session", Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
 
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
-	Gtk::Button* open_but = dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
+	Gtk::Button* open_but =
+	    dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
 	open_but->property_has_default() = true;
 
 	if (dialog.run() != Gtk::RESPONSE_OK) {
@@ -685,18 +703,19 @@ print_edge(GanvEdge* edge, void* data)
 		return;
 	}
 
-	(*script) << "jack_connect '" << src->full_name()
-	          << "' '" << dst->full_name() << "' &\n";
+	(*script) << "jack_connect '" << src->full_name() << "' '"
+	          << dst->full_name() << "' &\n";
 }
 
 void
 Patchage::save_session(bool close)
 {
-	Gtk::FileChooserDialog dialog(*_main_win, "Save Session",
-	                              Gtk::FILE_CHOOSER_ACTION_SAVE);
+	Gtk::FileChooserDialog dialog(
+	    *_main_win, "Save Session", Gtk::FILE_CHOOSER_ACTION_SAVE);
 
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
-	Gtk::Button* save_but = dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
+	Gtk::Button* save_but =
+	    dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
 	save_but->property_has_default() = true;
 
 	if (dialog.run() != Gtk::RESPONSE_OK) {
@@ -710,14 +729,14 @@ Patchage::save_session(bool close)
 	}
 
 	path += '/';
-	jack_session_command_t* cmd = jack_session_notify(
-		_jack_driver->client(),
-		NULL,
-		close ? JackSessionSaveAndQuit : JackSessionSave,
-		path.c_str());
+	jack_session_command_t* cmd =
+	    jack_session_notify(_jack_driver->client(),
+	                        NULL,
+	                        close ? JackSessionSaveAndQuit : JackSessionSave,
+	                        path.c_str());
 
 	const std::string script_path = path + "jack-session";
-	std::ofstream script(script_path.c_str());
+	std::ofstream     script(script_path.c_str());
 	script << "#!/bin/sh\n\n";
 
 	const std::string var("${SESSION_DIR}");
@@ -889,9 +908,7 @@ highlight_color(guint c, guint delta)
 	const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
 	const guint a        = c & 0xFF;
 
-	return ((((guint)(r)) << 24) |
-	        (((guint)(g)) << 16) |
-	        (((guint)(b)) << 8) |
+	return ((((guint)(r)) << 24) | (((guint)(g)) << 16) | (((guint)(b)) << 8) |
 	        (((guint)(a))));
 }
 
@@ -912,7 +929,8 @@ update_port_colors(GanvNode* node, void* data)
 	for (PatchageModule::iterator i = pmod->begin(); i != pmod->end(); ++i) {
 		PatchagePort* port = dynamic_cast<PatchagePort*>(*i);
 		if (port) {
-			const uint32_t rgba = patchage->conf()->get_port_color(port->type());
+			const uint32_t rgba =
+			    patchage->conf()->get_port_color(port->type());
 			port->set_fill_color(rgba);
 			port->set_border_color(highlight_color(rgba, 0x20));
 		}
@@ -932,7 +950,9 @@ update_edge_color(GanvEdge* edge, void* data)
 }
 
 void
-Patchage::on_legend_color_change(int id, const std::string& label, uint32_t rgba)
+Patchage::on_legend_color_change(int                id,
+                                 const std::string& label,
+                                 uint32_t           rgba)
 {
 	_conf->set_port_color((PortType)id, rgba);
 	_canvas->for_each_node(update_port_colors, this);
@@ -949,7 +969,7 @@ Patchage::on_messages_resized(Gtk::Allocation& alloc)
 void
 Patchage::save()
 {
-	_conf->set_zoom(_canvas->get_zoom());  // Can be changed by ganv
+	_conf->set_zoom(_canvas->get_zoom()); // Can be changed by ganv
 	_conf->save();
 }
 
@@ -968,14 +988,15 @@ Patchage::on_quit()
 void
 Patchage::on_export_image()
 {
-	Gtk::FileChooserDialog dialog("Export Image", Gtk::FILE_CHOOSER_ACTION_SAVE);
+	Gtk::FileChooserDialog dialog("Export Image",
+	                              Gtk::FILE_CHOOSER_ACTION_SAVE);
 	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
 	dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
 	dialog.set_default_response(Gtk::RESPONSE_OK);
 	dialog.set_transient_for(*_main_win);
 
 	typedef std::map<std::string, std::string> Types;
-	Types types;
+	Types                                      types;
 	types["*.dot"] = "Graphviz DOT";
 	types["*.pdf"] = "Portable Document Format";
 	types["*.ps"]  = "PostScript";
@@ -997,9 +1018,12 @@ Patchage::on_export_image()
 	if (dialog.run() == Gtk::RESPONSE_OK) {
 		const std::string filename = dialog.get_filename();
 		if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
-			Gtk::MessageDialog confirm(
-				std::string("File exists!  Overwrite ") + filename + "?",
-				true, Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+			Gtk::MessageDialog confirm(std::string("File exists!  Overwrite ") +
+			                               filename + "?",
+			                           true,
+			                           Gtk::MESSAGE_WARNING,
+			                           Gtk::BUTTONS_YES_NO,
+			                           true);
 			confirm.set_transient_for(dialog);
 			if (confirm.run() != Gtk::RESPONSE_YES) {
 				return;
@@ -1021,13 +1045,14 @@ Patchage::on_view_messages()
 			const int max_pos     = _main_paned->get_allocation().get_height();
 			const int min_height  = (line_height + 2 * pad);
 			const int conf_height = _conf->get_messages_height();
-			_main_paned->set_position(max_pos - std::max(conf_height, min_height));
+			_main_paned->set_position(max_pos -
+			                          std::max(conf_height, min_height));
 			_pane_initialized = true;
 		}
 
 		_log_scrolledwindow->show();
-		_status_text->scroll_to_mark(
-			_status_text->get_buffer()->get_insert(), 0);
+		_status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(),
+		                             0);
 		_conf->set_show_messages(true);
 	} else {
 		_log_scrolledwindow->hide();
@@ -1067,4 +1092,3 @@ Patchage::buffer_size_changed()
 	}
 #endif
 }
-

@@ -20,19 +20,21 @@
 #include "PatchageCanvas.hpp"
 #include "PatchagePort.hpp"
 
-PatchageModule::PatchageModule(
-	Patchage* app, const std::string& name, ModuleType type, double x, double y)
-	: Module(*app->canvas().get(), name, x, y)
-	, _app(app)
-	, _menu(NULL)
-	, _name(name)
-	, _type(type)
+PatchageModule::PatchageModule(Patchage*          app,
+                               const std::string& name,
+                               ModuleType         type,
+                               double             x,
+                               double             y)
+    : Module(*app->canvas().get(), name, x, y)
+    , _app(app)
+    , _menu(NULL)
+    , _name(name)
+    , _type(type)
 {
-	signal_event().connect(
-		sigc::mem_fun(this, &PatchageModule::on_event));
+	signal_event().connect(sigc::mem_fun(this, &PatchageModule::on_event));
 
 	signal_moved().connect(
-		sigc::mem_fun(this, &PatchageModule::store_location));
+	    sigc::mem_fun(this, &PatchageModule::store_location));
 
 	// Set as source by default, turned off if input ports added
 	set_is_source(true);
@@ -72,22 +74,19 @@ PatchageModule::update_menu()
 bool
 PatchageModule::show_menu(GdkEventButton* ev)
 {
-	_menu = new Gtk::Menu();
+	_menu                      = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
 	if (_type == InputOutput) {
-		items.push_back(
-			Gtk::Menu_Helpers::MenuElem(
-				"_Split", sigc::mem_fun(this, &PatchageModule::split)));
+		items.push_back(Gtk::Menu_Helpers::MenuElem(
+		    "_Split", sigc::mem_fun(this, &PatchageModule::split)));
 		update_menu();
 	} else {
-		items.push_back(
-			Gtk::Menu_Helpers::MenuElem(
-				"_Join", sigc::mem_fun(this, &PatchageModule::join)));
+		items.push_back(Gtk::Menu_Helpers::MenuElem(
+		    "_Join", sigc::mem_fun(this, &PatchageModule::join)));
 	}
-	items.push_back(
-		Gtk::Menu_Helpers::MenuElem(
-			"_Disconnect All",
-			sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
+	items.push_back(Gtk::Menu_Helpers::MenuElem(
+	    "_Disconnect All",
+	    sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
 
 	_menu->popup(ev->button, ev->time);
 	return true;
@@ -110,8 +109,7 @@ PatchageModule::load_location()
 	if (_app->conf()->get_module_location(_name, _type, loc))
 		move_to(loc.x, loc.y);
 	else
-		move_to(20 + rand() % 640,
-		        20 + rand() % 480);
+		move_to(20 + rand() % 640, 20 + rand() % 480);
 }
 
 void

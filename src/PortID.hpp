@@ -22,39 +22,60 @@
 #include "PatchagePort.hpp"
 
 #ifdef PATCHAGE_LIBJACK
-  #include <jack/jack.h>
+#	include <jack/jack.h>
 #endif
 #ifdef HAVE_ALSA
-  #include <alsa/asoundlib.h>
+#	include <alsa/asoundlib.h>
 #endif
 
 #include <cstring>
 #include <iostream>
 
-struct PortID {
-	PortID() : type(NULL_PORT_ID) { memset(&id, 0, sizeof(id)); }
-	PortID(const PortID& copy) : type(copy.type) {
+struct PortID
+{
+	PortID()
+	    : type(NULL_PORT_ID)
+	{
+		memset(&id, 0, sizeof(id));
+	}
+	PortID(const PortID& copy)
+	    : type(copy.type)
+	{
 		memcpy(&id, &copy.id, sizeof(id));
 	}
 
-	enum { NULL_PORT_ID, JACK_ID, ALSA_ADDR } type;
+	enum
+	{
+		NULL_PORT_ID,
+		JACK_ID,
+		ALSA_ADDR
+	} type;
 
 #ifdef PATCHAGE_LIBJACK
-	PortID(jack_port_id_t jack_id, bool ign=false)
-		: type(JACK_ID) { id.jack_id = jack_id; }
+	PortID(jack_port_id_t jack_id, bool ign = false)
+	    : type(JACK_ID)
+	{
+		id.jack_id = jack_id;
+	}
 #endif
 
 #ifdef HAVE_ALSA
 	PortID(snd_seq_addr_t addr, bool in)
-		: type(ALSA_ADDR) { id.alsa_addr = addr; id.is_input = in; }
+	    : type(ALSA_ADDR)
+	{
+		id.alsa_addr = addr;
+		id.is_input  = in;
+	}
 #endif
 
-	union {
+	union
+	{
 #ifdef PATCHAGE_LIBJACK
 		jack_port_id_t jack_id;
 #endif
 #ifdef HAVE_ALSA
-		struct {
+		struct
+		{
 			snd_seq_addr_t alsa_addr;
 			bool           is_input : 1;
 		};
@@ -75,8 +96,9 @@ operator<<(std::ostream& os, const PortID& id)
 		break;
 	case PortID::ALSA_ADDR:
 #ifdef HAVE_ALSA
-		return os << "alsa:" << (int)id.id.alsa_addr.client << ":" << (int)id.id.alsa_addr.port
-		          << ":" << (id.id.is_input ? "in" : "out");
+		return os << "alsa:" << (int)id.id.alsa_addr.client << ":"
+		          << (int)id.id.alsa_addr.port << ":"
+		          << (id.id.is_input ? "in" : "out");
 #endif
 		break;
 	}
@@ -100,12 +122,12 @@ operator<(const PortID& a, const PortID& b)
 		break;
 	case PortID::ALSA_ADDR:
 #ifdef HAVE_ALSA
-		if ((a.id.alsa_addr.client < b.id.alsa_addr.client)
-		    || ((a.id.alsa_addr.client == b.id.alsa_addr.client)
-		        && a.id.alsa_addr.port < b.id.alsa_addr.port)) {
+		if ((a.id.alsa_addr.client < b.id.alsa_addr.client) ||
+		    ((a.id.alsa_addr.client == b.id.alsa_addr.client) &&
+		     a.id.alsa_addr.port < b.id.alsa_addr.port)) {
 			return true;
-		} else if (a.id.alsa_addr.client == b.id.alsa_addr.client
-		           && a.id.alsa_addr.port == b.id.alsa_addr.port) {
+		} else if (a.id.alsa_addr.client == b.id.alsa_addr.client &&
+		           a.id.alsa_addr.port == b.id.alsa_addr.port) {
 			return (a.id.is_input < b.id.is_input);
 		} else {
 			return false;

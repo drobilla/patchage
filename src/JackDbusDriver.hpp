@@ -17,14 +17,14 @@
 #ifndef PATCHAGE_JACKDBUSDRIVER_HPP
 #define PATCHAGE_JACKDBUSDRIVER_HPP
 
-#include <string>
-#include <jack/jack.h>
-#include <jack/statistics.h>
-#include <glibmm/thread.h>
-#include <dbus/dbus.h>
 #include "Driver.hpp"
 #include "Patchage.hpp"
 #include "PatchageModule.hpp"
+#include <dbus/dbus.h>
+#include <glibmm/thread.h>
+#include <jack/jack.h>
+#include <jack/statistics.h>
+#include <string>
 
 class PatchageEvent;
 class PatchageCanvas;
@@ -45,13 +45,9 @@ public:
 	void refresh();
 	void destroy_all();
 
-	bool connect(
-		PatchagePort* src,
-	    PatchagePort* dst);
+	bool connect(PatchagePort* src, PatchagePort* dst);
 
-	bool disconnect(
-		PatchagePort* src,
-		PatchagePort* dst);
+	bool disconnect(PatchagePort* src, PatchagePort* dst);
 
 	size_t get_xruns();
 	void   reset_xruns();
@@ -64,67 +60,58 @@ public:
 
 	void process_events(Patchage* app) {}
 
-	PatchagePort* create_port_view(
-			Patchage*     patchage,
-			const PortID& ref);
+	PatchagePort* create_port_view(Patchage* patchage, const PortID& ref);
 
 private:
 	void error_msg(const std::string& msg) const;
 	void info_msg(const std::string& msg) const;
 
-	PatchageModule* find_or_create_module(
-		ModuleType         type,
-		const std::string& name);
+	PatchageModule*
+	find_or_create_module(ModuleType type, const std::string& name);
 
-	void add_port(
-		PatchageModule*    module,
-		PortType           type,
-		const std::string& name,
-		bool               is_input);
+	void add_port(PatchageModule*    module,
+	              PortType           type,
+	              const std::string& name,
+	              bool               is_input);
 
-	void add_port(
-		dbus_uint64_t client_id,
-		const char*   client_name,
-		dbus_uint64_t port_id,
-		const char*   port_name,
-		dbus_uint32_t port_flags,
-		dbus_uint32_t port_type);
+	void add_port(dbus_uint64_t client_id,
+	              const char*   client_name,
+	              dbus_uint64_t port_id,
+	              const char*   port_name,
+	              dbus_uint32_t port_flags,
+	              dbus_uint32_t port_type);
 
-	void remove_port(
-		dbus_uint64_t client_id,
-		const char*   client_name,
-		dbus_uint64_t port_id,
-		const char*   port_name);
+	void remove_port(dbus_uint64_t client_id,
+	                 const char*   client_name,
+	                 dbus_uint64_t port_id,
+	                 const char*   port_name);
 
-	void connect_ports(
-		dbus_uint64_t connection_id,
-		dbus_uint64_t client1_id,
-		const char*   client1_name,
-		dbus_uint64_t port1_id,
-		const char*   port1_name,
-		dbus_uint64_t client2_id,
-		const char*   client2_name,
-		dbus_uint64_t port2_id,
-		const char*   port2_name);
+	void connect_ports(dbus_uint64_t connection_id,
+	                   dbus_uint64_t client1_id,
+	                   const char*   client1_name,
+	                   dbus_uint64_t port1_id,
+	                   const char*   port1_name,
+	                   dbus_uint64_t client2_id,
+	                   const char*   client2_name,
+	                   dbus_uint64_t port2_id,
+	                   const char*   port2_name);
 
-	void disconnect_ports(
-		dbus_uint64_t connection_id,
-		dbus_uint64_t client1_id,
-		const char*   client1_name,
-		dbus_uint64_t port1_id,
-		const char*   port1_name,
-		dbus_uint64_t client2_id,
-		const char*   client2_name,
-		dbus_uint64_t port2_id,
-		const char*   port2_name);
+	void disconnect_ports(dbus_uint64_t connection_id,
+	                      dbus_uint64_t client1_id,
+	                      const char*   client1_name,
+	                      dbus_uint64_t port1_id,
+	                      const char*   port1_name,
+	                      dbus_uint64_t client2_id,
+	                      const char*   client2_name,
+	                      dbus_uint64_t port2_id,
+	                      const char*   port2_name);
 
-	bool call(
-		bool          response_expected,
-		const char*   iface,
-		const char*   method,
-		DBusMessage** reply_ptr_ptr,
-		int           in_type,
-		...);
+	bool call(bool          response_expected,
+	          const char*   iface,
+	          const char*   method,
+	          DBusMessage** reply_ptr_ptr,
+	          int           in_type,
+	          ...);
 
 	void update_attached();
 
@@ -136,10 +123,9 @@ private:
 
 	void refresh_internal(bool force);
 
-	static DBusHandlerResult dbus_message_hook(
-		DBusConnection *connection,
-		DBusMessage *message,
-		void *me);
+	static DBusHandlerResult dbus_message_hook(DBusConnection* connection,
+	                                           DBusMessage*    message,
+	                                           void*           me);
 
 	void on_jack_appeared();
 
