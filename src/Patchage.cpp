@@ -926,8 +926,8 @@ update_port_colors(GanvNode* node, void* data)
 		return;
 	}
 
-	for (PatchageModule::iterator i = pmod->begin(); i != pmod->end(); ++i) {
-		PatchagePort* port = dynamic_cast<PatchagePort*>(*i);
+	for (Ganv::Port* p : *pmod) {
+		PatchagePort* port = dynamic_cast<PatchagePort*>(p);
 		if (port) {
 			const uint32_t rgba =
 			    patchage->conf()->get_port_color(port->type());
@@ -1001,10 +1001,10 @@ Patchage::on_export_image()
 	types["*.pdf"] = "Portable Document Format";
 	types["*.ps"]  = "PostScript";
 	types["*.svg"] = "Scalable Vector Graphics";
-	for (Types::const_iterator t = types.begin(); t != types.end(); ++t) {
+	for (const auto& t : types) {
 		Gtk::FileFilter filt;
-		filt.add_pattern(t->first);
-		filt.set_name(t->second);
+		filt.add_pattern(t.first);
+		filt.set_name(t.second);
 		dialog.add_filter(filt);
 	}
 

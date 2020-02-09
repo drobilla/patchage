@@ -138,15 +138,16 @@ PatchageModule::join()
 void
 PatchageModule::menu_disconnect_all()
 {
-	for (iterator p = begin(); p != end(); ++p)
-		(*p)->disconnect();
+	for (Ganv::Port* p : *this) {
+		p->disconnect();
+	}
 }
 
 PatchagePort*
 PatchageModule::get_port(const std::string& name)
 {
-	for (iterator p = begin(); p != end(); ++p) {
-		PatchagePort* pport = dynamic_cast<PatchagePort*>(*p);
+	for (Ganv::Port* p : *this) {
+		PatchagePort* pport = dynamic_cast<PatchagePort*>(p);
 		if (pport && pport->name() == name) {
 			return pport;
 		}

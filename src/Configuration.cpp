@@ -290,11 +290,10 @@ Configuration::save()
 	// Try to find a writable configuration file
 	const std::vector<std::string> filenames = get_filenames();
 	std::ofstream                  file;
-	for (size_t i = 0; i < filenames.size(); ++i) {
-		file.open(filenames[i].c_str(), std::ios::out);
+	for (const std::string& filename : filenames) {
+		file.open(filename.c_str(), std::ios::out);
 		if (file.good()) {
-			std::cout << "Writing configuration to " << filenames[i]
-			          << std::endl;
+			std::cout << "Writing configuration to " << filename << std::endl;
 			break;
 		}
 	}
@@ -325,12 +324,9 @@ Configuration::save()
 	}
 	file << std::dec << std::nouppercase;
 
-	for (std::map<std::string, ModuleSettings>::iterator i =
-	         _module_settings.begin();
-	     i != _module_settings.end();
-	     ++i) {
-		const ModuleSettings& settings = (*i).second;
-		const std::string&    name     = (*i).first;
+	for (const auto& s : _module_settings) {
+		const std::string&    name     = s.first;
+		const ModuleSettings& settings = s.second;
 
 		if (settings.split) {
 			if (settings.input_location && settings.output_location) {

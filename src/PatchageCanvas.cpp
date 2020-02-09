@@ -186,10 +186,8 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 		i = next;
 	}
 
-	for (std::set<PatchageModule*>::iterator i = data.empty.begin();
-	     i != data.empty.end();
-	     ++i) {
-		delete *i;
+	for (PatchageModule* m : data.empty) {
+		delete m;
 	}
 }
 
