@@ -1,89 +1,89 @@
 patchage (1.0.1) unstable;
 
-  * Support Jack CV and OSC via metadata
   * Add support for exporting canvas as PDF
-  * Save window size and position when closed via window manager
-  * Order ports deterministically
   * Bring back Jack buffer size selector
-  * Style messages pane to match canvas
-  * Don't install 512x512 icons
-  * Restore messages pane visibility and height
   * Configure based on compiler target OS for cross-compilation
+  * Don't install 512x512 icons
   * Fix compilation with Jack DBus
+  * Order ports deterministically
+  * Restore messages pane visibility and height
+  * Save window size and position when closed via window manager
+  * Style messages pane to match canvas
+  * Support Jack CV and OSC via metadata
   * Upgrade to waf 2.0.19
 
- -- David Robillard <d@drobilla.net>  Fri, 14 Oct 2016 19:06:17 -0400
+ -- David Robillard <d@drobilla.net>  Fri, 14 Oct 2016 23:06:17 +0000
 
 patchage (1.0.0) stable;
 
   * Allow removing connections by selecting their handle and pressing delete
-  * Remove Raul dependency
-  * Switch from FlowCanvas to Ganv (much improved looks and performance)
-  * Remove LASH support and simplify UI
   * Fix font configuration on OSX
-  * Use Mac style key bindings on OSX
   * Integrate with Mac menu bar on OSX
-  * Support for DOT export for rendering with GraphViz
-  * Use XDG_CONFIG_HOME instead of ~/.patchagerc
   * Make port colours configurable
+  * Remove LASH support and simplify UI
+  * Remove Raul dependency
+  * Support for DOT export for rendering with GraphViz
   * Support port pretty names via new Jack metadata API
+  * Switch from FlowCanvas to Ganv (much improved looks and performance)
+  * Use Mac style key bindings on OSX
+  * Use XDG_CONFIG_HOME instead of ~/.patchagerc
 
- -- David Robillard <d@drobilla.net>  Sun, 27 Apr 2014 23:46:10 -0400
+ -- David Robillard <d@drobilla.net>  Mon, 28 Apr 2014 03:46:10 +0000
 
 patchage (0.5.0) stable;
 
-  * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
   * Add -J (--no-jack) command line option
-  * Add proper --help output and man page
-  * Improve performance (dramatically for large setups)
-  * Fancy console info/warning/error logging
-  * Fix minor memory leaks and reduce memory consumption
-  * Fix handling of ALSA duplex ports
-  * Hide "split" module menu item when it is useless
-  * Fix Jack D-Bus support
-  * Mac OS X .app bundle port
-  * Bump FlowCanvas dependency to 0.7.0
-  * Add more/larger icons
   * Add missing COPYING file to distribution
+  * Add more/larger icons
+  * Add proper --help output and man page
+  * Auto-arrange interface modules sanely (align corresponding inputs/outputs)
   * Build system and code quality improvements
+  * Bump FlowCanvas dependency to 0.7.0
+  * Fancy console info/warning/error logging
+  * Fix Jack D-Bus support
+  * Fix handling of ALSA duplex ports
+  * Fix minor memory leaks and reduce memory consumption
+  * Hide "split" module menu item when it is useless
+  * Improve performance (dramatically for large setups)
+  * Mac OS X .app bundle port
 
- -- David Robillard <d@drobilla.net>  Tue, 11 Jan 2011 17:42:07 -0500
+ -- David Robillard <d@drobilla.net>  Tue, 11 Jan 2011 22:42:07 +0000
 
 patchage (0.4.5) stable;
 
-  * Install SVG icon
+  * Bump FlowCanvas dependency to 0.6.0
   * Fix compilation without Jack
   * Improve performance when dragging modules
-  * Bump FlowCanvas dependency to 0.6.0
+  * Install SVG icon
   * Upgrade to waf 1.5.18
 
- -- David Robillard <d@drobilla.net>  Fri, 03 Sep 2010 20:24:36 -0400
+ -- David Robillard <d@drobilla.net>  Sat, 04 Sep 2010 00:24:36 +0000
 
 patchage (0.4.4) stable;
 
   * Fix incorrect icon install paths
 
- -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 10:17:37 -0500
+ -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 15:17:37 +0000
 
 patchage (0.4.3) stable;
 
-  * Switch to waf build system
-  * Fix compilation with GCC 4.4
   * Better ALSA support
-  * Massive performance improvements when ALSA is enabled
   * Center on startup
+  * Fix compilation with GCC 4.4
+  * Massive performance improvements when ALSA is enabled
+  * Switch to waf build system
 
- -- David Robillard <d@drobilla.net>  Tue, 08 Dec 2009 21:13:37 -0500
+ -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 02:13:37 +0000
 
 patchage (0.4.2) stable;
 
   * LASH support via D-BUS from ladi-patchage branch
   * Remove old LASH support via liblash
 
- -- David Robillard <d@drobilla.net>  Tue, 09 Sep 2008 15:41:04 -0400
+ -- David Robillard <d@drobilla.net>  Tue, 09 Sep 2008 19:41:04 +0000
 
 patchage (0.4.1) stable;
 
   * Initial release
 
- -- David Robillard <d@drobilla.net>  Sun, 06 Jul 2008 17:19:55 -0400
+ -- David Robillard <d@drobilla.net>  Sun, 06 Jul 2008 21:19:55 +0000
