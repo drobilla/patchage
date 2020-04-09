@@ -1,4 +1,4 @@
-patchage (1.0.1) unstable;
+patchage (1.0.2) stable;
 
   * Add support for exporting canvas as PDF
   * Bring back Jack buffer size selector
@@ -12,7 +12,7 @@ patchage (1.0.1) unstable;
   * Support Jack CV and OSC via metadata
   * Upgrade to waf 2.0.19
 
- -- David Robillard <d@drobilla.net>  Fri, 14 Oct 2016 23:06:17 +0000
+ -- David Robillard <d@drobilla.net>  Thu, 09 Apr 2020 14:29:59 +0200
 
 patchage (1.0.0) stable;
 
