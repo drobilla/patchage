@@ -517,7 +517,7 @@ AlsaDriver::create_refresh_port()
 {
 	snd_seq_port_info_t* port_info = nullptr;
 	snd_seq_port_info_alloca(&port_info);
-	snd_seq_port_info_set_name(port_info, "System Announcement Reciever");
+	snd_seq_port_info_set_name(port_info, "System Announcement Receiver");
 	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
 	snd_seq_port_info_set_capability(port_info,
 	                                 SND_SEQ_PORT_CAP_WRITE |
