@@ -7,3 +7,4 @@ Terminal=false
 Icon=@APP_INSTALL_NAME@
 Type=Application
 Categories=AudioVideo;Audio;
+Keywords=music;midi;alsa;jack;
