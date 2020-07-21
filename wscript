@@ -80,6 +80,8 @@ def configure(conf):
                         defines     = ['_GNU_SOURCE'],
                         lib         = ['dl'],
                         define_name = 'HAVE_DLADDR',
+                        return_type = 'int',
+                        arg_types   = 'const void*,Dl_info*',
                         mandatory   = False)
 
     # Use Jack D-Bus if requested (only one jack driver is allowed)
@@ -103,6 +105,11 @@ def configure(conf):
                                     header_name = 'jack/metadata.h',
                                     define_name = 'HAVE_JACK_METADATA',
                                     uselib      = 'JACK',
+                                    return_type = 'int',
+                                    arg_types   = '''jack_uuid_t,
+                                                     const char*,
+                                                     char**,
+                                                     char**''',
                                     mandatory   = False)
 
     # Use Alsa if present unless --no-alsa
