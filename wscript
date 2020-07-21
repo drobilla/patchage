@@ -50,6 +50,64 @@ def configure(conf):
     conf.load('autowaf', cache=True)
     autowaf.set_cxx_lang(conf, 'c++11')
 
+    if Options.options.ultra_strict:
+        autowaf.add_compiler_flags(conf.env, '*', {
+            'clang': [
+                '-Wno-alloca',
+                '-Wno-cast-qual',
+                '-Wno-covered-switch-default',
+                '-Wno-documentation-unknown-command',
+                '-Wno-double-promotion',
+                '-Wno-float-conversion',
+                '-Wno-float-equal',
+                '-Wno-implicit-float-conversion',
+                '-Wno-padded',
+                '-Wno-pedantic',
+                '-Wno-shadow',
+                '-Wno-shorten-64-to-32',
+                '-Wno-sign-conversion',
+                '-Wno-stack-protector',
+                '-Wno-unused-parameter',
+            ],
+            'gcc': [
+                '-Wno-alloca',
+                '-Wno-conversion',
+                '-Wno-float-equal',
+                '-Wno-padded',
+                '-Wno-pedantic',
+                '-Wno-shadow',
+                '-Wno-stack-protector',
+                '-Wno-unused-parameter',
+            ],
+        })
+
+        autowaf.add_compiler_flags(conf.env, 'c', {
+            'clang': [
+                '-Wno-bad-function-cast',
+                '-Wno-missing-noreturn',
+            ],
+            'gcc': [
+                '-Wno-bad-function-cast',
+                '-Wno-c++-compat',
+            ],
+        })
+
+        autowaf.add_compiler_flags(conf.env, 'cxx', {
+            'clang': [
+                '-Wno-deprecated-copy',
+                '-Wno-extra-semi-stmt',
+                '-Wno-old-style-cast',
+                '-Wno-weak-vtables',
+                '-Wno-zero-as-null-pointer-constant',
+            ],
+            'gcc': [
+                '-Wno-conditionally-supported',
+                '-Wno-effc++',
+                '-Wno-old-style-cast',
+                '-Wno-suggest-override',
+            ],
+        })
+
     conf.check_pkg('dbus-1',
                    uselib_store='DBUS',
                    system=True,
