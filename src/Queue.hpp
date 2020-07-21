@@ -115,8 +115,6 @@ Queue<T>::push(const T& elem)
 /** Pop an item off the front of the queue - realtime-safe, not thread-safe.
  *
  * It is a fatal error to call pop() when the queue is empty.
- *
- * @returns the element popped.
  */
 template<typename T>
 inline void
