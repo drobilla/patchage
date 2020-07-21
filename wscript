@@ -9,7 +9,7 @@ from waflib import Options, Utils
 from waflib.extras import autowaf
 
 # Version of this package (even if built as a child)
-PATCHAGE_VERSION = '1.0.2'
+PATCHAGE_VERSION = '1.0.3'
 
 # Variables for 'waf dist'
 APPNAME = 'patchage'
@@ -50,16 +50,26 @@ def configure(conf):
     conf.load('autowaf', cache=True)
     autowaf.set_cxx_lang(conf, 'c++11')
 
-    conf.check_pkg('dbus-1', uselib_store='DBUS', mandatory=False)
-    conf.check_pkg('dbus-glib-1', uselib_store='DBUS_GLIB', mandatory=False)
-    conf.check_pkg('gthread-2.0 >= 2.14.0', uselib_store='GTHREAD')
-    conf.check_pkg('glibmm-2.4 >= 2.14.0', uselib_store='GLIBMM')
-    conf.check_pkg('gtkmm-2.4 >= 2.12.0', uselib_store='GTKMM')
+    conf.check_pkg('dbus-1',
+                   uselib_store='DBUS',
+                   system=True,
+                   mandatory=False)
+
+    conf.check_pkg('dbus-glib-1',
+                   uselib_store='DBUS_GLIB',
+                   system=True,
+                   mandatory=False)
+
+    conf.check_pkg('gthread-2.0 >= 2.14.0', system=True, uselib_store='GTHREAD')
+    conf.check_pkg('glibmm-2.4 >= 2.14.0', system=True, uselib_store='GLIBMM')
+    conf.check_pkg('gtkmm-2.4 >= 2.12.0', system=True, uselib_store='GTKMM')
+
     conf.check_pkg('ganv-1 >= 1.5.2', uselib_store='GANV')
 
     if conf.env.DEST_OS == 'darwin':
         conf.check_pkg('gtk-mac-integration',
                        uselib_store='GTK_OSX',
+                       system=True,
                        mandatory=False)
         if conf.env.HAVE_GTK_OSX:
             conf.define('PATCHAGE_GTK_OSX', 1)
@@ -80,7 +90,11 @@ def configure(conf):
     if use_jack_dbus:
         conf.define('HAVE_JACK_DBUS', 1)
     else:
-        conf.check_pkg('jack >= 0.120.0', uselib_store='JACK', mandatory=False)
+        conf.check_pkg('jack >= 0.120.0',
+                       uselib_store='JACK',
+                       system=True,
+                       mandatory=False)
+
         if conf.env.HAVE_JACK:
             conf.define('PATCHAGE_LIBJACK', 1)
             if Options.options.jack_session_manage:
@@ -93,7 +107,10 @@ def configure(conf):
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
-        conf.check_pkg('alsa', uselib_store='ALSA', mandatory=False)
+        conf.check_pkg('alsa',
+                       uselib_store='ALSA',
+                       system=True,
+                       mandatory=False)
 
     # Find files at binary location if we have dladdr unless --no-binloc
     if not Options.options.no_binloc and conf.is_defined('HAVE_DLADDR'):
