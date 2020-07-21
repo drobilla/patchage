@@ -108,7 +108,7 @@ PatchageCanvas::find_port(const PortID& id)
 		    (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
 		if (module)
-			pp = dynamic_cast<PatchagePort*>(module->get_port(port_name));
+			pp = module->get_port(port_name);
 
 		if (pp)
 			index_port(id, pp);
@@ -202,8 +202,7 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 	for (ModuleIndex::const_iterator j = i;
 	     j != _module_index.end() && j->first == client_name;
 	     ++j) {
-		PatchagePort* port =
-		    dynamic_cast<PatchagePort*>(j->second->get_port(port_name));
+		PatchagePort* port = j->second->get_port(port_name);
 		if (port)
 			return port;
 	}
