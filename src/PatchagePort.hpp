@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -60,7 +60,7 @@ public:
 		signal_event().connect(sigc::mem_fun(this, &PatchagePort::on_event));
 	}
 
-	virtual ~PatchagePort() {}
+	virtual ~PatchagePort() = default;
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const
