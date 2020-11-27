@@ -70,11 +70,11 @@ PatchageEvent::execute(Patchage* patchage)
 			PatchagePort* port = driver->create_port_view(patchage, _port_1);
 			if (!port) {
 				patchage->log().error(fmt::format(
-				    "Unable to create view for port `{}'", _port_1));
+				    "Unable to create view for port \"{}\"", _port_1));
 			}
 		} else {
 			patchage->log().error(
-			    fmt::format("Unknown type for port `{}'", _port_1));
+			    fmt::format("Unknown type for port \"{}\"", _port_1));
 		}
 
 	} else if (_type == Type::port_destruction) {
@@ -88,10 +88,10 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (!port_1) {
 			patchage->log().error(
-			    fmt::format("Unable to find port `{}' to connect", _port_1));
+			    fmt::format("Unable to find port \"{}\" to connect", _port_1));
 		} else if (!port_2) {
 			patchage->log().error(
-			    fmt::format("Unable to find port `{}' to connect", _port_2));
+			    fmt::format("Unable to find port \"{}\" to connect", _port_2));
 		} else {
 			patchage->canvas()->make_connection(port_1, port_2);
 		}
@@ -102,11 +102,11 @@ PatchageEvent::execute(Patchage* patchage)
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
 
 		if (!port_1) {
-			patchage->log().error(
-			    fmt::format("Unable to find port `{}' to disconnect", _port_1));
+			patchage->log().error(fmt::format(
+			    "Unable to find port \"{}\" to disconnect", _port_1));
 		} else if (!port_2) {
-			patchage->log().error(
-			    fmt::format("Unable to find port `{}' to disconnect", _port_2));
+			patchage->log().error(fmt::format(
+			    "Unable to find port \"{}\" to disconnect", _port_2));
 		} else {
 			patchage->canvas()->remove_edge_between(port_1, port_2);
 		}

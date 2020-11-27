@@ -120,14 +120,14 @@ JackDriver::update_attached()
 void
 JackDriver::on_jack_appeared()
 {
-	info_msg("JACK appeared.");
+	info_msg("Server appeared");
 	update_attached();
 }
 
 void
 JackDriver::on_jack_disappeared()
 {
-	info_msg("JACK disappeared.");
+	info_msg("Server disappeared");
 
 	// we are not calling update_attached() here, because it will activate
 	// jackdbus
@@ -470,7 +470,7 @@ JackDriver::is_started()
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of IsStarted failed.");
+		error_msg("Decoding reply of IsStarted failed");
 		return false;
 	}
 
@@ -787,7 +787,7 @@ JackDriver::refresh_internal(bool force)
 	          DBUS_TYPE_UINT64,
 	          &version,
 	          DBUS_TYPE_INVALID)) {
-		error_msg("GetGraph() failed.");
+		error_msg("GetGraph() failed");
 		return;
 	}
 
@@ -931,7 +931,7 @@ JackDriver::connect(PatchagePort* src, PatchagePort* dst)
 	          DBUS_TYPE_STRING,
 	          &port2_name,
 	          DBUS_TYPE_INVALID)) {
-		error_msg("ConnectPortsByName() failed.");
+		error_msg("ConnectPortsByName() failed");
 		return false;
 	}
 
@@ -960,7 +960,7 @@ JackDriver::disconnect(PatchagePort* src, PatchagePort* dst)
 	          DBUS_TYPE_STRING,
 	          &port2_name,
 	          DBUS_TYPE_INVALID)) {
-		error_msg("DisconnectPortsByName() failed.");
+		error_msg("DisconnectPortsByName() failed");
 		return false;
 	}
 
@@ -992,7 +992,7 @@ JackDriver::buffer_size()
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of GetBufferSize failed.");
+		error_msg("Decoding reply of GetBufferSize failed");
 		return 4096;
 	}
 
@@ -1045,7 +1045,7 @@ JackDriver::sample_rate()
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of GetSampleRate failed.");
+		error_msg("Decoding reply of GetSampleRate failed");
 		return false;
 	}
 
@@ -1076,7 +1076,7 @@ JackDriver::is_realtime() const
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&me->_dbus_error);
-		error_msg("decoding reply of IsRealtime failed.");
+		error_msg("Decoding reply of IsRealtime failed");
 		return false;
 	}
 
@@ -1110,7 +1110,7 @@ JackDriver::get_xruns()
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of GetXruns failed.");
+		error_msg("Decoding reply of GetXruns failed");
 		return 0;
 	}
 
@@ -1160,7 +1160,7 @@ JackDriver::get_max_dsp_load()
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
-		error_msg("decoding reply of GetLoad failed.");
+		error_msg("Decoding reply of GetLoad failed");
 		return 0.0;
 	}
 
@@ -1191,11 +1191,11 @@ JackDriver::create_port_view(Patchage*, const PortID&)
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-	_log.error(std::string{"Jack: "} + msg);
+	_log.error(std::string{"[JACK] "} + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-	_log.info(std::string{"Jack: "} + msg);
+	_log.info(std::string{"[JACK] "} + msg);
 }

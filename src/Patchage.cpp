@@ -332,7 +332,7 @@ Patchage::Patchage(int argc, char** argv)
 		_about_win->set_logo(Gdk::Pixbuf::create_from_file(
 		    bundle_location() + "/Resources/Patchage.icns"));
 	} catch (const Glib::Exception& e) {
-		_log.error(fmt::format("failed to set logo ({})", e.what()));
+		_log.error(fmt::format("Failed to set logo ({})", e.what()));
 	}
 #endif
 
@@ -654,14 +654,16 @@ Patchage::show_open_session_dialog()
 
 	const std::string dir = dialog.get_filename();
 	if (g_chdir(dir.c_str())) {
-		_log.error("Failed to switch to session directory " + dir);
+		_log.error(
+		    fmt::format("Failed to switch to session directory \"{}\"", dir));
 		return;
 	}
 
 	if (system("./jack-session") < 0) {
-		_log.error("Error executing `./jack-session' in " + dir);
+		_log.error(
+		    fmt::format("Error executing \"./jack-session\" in {}", dir));
 	} else {
-		_log.info("Loaded session " + dir);
+		_log.info(fmt::format("Loaded session {}", dir));
 	}
 }
 
@@ -699,7 +701,7 @@ Patchage::save_session(bool close)
 
 	std::string path = dialog.get_filename();
 	if (g_mkdir_with_parents(path.c_str(), 0740)) {
-		_log.error("Failed to create session directory " + path);
+		_log.error(fmt::format("Failed to create session directory {}", path));
 		return;
 	}
 

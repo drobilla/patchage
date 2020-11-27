@@ -34,6 +34,7 @@ Checks: >
   -hicpp-signed-bitwise,
   -llvm-header-guard,
   -llvmlibc-*,
+  -modernize-raw-string-literal,
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,
   -readability-implicit-bool-conversion,
