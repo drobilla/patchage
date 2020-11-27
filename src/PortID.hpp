@@ -35,13 +35,13 @@ struct PortID
 {
 	enum class Type
 	{
-		NULL_PORT_ID,
-		JACK_ID,
-		ALSA_ADDR
+		nothing,
+		jack_id,
+		alsa_addr,
 	};
 
 	PortID()
-	    : type(Type::NULL_PORT_ID)
+	    : type(Type::nothing)
 	{
 		memset(&id, 0, sizeof(id));
 	}
@@ -54,7 +54,7 @@ struct PortID
 
 #ifdef PATCHAGE_LIBJACK
 	PortID(jack_port_id_t jack_id, bool ign = false)
-	    : type(Type::JACK_ID)
+	    : type(Type::jack_id)
 	{
 		id.jack_id = jack_id;
 	}
@@ -62,7 +62,7 @@ struct PortID
 
 #ifdef HAVE_ALSA
 	PortID(snd_seq_addr_t addr, bool in)
-	    : type(Type::ALSA_ADDR)
+	    : type(Type::alsa_addr)
 	{
 		id.alsa_addr = addr;
 		id.is_input  = in;
@@ -90,14 +90,14 @@ static inline std::ostream&
 operator<<(std::ostream& os, const PortID& id)
 {
 	switch (id.type) {
-	case PortID::Type::NULL_PORT_ID:
+	case PortID::Type::nothing:
 		return os << "(null)";
-	case PortID::Type::JACK_ID:
+	case PortID::Type::jack_id:
 #ifdef PATCHAGE_LIBJACK
 		return os << "jack:" << id.id.jack_id;
 #endif
 		break;
-	case PortID::Type::ALSA_ADDR:
+	case PortID::Type::alsa_addr:
 #ifdef HAVE_ALSA
 		return os << "alsa:" << (int)id.id.alsa_addr.client << ":"
 		          << (int)id.id.alsa_addr.port << ":"
@@ -117,14 +117,14 @@ operator<(const PortID& a, const PortID& b)
 	}
 
 	switch (a.type) {
-	case PortID::Type::NULL_PORT_ID:
+	case PortID::Type::nothing:
 		return true;
-	case PortID::Type::JACK_ID:
+	case PortID::Type::jack_id:
 #ifdef PATCHAGE_LIBJACK
 		return a.id.jack_id < b.id.jack_id;
 #endif
 		break;
-	case PortID::Type::ALSA_ADDR:
+	case PortID::Type::alsa_addr:
 #ifdef HAVE_ALSA
 		if ((a.id.alsa_addr.client < b.id.alsa_addr.client) ||
 		    ((a.id.alsa_addr.client == b.id.alsa_addr.client) &&

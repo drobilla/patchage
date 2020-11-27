@@ -28,26 +28,26 @@ class Legend : public Gtk::HBox
 public:
 	Legend(const Configuration& configuration)
 	{
-		add_button(PortType::JACK_AUDIO,
+		add_button(PortType::jack_audio,
 		           "Audio",
-		           configuration.get_port_color(PortType::JACK_AUDIO));
+		           configuration.get_port_color(PortType::jack_audio));
 
 #ifdef HAVE_JACK_METADATA
-		add_button(PortType::JACK_CV,
+		add_button(PortType::jack_cv,
 		           "CV",
-		           configuration.get_port_color(PortType::JACK_CV));
-		add_button(PortType::JACK_OSC,
+		           configuration.get_port_color(PortType::jack_cv));
+		add_button(PortType::jack_osc,
 		           "OSC",
-		           configuration.get_port_color(PortType::JACK_OSC));
+		           configuration.get_port_color(PortType::jack_osc));
 #endif
 
-		add_button(PortType::JACK_MIDI,
+		add_button(PortType::jack_midi,
 		           "MIDI",
-		           configuration.get_port_color(PortType::JACK_MIDI));
+		           configuration.get_port_color(PortType::jack_midi));
 
-		add_button(PortType::ALSA_MIDI,
+		add_button(PortType::alsa_midi,
 		           "ALSA MIDI",
-		           configuration.get_port_color(PortType::ALSA_MIDI));
+		           configuration.get_port_color(PortType::alsa_midi));
 
 		show_all_children();
 	}

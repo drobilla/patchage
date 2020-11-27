@@ -40,17 +40,17 @@ class PatchageEvent
 public:
 	enum class Type : uint8_t
 	{
-		NULL_EVENT = 0,
-		REFRESH,
-		CLIENT_CREATION,
-		CLIENT_DESTRUCTION,
-		PORT_CREATION,
-		PORT_DESTRUCTION,
-		CONNECTION,
-		DISCONNECTION
+		noop,
+		refresh,
+		client_creation,
+		client_destruction,
+		port_creation,
+		port_destruction,
+		connection,
+		disconnection,
 	};
 
-	explicit PatchageEvent(Type type = Type::NULL_EVENT)
+	explicit PatchageEvent(Type type = Type::noop)
 	    : _str(nullptr)
 	    , _type(type)
 	{}

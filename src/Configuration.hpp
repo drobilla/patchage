@@ -25,18 +25,18 @@
 
 enum class ModuleType
 {
-	Input,
-	Output,
-	InputOutput
+	input,
+	output,
+	input_output,
 };
 
 enum class PortType
 {
-	JACK_AUDIO,
-	JACK_MIDI,
-	ALSA_MIDI,
-	JACK_OSC,
-	JACK_CV
+	jack_audio,
+	jack_midi,
+	alsa_midi,
+	jack_osc,
+	jack_cv,
 };
 
 #define N_PORT_TYPES 5

@@ -43,44 +43,44 @@ Configuration::Configuration()
     , _sort_ports(true)
 {
 #ifdef PATCHAGE_USE_LIGHT_THEME
-	_port_colors[static_cast<unsigned>(PortType::JACK_AUDIO)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_AUDIO)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
 	        0xA4BC8CFF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_MIDI)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_MIDI)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_midi)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_midi)] =
 	        0xC89595FF;
 
-	_port_colors[static_cast<unsigned>(PortType::ALSA_MIDI)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::ALSA_MIDI)] =
+	_port_colors[static_cast<unsigned>(PortType::alsa_midi)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::alsa_midi)] =
 	        0x8F7198FF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_OSC)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_OSC)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_osc)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_osc)] =
 	        0x7E8EAAFF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_CV)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_CV)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_cv)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_cv)] =
 	        0x83AFABFF;
 #else
-	_port_colors[static_cast<unsigned>(PortType::JACK_AUDIO)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_AUDIO)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
 	        0x3E5E00FF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_MIDI)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_MIDI)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_midi)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_midi)] =
 	        0x650300FF;
 
-	_port_colors[static_cast<unsigned>(PortType::ALSA_MIDI)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::ALSA_MIDI)] =
+	_port_colors[static_cast<unsigned>(PortType::alsa_midi)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::alsa_midi)] =
 	        0x2D0043FF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_OSC)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_OSC)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_osc)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_osc)] =
 	        0x4100FEFF;
 
-	_port_colors[static_cast<unsigned>(PortType::JACK_CV)] =
-	    _default_port_colors[static_cast<unsigned>(PortType::JACK_CV)] =
+	_port_colors[static_cast<unsigned>(PortType::jack_cv)] =
+	    _default_port_colors[static_cast<unsigned>(PortType::jack_cv)] =
 	        0x005E4EFF;
 #endif
 }
@@ -97,11 +97,11 @@ Configuration::get_module_location(const std::string& name,
 	}
 
 	const ModuleSettings& settings = (*i).second;
-	if (type == ModuleType::Input && settings.input_location) {
+	if (type == ModuleType::input && settings.input_location) {
 		loc = *settings.input_location;
-	} else if (type == ModuleType::Output && settings.output_location) {
+	} else if (type == ModuleType::output && settings.output_location) {
 		loc = *settings.output_location;
-	} else if (type == ModuleType::InputOutput && settings.inout_location) {
+	} else if (type == ModuleType::input_output && settings.inout_location) {
 		loc = *settings.inout_location;
 	} else {
 		return false;
@@ -119,19 +119,19 @@ Configuration::set_module_location(const std::string& name,
 	if (i == _module_settings.end()) {
 		i = _module_settings
 		        .insert(std::make_pair(
-		            name, ModuleSettings(type != ModuleType::InputOutput)))
+		            name, ModuleSettings(type != ModuleType::input_output)))
 		        .first;
 	}
 
 	ModuleSettings& settings = (*i).second;
 	switch (type) {
-	case ModuleType::Input:
+	case ModuleType::input:
 		settings.input_location = loc;
 		break;
-	case ModuleType::Output:
+	case ModuleType::output:
 		settings.output_location = loc;
 		break;
-	case ModuleType::InputOutput:
+	case ModuleType::input_output:
 		settings.inout_location = loc;
 		break;
 	}
@@ -262,15 +262,15 @@ Configuration::load()
 			file.ignore(1, '\"');
 			std::getline(file, name, '\"');
 
-			ModuleType  type = ModuleType::Input;
+			ModuleType  type = ModuleType::input;
 			std::string type_str;
 			file >> type_str;
 			if (type_str == "input") {
-				type = ModuleType::Input;
+				type = ModuleType::input;
 			} else if (type_str == "output") {
-				type = ModuleType::Output;
+				type = ModuleType::output;
 			} else if (type_str == "inputoutput") {
-				type = ModuleType::InputOutput;
+				type = ModuleType::input_output;
 			} else {
 				std::cerr << "error: bad position type `" << type_str
 				          << "' for module `" << name << "'" << std::endl;

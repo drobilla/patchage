@@ -76,8 +76,8 @@ JackDriver::~JackDriver()
 static bool
 is_jack_port(const PatchagePort* port)
 {
-	return port->type() == PortType::JACK_AUDIO ||
-	       port->type() == PortType::JACK_MIDI;
+	return port->type() == PortType::jack_audio ||
+	       port->type() == PortType::jack_midi;
 }
 
 /** Destroy all JACK (canvas) ports.
@@ -610,23 +610,23 @@ JackDriver::add_port(dbus_uint64_t client_id,
 
 	switch (port_type) {
 	case JACKDBUS_PORT_TYPE_AUDIO:
-		local_port_type = PortType::JACK_AUDIO;
+		local_port_type = PortType::jack_audio;
 		break;
 	case JACKDBUS_PORT_TYPE_MIDI:
-		local_port_type = PortType::JACK_MIDI;
+		local_port_type = PortType::jack_midi;
 		break;
 	default:
 		error_msg("Unknown JACK D-Bus port type");
 		return;
 	}
 
-	ModuleType type = ModuleType::InputOutput;
+	ModuleType type = ModuleType::input_output;
 	if (_app->conf()->get_module_split(
 	        client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
 		if (port_flags & JACKDBUS_PORT_FLAG_INPUT) {
-			type = ModuleType::Input;
+			type = ModuleType::input;
 		} else {
-			type = ModuleType::Output;
+			type = ModuleType::output;
 		}
 	}
 
