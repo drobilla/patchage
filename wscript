@@ -244,6 +244,7 @@ def build(bld):
             src/PatchageCanvas.cpp
             src/PatchageEvent.cpp
             src/PatchageModule.cpp
+            src/TextViewLog.cpp
             src/main.cpp
     '''
     if bld.is_defined('HAVE_JACK_DBUS'):

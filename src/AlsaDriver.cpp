@@ -30,8 +30,9 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
-AlsaDriver::AlsaDriver(Patchage* app)
+AlsaDriver::AlsaDriver(Patchage* app, ILog& log)
     : _app(app)
+    , _log(log)
     , _seq(nullptr)
     , _refresh_thread{}
 {}
@@ -47,10 +48,10 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 {
 	int ret = snd_seq_open(&_seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
 	if (ret) {
-		_app->error_msg("Alsa: Unable to attach.");
+		_log.error_msg("Alsa: Unable to attach.");
 		_seq = nullptr;
 	} else {
-		_app->info_msg("Alsa: Attached.");
+		_log.info_msg("Alsa: Attached.");
 
 		snd_seq_set_client_name(_seq, "Patchage");
 
@@ -61,7 +62,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 		ret = pthread_create(
 		    &_refresh_thread, &attr, &AlsaDriver::refresh_main, this);
 		if (ret) {
-			_app->error_msg("Alsa: Failed to start refresh thread.");
+			_log.error_msg("Alsa: Failed to start refresh thread.");
 		}
 
 		signal_attached.emit();
@@ -77,7 +78,7 @@ AlsaDriver::detach()
 		snd_seq_close(_seq);
 		_seq = nullptr;
 		signal_detached.emit();
-		_app->info_msg("Alsa: Detached.");
+		_log.info_msg("Alsa: Detached.");
 	}
 }
 
@@ -395,7 +396,7 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
 
 	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		_app->error_msg("Alsa: Attempt to connect port with no address.");
+		_log.error_msg("Alsa: Attempt to connect port with no address.");
 		return false;
 	}
 
@@ -404,7 +405,7 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	if (src.id.alsa_addr.client == dst.id.alsa_addr.client &&
 	    src.id.alsa_addr.port == dst.id.alsa_addr.port) {
-		_app->warning_msg("Alsa: Refusing to connect port to itself.");
+		_log.warning_msg("Alsa: Refusing to connect port to itself.");
 		return false;
 	}
 
@@ -420,23 +421,23 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	// Already connected (shouldn't happen)
 	if (!snd_seq_get_port_subscription(_seq, subs)) {
-		_app->error_msg("Alsa: Attempt to double subscribe ports.");
+		_log.error_msg("Alsa: Attempt to double subscribe ports.");
 		result = false;
 	}
 
 	int ret = snd_seq_subscribe_port(_seq, subs);
 	if (ret < 0) {
-		_app->error_msg(
+		_log.error_msg(
 		    fmt::format("Alsa: Subscription failed ({}).", snd_strerror(ret)));
 		result = false;
 	}
 
 	if (result) {
-		_app->info_msg(std::string("Alsa: Connected ") + src_port->full_name() +
-		               " => " + dst_port->full_name());
+		_log.info_msg(std::string("Alsa: Connected ") + src_port->full_name() +
+		              " => " + dst_port->full_name());
 	} else {
-		_app->error_msg(std::string("Alsa: Unable to connect ") +
-		                src_port->full_name() + " => " + dst_port->full_name());
+		_log.error_msg(std::string("Alsa: Unable to connect ") +
+		               src_port->full_name() + " => " + dst_port->full_name());
 	}
 
 	return (!result);
@@ -453,7 +454,7 @@ AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
 	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
 
 	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		_app->error_msg("Alsa: Attempt to connect port with no address");
+		_log.error_msg("Alsa: Attempt to connect port with no address");
 		return false;
 	}
 
@@ -470,21 +471,21 @@ AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	// Not connected (shouldn't happen)
 	if (snd_seq_get_port_subscription(_seq, subs) != 0) {
-		_app->error_msg(
+		_log.error_msg(
 		    "Alsa: Attempt to unsubscribe ports that are not subscribed.");
 		return false;
 	}
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		_app->error_msg(std::string("Alsa: Unable to disconnect ") +
-		                src_port->full_name() + " => " + dst_port->full_name() +
-		                "(" + snd_strerror(ret) + ")");
+		_log.error_msg(std::string("Alsa: Unable to disconnect ") +
+		               src_port->full_name() + " => " + dst_port->full_name() +
+		               "(" + snd_strerror(ret) + ")");
 		return false;
 	}
 
-	_app->info_msg(std::string("Alsa: Disconnected ") + src_port->full_name() +
-	               " => " + dst_port->full_name());
+	_log.info_msg(std::string("Alsa: Disconnected ") + src_port->full_name() +
+	              " => " + dst_port->full_name());
 
 	return true;
 }
@@ -503,7 +504,7 @@ AlsaDriver::create_refresh_port()
 
 	int ret = snd_seq_create_port(_seq, port_info);
 	if (ret) {
-		_app->error_msg(
+		_log.error_msg(
 		    fmt::format("Alsa: Error creating port ({})", snd_strerror(ret)));
 		return false;
 	}
@@ -514,7 +515,7 @@ AlsaDriver::create_refresh_port()
 	                           SND_SEQ_CLIENT_SYSTEM,
 	                           SND_SEQ_PORT_SYSTEM_ANNOUNCE);
 	if (ret) {
-		_app->error_msg(
+		_log.error_msg(
 		    fmt::format("Alsa: Failed to connect to system announce port ({})",
 		                snd_strerror(ret)));
 		return false;
@@ -535,7 +536,7 @@ void
 AlsaDriver::_refresh_main()
 {
 	if (!create_refresh_port()) {
-		_app->error_msg(
+		_log.error_msg(
 		    "Alsa: Could not create listen port, auto-refresh disabled.");
 		return;
 	}

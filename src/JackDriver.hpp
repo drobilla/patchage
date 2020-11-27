@@ -26,11 +26,12 @@
 #include <mutex>
 #include <string>
 
+class ILog;
 class Patchage;
-class PatchageEvent;
 class PatchageCanvas;
-class PatchagePort;
+class PatchageEvent;
 class PatchageModule;
+class PatchagePort;
 
 /** Handles all externally driven functionality, registering ports etc.
  *
@@ -40,7 +41,7 @@ class PatchageModule;
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(Patchage* app);
+	explicit JackDriver(Patchage* app, ILog& log);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -108,6 +109,7 @@ private:
 	static void jack_shutdown_cb(void* jack_driver);
 
 	Patchage*      _app;
+	ILog&          _log;
 	jack_client_t* _client;
 
 	Queue<PatchageEvent> _events;

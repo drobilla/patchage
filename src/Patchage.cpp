@@ -167,6 +167,7 @@ Patchage::Patchage(int argc, char** argv)
     , INIT_WIDGET(_log_scrolledwindow)
     , INIT_WIDGET(_status_text)
     , _legend(nullptr)
+    , _log(_status_text)
     , _pane_initialized(false)
     , _attach(true)
     , _driver_detached(false)
@@ -302,21 +303,6 @@ Patchage::Patchage(int argc, char** argv)
 		_menu_view_sprung_layout->set_sensitive(false);
 	}
 
-	for (int s = Gtk::STATE_NORMAL; s <= Gtk::STATE_INSENSITIVE; ++s) {
-		_status_text->modify_base(static_cast<Gtk::StateType>(s),
-		                          Gdk::Color("#000000"));
-		_status_text->modify_text(static_cast<Gtk::StateType>(s),
-		                          Gdk::Color("#FFFFFF"));
-	}
-
-	_error_tag                        = Gtk::TextTag::create();
-	_error_tag->property_foreground() = "#CC0000";
-	_status_text->get_buffer()->get_tag_table()->add(_error_tag);
-
-	_warning_tag                        = Gtk::TextTag::create();
-	_warning_tag->property_foreground() = "#C4A000";
-	_status_text->get_buffer()->get_tag_table()->add(_warning_tag);
-
 	_canvas->widget().show();
 	_main_win->present();
 
@@ -346,12 +332,12 @@ Patchage::Patchage(int argc, char** argv)
 		_about_win->set_logo(Gdk::Pixbuf::create_from_file(
 		    bundle_location() + "/Resources/Patchage.icns"));
 	} catch (const Glib::Exception& e) {
-		error_msg(fmt::format("failed to set logo ({})", e.what()));
+		_log.error_msg(fmt::format("failed to set logo ({})", e.what()));
 	}
 #endif
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = new JackDriver(this);
+	_jack_driver = new JackDriver(this, _log);
 	_jack_driver->signal_detached.connect(
 	    sigc::mem_fun(this, &Patchage::driver_detached));
 
@@ -362,7 +348,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #ifdef HAVE_ALSA
-	_alsa_driver = new AlsaDriver(this);
+	_alsa_driver = new AlsaDriver(this, _log);
 #endif
 
 	connect_widgets();
@@ -370,10 +356,6 @@ Patchage::Patchage(int argc, char** argv)
 	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
 	_menu_view_sort_ports->set_active(_conf->get_sort_ports());
-	_status_text->set_pixels_inside_wrap(2);
-	_status_text->set_left_margin(4);
-	_status_text->set_right_margin(4);
-	_status_text->set_pixels_below_lines(2);
 
 	g_signal_connect(
 	    _main_win->gobj(), "configure-event", G_CALLBACK(configure_cb), this);
@@ -594,32 +576,6 @@ Patchage::clear_load()
 #endif
 }
 
-void
-Patchage::error_msg(const std::string& msg)
-{
-	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _error_tag);
-	_status_text->scroll_to_mark(buffer->get_insert(), 0);
-	_menu_view_messages->set_active(true);
-}
-
-void
-Patchage::info_msg(const std::string& msg)
-{
-	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert(buffer->end(), std::string("\n") + msg);
-	_status_text->scroll_to_mark(buffer->get_insert(), 0);
-}
-
-void
-Patchage::warning_msg(const std::string& msg)
-{
-	Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-	buffer->insert_with_tag(
-	    buffer->end(), std::string("\n") + msg, _warning_tag);
-	_status_text->scroll_to_mark(buffer->get_insert(), 0);
-}
-
 static void
 load_module_location(GanvNode* node, void*)
 {
@@ -698,14 +654,14 @@ Patchage::show_open_session_dialog()
 
 	const std::string dir = dialog.get_filename();
 	if (g_chdir(dir.c_str())) {
-		error_msg("Failed to switch to session directory " + dir);
+		_log.error_msg("Failed to switch to session directory " + dir);
 		return;
 	}
 
 	if (system("./jack-session") < 0) {
-		error_msg("Error executing `./jack-session' in " + dir);
+		_log.error_msg("Error executing `./jack-session' in " + dir);
 	} else {
-		info_msg("Loaded session " + dir);
+		_log.info_msg("Loaded session " + dir);
 	}
 }
 
@@ -743,7 +699,7 @@ Patchage::save_session(bool close)
 
 	std::string path = dialog.get_filename();
 	if (g_mkdir_with_parents(path.c_str(), 0740)) {
-		error_msg("Failed to create session directory " + path);
+		_log.error_msg("Failed to create session directory " + path);
 		return;
 	}
 
@@ -1056,13 +1012,8 @@ Patchage::on_view_messages()
 	if (_menu_view_messages->get_active()) {
 		Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
 		if (!_pane_initialized) {
-			int y           = 0;
-			int line_height = 0;
-			_status_text->get_line_yrange(buffer->begin(), y, line_height);
-
-			const int pad         = _status_text->get_pixels_inside_wrap();
+			const int min_height  = _log.min_height();
 			const int max_pos     = _main_paned->get_allocation().get_height();
-			const int min_height  = (line_height + 2 * pad);
 			const int conf_height = _conf->get_messages_height();
 			_main_paned->set_position(max_pos -
 			                          std::max(conf_height, min_height));

@@ -246,7 +246,8 @@ PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 		_app->alsa_driver()->connect(p1, p2);
 #endif
 	} else {
-		_app->warning_msg("Cannot make connection, incompatible port types.");
+		_app->log().warning_msg(
+		    "Cannot make connection, incompatible port types.");
 	}
 }
 
@@ -267,7 +268,8 @@ PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 	}
 
 	if (!input || !output || input->is_output() || output->is_input()) {
-		_app->error_msg("Attempt to disconnect mismatched/unknown ports.");
+		_app->log().error_msg(
+		    "Attempt to disconnect mismatched/unknown ports.");
 		return;
 	}
 
@@ -283,7 +285,8 @@ PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 		_app->alsa_driver()->disconnect(output, input);
 #endif
 	} else {
-		_app->error_msg("Attempt to disconnect ports with strange types.");
+		_app->log().error_msg(
+		    "Attempt to disconnect ports with strange types.");
 	}
 }
 

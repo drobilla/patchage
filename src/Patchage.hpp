@@ -38,7 +38,9 @@
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
+#include "ILog.hpp"
 #include "Legend.hpp"
+#include "TextViewLog.hpp"
 #include "Widget.hpp"
 #include "patchage_config.h"
 
@@ -70,6 +72,7 @@ public:
 	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
 	Gtk::Window* window() { return _main_win.get(); }
+	ILog&        log() { return _log; }
 
 	Configuration* conf() const { return _conf; }
 	JackDriver*    jack_driver() const { return _jack_driver; }
@@ -91,10 +94,6 @@ public:
 	void        refresh();
 	inline void queue_refresh() { _refresh = true; }
 	inline void driver_detached() { _driver_detached = true; }
-
-	void info_msg(const std::string& msg);
-	void error_msg(const std::string& msg);
-	void warning_msg(const std::string& msg);
 
 	void update_state();
 	void store_window_location();
@@ -210,6 +209,7 @@ protected:
 	Widget<Gtk::ScrolledWindow> _log_scrolledwindow;
 	Widget<Gtk::TextView>       _status_text;
 	Legend*                     _legend;
+	TextViewLog                 _log;
 
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;

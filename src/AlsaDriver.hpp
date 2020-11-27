@@ -29,6 +29,7 @@
 #include <set>
 #include <string>
 
+class ILog;
 class Patchage;
 class PatchagePort;
 
@@ -37,7 +38,7 @@ class PatchagePort;
 class AlsaDriver : public Driver
 {
 public:
-	explicit AlsaDriver(Patchage* app);
+	explicit AlsaDriver(Patchage* app, ILog& log);
 
 	AlsaDriver(const AlsaDriver&) = delete;
 	AlsaDriver& operator=(const AlsaDriver&) = delete;
@@ -88,6 +89,7 @@ private:
 	                          snd_seq_addr_t     addr);
 
 	Patchage*  _app;
+	ILog&      _log;
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
 

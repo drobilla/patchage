@@ -16,6 +16,7 @@
 
 #include "JackDriver.hpp"
 
+#include "ILog.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
@@ -40,8 +41,9 @@ PATCHAGE_RESTORE_WARNINGS
 #include <set>
 #include <string>
 
-JackDriver::JackDriver(Patchage* app)
+JackDriver::JackDriver(Patchage* app, ILog& log)
     : _app(app)
+    , _log(log)
     , _client(nullptr)
     , _events(128)
     , _last_pos{}
@@ -73,7 +75,7 @@ JackDriver::attach(bool launch_daemon)
 	    (!launch_daemon) ? JackNoStartServer : JackNullOption;
 	_client = jack_client_open("Patchage", options, nullptr);
 	if (_client == nullptr) {
-		_app->error_msg("Jack: Unable to create client.");
+		_log.error_msg("Jack: Unable to create client.");
 		_is_activated = false;
 	} else {
 		jack_client_t* const client = _client;
@@ -92,9 +94,9 @@ JackDriver::attach(bool launch_daemon)
 			_is_activated = true;
 			signal_attached.emit();
 			std::stringstream ss;
-			_app->info_msg("Jack: Attached.");
+			_log.info_msg("Jack: Attached.");
 		} else {
-			_app->error_msg("Jack: Client activation failed.");
+			_log.error_msg("Jack: Client activation failed.");
 			_is_activated = false;
 		}
 	}
@@ -112,7 +114,7 @@ JackDriver::detach()
 	}
 	_is_activated = false;
 	signal_detached.emit();
-	_app->info_msg("Jack: Detached.");
+	_log.info_msg("Jack: Detached.");
 }
 
 static bool
@@ -141,8 +143,8 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
-		_app->error_msg(fmt::format("Jack: Failed to find port with ID `{}'.",
-		                            id.id.jack_id));
+		_log.error_msg(fmt::format("Jack: Failed to find port with ID `{}'.",
+		                           id.id.jack_id));
 		return nullptr;
 	}
 
@@ -170,9 +172,9 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 	}
 
 	if (parent->get_port(port_name)) {
-		_app->error_msg(fmt::format("Jack: Module `{}' already has port `{}'.",
-		                            module_name,
-		                            port_name));
+		_log.error_msg(fmt::format("Jack: Module `{}' already has port `{}'.",
+		                           module_name,
+		                           port_name));
 		return nullptr;
 	}
 
@@ -243,9 +245,9 @@ JackDriver::create_port(PatchageModule& parent,
 		}
 #endif
 	} else {
-		_app->warning_msg(fmt::format("Jack: Port `{}' has unknown type `{}'.",
-		                              jack_port_name(port),
-		                              type_str));
+		_log.warning_msg(fmt::format("Jack: Port `{}' has unknown type `{}'.",
+		                             jack_port_name(port),
+		                             type_str));
 		return nullptr;
 	}
 
@@ -436,11 +438,11 @@ JackDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0) {
-		_app->info_msg(std::string("Jack: Connected ") + src_port->full_name() +
-		               " => " + dst_port->full_name());
+		_log.info_msg(std::string("Jack: Connected ") + src_port->full_name() +
+		              " => " + dst_port->full_name());
 	} else {
-		_app->error_msg(std::string("Jack: Unable to connect ") +
-		                src_port->full_name() + " => " + dst_port->full_name());
+		_log.error_msg(std::string("Jack: Unable to connect ") +
+		               src_port->full_name() + " => " + dst_port->full_name());
 	}
 
 	return (!result);
@@ -462,11 +464,11 @@ JackDriver::disconnect(PatchagePort* const src_port,
 	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
 
 	if (result == 0) {
-		_app->info_msg(std::string("Jack: Disconnected ") +
-		               src_port->full_name() + " => " + dst_port->full_name());
+		_log.info_msg(std::string("Jack: Disconnected ") +
+		              src_port->full_name() + " => " + dst_port->full_name());
 	} else {
-		_app->error_msg(std::string("Jack: Unable to disconnect ") +
-		                src_port->full_name() + " => " + dst_port->full_name());
+		_log.error_msg(std::string("Jack: Unable to disconnect ") +
+		               src_port->full_name() + " => " + dst_port->full_name());
 	}
 
 	return (!result);
@@ -543,7 +545,7 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 {
 	assert(jack_driver);
 	auto* me = static_cast<JackDriver*>(jack_driver);
-	me->_app->info_msg("Jack: Shutdown.");
+	me->_log.info_msg("Jack: Shutdown.");
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
@@ -610,7 +612,7 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 	}
 
 	if (jack_set_buffer_size(_client, size)) {
-		_app->error_msg("[JACK] Unable to set buffer size");
+		_log.error_msg("[JACK] Unable to set buffer size");
 		return false;
 	}
 

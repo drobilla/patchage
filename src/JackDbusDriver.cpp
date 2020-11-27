@@ -54,8 +54,9 @@ PATCHAGE_RESTORE_WARNINGS
 
 //#define USE_FULL_REFRESH
 
-JackDriver::JackDriver(Patchage* app)
+JackDriver::JackDriver(Patchage* app, ILog& log)
     : _app(app)
+    , _log(log)
     , _dbus_error()
     , _dbus_connection(nullptr)
     , _max_dsp_load(0.0f)
@@ -1190,11 +1191,11 @@ JackDriver::create_port_view(Patchage*, const PortID&)
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-	_app->error_msg(std::string{"Jack: "} + msg);
+	_log.error_msg(std::string{"Jack: "} + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-	_app->info_msg(std::string{"Jack: "} + msg);
+	_log.info_msg(std::string{"Jack: "} + msg);
 }

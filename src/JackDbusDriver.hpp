@@ -29,14 +29,15 @@
 
 #include <string>
 
-class PatchageEvent;
+class ILog;
 class PatchageCanvas;
+class PatchageEvent;
 class PatchagePort;
 
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(Patchage* app);
+	explicit JackDriver(Patchage* app, ILog& log);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -143,6 +144,7 @@ private:
 	void on_jack_disappeared();
 
 	Patchage*       _app;
+	ILog&           _log;
 	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;
 	float           _max_dsp_load;
