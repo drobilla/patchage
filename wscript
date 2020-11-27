@@ -68,6 +68,8 @@ def configure(conf):
                 '-Wno-sign-conversion',
                 '-Wno-stack-protector',
                 '-Wno-unused-parameter',
+                '-Wno-suggest-override',
+                '-Wno-suggest-destructor-override',
             ],
             'gcc': [
                 '-Wno-alloca',
