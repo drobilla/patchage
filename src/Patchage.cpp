@@ -92,11 +92,16 @@ port_order(const GanvPort* a, const GanvPort* b, void* data)
 	if (pa && pb) {
 		if (pa->order() && pb->order()) {
 			return *pa->order() - *pb->order();
-		} else if (pa->order()) {
+		}
+
+		if (pa->order()) {
 			return -1;
-		} else if (pb->order()) {
+		}
+
+		if (pb->order()) {
 			return 1;
 		}
+
 		return pa->name().compare(pb->name());
 	}
 	return 0;
@@ -489,9 +494,9 @@ Patchage::update_toolbar()
 	static bool updating = false;
 	if (updating) {
 		return;
-	} else {
-		updating = true;
 	}
+
+	updating = true;
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {

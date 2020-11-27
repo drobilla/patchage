@@ -200,7 +200,9 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 	     ++j) {
 		if (j->second->type() == type) {
 			return j->second;
-		} else if (j->second->type() == ModuleType::input_output) {
+		}
+
+		if (j->second->type() == ModuleType::input_output) {
 			io_module = j->second;
 		}
 	}
@@ -357,14 +359,17 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 	if (caps & SND_SEQ_PORT_CAP_NO_EXPORT) {
 		_ignored.insert(addr);
 		return true;
-	} else if (!((caps & SND_SEQ_PORT_CAP_READ) ||
-	             (caps & SND_SEQ_PORT_CAP_WRITE) ||
-	             (caps & SND_SEQ_PORT_CAP_DUPLEX))) {
+	}
+
+	if (!((caps & SND_SEQ_PORT_CAP_READ) || (caps & SND_SEQ_PORT_CAP_WRITE) ||
+	      (caps & SND_SEQ_PORT_CAP_DUPLEX))) {
 		_ignored.insert(addr);
 		return true;
-	} else if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT) &&
-	           ((type == SND_SEQ_PORT_SYSTEM_TIMER ||
-	             type == SND_SEQ_PORT_SYSTEM_ANNOUNCE))) {
+	}
+
+	if ((snd_seq_client_info_get_type(cinfo) != SND_SEQ_USER_CLIENT) &&
+	    ((type == SND_SEQ_PORT_SYSTEM_TIMER ||
+	      type == SND_SEQ_PORT_SYSTEM_ANNOUNCE))) {
 		_ignored.insert(addr);
 		return true;
 	}

@@ -1,7 +1,6 @@
 Checks: >
   *,
   -*-c-arrays,
-  -*-else-after-return,
   -*-magic-numbers,
   -*-narrowing-conversions,
   -*-no-malloc,

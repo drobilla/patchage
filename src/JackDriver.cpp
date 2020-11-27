@@ -556,9 +556,9 @@ JackDriver::buffer_size()
 {
 	if (_is_activated) {
 		return _buffer_size;
-	} else {
-		return jack_get_buffer_size(_client);
 	}
+
+	return jack_get_buffer_size(_client);
 }
 
 void
@@ -611,10 +611,10 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 	if (jack_set_buffer_size(_client, size)) {
 		_app->error_msg("[JACK] Unable to set buffer size");
 		return false;
-	} else {
-		_buffer_size = size;
-		return true;
 	}
+
+	_buffer_size = size;
+	return true;
 }
 
 void

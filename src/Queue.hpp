@@ -112,12 +112,12 @@ Queue<T>::push(const T& elem)
 {
 	if (full()) {
 		return false;
-	} else {
-		unsigned back  = _back.load();
-		_objects[back] = elem;
-		_back          = (back + 1) % _size;
-		return true;
 	}
+
+	const unsigned back = _back.load();
+	_objects[back]      = elem;
+	_back               = (back + 1) % _size;
+	return true;
 }
 
 /** Pop an item off the front of the queue - realtime-safe, not thread-safe.

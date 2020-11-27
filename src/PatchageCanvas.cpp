@@ -60,7 +60,9 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 	     ++j) {
 		if (j->second->type() == type) {
 			return j->second;
-		} else if (j->second->type() == ModuleType::input_output) {
+		}
+
+		if (j->second->type() == ModuleType::input_output) {
 			io_module = j->second;
 		}
 	}
