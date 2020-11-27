@@ -1,5 +1,5 @@
 /*
-  Copyright 2014 David Robillard <http://drobilla.net>
+  Copyright 2014-2020 David Robillard <d@drobilla.net>
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -13,6 +13,9 @@
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
+#ifndef JACKEY_H
+#define JACKEY_H
 
 /**
    The supported event types of an event port.
@@ -70,3 +73,5 @@
    other relevance to order values.
 */
 #define JACKEY_ORDER "http://jackaudio.org/metadata/order"
+
+#endif // JACKEY_H

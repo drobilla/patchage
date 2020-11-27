@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2017 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -13,8 +13,8 @@
  * Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef QUEUE_HPP_INCLUDED
-#define QUEUE_HPP_INCLUDED
+#ifndef PATCHAGE_QUEUE_HPP
+#define PATCHAGE_QUEUE_HPP
 
 #include <atomic>
 #include <cassert>
@@ -126,4 +126,4 @@ Queue<T>::pop()
 	_front = (_front.load() + 1) % (_size);
 }
 
-#endif // QUEUE_HPP_INCLUDED
+#endif // PATCHAGE_QUEUE_HPP
