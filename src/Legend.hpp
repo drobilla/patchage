@@ -21,6 +21,7 @@
 
 #include <gtkmm/box.h>
 #include <gtkmm/colorbutton.h>
+#include <gtkmm/label.h>
 
 class Legend : public Gtk::HBox
 {

@@ -1,4 +1,5 @@
 /* This file is part of Patchage.
+ * Copyright 2008-2020 David Robillard <d@drobilla.net>
  * Copyright 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
@@ -20,10 +21,12 @@
 #include "Driver.hpp"
 #include "Patchage.hpp"
 #include "PatchageModule.hpp"
+
 #include <dbus/dbus.h>
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 #include <jack/statistics.h>
+
 #include <string>
 
 class PatchageEvent;

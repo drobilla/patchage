@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -17,12 +17,11 @@
 #ifndef PATCHAGE_CONFIGURATION_HPP
 #define PATCHAGE_CONFIGURATION_HPP
 
-#include <stdint.h>
+#include <boost/optional.hpp>
 
+#include <cstdint>
 #include <map>
 #include <string>
-
-#include <boost/optional.hpp>
 
 enum ModuleType
 {

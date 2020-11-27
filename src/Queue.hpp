@@ -18,6 +18,7 @@
 
 #include <atomic>
 #include <cassert>
+#include <cstddef>
 
 /** Realtime-safe single-reader single-writer queue */
 template<typename T>
