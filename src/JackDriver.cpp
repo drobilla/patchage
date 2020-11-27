@@ -100,7 +100,8 @@ JackDriver::attach(bool launch_daemon)
 void
 JackDriver::detach()
 {
-	Glib::Mutex::Lock lock(_shutdown_mutex);
+	std::lock_guard<std::mutex> lock{_shutdown_mutex};
+
 	if (_client) {
 		jack_deactivate(_client);
 		jack_client_close(_client);
@@ -277,7 +278,7 @@ JackDriver::refresh()
 	// Jack can take _client away from us at any time throughout here :/
 	// Shortest locks possible is the best solution I can figure out
 
-	Glib::Mutex::Lock lock(_shutdown_mutex);
+	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
 	if (_client == nullptr) {
 		shutdown();
@@ -538,7 +539,9 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	assert(jack_driver);
 	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	me->_app->info_msg("Jack: Shutdown.");
-	Glib::Mutex::Lock lock(me->_shutdown_mutex);
+
+	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
+
 	me->_client       = nullptr;
 	me->_is_activated = false;
 	me->signal_detached.emit();

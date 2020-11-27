@@ -24,6 +24,7 @@
 #include <pthread.h>
 
 #include <map>
+#include <mutex>
 #include <queue>
 #include <set>
 #include <string>
@@ -83,7 +84,7 @@ private:
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
 
-	Glib::Mutex               _events_mutex;
+	std::mutex                _events_mutex;
 	std::queue<PatchageEvent> _events;
 
 	struct SeqAddrComparator

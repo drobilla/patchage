@@ -541,7 +541,7 @@ AlsaDriver::_refresh_main()
 	while (snd_seq_event_input(_seq, &ev) > 0) {
 		assert(ev);
 
-		Glib::Mutex::Lock lock(_events_mutex);
+		std::lock_guard<std::mutex> lock{_events_mutex};
 
 		switch (ev->type) {
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
@@ -604,7 +604,8 @@ AlsaDriver::_refresh_main()
 void
 AlsaDriver::process_events(Patchage* app)
 {
-	Glib::Mutex::Lock lock(_events_mutex);
+	std::lock_guard<std::mutex> lock{_events_mutex};
+
 	while (!_events.empty()) {
 		PatchageEvent& ev = _events.front();
 		ev.execute(app);
