@@ -59,8 +59,9 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 
 		ret = pthread_create(
 		    &_refresh_thread, &attr, &AlsaDriver::refresh_main, this);
-		if (ret)
+		if (ret) {
 			_app->error_msg("Alsa: Failed to start refresh thread.");
+		}
 
 		signal_attached.emit();
 	}
@@ -100,8 +101,9 @@ AlsaDriver::destroy_all()
 void
 AlsaDriver::refresh()
 {
-	if (!is_attached())
+	if (!is_attached()) {
 		return;
+	}
 
 	assert(_seq);
 
@@ -187,8 +189,9 @@ PatchageModule*
 AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 {
 	const Modules::const_iterator i = _modules.find(client_id);
-	if (i == _modules.end())
+	if (i == _modules.end()) {
 		return nullptr;
+	}
 
 	PatchageModule* io_module = nullptr;
 	for (Modules::const_iterator j = i;
@@ -227,8 +230,9 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
                                       PatchageModule*& m,
                                       PatchagePort*&   port)
 {
-	if (ignore(addr))
+	if (ignore(addr)) {
 		return;
+	}
 
 	snd_seq_client_info_t* cinfo;
 	snd_seq_client_info_alloca(&cinfo);
@@ -251,12 +255,13 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
 	int type = snd_seq_port_info_get_type(pinfo);
 
 	// Figure out direction
-	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE))
+	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE)) {
 		is_duplex = true;
-	else if (caps & SND_SEQ_PORT_CAP_READ)
+	} else if (caps & SND_SEQ_PORT_CAP_READ) {
 		is_input = false;
-	else if (caps & SND_SEQ_PORT_CAP_WRITE)
+	} else if (caps & SND_SEQ_PORT_CAP_WRITE) {
 		is_input = true;
+	}
 
 	is_application = (type & SND_SEQ_PORT_TYPE_APPLICATION);
 
@@ -323,11 +328,13 @@ AlsaDriver::create_port(PatchageModule&    parent,
 bool
 AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 {
-	if (_ignored.find(addr) != _ignored.end())
+	if (_ignored.find(addr) != _ignored.end()) {
 		return true;
+	}
 
-	if (!add)
+	if (!add) {
 		return false;
+	}
 
 	snd_seq_client_info_t* cinfo;
 	snd_seq_client_info_alloca(&cinfo);
@@ -409,12 +416,13 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 		result = false;
 	}
 
-	if (result)
+	if (result) {
 		_app->info_msg(std::string("Alsa: Connected ") + src_port->full_name() +
 		               " => " + dst_port->full_name());
-	else
+	} else {
 		_app->error_msg(std::string("Alsa: Unable to connect ") +
 		                src_port->full_name() + " => " + dst_port->full_name());
+	}
 
 	return (!result);
 }
@@ -536,17 +544,19 @@ AlsaDriver::_refresh_main()
 		switch (ev->type) {
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
-			    !ignore(ev->data.connect.dest))
+			    !ignore(ev->data.connect.dest)) {
 				_events.push(PatchageEvent(PatchageEvent::CONNECTION,
 				                           ev->data.connect.sender,
 				                           ev->data.connect.dest));
+			}
 			break;
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
-			    !ignore(ev->data.connect.dest))
+			    !ignore(ev->data.connect.dest)) {
 				_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
 				                           ev->data.connect.sender,
 				                           ev->data.connect.dest));
+			}
 			break;
 		case SND_SEQ_EVENT_PORT_START:
 			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
@@ -554,10 +564,11 @@ AlsaDriver::_refresh_main()
 			    _seq, ev->data.addr.client, ev->data.addr.port, pinfo);
 			caps = snd_seq_port_info_get_capability(pinfo);
 
-			if (!ignore(ev->data.addr))
+			if (!ignore(ev->data.addr)) {
 				_events.push(PatchageEvent(
 				    PatchageEvent::PORT_CREATION,
 				    PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+			}
 			break;
 		case SND_SEQ_EVENT_PORT_EXIT:
 			if (!ignore(ev->data.addr, false)) {

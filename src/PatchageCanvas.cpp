@@ -50,8 +50,9 @@ PatchageModule*
 PatchageCanvas::find_module(const std::string& name, ModuleType type)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(name);
-	if (i == _module_index.end())
+	if (i == _module_index.end()) {
 		return nullptr;
+	}
 
 	PatchageModule* io_module = nullptr;
 	for (ModuleIndex::const_iterator j = i;
@@ -96,8 +97,9 @@ PatchageCanvas::find_port(const PortID& id)
 	if (id.type == PortID::JACK_ID) {
 		jack_port_t* jack_port =
 		    jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
-		if (!jack_port)
+		if (!jack_port) {
 			return nullptr;
+		}
 
 		std::string module_name;
 		std::string port_name;
@@ -107,11 +109,13 @@ PatchageCanvas::find_port(const PortID& id)
 		    module_name,
 		    (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
 
-		if (module)
+		if (module) {
 			pp = module->get_port(port_name);
+		}
 
-		if (pp)
+		if (pp) {
 			index_port(id, pp);
+		}
 	}
 #endif // PATCHAGE_LIBJACK
 
@@ -196,15 +200,17 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
                                   const std::string& port_name)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(client_name);
-	if (i == _module_index.end())
+	if (i == _module_index.end()) {
 		return nullptr;
+	}
 
 	for (ModuleIndex::const_iterator j = i;
 	     j != _module_index.end() && j->first == client_name;
 	     ++j) {
 		PatchagePort* port = j->second->get_port(port_name);
-		if (port)
+		if (port) {
 			return port;
+		}
 	}
 
 	return nullptr;
@@ -215,8 +221,9 @@ PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 {
 	auto* p1 = dynamic_cast<PatchagePort*>(port1);
 	auto* p2 = dynamic_cast<PatchagePort*>(port2);
-	if (!p1 || !p2)
+	if (!p1 || !p2) {
 		return;
+	}
 
 	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO) ||
 	    (p1->type() == JACK_MIDI && p2->type() == JACK_MIDI) ||
@@ -240,8 +247,9 @@ PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 {
 	auto* input  = dynamic_cast<PatchagePort*>(port1);
 	auto* output = dynamic_cast<PatchagePort*>(port2);
-	if (!input || !output)
+	if (!input || !output) {
 		return;
+	}
 
 	if (input->is_output() && output->is_input()) {
 		// Damn, guessed wrong
@@ -285,8 +293,9 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 		out_module = module;
 	}
 
-	if (in_module && out_module)
+	if (in_module && out_module) {
 		out_module->set_partner(in_module);
+	}
 }
 
 static void

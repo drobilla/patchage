@@ -410,13 +410,15 @@ Patchage::attach()
 	_enable_refresh = false;
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_jack_driver_autoattach)
+	if (_jack_driver_autoattach) {
 		_jack_driver->attach(true);
+	}
 #endif
 
 #ifdef HAVE_ALSA
-	if (_alsa_driver_autoattach)
+	if (_alsa_driver_autoattach) {
 		_alsa_driver->attach();
+	}
 #endif
 
 	_enable_refresh = true;
@@ -454,12 +456,14 @@ Patchage::idle_callback()
 		refresh();
 	} else if (_driver_detached) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		if (_jack_driver && !_jack_driver->is_attached())
+		if (_jack_driver && !_jack_driver->is_attached()) {
 			_jack_driver->destroy_all();
+		}
 #endif
 #ifdef HAVE_ALSA
-		if (_alsa_driver && !_alsa_driver->is_attached())
+		if (_alsa_driver && !_alsa_driver->is_attached()) {
 			_alsa_driver->destroy_all();
+		}
 #endif
 	}
 
@@ -538,13 +542,15 @@ Patchage::refresh()
 		_canvas->clear();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		if (_jack_driver)
+		if (_jack_driver) {
 			_jack_driver->refresh();
+		}
 #endif
 
 #ifdef HAVE_ALSA
-		if (_alsa_driver)
+		if (_alsa_driver) {
 			_alsa_driver->refresh();
+		}
 #endif
 	}
 }

@@ -50,8 +50,9 @@ PatchageModule::~PatchageModule()
 void
 PatchageModule::update_menu()
 {
-	if (!_menu)
+	if (!_menu) {
 		return;
+	}
 
 	if (_type == InputOutput) {
 		bool has_in  = false;
@@ -106,10 +107,11 @@ PatchageModule::load_location()
 {
 	Coord loc;
 
-	if (_app->conf()->get_module_location(_name, _type, loc))
+	if (_app->conf()->get_module_location(_name, _type, loc)) {
 		move_to(loc.x, loc.y);
-	else
+	} else {
 		move_to(20 + rand() % 640, 20 + rand() % 480);
+	}
 }
 
 void

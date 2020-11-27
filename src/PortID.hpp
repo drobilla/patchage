@@ -109,8 +109,9 @@ operator<<(std::ostream& os, const PortID& id)
 static inline bool
 operator<(const PortID& a, const PortID& b)
 {
-	if (a.type != b.type)
+	if (a.type != b.type) {
 		return a.type < b.type;
+	}
 
 	switch (a.type) {
 	case PortID::NULL_PORT_ID:
