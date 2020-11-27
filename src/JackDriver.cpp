@@ -218,8 +218,8 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	}
 #endif
 
-	const char* const type_str = jack_port_type(port);
-	PortType          port_type;
+	const char* const type_str  = jack_port_type(port);
+	PortType          port_type = JACK_AUDIO;
 	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
 		port_type = JACK_AUDIO;
 #ifdef HAVE_JACK_METADATA
@@ -269,8 +269,8 @@ JackDriver::shutdown()
 void
 JackDriver::refresh()
 {
-	const char** ports;
-	jack_port_t* port;
+	const char** ports = nullptr;
+	jack_port_t* port  = nullptr;
 
 	// Jack can take _client away from us at any time throughout here :/
 	// Shortest locks possible is the best solution I can figure out
@@ -293,7 +293,7 @@ JackDriver::refresh()
 	std::string port1_name;
 	std::string client2_name;
 	std::string port2_name;
-	size_t      colon;
+	size_t      colon = std::string::npos;
 
 	// Add all ports
 	for (int i = 0; ports[i]; ++i) {

@@ -558,17 +558,16 @@ Patchage::refresh()
 void
 Patchage::store_window_location()
 {
-	int loc_x, loc_y, size_x, size_y;
+	int loc_x = 0;
+	int loc_y = 0;
 	_main_win->get_position(loc_x, loc_y);
+
+	int size_x = 0;
+	int size_y = 0;
 	_main_win->get_size(size_x, size_y);
-	Coord window_location;
-	window_location.x = loc_x;
-	window_location.y = loc_y;
-	Coord window_size;
-	window_size.x = size_x;
-	window_size.y = size_y;
-	_conf->set_window_location(window_location);
-	_conf->set_window_size(window_size);
+
+	_conf->set_window_location({double(loc_x), double(loc_y)});
+	_conf->set_window_size({double(size_x), double(size_y)});
 }
 
 void
@@ -1045,14 +1044,17 @@ Patchage::on_view_messages()
 	if (_menu_view_messages->get_active()) {
 		Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
 		if (!_pane_initialized) {
-			int y, line_height;
+			int y           = 0;
+			int line_height = 0;
 			_status_text->get_line_yrange(buffer->begin(), y, line_height);
+
 			const int pad         = _status_text->get_pixels_inside_wrap();
 			const int max_pos     = _main_paned->get_allocation().get_height();
 			const int min_height  = (line_height + 2 * pad);
 			const int conf_height = _conf->get_messages_height();
 			_main_paned->set_position(max_pos -
 			                          std::max(conf_height, min_height));
+
 			_pane_initialized = true;
 		}
 

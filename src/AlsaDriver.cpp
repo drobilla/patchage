@@ -111,11 +111,11 @@ AlsaDriver::refresh()
 	_ignored.clear();
 	_port_addrs.clear();
 
-	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_t* cinfo = nullptr;
 	snd_seq_client_info_alloca(&cinfo);
 	snd_seq_client_info_set_client(cinfo, -1);
 
-	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_t* pinfo = nullptr;
 	snd_seq_port_info_alloca(&pinfo);
 
 	PatchageModule* parent = nullptr;
@@ -154,7 +154,7 @@ AlsaDriver::refresh()
 				continue;
 			}
 
-			snd_seq_query_subscribe_t* subsinfo;
+			snd_seq_query_subscribe_t* subsinfo = nullptr;
 			snd_seq_query_subscribe_alloca(&subsinfo);
 			snd_seq_query_subscribe_set_root(subsinfo, addr);
 			snd_seq_query_subscribe_set_index(subsinfo, 0);
@@ -234,12 +234,12 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
 		return;
 	}
 
-	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_t* cinfo = nullptr;
 	snd_seq_client_info_alloca(&cinfo);
 	snd_seq_client_info_set_client(cinfo, addr.client);
 	snd_seq_get_any_client_info(_seq, addr.client, cinfo);
 
-	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_t* pinfo = nullptr;
 	snd_seq_port_info_alloca(&pinfo);
 	snd_seq_port_info_set_client(pinfo, addr.client);
 	snd_seq_port_info_set_port(pinfo, addr.port);
@@ -336,12 +336,12 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 		return false;
 	}
 
-	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_t* cinfo = nullptr;
 	snd_seq_client_info_alloca(&cinfo);
 	snd_seq_client_info_set_client(cinfo, addr.client);
 	snd_seq_get_any_client_info(_seq, addr.client, cinfo);
 
-	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_t* pinfo = nullptr;
 	snd_seq_port_info_alloca(&pinfo);
 	snd_seq_port_info_set_client(pinfo, addr.client);
 	snd_seq_port_info_set_port(pinfo, addr.port);
@@ -394,7 +394,7 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	bool result = true;
 
-	snd_seq_port_subscribe_t* subs;
+	snd_seq_port_subscribe_t* subs = nullptr;
 	snd_seq_port_subscribe_malloc(&subs);
 	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
 	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
@@ -445,7 +445,7 @@ AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
 	const PortID src = s->second;
 	const PortID dst = d->second;
 
-	snd_seq_port_subscribe_t* subs;
+	snd_seq_port_subscribe_t* subs = nullptr;
 	snd_seq_port_subscribe_malloc(&subs);
 	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
 	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
@@ -477,7 +477,7 @@ AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
 bool
 AlsaDriver::create_refresh_port()
 {
-	snd_seq_port_info_t* port_info;
+	snd_seq_port_info_t* port_info = nullptr;
 	snd_seq_port_info_alloca(&port_info);
 	snd_seq_port_info_set_name(port_info, "System Announcement Reciever");
 	snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
@@ -529,13 +529,13 @@ AlsaDriver::_refresh_main()
 
 	int caps = 0;
 
-	snd_seq_client_info_t* cinfo;
+	snd_seq_client_info_t* cinfo = nullptr;
 	snd_seq_client_info_alloca(&cinfo);
 
-	snd_seq_port_info_t* pinfo;
+	snd_seq_port_info_t* pinfo = nullptr;
 	snd_seq_port_info_alloca(&pinfo);
 
-	snd_seq_event_t* ev;
+	snd_seq_event_t* ev = nullptr;
 	while (snd_seq_event_input(_seq, &ev) > 0) {
 		assert(ev);
 

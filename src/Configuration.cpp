@@ -33,8 +33,8 @@ static const char* port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
                                                     "JACK_CV"};
 
 Configuration::Configuration()
-    : _window_location(0, 0)
-    , _window_size(640, 480)
+    : _window_location{0, 0}
+    , _window_size{640, 480}
     , _zoom(1.0)
     , _font_size(12.0)
     , _messages_height(0)
@@ -212,7 +212,7 @@ Configuration::load()
 			file >> _messages_height;
 		} else if (key == "port_color") {
 			std::string type_name;
-			uint32_t    rgba;
+			uint32_t    rgba = 0u;
 			file >> type_name;
 			file.ignore(1, '#');
 			file >> std::hex >> std::uppercase;
@@ -237,7 +237,7 @@ Configuration::load()
 			file.ignore(1, '\"');
 			std::getline(file, name, '\"');
 
-			ModuleType  type;
+			ModuleType  type = Input;
 			std::string type_str;
 			file >> type_str;
 			if (type_str == "input") {

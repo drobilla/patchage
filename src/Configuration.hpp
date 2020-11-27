@@ -43,10 +43,16 @@ enum PortType
 
 struct Coord
 {
-	Coord(double x_ = 0, double y_ = 0)
+	Coord()
+	    : x(0.0)
+	    , y(0.0)
+	{}
+
+	Coord(double x_, double y_)
 	    : x(x_)
 	    , y(y_)
 	{}
+
 	double x;
 	double y;
 };
