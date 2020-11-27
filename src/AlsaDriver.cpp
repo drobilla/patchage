@@ -392,21 +392,23 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
  * \return Whether connection succeeded.
  */
 bool
-AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
+AlsaDriver::connect(const PortID       tail_id,
+                    const std::string& tail_client_name,
+                    const std::string& tail_port_name,
+                    const PortID       head_id,
+                    const std::string& head_client_name,
+                    const std::string& head_port_name)
 {
-	PortAddrs::const_iterator s = _port_addrs.find(src_port);
-	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
-
-	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		_log.error("[ALSA] Attempt to connect port with no address");
+	if (tail_id.type != PortID::Type::alsa_addr ||
+	    head_id.type != PortID::Type::alsa_addr) {
+		_log.error("[ALSA] Attempt to connect non-ALSA ports");
 		return false;
 	}
 
-	const PortID src = s->second;
-	const PortID dst = d->second;
-
-	if (src.id.alsa_addr.client == dst.id.alsa_addr.client &&
-	    src.id.alsa_addr.port == dst.id.alsa_addr.port) {
+	const auto& tail_addr = tail_id.id.alsa_addr;
+	const auto& head_addr = head_id.id.alsa_addr;
+	if (tail_addr.client == head_addr.client &&
+	    tail_addr.port == head_addr.port) {
 		_log.warning("[ALSA] Refusing to connect port to itself");
 		return false;
 	}
@@ -415,8 +417,8 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	snd_seq_port_subscribe_t* subs = nullptr;
 	snd_seq_port_subscribe_malloc(&subs);
-	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
-	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
+	snd_seq_port_subscribe_set_sender(subs, &tail_addr);
+	snd_seq_port_subscribe_set_dest(subs, &head_addr);
 	snd_seq_port_subscribe_set_exclusive(subs, 0);
 	snd_seq_port_subscribe_set_time_update(subs, 0);
 	snd_seq_port_subscribe_set_time_real(subs, 0);
@@ -435,13 +437,17 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 	}
 
 	if (result) {
-		_log.info(fmt::format("[ALSA] Connected {} => {}",
-		                      src_port->full_name(),
-		                      dst_port->full_name()));
+		_log.info(fmt::format("[ALSA] Connected {}:{} => {}:{}",
+		                      tail_client_name,
+		                      tail_port_name,
+		                      head_client_name,
+		                      head_port_name));
 	} else {
-		_log.error(fmt::format("[ALSA] Unable to connect {} => {}",
-		                       src_port->full_name(),
-		                       dst_port->full_name()));
+		_log.error(fmt::format("[ALSA] Failed to connect {}:{} => {}:{}",
+		                       tail_client_name,
+		                       tail_port_name,
+		                       head_client_name,
+		                       head_port_name));
 	}
 
 	return (!result);
@@ -452,23 +458,26 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
  * \return Whether disconnection succeeded.
  */
 bool
-AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
+AlsaDriver::disconnect(const PortID       tail_id,
+                       const std::string& tail_client_name,
+                       const std::string& tail_port_name,
+                       const PortID       head_id,
+                       const std::string& head_client_name,
+                       const std::string& head_port_name)
 {
-	PortAddrs::const_iterator s = _port_addrs.find(src_port);
-	PortAddrs::const_iterator d = _port_addrs.find(dst_port);
-
-	if (s == _port_addrs.end() || d == _port_addrs.end()) {
-		_log.error("[ALSA] Attempt to connect port with no address");
+	if (tail_id.type != PortID::Type::alsa_addr ||
+	    head_id.type != PortID::Type::alsa_addr) {
+		_log.error("[ALSA] Attempt to disconnect non-ALSA ports");
 		return false;
 	}
 
-	const PortID src = s->second;
-	const PortID dst = d->second;
+	const auto& tail_addr = tail_id.id.alsa_addr;
+	const auto& head_addr = head_id.id.alsa_addr;
 
 	snd_seq_port_subscribe_t* subs = nullptr;
 	snd_seq_port_subscribe_malloc(&subs);
-	snd_seq_port_subscribe_set_sender(subs, &src.id.alsa_addr);
-	snd_seq_port_subscribe_set_dest(subs, &dst.id.alsa_addr);
+	snd_seq_port_subscribe_set_sender(subs, &tail_addr);
+	snd_seq_port_subscribe_set_dest(subs, &head_addr);
 	snd_seq_port_subscribe_set_exclusive(subs, 0);
 	snd_seq_port_subscribe_set_time_update(subs, 0);
 	snd_seq_port_subscribe_set_time_real(subs, 0);
@@ -482,15 +491,21 @@ AlsaDriver::disconnect(PatchagePort* src_port, PatchagePort* dst_port)
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		_log.error(fmt::format("[ALSA] Unable to disconnect {} => {} ({})",
-		                       src_port->full_name(),
-		                       dst_port->full_name(),
-		                       snd_strerror(ret)));
+		_log.error(
+		    fmt::format("[ALSA] Failed to disconnect {}:{} => {}:{} ({})",
+		                tail_client_name,
+		                tail_port_name,
+		                head_client_name,
+		                head_port_name,
+		                snd_strerror(ret)));
 		return false;
 	}
 
-	_log.info(std::string("[ALSA] Disconnected ") + src_port->full_name() +
-	          " => " + dst_port->full_name());
+	_log.info(fmt::format("[ALSA] Disconnected {}:{} => {}:{}",
+	                      tail_client_name,
+	                      tail_port_name,
+	                      head_client_name,
+	                      head_port_name));
 
 	return true;
 }

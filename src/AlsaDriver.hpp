@@ -59,9 +59,19 @@ public:
 	PatchagePort*
 	create_port_view(Patchage* patchage, const PortID& id) override;
 
-	bool connect(PatchagePort* src_port, PatchagePort* dst_port) override;
+	bool connect(PortID             tail_id,
+	             const std::string& tail_client_name,
+	             const std::string& tail_port_name,
+	             PortID             head_id,
+	             const std::string& head_client_name,
+	             const std::string& head_port_name) override;
 
-	bool disconnect(PatchagePort* src_port, PatchagePort* dst_port) override;
+	bool disconnect(PortID             tail_id,
+	                const std::string& tail_client_name,
+	                const std::string& tail_port_name,
+	                PortID             head_id,
+	                const std::string& head_client_name,
+	                const std::string& head_port_name) override;
 
 	void print_addr(snd_seq_addr_t addr);
 

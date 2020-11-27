@@ -913,26 +913,30 @@ JackDriver::refresh()
 }
 
 bool
-JackDriver::connect(PatchagePort* src, PatchagePort* dst)
+JackDriver::connect(const PortID       tail_id,
+                    const std::string& tail_client_name,
+                    const std::string& tail_port_name,
+                    const PortID       head_id,
+                    const std::string& head_client_name,
+                    const std::string& head_port_name)
 {
-	const char*  client1_name = src->get_module()->get_label();
-	const char*  port1_name   = src->get_label();
-	const char*  client2_name = dst->get_module()->get_label();
-	const char*  port2_name   = dst->get_label();
-	DBusMessage* reply_ptr    = nullptr;
+	(void)tail_id;
+	(void)head_id;
+
+	DBusMessage* reply_ptr = nullptr;
 
 	if (!call(true,
 	          JACKDBUS_IFACE_PATCHBAY,
 	          "ConnectPortsByName",
 	          &reply_ptr,
 	          DBUS_TYPE_STRING,
-	          &client1_name,
+	          &tail_client_name,
 	          DBUS_TYPE_STRING,
-	          &port1_name,
+	          &tail_port_name,
 	          DBUS_TYPE_STRING,
-	          &client2_name,
+	          &head_client_name,
 	          DBUS_TYPE_STRING,
-	          &port2_name,
+	          &head_port_name,
 	          DBUS_TYPE_INVALID)) {
 		error_msg("ConnectPortsByName() failed");
 		return false;
@@ -942,26 +946,30 @@ JackDriver::connect(PatchagePort* src, PatchagePort* dst)
 }
 
 bool
-JackDriver::disconnect(PatchagePort* src, PatchagePort* dst)
+JackDriver::disconnect(const PortID       tail_id,
+                       const std::string& tail_client_name,
+                       const std::string& tail_port_name,
+                       const PortID       head_id,
+                       const std::string& head_client_name,
+                       const std::string& head_port_name)
 {
-	const char*  client1_name = src->get_module()->get_label();
-	const char*  port1_name   = src->get_label();
-	const char*  client2_name = dst->get_module()->get_label();
-	const char*  port2_name   = dst->get_label();
-	DBusMessage* reply_ptr    = nullptr;
+	(void)tail_id;
+	(void)head_id;
+
+	DBusMessage* reply_ptr = nullptr;
 
 	if (!call(true,
 	          JACKDBUS_IFACE_PATCHBAY,
 	          "DisconnectPortsByName",
 	          &reply_ptr,
 	          DBUS_TYPE_STRING,
-	          &client1_name,
+	          &tail_client_name,
 	          DBUS_TYPE_STRING,
-	          &port1_name,
+	          &tail_port_name,
 	          DBUS_TYPE_STRING,
-	          &client2_name,
+	          &head_client_name,
 	          DBUS_TYPE_STRING,
-	          &port2_name,
+	          &head_port_name,
 	          DBUS_TYPE_INVALID)) {
 		error_msg("DisconnectPortsByName() failed");
 		return false;

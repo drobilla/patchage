@@ -429,26 +429,35 @@ JackDriver::port_names(const PortID& id,
  * \return Whether connection succeeded.
  */
 bool
-JackDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
+JackDriver::connect(const PortID       tail_id,
+                    const std::string& tail_client_name,
+                    const std::string& tail_port_name,
+                    const PortID       head_id,
+                    const std::string& head_client_name,
+                    const std::string& head_port_name)
 {
-	if (_client == nullptr) {
+	(void)tail_id;
+	(void)head_id;
+
+	if (!_client) {
 		return false;
 	}
 
-	int result = jack_connect(
-	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
+	const auto tail_name = tail_client_name + ":" + tail_port_name;
+	const auto head_name = head_client_name + ":" + head_port_name;
+
+	const int result =
+	    jack_connect(_client, tail_name.c_str(), head_name.c_str());
 
 	if (result == 0) {
-		_log.info(fmt::format("[JACK] Connected {} => {}",
-		                      src_port->full_name(),
-		                      dst_port->full_name()));
+		_log.info(
+		    fmt::format("[JACK] Connected {} => {}", tail_name, head_name));
 	} else {
-		_log.error(fmt::format("[JACK] Unable to connect {} => {}",
-		                       src_port->full_name(),
-		                       dst_port->full_name()));
+		_log.error(fmt::format(
+		    "[JACK] Failed to connect {} => {}", tail_name, head_name));
 	}
 
-	return (!result);
+	return !result;
 }
 
 /** Disconnects two Jack audio ports.
@@ -456,27 +465,35 @@ JackDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
  * \return Whether disconnection succeeded.
  */
 bool
-JackDriver::disconnect(PatchagePort* const src_port,
-                       PatchagePort* const dst_port)
+JackDriver::disconnect(const PortID       tail_id,
+                       const std::string& tail_client_name,
+                       const std::string& tail_port_name,
+                       const PortID       head_id,
+                       const std::string& head_client_name,
+                       const std::string& head_port_name)
 {
-	if (_client == nullptr) {
+	(void)tail_id;
+	(void)head_id;
+
+	if (!_client) {
 		return false;
 	}
 
-	int result = jack_disconnect(
-	    _client, src_port->full_name().c_str(), dst_port->full_name().c_str());
+	const auto tail_name = tail_client_name + ":" + tail_port_name;
+	const auto head_name = head_client_name + ":" + head_port_name;
+
+	const int result =
+	    jack_disconnect(_client, tail_name.c_str(), head_name.c_str());
 
 	if (result == 0) {
-		_log.info(fmt::format("[JACK] Disconnected {} => {}",
-		                      src_port->full_name(),
-		                      dst_port->full_name()));
+		_log.info(
+		    fmt::format("[JACK] Disconnected {} => {}", tail_name, head_name));
 	} else {
-		_log.error(fmt::format("[JACK] Unable to disconnect {} => {}",
-		                       src_port->full_name(),
-		                       dst_port->full_name()));
+		_log.error(fmt::format(
+		    "[JACK] Failed to disconnect {} => {}", tail_name, head_name));
 	}
 
-	return (!result);
+	return !result;
 }
 
 void
