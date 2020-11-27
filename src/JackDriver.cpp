@@ -203,7 +203,9 @@ get_property(jack_uuid_t subject, const char* key)
 #endif
 
 PatchagePort*
-JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
+JackDriver::create_port(PatchageModule& parent,
+                        jack_port_t*    port,
+                        const PortID&   id)
 {
 	if (!port) {
 		return nullptr;

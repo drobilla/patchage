@@ -1,5 +1,5 @@
 /* This file is part of Patchage
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -25,7 +25,7 @@ template<typename W>
 class Widget
 {
 public:
-	Widget(Glib::RefPtr<Gtk::Builder> xml, const std::string& name)
+	Widget(const Glib::RefPtr<Gtk::Builder>& xml, const std::string& name)
 	{
 		xml->get_widget(name, _me);
 	}

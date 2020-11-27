@@ -77,7 +77,7 @@ public:
 
 private:
 	PatchagePort*
-	create_port(PatchageModule& parent, jack_port_t* port, PortID id);
+	create_port(PatchageModule& parent, jack_port_t* port, const PortID& id);
 
 	void shutdown();
 

@@ -43,7 +43,6 @@ Checks: >
   -llvmlibc-*,
   -misc-unused-parameters,
   -modernize-use-trailing-return-type,
-  -performance-unnecessary-value-param,
   -readability-convert-member-functions-to-static,
   -readability-implicit-bool-conversion,
   -readability-inconsistent-declaration-parameter-name,
