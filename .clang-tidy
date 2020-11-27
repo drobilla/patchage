@@ -9,7 +9,6 @@ Checks: >
   -*-unused-macros,
   -*-uppercase-literal-suffix,
   -*-vararg,
-  -bugprone-branch-clone,
   -bugprone-forward-declaration-namespace,
   -cert-dcl50-cpp,
   -cert-msc30-c,
@@ -38,7 +37,6 @@ Checks: >
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,
   -readability-implicit-bool-conversion,
-  -readability-make-member-function-const,
 FormatStyle: file
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*'
