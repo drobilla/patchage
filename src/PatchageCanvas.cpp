@@ -21,6 +21,7 @@
 #include "Patchage.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "warnings.hpp"
 
 #if defined(HAVE_JACK_DBUS)
 #	include "JackDbusDriver.hpp"
@@ -31,7 +32,9 @@
 #	include "AlsaDriver.hpp"
 #endif
 
+PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
+PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/format.hpp>
 

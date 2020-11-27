@@ -22,8 +22,11 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "PortID.hpp"
+#include "warnings.hpp"
 
+PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Canvas.hpp"
+PATCHAGE_RESTORE_WARNINGS
 
 #ifdef HAVE_ALSA
 #	include <alsa/asoundlib.h>

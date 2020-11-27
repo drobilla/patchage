@@ -22,6 +22,7 @@
 #include "PatchageEvent.hpp"
 #include "UIFile.hpp"
 #include "patchage_config.h"
+#include "warnings.hpp"
 
 #if defined(HAVE_JACK_DBUS)
 #	include "JackDbusDriver.hpp"
@@ -38,8 +39,10 @@
 #	include "AlsaDriver.hpp"
 #endif
 
+PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
 #include "ganv/Module.hpp"
+PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/format.hpp>
 #include <glib.h>
@@ -78,14 +81,14 @@ terminate_cb(GtkosxApplication* app, gpointer data)
 #endif
 
 static bool
-configure_cb(GtkWindow* parentWindow, GdkEvent* event, gpointer data)
+configure_cb(GtkWindow*, GdkEvent*, gpointer data)
 {
 	static_cast<Patchage*>(data)->store_window_location();
 	return FALSE;
 }
 
 static int
-port_order(const GanvPort* a, const GanvPort* b, void* data)
+port_order(const GanvPort* a, const GanvPort* b, void*)
 {
 	const auto* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
 	const auto* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
@@ -615,7 +618,7 @@ Patchage::warning_msg(const std::string& msg)
 }
 
 static void
-load_module_location(GanvNode* node, void* data)
+load_module_location(GanvNode* node, void*)
 {
 	if (GANV_IS_MODULE(node)) {
 		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
@@ -962,9 +965,7 @@ update_edge_color(GanvEdge* edge, void* data)
 }
 
 void
-Patchage::on_legend_color_change(PortType           id,
-                                 const std::string& label,
-                                 uint32_t           rgba)
+Patchage::on_legend_color_change(PortType id, const std::string&, uint32_t rgba)
 {
 	_conf->set_port_color(id, rgba);
 	_canvas->for_each_node(update_port_colors, this);
@@ -972,7 +973,7 @@ Patchage::on_legend_color_change(PortType           id,
 }
 
 void
-Patchage::on_messages_resized(Gtk::Allocation& alloc)
+Patchage::on_messages_resized(Gtk::Allocation&)
 {
 	const int max_pos = _main_paned->get_allocation().get_height();
 	_conf->set_messages_height(max_pos - _main_paned->get_position());
@@ -1088,7 +1089,7 @@ Patchage::on_view_toolbar()
 }
 
 bool
-Patchage::on_scroll(GdkEventScroll* ev)
+Patchage::on_scroll(GdkEventScroll*)
 {
 	return false;
 }

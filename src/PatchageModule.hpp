@@ -18,9 +18,12 @@
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
 #include "Configuration.hpp"
+#include "warnings.hpp"
 
+PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
+PATCHAGE_RESTORE_WARNINGS
 
 #include <gtkmm/menu_elems.h>
 

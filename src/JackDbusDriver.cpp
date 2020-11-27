@@ -138,9 +138,9 @@ JackDriver::on_jack_disappeared()
 
 /** Handle signals we have subscribed for in attach(). */
 DBusHandlerResult
-JackDriver::dbus_message_hook(DBusConnection* connection,
-                              DBusMessage*    message,
-                              void*           jack_driver)
+JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
+                              DBusMessage* message,
+                              void*        jack_driver)
 {
 	const char*   client2_name;
 	const char*   client_name;
@@ -599,9 +599,9 @@ JackDriver::add_port(PatchageModule*    module,
 }
 
 void
-JackDriver::add_port(dbus_uint64_t client_id,
-                     const char*   client_name,
-                     dbus_uint64_t port_id,
+JackDriver::add_port(dbus_uint64_t /*client_id*/,
+                     const char* client_name,
+                     dbus_uint64_t /*port_id*/,
                      const char*   port_name,
                      dbus_uint32_t port_flags,
                      dbus_uint32_t port_type)
@@ -639,10 +639,10 @@ JackDriver::add_port(dbus_uint64_t client_id,
 }
 
 void
-JackDriver::remove_port(dbus_uint64_t client_id,
-                        const char*   client_name,
-                        dbus_uint64_t port_id,
-                        const char*   port_name)
+JackDriver::remove_port(dbus_uint64_t /*client_id*/,
+                        const char* client_name,
+                        dbus_uint64_t /*port_id*/,
+                        const char* port_name)
 {
 	PatchagePort* port =
 	    _app->canvas()->find_port_by_name(client_name, port_name);
@@ -684,15 +684,15 @@ JackDriver::find_or_create_module(ModuleType type, const std::string& name)
 }
 
 void
-JackDriver::connect_ports(dbus_uint64_t connection_id,
-                          dbus_uint64_t client1_id,
-                          const char*   client1_name,
-                          dbus_uint64_t port1_id,
-                          const char*   port1_name,
-                          dbus_uint64_t client2_id,
-                          const char*   client2_name,
-                          dbus_uint64_t port2_id,
-                          const char*   port2_name)
+JackDriver::connect_ports(dbus_uint64_t /*connection_id*/,
+                          dbus_uint64_t /*client1_id*/,
+                          const char* client1_name,
+                          dbus_uint64_t /*port1_id*/,
+                          const char* port1_name,
+                          dbus_uint64_t /*client2_id*/,
+                          const char* client2_name,
+                          dbus_uint64_t /*port2_id*/,
+                          const char* port2_name)
 {
 	PatchagePort* port1 =
 	    _app->canvas()->find_port_by_name(client1_name, port1_name);
@@ -714,15 +714,15 @@ JackDriver::connect_ports(dbus_uint64_t connection_id,
 }
 
 void
-JackDriver::disconnect_ports(dbus_uint64_t connection_id,
-                             dbus_uint64_t client1_id,
-                             const char*   client1_name,
-                             dbus_uint64_t port1_id,
-                             const char*   port1_name,
-                             dbus_uint64_t client2_id,
-                             const char*   client2_name,
-                             dbus_uint64_t port2_id,
-                             const char*   port2_name)
+JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
+                             dbus_uint64_t /*client1_id*/,
+                             const char* client1_name,
+                             dbus_uint64_t /*port1_id*/,
+                             const char* port1_name,
+                             dbus_uint64_t /*client2_id*/,
+                             const char* client2_name,
+                             dbus_uint64_t /*port2_id*/,
+                             const char* port2_name)
 {
 	PatchagePort* port1 =
 	    _app->canvas()->find_port_by_name(client1_name, port1_name);
@@ -1180,7 +1180,7 @@ JackDriver::reset_max_dsp_load()
 }
 
 PatchagePort*
-JackDriver::create_port_view(Patchage* patchage, const PortID& id)
+JackDriver::create_port_view(Patchage*, const PortID&)
 {
 	assert(false); // we dont use events at all
 	return nullptr;

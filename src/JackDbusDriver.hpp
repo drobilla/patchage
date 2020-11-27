@@ -61,7 +61,7 @@ public:
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 
-	void process_events(Patchage* app) {}
+	void process_events(Patchage*) {}
 
 	PatchagePort* create_port_view(Patchage* patchage, const PortID& ref);
 

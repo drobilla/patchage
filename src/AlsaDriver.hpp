@@ -70,8 +70,7 @@ private:
 	                                      const std::string& client_name,
 	                                      ModuleType         type);
 
-	void create_port_view_internal(Patchage*        patchage,
-	                               snd_seq_addr_t   addr,
+	void create_port_view_internal(snd_seq_addr_t   addr,
 	                               PatchageModule*& parent,
 	                               PatchagePort*&   port);
 

@@ -133,7 +133,7 @@ AlsaDriver::refresh()
 				continue;
 			}
 
-			create_port_view_internal(_app, addr, parent, port);
+			create_port_view_internal(addr, parent, port);
 		}
 	}
 
@@ -178,11 +178,11 @@ AlsaDriver::refresh()
 }
 
 PatchagePort*
-AlsaDriver::create_port_view(Patchage* patchage, const PortID& id)
+AlsaDriver::create_port_view(Patchage*, const PortID& id)
 {
 	PatchageModule* parent = nullptr;
 	PatchagePort*   port   = nullptr;
-	create_port_view_internal(patchage, id.id.alsa_addr, parent, port);
+	create_port_view_internal(id.id.alsa_addr, parent, port);
 	return port;
 }
 
@@ -228,8 +228,7 @@ AlsaDriver::find_or_create_module(Patchage*          patchage,
 }
 
 void
-AlsaDriver::create_port_view_internal(Patchage*        patchage,
-                                      snd_seq_addr_t   addr,
+AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
                                       PatchageModule*& parent,
                                       PatchagePort*&   port)
 {

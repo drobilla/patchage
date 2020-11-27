@@ -73,7 +73,6 @@ def configure(conf):
                 '-Wno-shorten-64-to-32',
                 '-Wno-sign-conversion',
                 '-Wno-stack-protector',
-                '-Wno-unused-parameter',
                 '-Wno-suggest-override',
                 '-Wno-suggest-destructor-override',
             ],
@@ -86,7 +85,6 @@ def configure(conf):
                 '-Wno-shadow',
                 '-Wno-stack-protector',
                 '-Wno-suggest-attribute=noreturn',
-                '-Wno-unused-parameter',
             ],
         })
 
