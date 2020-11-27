@@ -148,7 +148,8 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 
 	const int jack_flags = jack_port_flags(jack_port);
 
-	std::string module_name, port_name;
+	std::string module_name;
+	std::string port_name;
 	port_names(id, module_name, port_name);
 
 	ModuleType type = ModuleType::input_output;

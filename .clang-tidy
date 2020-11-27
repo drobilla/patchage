@@ -45,7 +45,6 @@ Checks: >
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,
   -readability-implicit-bool-conversion,
-  -readability-isolate-declaration,
   -readability-make-member-function-const,
 FormatStyle: file
 WarningsAsErrors: '*'
