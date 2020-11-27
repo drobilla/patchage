@@ -41,6 +41,12 @@ public:
 	               double             x = 0,
 	               double             y = 0);
 
+	PatchageModule(const PatchageModule&) = delete;
+	PatchageModule& operator=(const PatchageModule&) = delete;
+
+	PatchageModule(PatchageModule&&) = delete;
+	PatchageModule& operator=(PatchageModule&&) = delete;
+
 	~PatchageModule() override;
 
 	void split();

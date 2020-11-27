@@ -61,6 +61,12 @@ public:
 	Patchage(int argc, char** argv);
 	~Patchage();
 
+	Patchage(const Patchage&) = delete;
+	Patchage& operator=(const Patchage&) = delete;
+
+	Patchage(Patchage&&) = delete;
+	Patchage& operator=(Patchage&&) = delete;
+
 	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
 	Gtk::Window* window() { return _main_win.get(); }

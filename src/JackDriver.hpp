@@ -42,6 +42,12 @@ class JackDriver : public Driver
 public:
 	explicit JackDriver(Patchage* app);
 
+	JackDriver(const JackDriver&) = delete;
+	JackDriver& operator=(const JackDriver&) = delete;
+
+	JackDriver(JackDriver&&) = delete;
+	JackDriver& operator=(JackDriver&&) = delete;
+
 	~JackDriver() override;
 
 	void attach(bool launch_daemon) override;

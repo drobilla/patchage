@@ -28,6 +28,14 @@ class PatchageCanvas;
 class Driver
 {
 public:
+	Driver() = default;
+
+	Driver(const Driver&) = delete;
+	Driver& operator=(const Driver&) = delete;
+
+	Driver(Driver&&) = delete;
+	Driver& operator=(Driver&&) = delete;
+
 	virtual ~Driver() = default;
 
 	virtual void process_events(Patchage* app) = 0;

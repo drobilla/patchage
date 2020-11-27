@@ -60,6 +60,12 @@ public:
 		signal_event().connect(sigc::mem_fun(this, &PatchagePort::on_event));
 	}
 
+	PatchagePort(const PatchagePort&) = delete;
+	PatchagePort& operator=(const PatchagePort&) = delete;
+
+	PatchagePort(PatchagePort&&) = delete;
+	PatchagePort& operator=(PatchagePort&&) = delete;
+
 	~PatchagePort() override = default;
 
 	/** Returns the full name of this port, as "modulename:portname" */

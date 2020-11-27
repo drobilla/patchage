@@ -6,7 +6,6 @@ Checks: >
   -*-narrowing-conversions,
   -*-no-malloc,
   -*-non-private-member-variables-in-classes,
-  -*-special-member-functions,
   -*-unused-macros,
   -*-uppercase-literal-suffix,
   -*-vararg,

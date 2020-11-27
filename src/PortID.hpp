@@ -59,21 +59,13 @@ struct PortID
 	}
 #endif
 
-	PortID(const PortID& copy)
-	    : type(copy.type)
-	{
-		memcpy(&id, &copy.id, sizeof(id));
-	}
+	PortID(const PortID& copy) = default;
+	PortID& operator=(const PortID& copy) = default;
 
-	PortID& operator=(const PortID& copy)
-	{
-		if (&copy != this) {
-			type = copy.type;
-			memcpy(&id, &copy.id, sizeof(id));
-		}
+	PortID(PortID&& id) = default;
+	PortID& operator=(PortID&& id) = default;
 
-		return *this;
-	}
+	~PortID() = default;
 
 	Type type = Type::nothing;
 

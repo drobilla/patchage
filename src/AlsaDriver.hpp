@@ -39,6 +39,12 @@ class AlsaDriver : public Driver
 public:
 	explicit AlsaDriver(Patchage* app);
 
+	AlsaDriver(const AlsaDriver&) = delete;
+	AlsaDriver& operator=(const AlsaDriver&) = delete;
+
+	AlsaDriver(AlsaDriver&&) = delete;
+	AlsaDriver& operator=(AlsaDriver&&) = delete;
+
 	~AlsaDriver() override;
 
 	void attach(bool launch_daemon) override;

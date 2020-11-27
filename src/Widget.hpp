@@ -33,6 +33,11 @@ public:
 	Widget(const Widget&) = delete;
 	Widget& operator=(const Widget&) = delete;
 
+	Widget(Widget&&) = delete;
+	Widget& operator=(Widget&&) = delete;
+
+	~Widget() = default;
+
 	void destroy() { delete _me; }
 
 	W*       get() { return _me; }
