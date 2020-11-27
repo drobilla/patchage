@@ -71,7 +71,7 @@ public:
 
 	void remove_port(const PortID& id);
 
-	void clear();
+	void clear() override;
 
 private:
 	using PortIndex   = std::map<const PortID, PatchagePort*>;

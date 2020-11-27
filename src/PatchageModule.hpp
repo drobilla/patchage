@@ -41,7 +41,7 @@ public:
 	               double             x = 0,
 	               double             y = 0);
 
-	~PatchageModule();
+	~PatchageModule() override;
 
 	void split();
 	void join();
@@ -60,7 +60,7 @@ public:
 	const std::string& name() const { return _name; }
 
 protected:
-	bool on_event(GdkEvent* ev);
+	bool on_event(GdkEvent* ev) override;
 
 	Patchage*   _app;
 	Gtk::Menu*  _menu;

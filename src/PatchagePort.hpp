@@ -60,7 +60,7 @@ public:
 		signal_event().connect(sigc::mem_fun(this, &PatchagePort::on_event));
 	}
 
-	virtual ~PatchagePort() = default;
+	~PatchagePort() override = default;
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const
@@ -78,7 +78,7 @@ public:
 		}
 	}
 
-	bool on_event(GdkEvent* ev)
+	bool on_event(GdkEvent* ev) override
 	{
 		if (ev->type != GDK_BUTTON_PRESS || ev->button.button != 3) {
 			return false;

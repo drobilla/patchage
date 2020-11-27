@@ -61,7 +61,6 @@ def configure(conf):
             'clang': [
                 '-Wno-alloca',
                 '-Wno-cast-qual',
-                '-Wno-covered-switch-default',
                 '-Wno-documentation-unknown-command',
                 '-Wno-double-promotion',
                 '-Wno-float-conversion',
@@ -72,9 +71,6 @@ def configure(conf):
                 '-Wno-shadow',
                 '-Wno-shorten-64-to-32',
                 '-Wno-sign-conversion',
-                '-Wno-stack-protector',
-                '-Wno-suggest-override',
-                '-Wno-suggest-destructor-override',
             ],
             'gcc': [
                 '-Wno-alloca',
@@ -108,7 +104,6 @@ def configure(conf):
                 '-Wno-conditionally-supported',
                 '-Wno-effc++',
                 '-Wno-old-style-cast',
-                '-Wno-suggest-override',
             ],
         })
 

@@ -38,25 +38,27 @@ class AlsaDriver : public Driver
 {
 public:
 	explicit AlsaDriver(Patchage* app);
-	~AlsaDriver();
 
-	void attach(bool launch_daemon);
-	void detach();
+	~AlsaDriver() override;
 
-	bool is_attached() const { return (_seq != nullptr); }
+	void attach(bool launch_daemon) override;
+	void detach() override;
 
-	void refresh();
-	void destroy_all();
+	bool is_attached() const override { return (_seq != nullptr); }
 
-	PatchagePort* create_port_view(Patchage* patchage, const PortID& id);
+	void refresh() override;
+	void destroy_all() override;
 
-	bool connect(PatchagePort* src_port, PatchagePort* dst_port);
+	PatchagePort*
+	create_port_view(Patchage* patchage, const PortID& id) override;
 
-	bool disconnect(PatchagePort* src_port, PatchagePort* dst_port);
+	bool connect(PatchagePort* src_port, PatchagePort* dst_port) override;
+
+	bool disconnect(PatchagePort* src_port, PatchagePort* dst_port) override;
 
 	void print_addr(snd_seq_addr_t addr);
 
-	void process_events(Patchage* app);
+	void process_events(Patchage* app) override;
 
 private:
 	bool         create_refresh_port();

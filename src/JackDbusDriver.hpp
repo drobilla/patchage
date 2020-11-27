@@ -37,20 +37,21 @@ class JackDriver : public Driver
 {
 public:
 	explicit JackDriver(Patchage* app);
-	~JackDriver();
 
-	void attach(bool launch_daemon);
-	void detach();
+	~JackDriver() override;
 
-	bool is_attached() const;
+	void attach(bool launch_daemon) override;
+	void detach() override;
+
+	bool is_attached() const override;
 	bool is_realtime() const;
 
-	void refresh();
-	void destroy_all();
+	void refresh() override;
+	void destroy_all() override;
 
-	bool connect(PatchagePort* src, PatchagePort* dst);
+	bool connect(PatchagePort* src, PatchagePort* dst) override;
 
-	bool disconnect(PatchagePort* src, PatchagePort* dst);
+	bool disconnect(PatchagePort* src, PatchagePort* dst) override;
 
 	uint32_t get_xruns();
 	void     reset_xruns();
@@ -61,9 +62,10 @@ public:
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 
-	void process_events(Patchage*) {}
+	void process_events(Patchage*) override {}
 
-	PatchagePort* create_port_view(Patchage* patchage, const PortID& ref);
+	PatchagePort*
+	create_port_view(Patchage* patchage, const PortID& ref) override;
 
 private:
 	void error_msg(const std::string& msg) const;

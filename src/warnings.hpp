@@ -19,16 +19,19 @@
 
 #if defined(__clang__)
 
-#	define PATCHAGE_DISABLE_GANV_WARNINGS \
-		_Pragma("clang diagnostic push")   \
+#	define PATCHAGE_DISABLE_GANV_WARNINGS                                    \
+		_Pragma("clang diagnostic push")                                      \
+		_Pragma("clang diagnostic ignored \"-Wsuggest-destructor-override\"") \
+		_Pragma("clang diagnostic ignored \"-Wsuggest-override\"")            \
 		_Pragma("clang diagnostic ignored \"-Wunused-parameter\"")
 
 #	define PATCHAGE_RESTORE_WARNINGS _Pragma("clang diagnostic pop")
 
 #elif defined(__GNUC__)
 
-#	define PATCHAGE_DISABLE_GANV_WARNINGS \
-		_Pragma("GCC diagnostic push")     \
+#	define PATCHAGE_DISABLE_GANV_WARNINGS                       \
+		_Pragma("GCC diagnostic push")                           \
+		_Pragma("GCC diagnostic ignored \"-Wsuggest-override\"") \
 		_Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")
 
 #	define PATCHAGE_RESTORE_WARNINGS _Pragma("GCC diagnostic pop")
