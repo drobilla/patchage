@@ -49,7 +49,7 @@ struct PortID
 	}
 
 #ifdef PATCHAGE_LIBJACK
-	PortID(jack_port_id_t jack_id, bool ign = false)
+	explicit PortID(jack_port_id_t jack_id, bool ign = false)
 	    : type(Type::jack_id)
 	{
 		id.jack_id = jack_id;

@@ -115,9 +115,10 @@ public:
 private:
 	struct ModuleSettings
 	{
-		ModuleSettings(bool s = false)
+		explicit ModuleSettings(bool s = false)
 		    : split(s)
 		{}
+
 		boost::optional<Coord> input_location;
 		boost::optional<Coord> output_location;
 		boost::optional<Coord> inout_location;

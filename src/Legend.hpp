@@ -26,7 +26,7 @@
 class Legend : public Gtk::HBox
 {
 public:
-	Legend(const Configuration& configuration)
+	explicit Legend(const Configuration& configuration)
 	{
 		add_button(PortType::jack_audio,
 		           "Audio",

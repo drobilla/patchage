@@ -138,7 +138,7 @@ struct RemovePortsData
 {
 	using Predicate = bool (*)(const PatchagePort*);
 
-	RemovePortsData(Predicate p)
+	explicit RemovePortsData(Predicate p)
 	    : pred(p)
 	{}
 
