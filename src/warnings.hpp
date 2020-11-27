@@ -19,6 +19,13 @@
 
 #if defined(__clang__)
 
+#	define PATCHAGE_DISABLE_FMT_WARNINGS                                   \
+		_Pragma("clang diagnostic push")                                    \
+		_Pragma(                                                            \
+		    "clang diagnostic ignored \"-Wdocumentation-unknown-command\"") \
+		_Pragma("clang diagnostic ignored \"-Wglobal-constructors\"")       \
+		_Pragma("clang diagnostic ignored \"-Wsigned-enum-bitfield\"")
+
 #	define PATCHAGE_DISABLE_GANV_WARNINGS                                    \
 		_Pragma("clang diagnostic push")                                      \
 		_Pragma(                                                              \
@@ -30,6 +37,8 @@
 #	define PATCHAGE_RESTORE_WARNINGS _Pragma("clang diagnostic pop")
 
 #elif defined(__GNUC__)
+
+#	define PATCHAGE_DISABLE_FMT_WARNINGS _Pragma("GCC diagnostic push")
 
 #	define PATCHAGE_DISABLE_GANV_WARNINGS                       \
 		_Pragma("GCC diagnostic push")                           \

@@ -44,7 +44,10 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Module.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/format.hpp>
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+PATCHAGE_RESTORE_WARNINGS
+
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gtk/gtkwindow.h>
@@ -343,7 +346,7 @@ Patchage::Patchage(int argc, char** argv)
 		_about_win->set_logo(Gdk::Pixbuf::create_from_file(
 		    bundle_location() + "/Resources/Patchage.icns"));
 	} catch (const Glib::Exception& e) {
-		error_msg((boost::format("failed to set logo (%s)") % e.what()).str());
+		error_msg(fmt::format("failed to set logo ({})", e.what()));
 	}
 #endif
 

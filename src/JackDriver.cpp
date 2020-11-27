@@ -28,7 +28,10 @@
 #	include <jack/metadata.h>
 #endif
 
-#include <boost/format.hpp>
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+PATCHAGE_RESTORE_WARNINGS
+
 #include <jack/jack.h>
 #include <jack/statistics.h>
 
@@ -36,8 +39,6 @@
 #include <cstring>
 #include <set>
 #include <string>
-
-using boost::format;
 
 JackDriver::JackDriver(Patchage* app)
     : _app(app)
@@ -140,8 +141,8 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
-		_app->error_msg(
-		    (format("Jack: Failed to find port with ID `%1%'.") % id).str());
+		_app->error_msg(fmt::format("Jack: Failed to find port with ID `{}'.",
+		                            id.id.jack_id));
 		return nullptr;
 	}
 
@@ -169,9 +170,9 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 	}
 
 	if (parent->get_port(port_name)) {
-		_app->error_msg((format("Jack: Module `%1%' already has port `%2%'.") %
-		                 module_name % port_name)
-		                    .str());
+		_app->error_msg(fmt::format("Jack: Module `{}' already has port `{}'.",
+		                            module_name,
+		                            port_name));
 		return nullptr;
 	}
 
@@ -242,9 +243,9 @@ JackDriver::create_port(PatchageModule& parent,
 		}
 #endif
 	} else {
-		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.") %
-		                   jack_port_name(port) % type_str)
-		                      .str());
+		_app->warning_msg(fmt::format("Jack: Port `{}' has unknown type `{}'.",
+		                              jack_port_name(port),
+		                              type_str));
 		return nullptr;
 	}
 

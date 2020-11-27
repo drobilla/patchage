@@ -25,7 +25,10 @@
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 
-#include <boost/format.hpp>
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+PATCHAGE_RESTORE_WARNINGS
+
 #include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus.h>
@@ -174,9 +177,10 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &new_owner,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "NameOwnerChanged signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "NameOwnerChanged signal arguments ({})",
+			                me->_dbus_error.message));
+
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -197,9 +201,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &new_graph_version,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "GraphChanged signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "GraphChanged signal arguments ({})",
+			                me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -236,9 +240,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &port_type,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "PortAppeared signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "PortAppeared signal arguments ({})",
+			                me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -270,9 +274,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &port_name,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "PortDisappeared signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "PortDisappeared signal arguments ({})",
+			                me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -313,9 +317,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &connection_id,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "PortsConnected signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "PortsConnected signal arguments ({})",
+			                me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -364,9 +368,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		                           &connection_id,
 		                           DBUS_TYPE_INVALID)) {
 			me->error_msg(
-			    str(boost::format("dbus_message_get_args() failed to extract "
-			                      "PortsConnected signal arguments (%s)") %
-			        me->_dbus_error.message));
+			    fmt::format("dbus_message_get_args() failed to extract "
+			                "PortsDisconnected signal arguments ({})",
+			                me->_dbus_error.message));
 			dbus_error_free(&me->_dbus_error);
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
@@ -428,10 +432,10 @@ JackDriver::call(bool          response_expected,
 
 	if (!reply_ptr) {
 		if (response_expected) {
-			error_msg(str(
-			    boost::format("no reply from server when calling method '%s'"
-			                  ", error is '%s'") %
-			    method % _dbus_error.message));
+			error_msg(
+			    fmt::format("no reply from server when calling method {} ({})",
+			                method,
+			                _dbus_error.message));
 		}
 		_server_responding = false;
 		dbus_error_free(&_dbus_error);

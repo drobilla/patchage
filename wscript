@@ -186,7 +186,21 @@ def configure(conf):
         conf.define('PATCHAGE_USE_LIGHT_THEME', 1)
 
     # Boost headers
-    conf.check_cxx(header_name='boost/format.hpp')
+    conf.check_cxx(header_name='boost/optional.hpp')
+
+    # Check for system provided fmt
+    conf.check_pkg('fmt',
+                   uselib_store='FMT',
+                   system=True,
+                   mandatory=False)
+
+    if not conf.env.HAVE_FMT:
+        # Fall back to minimal bundled version if not found
+        Logs.warn("System fmt library not found, using bundled copy")
+        include_dir = conf.path.find_node('subprojects/fmt/include')
+        conf.define('FMT_HEADER_ONLY', 1)
+        conf.env.LIB_FMT = []
+        conf.env.INCLUDES_FMT = [include_dir.abspath()]
 
     conf.env.PATCHAGE_VERSION = PATCHAGE_VERSION
 
@@ -221,7 +235,7 @@ def build(bld):
     prog = bld(features     = 'cxx cxxprogram',
                includes     = ['.', 'src'],
                target       = out_base + bld.env.APP_INSTALL_NAME,
-               uselib       = 'DBUS GANV DBUS_GLIB GTKMM GTHREAD GTK_OSX',
+               uselib       = 'DBUS GANV DBUS_GLIB FMT GTKMM GTHREAD GTK_OSX',
                install_path = '${BINDIR}')
     prog.source = '''
             src/Configuration.cpp

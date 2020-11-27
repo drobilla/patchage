@@ -32,9 +32,10 @@
 #	include "AlsaDriver.hpp"
 #endif
 
-#include <boost/format.hpp>
-
-using boost::format;
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+PATCHAGE_RESTORE_WARNINGS
 
 void
 PatchageEvent::execute(Patchage* patchage)
@@ -68,13 +69,12 @@ PatchageEvent::execute(Patchage* patchage)
 		if (driver) {
 			PatchagePort* port = driver->create_port_view(patchage, _port_1);
 			if (!port) {
-				patchage->error_msg(
-				    (format("Unable to create view for port `%1%'") % _port_1)
-				        .str());
+				patchage->error_msg(fmt::format(
+				    "Unable to create view for port `{}'", _port_1));
 			}
 		} else {
 			patchage->error_msg(
-			    (format("Unknown type for port `%1%'") % _port_1).str());
+			    fmt::format("Unknown type for port `{}'", _port_1));
 		}
 
 	} else if (_type == Type::port_destruction) {
@@ -88,12 +88,10 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (!port_1) {
 			patchage->error_msg(
-			    (format("Unable to find port `%1%' to connect") % _port_1)
-			        .str());
+			    fmt::format("Unable to find port `{}' to connect", _port_1));
 		} else if (!port_2) {
 			patchage->error_msg(
-			    (format("Unable to find port `%1%' to connect") % _port_2)
-			        .str());
+			    fmt::format("Unable to find port `{}' to connect", _port_2));
 		} else {
 			patchage->canvas()->make_connection(port_1, port_2);
 		}
@@ -105,12 +103,10 @@ PatchageEvent::execute(Patchage* patchage)
 
 		if (!port_1) {
 			patchage->error_msg(
-			    (format("Unable to find port `%1%' to disconnect") % _port_1)
-			        .str());
+			    fmt::format("Unable to find port `{}' to disconnect", _port_1));
 		} else if (!port_2) {
 			patchage->error_msg(
-			    (format("Unable to find port `%1%' to disconnect") % _port_2)
-			        .str());
+			    fmt::format("Unable to find port `{}' to disconnect", _port_2));
 		} else {
 			patchage->canvas()->remove_edge_between(port_1, port_2);
 		}

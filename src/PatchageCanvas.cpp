@@ -36,10 +36,6 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/format.hpp>
-
-using boost::format;
-
 PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
     : Ganv::Canvas(width, height)
     , _app(app)

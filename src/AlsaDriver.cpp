@@ -21,14 +21,14 @@
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 
-#include <boost/format.hpp>
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+PATCHAGE_RESTORE_WARNINGS
 
 #include <cassert>
 #include <set>
 #include <string>
 #include <utility>
-
-using boost::format;
 
 AlsaDriver::AlsaDriver(Patchage* app)
     : _app(app)
@@ -427,8 +427,7 @@ AlsaDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 	int ret = snd_seq_subscribe_port(_seq, subs);
 	if (ret < 0) {
 		_app->error_msg(
-		    (format("Alsa: Subscription failed (%1%).") % snd_strerror(ret))
-		        .str());
+		    fmt::format("Alsa: Subscription failed ({}).", snd_strerror(ret)));
 		result = false;
 	}
 
@@ -505,8 +504,7 @@ AlsaDriver::create_refresh_port()
 	int ret = snd_seq_create_port(_seq, port_info);
 	if (ret) {
 		_app->error_msg(
-		    (format("Alsa: Error creating port (%1%): ") % snd_strerror(ret))
-		        .str());
+		    fmt::format("Alsa: Error creating port ({})", snd_strerror(ret)));
 		return false;
 	}
 
@@ -517,9 +515,8 @@ AlsaDriver::create_refresh_port()
 	                           SND_SEQ_PORT_SYSTEM_ANNOUNCE);
 	if (ret) {
 		_app->error_msg(
-		    (format("Alsa: Failed to connect to system announce port (%1%)") %
-		     snd_strerror(ret))
-		        .str());
+		    fmt::format("Alsa: Failed to connect to system announce port ({})",
+		                snd_strerror(ret)));
 		return false;
 	}
 
