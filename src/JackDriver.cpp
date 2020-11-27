@@ -303,7 +303,7 @@ JackDriver::refresh()
 		port = jack_port_by_name(_client, ports[i]);
 
 		client1_name = ports[i];
-		client1_name = client1_name.substr(0, client1_name.find(":"));
+		client1_name = client1_name.substr(0, client1_name.find(':'));
 
 		ModuleType type = ModuleType::input_output;
 		if (_app->conf()->get_module_split(
@@ -410,8 +410,8 @@ JackDriver::port_names(const PortID& id,
 
 	const std::string full_name = jack_port_name(jack_port);
 
-	module_name = full_name.substr(0, full_name.find(":"));
-	port_name   = full_name.substr(full_name.find(":") + 1);
+	module_name = full_name.substr(0, full_name.find(':'));
+	port_name   = full_name.substr(full_name.find(':') + 1);
 
 	return true;
 }
