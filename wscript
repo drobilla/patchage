@@ -120,9 +120,17 @@ def configure(conf):
                    system=True,
                    mandatory=False)
 
-    conf.check_pkg('gthread-2.0 >= 2.14.0', system=True, uselib_store='GTHREAD')
-    conf.check_pkg('glibmm-2.4 >= 2.14.0', system=True, uselib_store='GLIBMM')
-    conf.check_pkg('gtkmm-2.4 >= 2.12.0', system=True, uselib_store='GTKMM')
+    conf.check_pkg('gthread-2.0 >= 2.14.0',
+                   system=True,
+                   uselib_store='GTHREAD')
+
+    conf.check_pkg('glibmm-2.4 >= 2.14.0',
+                   system=True,
+                   uselib_store='GLIBMM')
+
+    conf.check_pkg('gtkmm-2.4 >= 2.12.0',
+                   system=True,
+                   uselib_store='GTKMM')
 
     conf.check_pkg('ganv-1 >= 1.5.2', uselib_store='GANV')
 
