@@ -42,8 +42,8 @@ struct PortID
 
 	PortID() = default;
 
-#ifdef PATCHAGE_LIBJACK
-	explicit PortID(jack_port_id_t jack_id, bool = false)
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
+	explicit PortID(uint32_t jack_id, bool = false)
 	    : type(Type::jack_id)
 	{
 		id.jack_id = jack_id;
@@ -71,8 +71,8 @@ struct PortID
 
 	union
 	{
-#ifdef PATCHAGE_LIBJACK
-		jack_port_id_t jack_id;
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
+		uint32_t jack_id;
 #endif
 #ifdef HAVE_ALSA
 		struct
@@ -118,7 +118,7 @@ operator<(const PortID& a, const PortID& b)
 	case PortID::Type::nothing:
 		return true;
 	case PortID::Type::jack_id:
-#ifdef PATCHAGE_LIBJACK
+#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		return a.id.jack_id < b.id.jack_id;
 #endif
 		break;

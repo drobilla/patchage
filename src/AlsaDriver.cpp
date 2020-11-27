@@ -322,20 +322,22 @@ AlsaDriver::create_port(PatchageModule&    parent,
                         bool               is_input,
                         snd_seq_addr_t     addr)
 {
+	const PortID id{addr, is_input};
+
 	auto* ret =
 	    new PatchagePort(parent,
 	                     PortType::alsa_midi,
+	                     id,
 	                     name,
 	                     "",
 	                     is_input,
 	                     _app->conf()->get_port_color(PortType::alsa_midi),
 	                     _app->show_human_names());
 
-	dynamic_cast<PatchageCanvas*>(parent.canvas())
-	    ->index_port(PortID(addr, is_input), ret);
+	dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
 
-	_app->canvas()->index_port(PortID(addr, is_input), ret);
-	_port_addrs.insert(std::make_pair(ret, PortID(addr, is_input)));
+	_app->canvas()->index_port(id, ret);
+	_port_addrs.insert(std::make_pair(ret, id));
 	return ret;
 }
 

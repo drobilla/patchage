@@ -253,6 +253,7 @@ JackDriver::create_port(PatchageModule& parent,
 
 	auto* ret = new PatchagePort(parent,
 	                             port_type,
+	                             id,
 	                             jack_port_short_name(port),
 	                             label,
 	                             (jack_port_flags(port) & JackPortIsInput),

@@ -83,6 +83,7 @@ private:
 
 	void add_port(PatchageModule*    module,
 	              PortType           type,
+	              PortID             id,
 	              const std::string& name,
 	              bool               is_input);
 
