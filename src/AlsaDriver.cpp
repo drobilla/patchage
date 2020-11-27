@@ -304,14 +304,13 @@ AlsaDriver::create_port(PatchageModule&    parent,
                         bool               is_input,
                         snd_seq_addr_t     addr)
 {
-	PatchagePort* ret =
-	    new PatchagePort(parent,
-	                     ALSA_MIDI,
-	                     name,
-	                     "",
-	                     is_input,
-	                     _app->conf()->get_port_color(ALSA_MIDI),
-	                     _app->show_human_names());
+	auto* ret = new PatchagePort(parent,
+	                             ALSA_MIDI,
+	                             name,
+	                             "",
+	                             is_input,
+	                             _app->conf()->get_port_color(ALSA_MIDI),
+	                             _app->show_human_names());
 
 	dynamic_cast<PatchageCanvas*>(parent.canvas())
 	    ->index_port(PortID(addr, is_input), ret);
@@ -506,7 +505,7 @@ AlsaDriver::create_refresh_port()
 void*
 AlsaDriver::refresh_main(void* me)
 {
-	AlsaDriver* ad = (AlsaDriver*)me;
+	auto* ad = (AlsaDriver*)me;
 	ad->_refresh_main();
 	return nullptr;
 }

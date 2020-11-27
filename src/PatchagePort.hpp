@@ -62,7 +62,7 @@ public:
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const
 	{
-		PatchageModule* pmod = dynamic_cast<PatchageModule*>(get_module());
+		auto* pmod = dynamic_cast<PatchageModule*>(get_module());
 		return std::string(pmod->name()) + ":" + _name;
 	}
 

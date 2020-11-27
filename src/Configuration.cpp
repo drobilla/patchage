@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -87,8 +87,7 @@ Configuration::set_module_location(const std::string& name,
                                    ModuleType         type,
                                    Coord              loc)
 {
-	std::map<std::string, ModuleSettings>::iterator i =
-	    _module_settings.find(name);
+	auto i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		i = _module_settings
 		        .insert(
@@ -120,8 +119,7 @@ Configuration::set_module_location(const std::string& name,
 bool
 Configuration::get_module_split(const std::string& name, bool default_val) const
 {
-	std::map<std::string, ModuleSettings>::const_iterator i =
-	    _module_settings.find(name);
+	auto i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		return default_val;
 	}

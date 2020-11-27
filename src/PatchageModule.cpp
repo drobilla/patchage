@@ -147,7 +147,7 @@ PatchagePort*
 PatchageModule::get_port(const std::string& name)
 {
 	for (Ganv::Port* p : *this) {
-		PatchagePort* pport = dynamic_cast<PatchagePort*>(p);
+		auto* pport = dynamic_cast<PatchagePort*>(p);
 		if (pport && pport->name() == name) {
 			return pport;
 		}

@@ -240,15 +240,14 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 		return nullptr;
 	}
 
-	PatchagePort* ret(
-	    new PatchagePort(parent,
-	                     port_type,
-	                     jack_port_short_name(port),
-	                     label,
-	                     (jack_port_flags(port) & JackPortIsInput),
-	                     _app->conf()->get_port_color(port_type),
-	                     _app->show_human_names(),
-	                     order));
+	auto* ret = new PatchagePort(parent,
+	                             port_type,
+	                             jack_port_short_name(port),
+	                             label,
+	                             (jack_port_flags(port) & JackPortIsInput),
+	                             _app->conf()->get_port_color(port_type),
+	                             _app->show_human_names(),
+	                             order);
 
 	if (id.type != PortID::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
@@ -459,7 +458,7 @@ JackDriver::jack_client_registration_cb(const char* name,
                                         int         registered,
                                         void*       jack_driver)
 {
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (registered) {
@@ -475,7 +474,7 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
                                       int            registered,
                                       void*          jack_driver)
 {
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (registered) {
@@ -492,7 +491,7 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
                                  int            connect,
                                  void*          jack_driver)
 {
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (connect) {
@@ -505,7 +504,7 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 int
 JackDriver::jack_xrun_cb(void* jack_driver)
 {
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	++me->_xruns;
@@ -520,7 +519,7 @@ void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
 	assert(jack_driver);
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
 	me->_app->info_msg("Jack: Shutdown.");
 	Glib::Mutex::Lock lock(me->_shutdown_mutex);
 	me->_client       = nullptr;

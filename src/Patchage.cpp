@@ -87,8 +87,8 @@ configure_cb(GtkWindow* parentWindow, GdkEvent* event, gpointer data)
 static int
 port_order(const GanvPort* a, const GanvPort* b, void* data)
 {
-	const PatchagePort* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
-	const PatchagePort* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
+	const auto* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
+	const auto* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
 	if (pa && pb) {
 		if (pa->order() && pb->order()) {
 			return *pa->order() - *pb->order();
@@ -605,8 +605,8 @@ static void
 load_module_location(GanvNode* node, void* data)
 {
 	if (GANV_IS_MODULE(node)) {
-		Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
-		PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+		auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
 		if (pmod) {
 			pmod->load_location();
 		}
@@ -817,11 +817,11 @@ update_labels(GanvNode* node, void* data)
 {
 	const bool human_names = *(const bool*)data;
 	if (GANV_IS_MODULE(node)) {
-		Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
-		PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+		auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
 		if (pmod) {
 			for (Ganv::Port* gport : *gmod) {
-				PatchagePort* pport = dynamic_cast<PatchagePort*>(gport);
+				auto* pport = dynamic_cast<PatchagePort*>(gport);
 				if (pport) {
 					pport->show_human_name(human_names);
 				}
@@ -915,19 +915,19 @@ highlight_color(guint c, guint delta)
 static void
 update_port_colors(GanvNode* node, void* data)
 {
-	Patchage* patchage = (Patchage*)data;
+	auto* patchage = (Patchage*)data;
 	if (!GANV_IS_MODULE(node)) {
 		return;
 	}
 
-	Ganv::Module*   gmod = Glib::wrap(GANV_MODULE(node));
-	PatchageModule* pmod = dynamic_cast<PatchageModule*>(gmod);
+	Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+	auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
 	if (!pmod) {
 		return;
 	}
 
 	for (Ganv::Port* p : *pmod) {
-		PatchagePort* port = dynamic_cast<PatchagePort*>(p);
+		auto* port = dynamic_cast<PatchagePort*>(p);
 		if (port) {
 			const uint32_t rgba =
 			    patchage->conf()->get_port_color(port->type());
@@ -940,10 +940,10 @@ update_port_colors(GanvNode* node, void* data)
 static void
 update_edge_color(GanvEdge* edge, void* data)
 {
-	Patchage*   patchage = (Patchage*)data;
+	auto*       patchage = (Patchage*)data;
 	Ganv::Edge* edgemm   = Glib::wrap(edge);
 
-	PatchagePort* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
+	auto* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
 	if (tail) {
 		edgemm->set_color(patchage->conf()->get_port_color(tail->type()));
 	}
@@ -1008,8 +1008,8 @@ Patchage::on_export_image()
 		dialog.add_filter(filt);
 	}
 
-	Gtk::CheckButton* bg_but = new Gtk::CheckButton("Draw _Background", true);
-	Gtk::Alignment*   extra  = new Gtk::Alignment(1.0, 0.5, 0.0, 0.0);
+	auto* bg_but = new Gtk::CheckButton("Draw _Background", true);
+	auto* extra  = new Gtk::Alignment(1.0, 0.5, 0.0, 0.0);
 	bg_but->set_active(true);
 	extra->add(*Gtk::manage(bg_but));
 	extra->show_all();

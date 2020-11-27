@@ -71,7 +71,7 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 void
 PatchageCanvas::remove_module(const std::string& name)
 {
-	ModuleIndex::iterator i = _module_index.find(name);
+	auto i = _module_index.find(name);
 	while (i != _module_index.end()) {
 		PatchageModule* mod = i->second;
 		_module_index.erase(i);
@@ -85,7 +85,7 @@ PatchageCanvas::find_port(const PortID& id)
 {
 	PatchagePort* pp = nullptr;
 
-	PortIndex::iterator i = _port_index.find(id);
+	auto i = _port_index.find(id);
 	if (i != _port_index.end()) {
 		assert(i->second->get_module());
 		return i->second;
@@ -141,8 +141,8 @@ struct RemovePortsData
 static void
 delete_port_if_matches(GanvPort* port, void* cdata)
 {
-	RemovePortsData* data  = (RemovePortsData*)cdata;
-	PatchagePort*    pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
+	auto* data  = (RemovePortsData*)cdata;
+	auto* pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
 	if (pport && data->pred(pport)) {
 		delete pport;
 	}
@@ -155,13 +155,13 @@ remove_ports_matching(GanvNode* node, void* cdata)
 		return;
 	}
 
-	Ganv::Module*   cmodule = Glib::wrap(GANV_MODULE(node));
-	PatchageModule* pmodule = dynamic_cast<PatchageModule*>(cmodule);
+	Ganv::Module* cmodule = Glib::wrap(GANV_MODULE(node));
+	auto*         pmodule = dynamic_cast<PatchageModule*>(cmodule);
 	if (!pmodule) {
 		return;
 	}
 
-	RemovePortsData* data = (RemovePortsData*)cdata;
+	auto* data = (RemovePortsData*)cdata;
 
 	pmodule->for_each_port(delete_port_if_matches, data);
 
@@ -177,8 +177,8 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 
 	for_each_node(remove_ports_matching, &data);
 
-	for (PortIndex::iterator i = _port_index.begin(); i != _port_index.end();) {
-		PortIndex::iterator next = i;
+	for (auto i = _port_index.begin(); i != _port_index.end();) {
+		auto next = i;
 		++next;
 		if (pred(i->second)) {
 			_port_index.erase(i);
@@ -213,8 +213,8 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 void
 PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 {
-	PatchagePort* p1 = dynamic_cast<PatchagePort*>(port1);
-	PatchagePort* p2 = dynamic_cast<PatchagePort*>(port2);
+	auto* p1 = dynamic_cast<PatchagePort*>(port1);
+	auto* p2 = dynamic_cast<PatchagePort*>(port2);
 	if (!p1 || !p2)
 		return;
 
@@ -238,8 +238,8 @@ PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 void
 PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 {
-	PatchagePort* input  = dynamic_cast<PatchagePort*>(port1);
-	PatchagePort* output = dynamic_cast<PatchagePort*>(port2);
+	auto* input  = dynamic_cast<PatchagePort*>(port1);
+	auto* output = dynamic_cast<PatchagePort*>(port2);
 	if (!input || !output)
 		return;
 
@@ -292,8 +292,8 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 static void
 disconnect_edge(GanvEdge* edge, void* data)
 {
-	PatchageCanvas* canvas = (PatchageCanvas*)data;
-	Ganv::Edge*     edgemm = Glib::wrap(edge);
+	auto*       canvas = (PatchageCanvas*)data;
+	Ganv::Edge* edgemm = Glib::wrap(edge);
 	canvas->disconnect(edgemm->get_tail(), edgemm->get_head());
 }
 
@@ -320,7 +320,7 @@ void
 PatchageCanvas::remove_module(PatchageModule* module)
 {
 	// Remove module from cache
-	for (ModuleIndex::iterator i = _module_index.find(module->get_label());
+	for (auto i = _module_index.find(module->get_label());
 	     i != _module_index.end() && i->first == module->get_label();
 	     ++i) {
 		if (i->second == module) {

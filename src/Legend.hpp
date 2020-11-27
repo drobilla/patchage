@@ -46,8 +46,8 @@ public:
 		col.set_rgb(((rgba >> 24) & 0xFF) * 0x100,
 		            ((rgba >> 16) & 0xFF) * 0x100,
 		            ((rgba >> 8) & 0xFF) * 0x100);
-		Gtk::HBox*        box = new Gtk::HBox();
-		Gtk::ColorButton* but = new Gtk::ColorButton(col);
+		auto* box = new Gtk::HBox();
+		auto* but = new Gtk::ColorButton(col);
 		but->set_use_alpha(false);
 		but->signal_color_set().connect(sigc::bind(
 		    sigc::mem_fun(this, &Legend::on_color_set), id, label, but));
