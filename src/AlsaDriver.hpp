@@ -42,7 +42,7 @@ public:
 	void attach(bool launch_daemon = false);
 	void detach();
 
-	bool is_attached() const { return (_seq != NULL); }
+	bool is_attached() const { return (_seq != nullptr); }
 
 	void refresh();
 	void destroy_all();

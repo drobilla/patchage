@@ -1,4 +1,5 @@
 /* This file is part of Patchage.
+ * Copyright 2008-2020 David Robillard <d@drobilla.net>
  * Copyright 2008 Nedko Arnaudov <nedko@arnaudov.name>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
@@ -522,36 +523,37 @@ JackDriver::attach(bool launch_daemon)
 		return;
 	}
 
-	dbus_connection_setup_with_g_main(_dbus_connection, NULL);
+	dbus_connection_setup_with_g_main(_dbus_connection, nullptr);
 
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" DBUS_INTERFACE_DBUS
 	                   "',member=NameOwnerChanged,arg0='org.jackaudio.service'",
-	                   NULL);
+	                   nullptr);
 #if defined(USE_FULL_REFRESH)
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=GraphChanged",
-	                   NULL);
+	                   nullptr);
 #else
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortAppeared",
-	                   NULL);
+	                   nullptr);
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortDisappeared",
-	                   NULL);
+	                   nullptr);
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortsConnected",
-	                   NULL);
+	                   nullptr);
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortsDisconnected",
-	                   NULL);
+	                   nullptr);
 #endif
-	dbus_connection_add_filter(_dbus_connection, dbus_message_hook, this, NULL);
+	dbus_connection_add_filter(
+	    _dbus_connection, dbus_message_hook, this, nullptr);
 
 	update_attached();
 
@@ -1180,7 +1182,7 @@ PatchagePort*
 JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
 	assert(false); // we dont use events at all
-	return NULL;
+	return nullptr;
 }
 
 void

@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2010-2014 David Robillard <http://drobilla.net>
+ * Copyright 2010-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -27,7 +27,7 @@ PatchageModule::PatchageModule(Patchage*          app,
                                double             y)
     : Module(*app->canvas().get(), name, x, y)
     , _app(app)
-    , _menu(NULL)
+    , _menu(nullptr)
     , _name(name)
     , _type(type)
 {
@@ -44,7 +44,7 @@ PatchageModule::~PatchageModule()
 {
 	_app->canvas()->remove_module(this);
 	delete _menu;
-	_menu = NULL;
+	_menu = nullptr;
 }
 
 void
@@ -153,5 +153,5 @@ PatchageModule::get_port(const std::string& name)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }

@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -41,7 +41,7 @@ using boost::format;
 
 JackDriver::JackDriver(Patchage* app)
     : _app(app)
-    , _client(NULL)
+    , _client(nullptr)
     , _events(128)
     , _xruns(0)
     , _xrun_delay(0)
@@ -67,8 +67,8 @@ JackDriver::attach(bool launch_daemon)
 
 	jack_options_t options =
 	    (!launch_daemon) ? JackNoStartServer : JackNullOption;
-	_client = jack_client_open("Patchage", options, NULL);
-	if (_client == NULL) {
+	_client = jack_client_open("Patchage", options, nullptr);
+	if (_client == nullptr) {
 		_app->error_msg("Jack: Unable to create client.");
 		_is_activated = false;
 	} else {
@@ -103,7 +103,7 @@ JackDriver::detach()
 	if (_client) {
 		jack_deactivate(_client);
 		jack_client_close(_client);
-		_client = NULL;
+		_client = nullptr;
 	}
 	_is_activated = false;
 	signal_detached.emit();
@@ -137,7 +137,7 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 		_app->error_msg(
 		    (format("Jack: Failed to find port with ID `%1%'.") % id).str());
 		;
-		return NULL;
+		return nullptr;
 	}
 
 	const int jack_flags = jack_port_flags(jack_port);
@@ -166,7 +166,7 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 		_app->error_msg((format("Jack: Module `%1%' already has port `%2%'.") %
 		                 module_name % port_name)
 		                    .str());
-		return NULL;
+		return nullptr;
 	}
 
 	PatchagePort* port = create_port(*parent, jack_port, id);
@@ -184,8 +184,8 @@ get_property(jack_uuid_t subject, const char* key)
 {
 	std::string result;
 
-	char* value    = NULL;
-	char* datatype = NULL;
+	char* value    = nullptr;
+	char* datatype = nullptr;
 	if (!jack_get_property(subject, key, &value, &datatype)) {
 		result = value;
 	}
@@ -200,7 +200,7 @@ PatchagePort*
 JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 {
 	if (!port) {
-		return NULL;
+		return nullptr;
 	}
 
 	std::string          label;
@@ -237,7 +237,7 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 		_app->warning_msg((format("Jack: Port `%1%' has unknown type `%2%'.") %
 		                   jack_port_name(port) % type_str)
 		                      .str());
-		return NULL;
+		return nullptr;
 	}
 
 	PatchagePort* ret(
@@ -277,12 +277,13 @@ JackDriver::refresh()
 
 	Glib::Mutex::Lock lock(_shutdown_mutex);
 
-	if (_client == NULL) {
+	if (_client == nullptr) {
 		shutdown();
 		return;
 	}
 
-	ports = jack_get_ports(_client, NULL, NULL, 0); // get all existing ports
+	ports =
+	    jack_get_ports(_client, nullptr, nullptr, 0); // get all existing ports
 
 	if (!ports) {
 		return;
@@ -360,8 +361,8 @@ JackDriver::refresh()
 				if (!port1 || !port2)
 					continue;
 
-				Ganv::Port* src = NULL;
-				Ganv::Port* dst = NULL;
+				Ganv::Port* src = nullptr;
+				Ganv::Port* dst = nullptr;
 
 				if (port1->is_output() && port2->is_input()) {
 					src = port1;
@@ -387,7 +388,7 @@ JackDriver::port_names(const PortID& id,
                        std::string&  module_name,
                        std::string&  port_name)
 {
-	jack_port_t* jack_port = NULL;
+	jack_port_t* jack_port = nullptr;
 
 	if (id.type == PortID::JACK_ID)
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
@@ -413,7 +414,7 @@ JackDriver::port_names(const PortID& id,
 bool
 JackDriver::connect(PatchagePort* src_port, PatchagePort* dst_port)
 {
-	if (_client == NULL)
+	if (_client == nullptr)
 		return false;
 
 	int result = jack_connect(
@@ -437,7 +438,7 @@ bool
 JackDriver::disconnect(PatchagePort* const src_port,
                        PatchagePort* const dst_port)
 {
-	if (_client == NULL)
+	if (_client == nullptr)
 		return false;
 
 	int result = jack_disconnect(
@@ -522,7 +523,7 @@ JackDriver::jack_shutdown_cb(void* jack_driver)
 	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
 	me->_app->info_msg("Jack: Shutdown.");
 	Glib::Mutex::Lock lock(me->_shutdown_mutex);
-	me->_client       = NULL;
+	me->_client       = nullptr;
 	me->_is_activated = false;
 	me->signal_detached.emit();
 }

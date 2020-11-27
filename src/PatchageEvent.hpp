@@ -51,7 +51,7 @@ public:
 	};
 
 	explicit PatchageEvent(Type type = NULL_EVENT)
-	    : _str(NULL)
+	    : _str(nullptr)
 	    , _type(type)
 	{}
 
@@ -62,14 +62,14 @@ public:
 
 	template<typename P>
 	PatchageEvent(Type type, P port)
-	    : _str(NULL)
+	    : _str(nullptr)
 	    , _port_1(port)
 	    , _type(type)
 	{}
 
 	template<typename P>
 	PatchageEvent(Type type, P port_1, P port_2)
-	    : _str(NULL)
+	    : _str(nullptr)
 	    , _port_1(port_1, false)
 	    , _port_2(port_2, true)
 	    , _type(type)

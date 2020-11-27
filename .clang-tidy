@@ -49,7 +49,6 @@ Checks: >
   -llvmlibc-*,
   -misc-unused-parameters,
   -modernize-loop-convert,
-  -modernize-use-nullptr,
   -modernize-use-trailing-return-type,
   -modernize-use-using,
   -performance-faster-string-find,

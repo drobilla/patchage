@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -51,9 +51,9 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 {
 	const ModuleIndex::const_iterator i = _module_index.find(name);
 	if (i == _module_index.end())
-		return NULL;
+		return nullptr;
 
-	PatchageModule* io_module = NULL;
+	PatchageModule* io_module = nullptr;
 	for (ModuleIndex::const_iterator j = i;
 	     j != _module_index.end() && j->first == name;
 	     ++j) {
@@ -64,7 +64,7 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 		}
 	}
 
-	// Return InputOutput module for Input or Output (or NULL if not found)
+	// Return InputOutput module for Input or Output (or nullptr if not found)
 	return io_module;
 }
 
@@ -83,7 +83,7 @@ PatchageCanvas::remove_module(const std::string& name)
 PatchagePort*
 PatchageCanvas::find_port(const PortID& id)
 {
-	PatchagePort* pp = NULL;
+	PatchagePort* pp = nullptr;
 
 	PortIndex::iterator i = _port_index.find(id);
 	if (i != _port_index.end()) {
@@ -97,7 +97,7 @@ PatchageCanvas::find_port(const PortID& id)
 		jack_port_t* jack_port =
 		    jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
 		if (!jack_port)
-			return NULL;
+			return nullptr;
 
 		std::string module_name;
 		std::string port_name;
@@ -197,7 +197,7 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 {
 	const ModuleIndex::const_iterator i = _module_index.find(client_name);
 	if (i == _module_index.end())
-		return NULL;
+		return nullptr;
 
 	for (ModuleIndex::const_iterator j = i;
 	     j != _module_index.end() && j->first == client_name;
@@ -207,7 +207,7 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 			return port;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void
@@ -275,8 +275,8 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 	_module_index.insert(std::make_pair(name, module));
 
 	// Join partners, if applicable
-	PatchageModule* in_module  = NULL;
-	PatchageModule* out_module = NULL;
+	PatchageModule* in_module  = nullptr;
+	PatchageModule* out_module = nullptr;
 	if (module->type() == Input) {
 		in_module  = module;
 		out_module = find_module(name, Output);

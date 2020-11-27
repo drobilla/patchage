@@ -45,7 +45,7 @@ public:
 	void attach(bool launch_daemon);
 	void detach();
 
-	bool is_attached() const { return (_client != NULL); }
+	bool is_attached() const { return (_client != nullptr); }
 	bool is_realtime() const { return _client && jack_is_realtime(_client); }
 
 	void refresh();

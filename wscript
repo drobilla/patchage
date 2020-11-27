@@ -107,7 +107,6 @@ def configure(conf):
                 '-Wno-extra-semi-stmt',
                 '-Wno-old-style-cast',
                 '-Wno-weak-vtables',
-                '-Wno-zero-as-null-pointer-constant',
             ],
             'gcc': [
                 '-Wno-conditionally-supported',

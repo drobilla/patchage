@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -45,16 +45,16 @@ PatchageEvent::execute(Patchage* patchage)
 	} else if (_type == CLIENT_CREATION) {
 		// No empty modules (for now)
 		g_free(_str);
-		_str = NULL;
+		_str = nullptr;
 
 	} else if (_type == CLIENT_DESTRUCTION) {
 		patchage->canvas()->remove_module(_str);
 		g_free(_str);
-		_str = NULL;
+		_str = nullptr;
 
 	} else if (_type == PORT_CREATION) {
 
-		Driver* driver = NULL;
+		Driver* driver = nullptr;
 		if (_port_1.type == PortID::JACK_ID) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 			driver = patchage->jack_driver();

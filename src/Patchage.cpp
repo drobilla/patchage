@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -112,10 +112,10 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord
 Patchage::Patchage(int argc, char** argv)
     : _xml(UIFile::open("patchage"))
 #ifdef HAVE_ALSA
-    , _alsa_driver(NULL)
+    , _alsa_driver(nullptr)
 #endif
-    , _jack_driver(NULL)
-    , _conf(NULL)
+    , _jack_driver(nullptr)
+    , _conf(nullptr)
     , INIT_WIDGET(_about_win)
     , INIT_WIDGET(_main_scrolledwin)
     , INIT_WIDGET(_main_win)
@@ -154,7 +154,7 @@ Patchage::Patchage(int argc, char** argv)
     , INIT_WIDGET(_main_paned)
     , INIT_WIDGET(_log_scrolledwindow)
     , INIT_WIDGET(_status_text)
-    , _legend(NULL)
+    , _legend(nullptr)
     , _pane_initialized(false)
     , _attach(true)
     , _driver_detached(false)
@@ -311,7 +311,7 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->set_zoom(_conf->get_zoom());
 	_canvas->set_font_size(_conf->get_font_size());
 	if (_conf->get_sort_ports()) {
-		_canvas->set_port_order(port_order, NULL);
+		_canvas->set_port_order(port_order, nullptr);
 	}
 
 	_main_win->resize(static_cast<int>(_conf->get_window_size().x),
@@ -373,7 +373,7 @@ Patchage::Patchage(int argc, char** argv)
 #ifdef PATCHAGE_GTK_OSX
 	// Set up Mac menu bar
 	GtkosxApplication* osxapp =
-	    (GtkosxApplication*)g_object_new(GTKOSX_TYPE_APPLICATION, NULL);
+	    (GtkosxApplication*)g_object_new(GTKOSX_TYPE_APPLICATION, nullptr);
 	_menubar->hide();
 	_menu_file_quit->hide();
 	gtkosx_application_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
@@ -382,7 +382,7 @@ Patchage::Patchage(int argc, char** argv)
 	g_signal_connect(_menubar->gobj(),
 	                 "can-activate-accel",
 	                 G_CALLBACK(can_activate_cb),
-	                 NULL);
+	                 nullptr);
 	g_signal_connect(
 	    osxapp, "NSApplicationWillTerminate", G_CALLBACK(terminate_cb), this);
 	gtkosx_application_ready(osxapp);
@@ -616,7 +616,7 @@ load_module_location(GanvNode* node, void* data)
 void
 Patchage::update_state()
 {
-	_canvas->for_each_node(load_module_location, NULL);
+	_canvas->for_each_node(load_module_location, nullptr);
 }
 
 /** Update the sensitivity status of menus to reflect the present.
@@ -731,7 +731,7 @@ Patchage::save_session(bool close)
 	path += '/';
 	jack_session_command_t* cmd =
 	    jack_session_notify(_jack_driver->client(),
-	                        NULL,
+	                        nullptr,
 	                        close ? JackSessionSaveAndQuit : JackSessionSave,
 	                        path.c_str());
 
@@ -841,7 +841,7 @@ void
 Patchage::on_view_sort_ports()
 {
 	const bool sort_ports = this->sort_ports();
-	_canvas->set_port_order(sort_ports ? port_order : NULL, NULL);
+	_canvas->set_port_order(sort_ports ? port_order : nullptr, nullptr);
 	_conf->set_sort_ports(sort_ports);
 	refresh();
 }

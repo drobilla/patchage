@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -32,7 +32,7 @@ using boost::format;
 
 AlsaDriver::AlsaDriver(Patchage* app)
     : _app(app)
-    , _seq(NULL)
+    , _seq(nullptr)
 {}
 
 AlsaDriver::~AlsaDriver()
@@ -47,7 +47,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 	int ret = snd_seq_open(&_seq, "default", SND_SEQ_OPEN_DUPLEX, 0);
 	if (ret) {
 		_app->error_msg("Alsa: Unable to attach.");
-		_seq = NULL;
+		_seq = nullptr;
 	} else {
 		_app->info_msg("Alsa: Attached.");
 
@@ -71,9 +71,9 @@ AlsaDriver::detach()
 {
 	if (_seq) {
 		pthread_cancel(_refresh_thread);
-		pthread_join(_refresh_thread, NULL);
+		pthread_join(_refresh_thread, nullptr);
 		snd_seq_close(_seq);
-		_seq = NULL;
+		_seq = nullptr;
 		signal_detached.emit();
 		_app->info_msg("Alsa: Detached.");
 	}
@@ -116,8 +116,8 @@ AlsaDriver::refresh()
 	snd_seq_port_info_t* pinfo;
 	snd_seq_port_info_alloca(&pinfo);
 
-	PatchageModule* parent = NULL;
-	PatchagePort*   port   = NULL;
+	PatchageModule* parent = nullptr;
+	PatchagePort*   port   = nullptr;
 
 	// Create port views
 	while (snd_seq_query_next_client(_seq, cinfo) >= 0) {
@@ -177,8 +177,8 @@ AlsaDriver::refresh()
 PatchagePort*
 AlsaDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
-	PatchageModule* parent = NULL;
-	PatchagePort*   port   = NULL;
+	PatchageModule* parent = nullptr;
+	PatchagePort*   port   = nullptr;
 	create_port_view_internal(patchage, id.id.alsa_addr, parent, port);
 	return port;
 }
@@ -188,9 +188,9 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 {
 	const Modules::const_iterator i = _modules.find(client_id);
 	if (i == _modules.end())
-		return NULL;
+		return nullptr;
 
-	PatchageModule* io_module = NULL;
+	PatchageModule* io_module = nullptr;
 	for (Modules::const_iterator j = i;
 	     j != _modules.end() && j->first == client_id;
 	     ++j) {
@@ -201,7 +201,7 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 		}
 	}
 
-	// Return InputOutput module for Input or Output, or NULL if not found
+	// Return InputOutput module for Input or Output, or null if not found
 	return io_module;
 }
 
@@ -508,7 +508,7 @@ AlsaDriver::refresh_main(void* me)
 {
 	AlsaDriver* ad = (AlsaDriver*)me;
 	ad->_refresh_main();
-	return NULL;
+	return nullptr;
 }
 
 void
