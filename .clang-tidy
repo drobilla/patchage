@@ -59,7 +59,6 @@ Checks: >
   -readability-isolate-declaration,
   -readability-make-member-function-const,
   -readability-redundant-smartptr-get,
-  -readability-static-accessed-through-instance,
 FormatStyle: file
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*'
