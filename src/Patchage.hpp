@@ -53,7 +53,7 @@ class Configuration;
 
 namespace Ganv {
 class Module;
-}
+} // namespace Ganv
 
 class Patchage
 {
