@@ -25,7 +25,7 @@ PatchageModule::PatchageModule(Patchage*          app,
                                ModuleType         type,
                                double             x,
                                double             y)
-    : Module(*app->canvas().get(), name, x, y)
+    : Module(*app->canvas(), name, x, y)
     , _app(app)
     , _menu(nullptr)
     , _name(name)
