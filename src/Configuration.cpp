@@ -174,7 +174,7 @@ get_filenames()
 	}
 
 	// Current directory (bundle or last-ditch effort)
-	filenames.push_back("patchagerc");
+	filenames.emplace_back("patchagerc");
 
 	return filenames;
 }
