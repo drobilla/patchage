@@ -52,7 +52,7 @@
 
 JackDriver::JackDriver(Patchage* app)
     : _app(app)
-    , _dbus_connection(0)
+    , _dbus_connection(nullptr)
     , _max_dsp_load(0)
     , _server_responding(false)
     , _server_started(false)
@@ -1080,7 +1080,7 @@ JackDriver::is_realtime() const
 	return realtime;
 }
 
-size_t
+uint32_t
 JackDriver::get_xruns()
 {
 	DBusMessage*  reply_ptr;
@@ -1133,8 +1133,8 @@ JackDriver::reset_xruns()
 float
 JackDriver::get_max_dsp_load()
 {
-	DBusMessage* reply_ptr;
-	double       load;
+	DBusMessage* reply_ptr = nullptr;
+	double       load      = 0.0;
 
 	if (_server_responding && !_server_started) {
 		return 0.0;
@@ -1163,8 +1163,8 @@ JackDriver::get_max_dsp_load()
 
 	load /= 100.0; // convert from percent to [0..1]
 
-	if (load > _max_dsp_load) {
-		_max_dsp_load = load;
+	if (load > static_cast<double>(_max_dsp_load)) {
+		_max_dsp_load = static_cast<float>(load);
 	}
 
 	return _max_dsp_load;

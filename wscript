@@ -79,6 +79,7 @@ def configure(conf):
                 '-Wno-pedantic',
                 '-Wno-shadow',
                 '-Wno-stack-protector',
+                '-Wno-suggest-attribute=noreturn',
                 '-Wno-unused-parameter',
             ],
         })

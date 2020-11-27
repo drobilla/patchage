@@ -52,10 +52,10 @@ public:
 
 	bool disconnect(PatchagePort* src, PatchagePort* dst);
 
-	size_t get_xruns();
-	void   reset_xruns();
-	float  get_max_dsp_load();
-	void   reset_max_dsp_load();
+	uint32_t get_xruns();
+	void     reset_xruns();
+	float    get_max_dsp_load();
+	void     reset_max_dsp_load();
 
 	float          sample_rate();
 	jack_nframes_t buffer_size();
