@@ -83,7 +83,7 @@ private:
 	static void
 	jack_client_registration_cb(const char* name, int registered, void* me);
 	static void
-	            jack_port_registration_cb(jack_port_id_t port_id, int registered, void* me);
+	jack_port_registration_cb(jack_port_id_t port_id, int registered, void* me);
 	static void jack_port_connect_cb(jack_port_id_t src,
 	                                 jack_port_id_t dst,
 	                                 int            connect,

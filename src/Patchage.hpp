@@ -128,7 +128,7 @@ protected:
 	void on_decrease_font_size();
 	void on_normal_font_size();
 	void
-	     on_legend_color_change(int id, const std::string& label, uint32_t rgba);
+	on_legend_color_change(int id, const std::string& label, uint32_t rgba);
 	void on_messages_resized(Gtk::Allocation& alloc);
 
 	bool on_scroll(GdkEventScroll* ev);

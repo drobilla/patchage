@@ -15,7 +15,7 @@
  */
 
 #ifndef _GNU_SOURCE
-	#define _GNU_SOURCE
+#	define _GNU_SOURCE
 #endif
 
 #include <dlfcn.h>
@@ -31,7 +31,7 @@ binary_location()
 {
 	Dl_info     dli;
 	std::string loc;
-	const int ret = dladdr((void*)&binary_location, &dli);
+	const int   ret = dladdr((void*)&binary_location, &dli);
 	if (ret) {
 		char* const bin_loc = (char*)calloc(PATH_MAX, 1);
 		if (realpath(dli.dli_fname, bin_loc)) {
