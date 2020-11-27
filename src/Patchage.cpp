@@ -720,7 +720,7 @@ Patchage::save_session(bool close)
 	for (int c = 0; cmd[c].uuid; ++c) {
 		std::string  command = cmd[c].command;
 		const size_t index   = command.find(var);
-		if (index != string::npos) {
+		if (index != std::string::npos) {
 			command.replace(index, var.length(), cmd[c].client_name);
 		}
 
