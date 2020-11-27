@@ -516,7 +516,7 @@ AlsaDriver::create_refresh_port()
 void*
 AlsaDriver::refresh_main(void* me)
 {
-	auto* ad = (AlsaDriver*)me;
+	auto* ad = static_cast<AlsaDriver*>(me);
 	ad->_refresh_main();
 	return nullptr;
 }

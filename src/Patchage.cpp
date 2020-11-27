@@ -80,7 +80,7 @@ terminate_cb(GtkosxApplication* app, gpointer data)
 static bool
 configure_cb(GtkWindow* parentWindow, GdkEvent* event, gpointer data)
 {
-	((Patchage*)data)->store_window_location();
+	static_cast<Patchage*>(data)->store_window_location();
 	return FALSE;
 }
 
@@ -821,7 +821,7 @@ Patchage::on_help_about()
 static void
 update_labels(GanvNode* node, void* data)
 {
-	const bool human_names = *(const bool*)data;
+	const bool human_names = *static_cast<const bool*>(data);
 	if (GANV_IS_MODULE(node)) {
 		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
 		auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
@@ -921,7 +921,7 @@ highlight_color(guint c, guint delta)
 static void
 update_port_colors(GanvNode* node, void* data)
 {
-	auto* patchage = (Patchage*)data;
+	auto* patchage = static_cast<Patchage*>(data);
 	if (!GANV_IS_MODULE(node)) {
 		return;
 	}
@@ -946,7 +946,7 @@ update_port_colors(GanvNode* node, void* data)
 static void
 update_edge_color(GanvEdge* edge, void* data)
 {
-	auto*       patchage = (Patchage*)data;
+	auto*       patchage = static_cast<Patchage*>(data);
 	Ganv::Edge* edgemm   = Glib::wrap(edge);
 
 	auto* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());

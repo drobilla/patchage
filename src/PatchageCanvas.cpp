@@ -147,7 +147,7 @@ struct RemovePortsData
 static void
 delete_port_if_matches(GanvPort* port, void* cdata)
 {
-	auto* data  = (RemovePortsData*)cdata;
+	auto* data  = static_cast<RemovePortsData*>(cdata);
 	auto* pport = dynamic_cast<PatchagePort*>(Glib::wrap(port));
 	if (pport && data->pred(pport)) {
 		delete pport;
@@ -167,7 +167,7 @@ remove_ports_matching(GanvNode* node, void* cdata)
 		return;
 	}
 
-	auto* data = (RemovePortsData*)cdata;
+	auto* data = static_cast<RemovePortsData*>(cdata);
 
 	pmodule->for_each_port(delete_port_if_matches, data);
 
@@ -310,7 +310,7 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 static void
 disconnect_edge(GanvEdge* edge, void* data)
 {
-	auto*       canvas = (PatchageCanvas*)data;
+	auto*       canvas = static_cast<PatchageCanvas*>(data);
 	Ganv::Edge* edgemm = Glib::wrap(edge);
 	canvas->disconnect(edgemm->get_tail(), edgemm->get_head());
 }
