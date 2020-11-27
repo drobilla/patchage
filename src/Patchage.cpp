@@ -425,7 +425,7 @@ Patchage::attach()
 
 #ifdef HAVE_ALSA
 	if (_alsa_driver_autoattach) {
-		_alsa_driver->attach();
+		_alsa_driver->attach(false);
 	}
 #endif
 

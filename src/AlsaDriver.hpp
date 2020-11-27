@@ -40,7 +40,7 @@ public:
 	explicit AlsaDriver(Patchage* app);
 	~AlsaDriver();
 
-	void attach(bool launch_daemon = false);
+	void attach(bool launch_daemon);
 	void detach();
 
 	bool is_attached() const { return (_seq != nullptr); }

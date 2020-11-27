@@ -30,7 +30,6 @@ Checks: >
   -fuchsia-default-arguments-declarations,
   -fuchsia-multiple-inheritance,
   -fuchsia-overloaded-operator,
-  -google-default-arguments,
   -google-runtime-references,
   -hicpp-no-array-decay,
   -hicpp-signed-bitwise,
