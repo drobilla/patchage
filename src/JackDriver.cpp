@@ -476,7 +476,7 @@ JackDriver::jack_client_registration_cb(const char* name,
                                         int         registered,
                                         void*       jack_driver)
 {
-	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (registered) {
@@ -493,7 +493,7 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
                                       int            registered,
                                       void*          jack_driver)
 {
-	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (registered) {
@@ -511,7 +511,7 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
                                  int            connect,
                                  void*          jack_driver)
 {
-	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (connect) {
@@ -526,7 +526,7 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 int
 JackDriver::jack_xrun_cb(void* jack_driver)
 {
-	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	++me->_xruns;
@@ -541,7 +541,7 @@ void
 JackDriver::jack_shutdown_cb(void* jack_driver)
 {
 	assert(jack_driver);
-	auto* me = reinterpret_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	me->_app->info_msg("Jack: Shutdown.");
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};

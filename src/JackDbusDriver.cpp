@@ -159,7 +159,7 @@ JackDriver::dbus_message_hook(DBusConnection* connection,
 	dbus_uint64_t port_id;
 
 	assert(jack_driver);
-	JackDriver* me = reinterpret_cast<JackDriver*>(jack_driver);
+	JackDriver* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_dbus_connection);
 
 	if (dbus_message_is_signal(
