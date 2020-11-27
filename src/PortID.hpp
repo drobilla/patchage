@@ -95,8 +95,8 @@ operator<<(std::ostream& os, const PortID& id)
 		break;
 	case PortID::Type::alsa_addr:
 #ifdef HAVE_ALSA
-		return os << "alsa:" << (int)id.id.alsa_addr.client << ":"
-		          << (int)id.id.alsa_addr.port << ":"
+		return os << "alsa:" << int(id.id.alsa_addr.client) << ":"
+		          << int(id.id.alsa_addr.port) << ":"
 		          << (id.id.is_input ? "in" : "out");
 #endif
 		break;

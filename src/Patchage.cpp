@@ -292,8 +292,10 @@ Patchage::Patchage(int argc, char** argv)
 	}
 
 	for (int s = Gtk::STATE_NORMAL; s <= Gtk::STATE_INSENSITIVE; ++s) {
-		_status_text->modify_base((Gtk::StateType)s, Gdk::Color("#000000"));
-		_status_text->modify_text((Gtk::StateType)s, Gdk::Color("#FFFFFF"));
+		_status_text->modify_base(static_cast<Gtk::StateType>(s),
+		                          Gdk::Color("#000000"));
+		_status_text->modify_text(static_cast<Gtk::StateType>(s),
+		                          Gdk::Color("#FFFFFF"));
 	}
 
 	_error_tag                        = Gtk::TextTag::create();
@@ -497,14 +499,14 @@ Patchage::update_toolbar()
 		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
 		if (sample_rate != 0) {
 			const int latency_ms =
-			    lrintf(buffer_size * 1000 / (float)sample_rate);
+			    lrintf(buffer_size * 1000 / float(sample_rate));
 			std::stringstream ss;
 			ss << " frames @ " << (sample_rate / 1000) << "kHz (" << latency_ms
 			   << "ms)";
 			_latency_label->set_label(ss.str());
 			_latency_label->set_visible(true);
 			_buf_size_combo->set_active(
-			    (int)log2f(_jack_driver->buffer_size()) - 5);
+			    static_cast<int>(log2f(_jack_driver->buffer_size()) - 5));
 			updating = false;
 			return;
 		}
@@ -914,8 +916,7 @@ highlight_color(guint c, guint delta)
 	const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
 	const guint a        = c & 0xFF;
 
-	return ((((guint)(r)) << 24) | (((guint)(g)) << 16) | (((guint)(b)) << 8) |
-	        (((guint)(a))));
+	return ((r << 24u) | (g << 16u) | (b << 8u) | a);
 }
 
 static void

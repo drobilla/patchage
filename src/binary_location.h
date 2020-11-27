@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2008-2014 David Robillard <http://drobilla.net>
+ * Copyright 2008-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -29,15 +29,19 @@
 inline std::string
 binary_location()
 {
-	Dl_info     dli;
-	std::string loc;
-	const int   ret = dladdr((void*)&binary_location, &dli);
-	if (ret) {
-		if (char* const bin_loc = realpath(dli.dli_fname, nullptr)) {
-			loc = bin_loc;
-			free(bin_loc);
-		}
+	Dl_info   dli = {};
+	const int ret = dladdr(reinterpret_cast<void*>(&binary_location), &dli);
+	if (!ret) {
+		return "";
 	}
+
+	char* const bin_loc = realpath(dli.dli_fname, nullptr);
+	if (!bin_loc) {
+		return "";
+	}
+
+	std::string loc{bin_loc};
+	free(bin_loc);
 	return loc;
 }
 

@@ -34,7 +34,6 @@ Checks: >
   -fuchsia-overloaded-operator,
   -google-default-arguments,
   -google-explicit-constructor,
-  -google-readability-casting,
   -google-runtime-references,
   -hicpp-explicit-conversions,
   -hicpp-no-array-decay,

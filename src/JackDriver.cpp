@@ -50,7 +50,7 @@ JackDriver::JackDriver(Patchage* app)
     , _is_activated(false)
 {
 	_last_pos.frame = 0;
-	_last_pos.valid = (jack_position_bits_t)0;
+	_last_pos.valid = {};
 }
 
 JackDriver::~JackDriver()
