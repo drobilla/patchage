@@ -26,24 +26,23 @@
 #include <string>
 
 /** Return the absolute path of the binary. */
-static std::string
+inline std::string
 binary_location()
 {
 	Dl_info     dli;
 	std::string loc;
 	const int   ret = dladdr((void*)&binary_location, &dli);
 	if (ret) {
-		char* const bin_loc = (char*)calloc(PATH_MAX, 1);
-		if (realpath(dli.dli_fname, bin_loc)) {
+		if (char* const bin_loc = realpath(dli.dli_fname, nullptr)) {
 			loc = bin_loc;
+			free(bin_loc);
 		}
-		free(bin_loc);
 	}
 	return loc;
 }
 
 /** Return the absolute path of the bundle (binary parent directory). */
-static std::string
+inline std::string
 bundle_location()
 {
 	const std::string binary = binary_location();
