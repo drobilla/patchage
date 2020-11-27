@@ -237,6 +237,7 @@ def build(bld):
                install_path = '${BINDIR}')
     prog.source = '''
             src/Configuration.cpp
+            src/Legend.cpp
             src/Patchage.cpp
             src/PatchageCanvas.cpp
             src/PatchageEvent.cpp
