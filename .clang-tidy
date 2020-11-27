@@ -46,7 +46,6 @@ Checks: >
   -llvmlibc-*,
   -misc-unused-parameters,
   -modernize-use-trailing-return-type,
-  -modernize-use-using,
   -performance-faster-string-find,
   -performance-unnecessary-value-param,
   -readability-convert-member-functions-to-static,

@@ -134,7 +134,7 @@ PatchageCanvas::remove_port(const PortID& id)
 
 struct RemovePortsData
 {
-	typedef bool (*Predicate)(const PatchagePort*);
+	using Predicate = bool (*)(const PatchagePort*);
 
 	RemovePortsData(Predicate p)
 	    : pred(p)

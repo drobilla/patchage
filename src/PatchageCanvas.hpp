@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -71,16 +71,15 @@ public:
 	void clear();
 
 private:
-	Patchage* _app;
+	using PortIndex   = std::map<const PortID, PatchagePort*>;
+	using ModuleIndex = std::multimap<const std::string, PatchageModule*>;
 
 	bool on_event(GdkEvent* ev);
 	bool on_connection_event(Ganv::Edge* c, GdkEvent* ev);
 
-	typedef std::map<const PortID, PatchagePort*> PortIndex;
-	PortIndex                                     _port_index;
-
-	typedef std::multimap<const std::string, PatchageModule*> ModuleIndex;
-	ModuleIndex                                               _module_index;
+	Patchage*   _app;
+	PortIndex   _port_index;
+	ModuleIndex _module_index;
 };
 
 #endif // PATCHAGE_PATCHAGECANVAS_HPP

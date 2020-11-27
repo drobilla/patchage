@@ -1000,8 +1000,9 @@ Patchage::on_export_image()
 	dialog.set_default_response(Gtk::RESPONSE_OK);
 	dialog.set_transient_for(*_main_win);
 
-	typedef std::map<std::string, std::string> Types;
-	Types                                      types;
+	using Types = std::map<std::string, std::string>;
+
+	Types types;
 	types["*.dot"] = "Graphviz DOT";
 	types["*.pdf"] = "Portable Document Format";
 	types["*.ps"]  = "PostScript";
