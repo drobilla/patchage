@@ -43,18 +43,15 @@ enum class PortType
 
 struct Coord
 {
-	Coord()
-	    : x(0.0)
-	    , y(0.0)
-	{}
+	Coord() = default;
 
 	Coord(double x_, double y_)
 	    : x(x_)
 	    , y(y_)
 	{}
 
-	double x;
-	double y;
+	double x{0.0};
+	double y{0.0};
 };
 
 class Configuration
@@ -129,18 +126,19 @@ private:
 
 	std::map<std::string, ModuleSettings> _module_settings;
 
-	uint32_t _default_port_colors[N_PORT_TYPES];
-	uint32_t _port_colors[N_PORT_TYPES];
+	uint32_t _default_port_colors[N_PORT_TYPES] = {};
+	uint32_t _port_colors[N_PORT_TYPES]         = {};
 
-	Coord _window_location;
-	Coord _window_size;
-	float _zoom;
-	float _font_size;
-	int   _messages_height;
-	bool  _show_toolbar;
-	bool  _sprung_layout;
-	bool  _show_messages;
-	bool  _sort_ports;
+	Coord _window_location{0.0, 0.0};
+	Coord _window_size{960.0, 540.0};
+
+	float _zoom            = 1.0f;
+	float _font_size       = 12.0f;
+	int   _messages_height = 0;
+	bool  _show_toolbar    = true;
+	bool  _sprung_layout   = false;
+	bool  _show_messages   = false;
+	bool  _sort_ports      = true;
 };
 
 #endif // PATCHAGE_CONFIGURATION_HPP

@@ -33,6 +33,7 @@ using boost::format;
 AlsaDriver::AlsaDriver(Patchage* app)
     : _app(app)
     , _seq(nullptr)
+    , _refresh_thread{}
 {}
 
 AlsaDriver::~AlsaDriver()

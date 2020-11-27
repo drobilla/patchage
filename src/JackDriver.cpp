@@ -43,6 +43,8 @@ JackDriver::JackDriver(Patchage* app)
     : _app(app)
     , _client(nullptr)
     , _events(128)
+    , _last_pos{}
+    , _buffer_size(0)
     , _xruns(0)
     , _xrun_delay(0)
     , _is_activated(false)

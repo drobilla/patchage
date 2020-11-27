@@ -51,8 +51,7 @@ public:
 	};
 
 	explicit PatchageEvent(Type type = Type::noop)
-	    : _str(nullptr)
-	    , _type(type)
+	    : _type(type)
 	{}
 
 	PatchageEvent(Type type, const char* str)
@@ -62,15 +61,13 @@ public:
 
 	template<typename P>
 	PatchageEvent(Type type, P port)
-	    : _str(nullptr)
-	    , _port_1(port)
+	    : _port_1(port)
 	    , _type(type)
 	{}
 
 	template<typename P>
 	PatchageEvent(Type type, P port_1, P port_2)
-	    : _str(nullptr)
-	    , _port_1(port_1, false)
+	    : _port_1(port_1, false)
 	    , _port_2(port_2, true)
 	    , _type(type)
 	{}
@@ -80,7 +77,7 @@ public:
 	inline Type type() const { return _type; }
 
 private:
-	char*  _str;
+	char*  _str{nullptr};
 	PortID _port_1;
 	PortID _port_2;
 	Type   _type;

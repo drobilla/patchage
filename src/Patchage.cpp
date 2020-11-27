@@ -116,6 +116,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
     , _jack_driver(nullptr)
     , _conf(nullptr)
+    , _gtk_main(nullptr)
     , INIT_WIDGET(_about_win)
     , INIT_WIDGET(_main_scrolledwin)
     , INIT_WIDGET(_main_win)

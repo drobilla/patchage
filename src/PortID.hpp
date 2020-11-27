@@ -40,11 +40,7 @@ struct PortID
 		alsa_addr,
 	};
 
-	PortID()
-	    : type(Type::nothing)
-	{
-		memset(&id, 0, sizeof(id));
-	}
+	PortID() = default;
 
 	PortID(const PortID& copy)
 	    : type(copy.type)
@@ -69,7 +65,7 @@ struct PortID
 	}
 #endif
 
-	Type type;
+	Type type = Type::nothing;
 
 	union
 	{
@@ -83,7 +79,7 @@ struct PortID
 			bool           is_input : 1;
 		};
 #endif
-	} id;
+	} id = {};
 };
 
 static inline std::ostream&

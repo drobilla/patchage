@@ -33,14 +33,6 @@ static const char* port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
                                                     "JACK_CV"};
 
 Configuration::Configuration()
-    : _window_location{0, 0}
-    , _window_size{640, 480}
-    , _zoom(1.0)
-    , _font_size(12.0)
-    , _messages_height(0)
-    , _show_toolbar(true)
-    , _show_messages(false)
-    , _sort_ports(true)
 {
 #ifdef PATCHAGE_USE_LIGHT_THEME
 	_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
