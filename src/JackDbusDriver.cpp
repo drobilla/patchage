@@ -1191,11 +1191,11 @@ JackDriver::create_port_view(Patchage*, const PortID&)
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-	_log.error_msg(std::string{"Jack: "} + msg);
+	_log.error(std::string{"Jack: "} + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-	_log.info_msg(std::string{"Jack: "} + msg);
+	_log.info(std::string{"Jack: "} + msg);
 }

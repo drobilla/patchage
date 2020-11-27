@@ -33,9 +33,9 @@ public:
 
 	virtual ~ILog() = default;
 
-	virtual void info_msg(const std::string& msg)    = 0;
-	virtual void warning_msg(const std::string& msg) = 0;
-	virtual void error_msg(const std::string& msg)   = 0;
+	virtual void info(const std::string& msg)    = 0;
+	virtual void warning(const std::string& msg) = 0;
+	virtual void error(const std::string& msg)   = 0;
 };
 
 #endif // PATCHAGE_ILOG_HPP

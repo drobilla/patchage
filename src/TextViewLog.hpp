@@ -38,9 +38,9 @@ public:
 
 	~TextViewLog() override = default;
 
-	void info_msg(const std::string& msg) override;
-	void error_msg(const std::string& msg) override;
-	void warning_msg(const std::string& msg) override;
+	void info(const std::string& msg) override;
+	void error(const std::string& msg) override;
+	void warning(const std::string& msg) override;
 
 	int min_height() const;
 

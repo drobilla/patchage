@@ -46,7 +46,7 @@ TextViewLog::TextViewLog(Widget<Gtk::TextView>& text_view)
 }
 
 void
-TextViewLog::info_msg(const std::string& msg)
+TextViewLog::info(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
 	buffer->insert(buffer->end(), std::string("\n") + msg);
@@ -54,7 +54,7 @@ TextViewLog::info_msg(const std::string& msg)
 }
 
 void
-TextViewLog::warning_msg(const std::string& msg)
+TextViewLog::warning(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
 	buffer->insert_with_tag(
@@ -63,7 +63,7 @@ TextViewLog::warning_msg(const std::string& msg)
 }
 
 void
-TextViewLog::error_msg(const std::string& msg)
+TextViewLog::error(const std::string& msg)
 {
 	Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
 	buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _error_tag);
