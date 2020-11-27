@@ -26,11 +26,11 @@
 #include <limits>
 #include <vector>
 
-static const char* port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
-                                                    "JACK_MIDI",
-                                                    "ALSA_MIDI",
-                                                    "JACK_OSC",
-                                                    "JACK_CV"};
+static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
+                                                          "JACK_MIDI",
+                                                          "ALSA_MIDI",
+                                                          "JACK_OSC",
+                                                          "JACK_CV"};
 
 Configuration::Configuration()
 {
