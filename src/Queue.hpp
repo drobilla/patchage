@@ -27,13 +27,20 @@ class Queue
 public:
 	/** @param size Size in number of elements */
 	explicit Queue(size_t size);
+
+	Queue(const Queue&) = delete;
+	Queue& operator=(const Queue&) = delete;
+
+	Queue(Queue&&) = delete;
+	Queue& operator=(Queue&&) = delete;
+
 	~Queue();
 
 	// Any thread:
 
 	inline size_t capacity() const { return _size - 1; }
 
-	// Write thread(s):
+	// Write thread:
 
 	inline bool full() const;
 	inline bool push(const T& obj);
