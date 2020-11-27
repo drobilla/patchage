@@ -81,16 +81,22 @@ private:
 
 	void shutdown();
 
-	static void
-	jack_client_registration_cb(const char* name, int registered, void* me);
-	static void
-	jack_port_registration_cb(jack_port_id_t port_id, int registered, void* me);
+	static void jack_client_registration_cb(const char* name,
+	                                        int         registered,
+	                                        void*       jack_driver);
+
+	static void jack_port_registration_cb(jack_port_id_t port_id,
+	                                      int            registered,
+	                                      void*          jack_driver);
+
 	static void jack_port_connect_cb(jack_port_id_t src,
 	                                 jack_port_id_t dst,
 	                                 int            connect,
-	                                 void*          me);
-	static int  jack_xrun_cb(void* me);
-	static void jack_shutdown_cb(void* me);
+	                                 void*          jack_driver);
+
+	static int jack_xrun_cb(void* jack_driver);
+
+	static void jack_shutdown_cb(void* jack_driver);
 
 	Patchage*      _app;
 	jack_client_t* _client;

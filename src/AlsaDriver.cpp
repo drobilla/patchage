@@ -228,7 +228,7 @@ AlsaDriver::find_or_create_module(Patchage*          patchage,
 void
 AlsaDriver::create_port_view_internal(Patchage*        patchage,
                                       snd_seq_addr_t   addr,
-                                      PatchageModule*& m,
+                                      PatchageModule*& parent,
                                       PatchagePort*&   port)
 {
 	if (ignore(addr)) {
@@ -279,26 +279,27 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
 	}
 
 	if (!split) {
-		m = find_or_create_module(
+		parent = find_or_create_module(
 		    _app, addr.client, client_name, ModuleType::input_output);
-		if (!m->get_port(port_name)) {
-			port = create_port(*m, port_name, is_input, addr);
+		if (!parent->get_port(port_name)) {
+			port = create_port(*parent, port_name, is_input, addr);
 			port->show();
 		}
 
 	} else { // split
 		ModuleType type = ((is_input) ? ModuleType::input : ModuleType::output);
-		m = find_or_create_module(_app, addr.client, client_name, type);
-		if (!m->get_port(port_name)) {
-			port = create_port(*m, port_name, is_input, addr);
+		parent = find_or_create_module(_app, addr.client, client_name, type);
+		if (!parent->get_port(port_name)) {
+			port = create_port(*parent, port_name, is_input, addr);
 			port->show();
 		}
 
 		if (is_duplex) {
 			type = ((!is_input) ? ModuleType::input : ModuleType::output);
-			m    = find_or_create_module(_app, addr.client, client_name, type);
-			if (!m->get_port(port_name)) {
-				port = create_port(*m, port_name, !is_input, addr);
+			parent =
+			    find_or_create_module(_app, addr.client, client_name, type);
+			if (!parent->get_port(port_name)) {
+				port = create_port(*parent, port_name, !is_input, addr);
 				port->show();
 			}
 		}

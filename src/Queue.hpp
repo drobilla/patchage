@@ -43,7 +43,7 @@ public:
 	// Write thread:
 
 	inline bool full() const;
-	inline bool push(const T& obj);
+	inline bool push(const T& elem);
 
 	// Read thread:
 
