@@ -28,19 +28,31 @@ class Legend : public Gtk::HBox
 public:
 	Legend(const Configuration& configuration)
 	{
-		add_button(
-		    JACK_AUDIO, "Audio", configuration.get_port_color(JACK_AUDIO));
+		add_button(PortType::JACK_AUDIO,
+		           "Audio",
+		           configuration.get_port_color(PortType::JACK_AUDIO));
+
 #ifdef HAVE_JACK_METADATA
-		add_button(JACK_CV, "CV", configuration.get_port_color(JACK_CV));
-		add_button(JACK_OSC, "OSC", configuration.get_port_color(JACK_OSC));
+		add_button(PortType::JACK_CV,
+		           "CV",
+		           configuration.get_port_color(PortType::JACK_CV));
+		add_button(PortType::JACK_OSC,
+		           "OSC",
+		           configuration.get_port_color(PortType::JACK_OSC));
 #endif
-		add_button(JACK_MIDI, "MIDI", configuration.get_port_color(JACK_MIDI));
-		add_button(
-		    ALSA_MIDI, "ALSA MIDI", configuration.get_port_color(ALSA_MIDI));
+
+		add_button(PortType::JACK_MIDI,
+		           "MIDI",
+		           configuration.get_port_color(PortType::JACK_MIDI));
+
+		add_button(PortType::ALSA_MIDI,
+		           "ALSA MIDI",
+		           configuration.get_port_color(PortType::ALSA_MIDI));
+
 		show_all_children();
 	}
 
-	void add_button(int id, const std::string& label, uint32_t rgba)
+	void add_button(const PortType id, const std::string& label, uint32_t rgba)
 	{
 		Gdk::Color col;
 		col.set_rgb(((rgba >> 24) & 0xFF) * 0x100,
@@ -58,7 +70,7 @@ public:
 		this->pack_start(*Gtk::manage(box), false, false, 6);
 	}
 
-	void on_color_set(const int               id,
+	void on_color_set(const PortType          id,
 	                  const std::string&      label,
 	                  const Gtk::ColorButton* but)
 	{
@@ -70,7 +82,7 @@ public:
 		signal_color_changed.emit(id, label, rgba);
 	}
 
-	sigc::signal<void, int, std::string, uint32_t> signal_color_changed;
+	sigc::signal<void, PortType, std::string, uint32_t> signal_color_changed;
 };
 
 #endif // PATCHAGE_LEGEND_HPP

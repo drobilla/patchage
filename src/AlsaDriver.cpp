@@ -83,7 +83,7 @@ AlsaDriver::detach()
 static bool
 is_alsa_port(const PatchagePort* port)
 {
-	return port->type() == ALSA_MIDI;
+	return port->type() == PortType::ALSA_MIDI;
 }
 
 /** Destroy all JACK (canvas) ports.
@@ -199,7 +199,7 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 	     ++j) {
 		if (j->second->type() == type) {
 			return j->second;
-		} else if (j->second->type() == InputOutput) {
+		} else if (j->second->type() == ModuleType::InputOutput) {
 			io_module = j->second;
 		}
 	}
@@ -278,14 +278,15 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
 	}
 
 	if (!split) {
-		m = find_or_create_module(_app, addr.client, client_name, InputOutput);
+		m = find_or_create_module(
+		    _app, addr.client, client_name, ModuleType::InputOutput);
 		if (!m->get_port(port_name)) {
 			port = create_port(*m, port_name, is_input, addr);
 			port->show();
 		}
 
 	} else { // split
-		ModuleType type = ((is_input) ? Input : Output);
+		ModuleType type = ((is_input) ? ModuleType::Input : ModuleType::Output);
 		m = find_or_create_module(_app, addr.client, client_name, type);
 		if (!m->get_port(port_name)) {
 			port = create_port(*m, port_name, is_input, addr);
@@ -293,7 +294,7 @@ AlsaDriver::create_port_view_internal(Patchage*        patchage,
 		}
 
 		if (is_duplex) {
-			type = ((!is_input) ? Input : Output);
+			type = ((!is_input) ? ModuleType::Input : ModuleType::Output);
 			m    = find_or_create_module(_app, addr.client, client_name, type);
 			if (!m->get_port(port_name)) {
 				port = create_port(*m, port_name, !is_input, addr);
@@ -309,13 +310,14 @@ AlsaDriver::create_port(PatchageModule&    parent,
                         bool               is_input,
                         snd_seq_addr_t     addr)
 {
-	auto* ret = new PatchagePort(parent,
-	                             ALSA_MIDI,
-	                             name,
-	                             "",
-	                             is_input,
-	                             _app->conf()->get_port_color(ALSA_MIDI),
-	                             _app->show_human_names());
+	auto* ret =
+	    new PatchagePort(parent,
+	                     PortType::ALSA_MIDI,
+	                     name,
+	                     "",
+	                     is_input,
+	                     _app->conf()->get_port_color(PortType::ALSA_MIDI),
+	                     _app->show_human_names());
 
 	dynamic_cast<PatchageCanvas*>(parent.canvas())
 	    ->index_port(PortID(addr, is_input), ret);
@@ -545,7 +547,7 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(PatchageEvent(PatchageEvent::CONNECTION,
+				_events.push(PatchageEvent(PatchageEvent::Type::CONNECTION,
 				                           ev->data.connect.sender,
 				                           ev->data.connect.dest));
 			}
@@ -553,7 +555,7 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(PatchageEvent(PatchageEvent::DISCONNECTION,
+				_events.push(PatchageEvent(PatchageEvent::Type::DISCONNECTION,
 				                           ev->data.connect.sender,
 				                           ev->data.connect.dest));
 			}
@@ -566,7 +568,7 @@ AlsaDriver::_refresh_main()
 
 			if (!ignore(ev->data.addr)) {
 				_events.push(PatchageEvent(
-				    PatchageEvent::PORT_CREATION,
+				    PatchageEvent::Type::PORT_CREATION,
 				    PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
 			}
 			break;
@@ -574,10 +576,13 @@ AlsaDriver::_refresh_main()
 			if (!ignore(ev->data.addr, false)) {
 				// Note: getting caps at this point does not work
 				// Delete both inputs and outputs (to handle duplex ports)
-				_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
-				                           PortID(ev->data.addr, true)));
-				_events.push(PatchageEvent(PatchageEvent::PORT_DESTRUCTION,
-				                           PortID(ev->data.addr, false)));
+				_events.push(
+				    PatchageEvent(PatchageEvent::Type::PORT_DESTRUCTION,
+				                  PortID(ev->data.addr, true)));
+				_events.push(
+				    PatchageEvent(PatchageEvent::Type::PORT_DESTRUCTION,
+				                  PortID(ev->data.addr, false)));
+
 				_port_addrs.erase(
 				    _app->canvas()->find_port(PortID(ev->data.addr, false)));
 				_port_addrs.erase(

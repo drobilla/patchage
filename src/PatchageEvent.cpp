@@ -39,28 +39,28 @@ using boost::format;
 void
 PatchageEvent::execute(Patchage* patchage)
 {
-	if (_type == REFRESH) {
+	if (_type == Type::REFRESH) {
 		patchage->refresh();
 
-	} else if (_type == CLIENT_CREATION) {
+	} else if (_type == Type::CLIENT_CREATION) {
 		// No empty modules (for now)
 		g_free(_str);
 		_str = nullptr;
 
-	} else if (_type == CLIENT_DESTRUCTION) {
+	} else if (_type == Type::CLIENT_DESTRUCTION) {
 		patchage->canvas()->remove_module(_str);
 		g_free(_str);
 		_str = nullptr;
 
-	} else if (_type == PORT_CREATION) {
+	} else if (_type == Type::PORT_CREATION) {
 
 		Driver* driver = nullptr;
-		if (_port_1.type == PortID::JACK_ID) {
+		if (_port_1.type == PortID::Type::JACK_ID) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 			driver = patchage->jack_driver();
 #endif
 #ifdef HAVE_ALSA
-		} else if (_port_1.type == PortID::ALSA_ADDR) {
+		} else if (_port_1.type == PortID::Type::ALSA_ADDR) {
 			driver = patchage->alsa_driver();
 #endif
 		}
@@ -77,11 +77,11 @@ PatchageEvent::execute(Patchage* patchage)
 			    (format("Unknown type for port `%1%'") % _port_1).str());
 		}
 
-	} else if (_type == PORT_DESTRUCTION) {
+	} else if (_type == Type::PORT_DESTRUCTION) {
 
 		patchage->canvas()->remove_port(_port_1);
 
-	} else if (_type == CONNECTION) {
+	} else if (_type == Type::CONNECTION) {
 
 		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
@@ -98,7 +98,7 @@ PatchageEvent::execute(Patchage* patchage)
 			patchage->canvas()->make_connection(port_1, port_2);
 		}
 
-	} else if (_type == DISCONNECTION) {
+	} else if (_type == Type::DISCONNECTION) {
 
 		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
 		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);

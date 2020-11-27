@@ -60,7 +60,7 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 	     ++j) {
 		if (j->second->type() == type) {
 			return j->second;
-		} else if (j->second->type() == InputOutput) {
+		} else if (j->second->type() == ModuleType::InputOutput) {
 			io_module = j->second;
 		}
 	}
@@ -94,7 +94,7 @@ PatchageCanvas::find_port(const PortID& id)
 
 #ifdef PATCHAGE_LIBJACK
 	// Alsa ports are always indexed (or don't exist at all)
-	if (id.type == PortID::JACK_ID) {
+	if (id.type == PortID::Type::JACK_ID) {
 		jack_port_t* jack_port =
 		    jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
 		if (!jack_port) {
@@ -105,9 +105,11 @@ PatchageCanvas::find_port(const PortID& id)
 		std::string port_name;
 		_app->jack_driver()->port_names(id, module_name, port_name);
 
-		PatchageModule* module = find_module(
-		    module_name,
-		    (jack_port_flags(jack_port) & JackPortIsInput) ? Input : Output);
+		PatchageModule* module =
+		    find_module(module_name,
+		                (jack_port_flags(jack_port) & JackPortIsInput)
+		                    ? ModuleType::Input
+		                    : ModuleType::Output);
 
 		if (module) {
 			pp = module->get_port(port_name);
@@ -225,16 +227,21 @@ PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 		return;
 	}
 
-	if ((p1->type() == JACK_AUDIO && p2->type() == JACK_AUDIO) ||
-	    (p1->type() == JACK_MIDI && p2->type() == JACK_MIDI) ||
-	    (p1->type() == JACK_AUDIO && p2->type() == JACK_CV) ||
-	    (p1->type() == JACK_CV && p2->type() == JACK_CV) ||
-	    (p1->type() == JACK_OSC && p2->type() == JACK_OSC)) {
+	if ((p1->type() == PortType::JACK_AUDIO &&
+	     p2->type() == PortType::JACK_AUDIO) ||
+	    (p1->type() == PortType::JACK_MIDI &&
+	     p2->type() == PortType::JACK_MIDI) ||
+	    (p1->type() == PortType::JACK_AUDIO &&
+	     p2->type() == PortType::JACK_CV) ||
+	    (p1->type() == PortType::JACK_CV && p2->type() == PortType::JACK_CV) ||
+	    (p1->type() == PortType::JACK_OSC &&
+	     p2->type() == PortType::JACK_OSC)) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->connect(p1, p2);
 #endif
 #ifdef HAVE_ALSA
-	} else if (p1->type() == ALSA_MIDI && p2->type() == ALSA_MIDI) {
+	} else if (p1->type() == PortType::ALSA_MIDI &&
+	           p2->type() == PortType::ALSA_MIDI) {
 		_app->alsa_driver()->connect(p1, p2);
 #endif
 	} else {
@@ -263,13 +270,15 @@ PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 		return;
 	}
 
-	if (input->type() == JACK_AUDIO || input->type() == JACK_MIDI ||
-	    input->type() == JACK_CV || input->type() == JACK_OSC) {
+	if (input->type() == PortType::JACK_AUDIO ||
+	    input->type() == PortType::JACK_MIDI ||
+	    input->type() == PortType::JACK_CV ||
+	    input->type() == PortType::JACK_OSC) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		_app->jack_driver()->disconnect(output, input);
 #endif
 #ifdef HAVE_ALSA
-	} else if (input->type() == ALSA_MIDI) {
+	} else if (input->type() == PortType::ALSA_MIDI) {
 		_app->alsa_driver()->disconnect(output, input);
 #endif
 	} else {
@@ -285,11 +294,11 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 	// Join partners, if applicable
 	PatchageModule* in_module  = nullptr;
 	PatchageModule* out_module = nullptr;
-	if (module->type() == Input) {
+	if (module->type() == ModuleType::Input) {
 		in_module  = module;
-		out_module = find_module(name, Output);
-	} else if (module->type() == Output) {
-		in_module  = find_module(name, Output);
+		out_module = find_module(name, ModuleType::Output);
+	} else if (module->type() == ModuleType::Output) {
+		in_module  = find_module(name, ModuleType::Output);
 		out_module = module;
 	}
 

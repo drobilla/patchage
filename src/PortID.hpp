@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2008-2014 David Robillard <http://drobilla.net>
+ * Copyright 2008-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -33,27 +33,28 @@
 
 struct PortID
 {
+	enum class Type
+	{
+		NULL_PORT_ID,
+		JACK_ID,
+		ALSA_ADDR
+	};
+
 	PortID()
-	    : type(NULL_PORT_ID)
+	    : type(Type::NULL_PORT_ID)
 	{
 		memset(&id, 0, sizeof(id));
 	}
+
 	PortID(const PortID& copy)
 	    : type(copy.type)
 	{
 		memcpy(&id, &copy.id, sizeof(id));
 	}
 
-	enum
-	{
-		NULL_PORT_ID,
-		JACK_ID,
-		ALSA_ADDR
-	} type;
-
 #ifdef PATCHAGE_LIBJACK
 	PortID(jack_port_id_t jack_id, bool ign = false)
-	    : type(JACK_ID)
+	    : type(Type::JACK_ID)
 	{
 		id.jack_id = jack_id;
 	}
@@ -61,12 +62,14 @@ struct PortID
 
 #ifdef HAVE_ALSA
 	PortID(snd_seq_addr_t addr, bool in)
-	    : type(ALSA_ADDR)
+	    : type(Type::ALSA_ADDR)
 	{
 		id.alsa_addr = addr;
 		id.is_input  = in;
 	}
 #endif
+
+	Type type;
 
 	union
 	{
@@ -87,14 +90,14 @@ static inline std::ostream&
 operator<<(std::ostream& os, const PortID& id)
 {
 	switch (id.type) {
-	case PortID::NULL_PORT_ID:
+	case PortID::Type::NULL_PORT_ID:
 		return os << "(null)";
-	case PortID::JACK_ID:
+	case PortID::Type::JACK_ID:
 #ifdef PATCHAGE_LIBJACK
 		return os << "jack:" << id.id.jack_id;
 #endif
 		break;
-	case PortID::ALSA_ADDR:
+	case PortID::Type::ALSA_ADDR:
 #ifdef HAVE_ALSA
 		return os << "alsa:" << (int)id.id.alsa_addr.client << ":"
 		          << (int)id.id.alsa_addr.port << ":"
@@ -114,14 +117,14 @@ operator<(const PortID& a, const PortID& b)
 	}
 
 	switch (a.type) {
-	case PortID::NULL_PORT_ID:
+	case PortID::Type::NULL_PORT_ID:
 		return true;
-	case PortID::JACK_ID:
+	case PortID::Type::JACK_ID:
 #ifdef PATCHAGE_LIBJACK
 		return a.id.jack_id < b.id.jack_id;
 #endif
 		break;
-	case PortID::ALSA_ADDR:
+	case PortID::Type::ALSA_ADDR:
 #ifdef HAVE_ALSA
 		if ((a.id.alsa_addr.client < b.id.alsa_addr.client) ||
 		    ((a.id.alsa_addr.client == b.id.alsa_addr.client) &&

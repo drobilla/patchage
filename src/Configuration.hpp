@@ -23,14 +23,14 @@
 #include <map>
 #include <string>
 
-enum ModuleType
+enum class ModuleType
 {
 	Input,
 	Output,
 	InputOutput
 };
 
-enum PortType
+enum class PortType
 {
 	JACK_AUDIO,
 	JACK_MIDI,
@@ -100,10 +100,14 @@ public:
 	int  get_messages_height() const { return _messages_height; }
 	void set_messages_height(int height) { _messages_height = height; }
 
-	uint32_t get_port_color(PortType type) const { return _port_colors[type]; }
-	void     set_port_color(PortType type, uint32_t rgba)
+	uint32_t get_port_color(PortType type) const
 	{
-		_port_colors[type] = rgba;
+		return _port_colors[static_cast<unsigned>(type)];
+	}
+
+	void set_port_color(PortType type, uint32_t rgba)
+	{
+		_port_colors[static_cast<unsigned>(type)] = rgba;
 	}
 
 	Coord get_window_location() { return _window_location; }

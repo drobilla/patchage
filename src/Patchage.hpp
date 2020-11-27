@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -127,8 +127,11 @@ protected:
 	void on_increase_font_size();
 	void on_decrease_font_size();
 	void on_normal_font_size();
-	void
-	on_legend_color_change(int id, const std::string& label, uint32_t rgba);
+
+	void on_legend_color_change(PortType           id,
+	                            const std::string& label,
+	                            uint32_t           rgba);
+
 	void on_messages_resized(Gtk::Allocation& alloc);
 
 	bool on_scroll(GdkEventScroll* ev);

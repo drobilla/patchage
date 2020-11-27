@@ -955,11 +955,11 @@ update_edge_color(GanvEdge* edge, void* data)
 }
 
 void
-Patchage::on_legend_color_change(int                id,
+Patchage::on_legend_color_change(PortType           id,
                                  const std::string& label,
                                  uint32_t           rgba)
 {
-	_conf->set_port_color((PortType)id, rgba);
+	_conf->set_port_color(id, rgba);
 	_canvas->for_each_node(update_port_colors, this);
 	_canvas->for_each_edge(update_edge_color, this);
 }

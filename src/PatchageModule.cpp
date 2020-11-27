@@ -54,7 +54,7 @@ PatchageModule::update_menu()
 		return;
 	}
 
-	if (_type == InputOutput) {
+	if (_type == ModuleType::InputOutput) {
 		bool has_in  = false;
 		bool has_out = false;
 		for (const_iterator p = begin(); p != end(); ++p) {
@@ -77,7 +77,7 @@ PatchageModule::show_menu(GdkEventButton* ev)
 {
 	_menu                      = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
-	if (_type == InputOutput) {
+	if (_type == ModuleType::InputOutput) {
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
 		    "_Split", sigc::mem_fun(this, &PatchageModule::split)));
 		update_menu();
@@ -124,7 +124,7 @@ PatchageModule::store_location(double x, double y)
 void
 PatchageModule::split()
 {
-	assert(_type == InputOutput);
+	assert(_type == ModuleType::InputOutput);
 	_app->conf()->set_module_split(_name, true);
 	_app->refresh();
 }
@@ -132,7 +132,7 @@ PatchageModule::split()
 void
 PatchageModule::join()
 {
-	assert(_type != InputOutput);
+	assert(_type != ModuleType::InputOutput);
 	_app->conf()->set_module_split(_name, false);
 	_app->refresh();
 }

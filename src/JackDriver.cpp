@@ -114,8 +114,10 @@ JackDriver::detach()
 static bool
 is_jack_port(const PatchagePort* port)
 {
-	return (port->type() == JACK_AUDIO || port->type() == JACK_MIDI ||
-	        port->type() == JACK_OSC || port->type() == JACK_CV);
+	return (port->type() == PortType::JACK_AUDIO ||
+	        port->type() == PortType::JACK_MIDI ||
+	        port->type() == PortType::JACK_OSC ||
+	        port->type() == PortType::JACK_CV);
 }
 
 /** Destroy all JACK (canvas) ports.
@@ -131,7 +133,7 @@ JackDriver::destroy_all()
 PatchagePort*
 JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
-	assert(id.type == PortID::JACK_ID);
+	assert(id.type == PortID::Type::JACK_ID);
 
 	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
 	if (!jack_port) {
@@ -146,13 +148,13 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 	std::string module_name, port_name;
 	port_names(id, module_name, port_name);
 
-	ModuleType type = InputOutput;
+	ModuleType type = ModuleType::InputOutput;
 	if (_app->conf()->get_module_split(module_name,
 	                                   (jack_flags & JackPortIsTerminal))) {
 		if (jack_flags & JackPortIsInput) {
-			type = Input;
+			type = ModuleType::Input;
 		} else {
-			type = Output;
+			type = ModuleType::Output;
 		}
 	}
 
@@ -219,19 +221,19 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 #endif
 
 	const char* const type_str  = jack_port_type(port);
-	PortType          port_type = JACK_AUDIO;
+	PortType          port_type = PortType::JACK_AUDIO;
 	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
-		port_type = JACK_AUDIO;
+		port_type = PortType::JACK_AUDIO;
 #ifdef HAVE_JACK_METADATA
 		if (get_property(uuid, JACKEY_SIGNAL_TYPE) == "CV") {
-			port_type = JACK_CV;
+			port_type = PortType::JACK_CV;
 		}
 #endif
 	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
-		port_type = JACK_MIDI;
+		port_type = PortType::JACK_MIDI;
 #ifdef HAVE_JACK_METADATA
 		if (get_property(uuid, JACKEY_EVENT_TYPES) == "OSC") {
-			port_type = JACK_OSC;
+			port_type = PortType::JACK_OSC;
 		}
 #endif
 	} else {
@@ -250,7 +252,7 @@ JackDriver::create_port(PatchageModule& parent, jack_port_t* port, PortID id)
 	                             _app->show_human_names(),
 	                             order);
 
-	if (id.type != PortID::NULL_PORT_ID) {
+	if (id.type != PortID::Type::NULL_PORT_ID) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
 	}
 
@@ -302,13 +304,13 @@ JackDriver::refresh()
 		client1_name = ports[i];
 		client1_name = client1_name.substr(0, client1_name.find(":"));
 
-		ModuleType type = InputOutput;
+		ModuleType type = ModuleType::InputOutput;
 		if (_app->conf()->get_module_split(
 		        client1_name, (jack_port_flags(port) & JackPortIsTerminal))) {
 			if (jack_port_flags(port) & JackPortIsInput) {
-				type = Input;
+				type = ModuleType::Input;
 			} else {
-				type = Output;
+				type = ModuleType::Output;
 			}
 		}
 
@@ -336,8 +338,9 @@ JackDriver::refresh()
 		port1_name   = client1_name.substr(colon + 1);
 		client1_name = client1_name.substr(0, colon);
 
-		const ModuleType port1_type =
-		    (jack_port_flags(port) & JackPortIsInput) ? Input : Output;
+		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput)
+		                                  ? ModuleType::Input
+		                                  : ModuleType::Output;
 
 		PatchageModule* client1_module =
 		    _app->canvas()->find_module(client1_name, port1_type);
@@ -350,8 +353,9 @@ JackDriver::refresh()
 				port2_name   = client2_name.substr(colon + 1);
 				client2_name = client2_name.substr(0, colon);
 
-				const ModuleType port2_type =
-				    (port1_type == Input) ? Output : Input;
+				const ModuleType port2_type = (port1_type == ModuleType::Input)
+				                                  ? ModuleType::Output
+				                                  : ModuleType::Input;
 
 				PatchageModule* client2_module =
 				    _app->canvas()->find_module(client2_name, port2_type);
@@ -393,7 +397,7 @@ JackDriver::port_names(const PortID& id,
 {
 	jack_port_t* jack_port = nullptr;
 
-	if (id.type == PortID::JACK_ID) {
+	if (id.type == PortID::Type::JACK_ID) {
 		jack_port = jack_port_by_id(_client, id.id.jack_id);
 	}
 
@@ -471,10 +475,11 @@ JackDriver::jack_client_registration_cb(const char* name,
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.push(PatchageEvent(PatchageEvent::CLIENT_CREATION, name));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::Type::CLIENT_CREATION, name));
 	} else {
 		me->_events.push(
-		    PatchageEvent(PatchageEvent::CLIENT_DESTRUCTION, name));
+		    PatchageEvent(PatchageEvent::Type::CLIENT_DESTRUCTION, name));
 	}
 }
 
@@ -487,10 +492,11 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.push(PatchageEvent(PatchageEvent::PORT_CREATION, port_id));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::Type::PORT_CREATION, port_id));
 	} else {
 		me->_events.push(
-		    PatchageEvent(PatchageEvent::PORT_DESTRUCTION, port_id));
+		    PatchageEvent(PatchageEvent::Type::PORT_DESTRUCTION, port_id));
 	}
 }
 
@@ -504,9 +510,11 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 	assert(me->_client);
 
 	if (connect) {
-		me->_events.push(PatchageEvent(PatchageEvent::CONNECTION, src, dst));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::Type::CONNECTION, src, dst));
 	} else {
-		me->_events.push(PatchageEvent(PatchageEvent::DISCONNECTION, src, dst));
+		me->_events.push(
+		    PatchageEvent(PatchageEvent::Type::DISCONNECTION, src, dst));
 	}
 }
 

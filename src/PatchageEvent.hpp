@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2014 David Robillard <http://drobilla.net>
+ * Copyright 2007-2020 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -38,7 +38,7 @@ class Patchage;
 class PatchageEvent
 {
 public:
-	enum Type
+	enum class Type : uint8_t
 	{
 		NULL_EVENT = 0,
 		REFRESH,
@@ -50,7 +50,7 @@ public:
 		DISCONNECTION
 	};
 
-	explicit PatchageEvent(Type type = NULL_EVENT)
+	explicit PatchageEvent(Type type = Type::NULL_EVENT)
 	    : _str(nullptr)
 	    , _type(type)
 	{}
@@ -77,13 +77,13 @@ public:
 
 	void execute(Patchage* patchage);
 
-	inline Type type() const { return (Type)_type; }
+	inline Type type() const { return _type; }
 
 private:
-	char*   _str;
-	PortID  _port_1;
-	PortID  _port_2;
-	uint8_t _type;
+	char*  _str;
+	PortID _port_1;
+	PortID _port_2;
+	Type   _type;
 };
 
 #endif // PATCHAGE_PATCHAGEEVENT_HPP
