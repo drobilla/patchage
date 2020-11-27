@@ -115,7 +115,7 @@ struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord
 	Gtk::TreeModelColumn<Glib::ustring> label;
 };
 
-#define INIT_WIDGET(x) x(_xml, ((const char*)#x) + 1)
+#define INIT_WIDGET(x) x(_xml, (#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
     : _xml(UIFile::open("patchage"))

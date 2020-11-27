@@ -21,6 +21,8 @@
 
 #	define PATCHAGE_DISABLE_GANV_WARNINGS                                    \
 		_Pragma("clang diagnostic push")                                      \
+		_Pragma(                                                              \
+		    "clang diagnostic ignored \"-Wdocumentation-unknown-command\"")   \
 		_Pragma("clang diagnostic ignored \"-Wsuggest-destructor-override\"") \
 		_Pragma("clang diagnostic ignored \"-Wsuggest-override\"")            \
 		_Pragma("clang diagnostic ignored \"-Wunused-parameter\"")

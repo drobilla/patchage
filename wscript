@@ -61,7 +61,6 @@ def configure(conf):
             'clang': [
                 '-Wno-alloca',
                 '-Wno-cast-qual',
-                '-Wno-documentation-unknown-command',
                 '-Wno-double-promotion',
                 '-Wno-float-conversion',
                 '-Wno-float-equal',
@@ -89,19 +88,16 @@ def configure(conf):
             ],
             'gcc': [
                 '-Wno-bad-function-cast',
-                '-Wno-c++-compat',
             ],
         })
 
         autowaf.add_compiler_flags(conf.env, 'cxx', {
             'clang': [
-                '-Wno-old-style-cast',
                 '-Wno-weak-vtables',
             ],
             'gcc': [
                 '-Wno-conditionally-supported',
                 '-Wno-effc++',
-                '-Wno-old-style-cast',
             ],
         })
 

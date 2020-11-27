@@ -697,16 +697,16 @@ JackDriver::connect_ports(dbus_uint64_t /*connection_id*/,
 	PatchagePort* port1 =
 	    _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((std::string) "Unable to connect unknown port '" +
-		          port1_name + "' of client '" + client1_name + "'");
+		error_msg(std::string{"Unable to connect unknown port '"} + port1_name +
+		          "' of client '" + client1_name + "'");
 		return;
 	}
 
 	PatchagePort* port2 =
 	    _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((std::string) "Unable to connect unknown port '" +
-		          port2_name + "' of client '" + client2_name + "'");
+		error_msg(std::string{"Unable to connect unknown port '"} + port2_name +
+		          "' of client '" + client2_name + "'");
 		return;
 	}
 
@@ -727,7 +727,7 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
 	PatchagePort* port1 =
 	    _app->canvas()->find_port_by_name(client1_name, port1_name);
 	if (!port1) {
-		error_msg((std::string) "Unable to disconnect unknown port '" +
+		error_msg(std::string{"Unable to disconnect unknown port '"} +
 		          port1_name + "' of client '" + client1_name + "'");
 		return;
 	}
@@ -735,7 +735,7 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
 	PatchagePort* port2 =
 	    _app->canvas()->find_port_by_name(client2_name, port2_name);
 	if (!port2) {
-		error_msg((std::string) "Unable to disconnect unknown port '" +
+		error_msg(std::string{"Unable to disconnect unknown port '"} +
 		          port2_name + "' of client '" + client2_name + "'");
 		return;
 	}
@@ -788,7 +788,7 @@ JackDriver::refresh_internal(bool force)
 	reply_signature = dbus_message_get_signature(reply_ptr);
 
 	if (strcmp(reply_signature, "ta(tsa(tsuu))a(tstststst)") != 0) {
-		error_msg((std::string) "GetGraph() reply signature mismatch. " +
+		error_msg(std::string{"GetGraph() reply signature mismatch. "} +
 		          reply_signature);
 		goto unref;
 	}
@@ -1189,11 +1189,11 @@ JackDriver::create_port_view(Patchage*, const PortID&)
 void
 JackDriver::error_msg(const std::string& msg) const
 {
-	_app->error_msg((std::string) "Jack: " + msg);
+	_app->error_msg(std::string{"Jack: "} + msg);
 }
 
 void
 JackDriver::info_msg(const std::string& msg) const
 {
-	_app->info_msg((std::string) "Jack: " + msg);
+	_app->info_msg(std::string{"Jack: "} + msg);
 }
