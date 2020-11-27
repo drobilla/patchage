@@ -45,7 +45,6 @@ Checks: >
   -llvm-header-guard,
   -llvmlibc-*,
   -misc-unused-parameters,
-  -modernize-loop-convert,
   -modernize-use-trailing-return-type,
   -modernize-use-using,
   -performance-faster-string-find,

@@ -167,11 +167,10 @@ Configuration::load()
 	// Try to find a readable configuration file
 	const std::vector<std::string> filenames = get_filenames();
 	std::ifstream                  file;
-	for (size_t i = 0; i < filenames.size(); ++i) {
-		file.open(filenames[i].c_str(), std::ios::in);
+	for (const auto& filename : filenames) {
+		file.open(filename.c_str(), std::ios::in);
 		if (file.good()) {
-			std::cout << "Loading configuration from " << filenames[i]
-			          << std::endl;
+			std::cout << "Loading configuration from " << filename << std::endl;
 			break;
 		}
 	}
