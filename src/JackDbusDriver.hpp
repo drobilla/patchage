@@ -38,6 +38,12 @@ class JackDriver : public Driver
 public:
 	explicit JackDriver(Patchage* app);
 
+	JackDriver(const JackDriver&) = delete;
+	JackDriver& operator=(const JackDriver&) = delete;
+
+	JackDriver(JackDriver&&) = delete;
+	JackDriver& operator=(JackDriver&&) = delete;
+
 	~JackDriver() override;
 
 	void attach(bool launch_daemon) override;
@@ -130,13 +136,12 @@ private:
 
 	static DBusHandlerResult dbus_message_hook(DBusConnection* connection,
 	                                           DBusMessage*    message,
-	                                           void*           me);
+	                                           void*           jack_driver);
 
 	void on_jack_appeared();
 
 	void on_jack_disappeared();
 
-private:
 	Patchage*       _app;
 	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;

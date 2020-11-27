@@ -56,8 +56,9 @@ PATCHAGE_RESTORE_WARNINGS
 
 JackDriver::JackDriver(Patchage* app)
     : _app(app)
+    , _dbus_error()
     , _dbus_connection(nullptr)
-    , _max_dsp_load(0)
+    , _max_dsp_load(0.0f)
     , _server_responding(false)
     , _server_started(false)
     , _graph_version(0)
@@ -145,24 +146,24 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
                               DBusMessage* message,
                               void*        jack_driver)
 {
-	const char*   client2_name;
-	const char*   client_name;
-	const char*   new_owner;
-	const char*   object_name;
-	const char*   old_owner;
-	const char*   port2_name;
-	const char*   port_name;
-	dbus_uint32_t port_flags;
-	dbus_uint32_t port_type;
-	dbus_uint64_t client2_id;
-	dbus_uint64_t client_id;
-	dbus_uint64_t connection_id;
-	dbus_uint64_t new_graph_version;
-	dbus_uint64_t port2_id;
-	dbus_uint64_t port_id;
+	const char*   client2_name      = nullptr;
+	const char*   client_name       = nullptr;
+	const char*   new_owner         = nullptr;
+	const char*   object_name       = nullptr;
+	const char*   old_owner         = nullptr;
+	const char*   port2_name        = nullptr;
+	const char*   port_name         = nullptr;
+	dbus_uint32_t port_flags        = 0u;
+	dbus_uint32_t port_type         = 0u;
+	dbus_uint64_t client2_id        = 0u;
+	dbus_uint64_t client_id         = 0u;
+	dbus_uint64_t connection_id     = 0u;
+	dbus_uint64_t new_graph_version = 0u;
+	dbus_uint64_t port2_id          = 0u;
+	dbus_uint64_t port_id           = 0u;
 
 	assert(jack_driver);
-	JackDriver* me = static_cast<JackDriver*>(jack_driver);
+	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_dbus_connection);
 
 	if (dbus_message_is_signal(
@@ -405,8 +406,8 @@ JackDriver::call(bool          response_expected,
                  int           in_type,
                  ...)
 {
-	DBusMessage* request_ptr;
-	DBusMessage* reply_ptr;
+	DBusMessage* request_ptr = nullptr;
+	DBusMessage* reply_ptr   = nullptr;
 	va_list      ap;
 
 	request_ptr = dbus_message_new_method_call(
@@ -450,8 +451,8 @@ JackDriver::call(bool          response_expected,
 bool
 JackDriver::is_started()
 {
-	DBusMessage* reply_ptr;
-	dbus_bool_t  started;
+	DBusMessage* reply_ptr = nullptr;
+	dbus_bool_t  started   = false;
 
 	if (!call(false,
 	          JACKDBUS_IFACE_CONTROL,
@@ -480,7 +481,7 @@ JackDriver::is_started()
 void
 JackDriver::start_server()
 {
-	DBusMessage* reply_ptr;
+	DBusMessage* reply_ptr = nullptr;
 
 	if (!call(false,
 	          JACKDBUS_IFACE_CONTROL,
@@ -498,7 +499,7 @@ JackDriver::start_server()
 void
 JackDriver::stop_server()
 {
-	DBusMessage* reply_ptr;
+	DBusMessage* reply_ptr = nullptr;
 
 	if (!call(false,
 	          JACKDBUS_IFACE_CONTROL,
@@ -655,7 +656,7 @@ JackDriver::remove_port(dbus_uint64_t /*client_id*/,
 		return;
 	}
 
-	PatchageModule* module = dynamic_cast<PatchageModule*>(port->get_module());
+	auto* module = dynamic_cast<PatchageModule*>(port->get_module());
 
 	delete port;
 
@@ -750,27 +751,27 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
 void
 JackDriver::refresh_internal(bool force)
 {
-	DBusMessage*    reply_ptr;
-	DBusMessageIter iter;
-	dbus_uint64_t   version;
-	const char*     reply_signature;
-	DBusMessageIter clients_array_iter;
-	DBusMessageIter client_struct_iter;
-	DBusMessageIter ports_array_iter;
-	DBusMessageIter port_struct_iter;
-	DBusMessageIter connections_array_iter;
-	DBusMessageIter connection_struct_iter;
-	dbus_uint64_t   client_id;
-	const char*     client_name;
-	dbus_uint64_t   port_id;
-	const char*     port_name;
-	dbus_uint32_t   port_flags;
-	dbus_uint32_t   port_type;
-	dbus_uint64_t   client2_id;
-	const char*     client2_name;
-	dbus_uint64_t   port2_id;
-	const char*     port2_name;
-	dbus_uint64_t   connection_id;
+	DBusMessage*    reply_ptr              = nullptr;
+	DBusMessageIter iter                   = {};
+	dbus_uint64_t   version                = 0u;
+	const char*     reply_signature        = nullptr;
+	DBusMessageIter clients_array_iter     = {};
+	DBusMessageIter client_struct_iter     = {};
+	DBusMessageIter ports_array_iter       = {};
+	DBusMessageIter port_struct_iter       = {};
+	DBusMessageIter connections_array_iter = {};
+	DBusMessageIter connection_struct_iter = {};
+	dbus_uint64_t   client_id              = 0u;
+	const char*     client_name            = nullptr;
+	dbus_uint64_t   port_id                = 0u;
+	const char*     port_name              = nullptr;
+	dbus_uint32_t   port_flags             = 0u;
+	dbus_uint32_t   port_type              = 0u;
+	dbus_uint64_t   client2_id             = 0u;
+	const char*     client2_name           = nullptr;
+	dbus_uint64_t   port2_id               = 0u;
+	const char*     port2_name             = nullptr;
+	dbus_uint64_t   connection_id          = 0u;
 
 	if (force) {
 		version = 0; // workaround module split/join stupidity
@@ -794,7 +795,8 @@ JackDriver::refresh_internal(bool force)
 	if (strcmp(reply_signature, "ta(tsa(tsuu))a(tstststst)") != 0) {
 		error_msg(std::string{"GetGraph() reply signature mismatch. "} +
 		          reply_signature);
-		goto unref;
+		dbus_message_unref(reply_ptr);
+		return;
 	}
 
 	dbus_message_iter_init(reply_ptr, &iter);
@@ -803,7 +805,8 @@ JackDriver::refresh_internal(bool force)
 	dbus_message_iter_next(&iter);
 
 	if (!force && version <= _graph_version) {
-		goto unref;
+		dbus_message_unref(reply_ptr);
+		return;
 	}
 
 	destroy_all();
@@ -897,9 +900,6 @@ JackDriver::refresh_internal(bool force)
 		              port2_id,
 		              port2_name);
 	}
-
-unref:
-	dbus_message_unref(reply_ptr);
 }
 
 void
@@ -911,12 +911,12 @@ JackDriver::refresh()
 bool
 JackDriver::connect(PatchagePort* src, PatchagePort* dst)
 {
-	const char* client1_name = src->get_module()->get_label();
-	const char* port1_name   = src->get_label();
-	const char* client2_name = dst->get_module()->get_label();
-	const char* port2_name   = dst->get_label();
+	const char*  client1_name = src->get_module()->get_label();
+	const char*  port1_name   = src->get_label();
+	const char*  client2_name = dst->get_module()->get_label();
+	const char*  port2_name   = dst->get_label();
+	DBusMessage* reply_ptr    = nullptr;
 
-	DBusMessage* reply_ptr;
 	if (!call(true,
 	          JACKDBUS_IFACE_PATCHBAY,
 	          "ConnectPortsByName",
@@ -940,12 +940,12 @@ JackDriver::connect(PatchagePort* src, PatchagePort* dst)
 bool
 JackDriver::disconnect(PatchagePort* src, PatchagePort* dst)
 {
-	const char* client1_name = src->get_module()->get_label();
-	const char* port1_name   = src->get_label();
-	const char* client2_name = dst->get_module()->get_label();
-	const char* port2_name   = dst->get_label();
+	const char*  client1_name = src->get_module()->get_label();
+	const char*  port1_name   = src->get_label();
+	const char*  client2_name = dst->get_module()->get_label();
+	const char*  port2_name   = dst->get_label();
+	DBusMessage* reply_ptr    = nullptr;
 
-	DBusMessage* reply_ptr;
 	if (!call(true,
 	          JACKDBUS_IFACE_PATCHBAY,
 	          "DisconnectPortsByName",
@@ -969,11 +969,11 @@ JackDriver::disconnect(PatchagePort* src, PatchagePort* dst)
 jack_nframes_t
 JackDriver::buffer_size()
 {
-	DBusMessage*  reply_ptr;
-	dbus_uint32_t buffer_size;
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t buffer_size = 0u;
 
 	if (_server_responding && !_server_started) {
-		goto fail;
+		return 4096;
 	}
 
 	if (!call(true,
@@ -981,7 +981,7 @@ JackDriver::buffer_size()
 	          "GetBufferSize",
 	          &reply_ptr,
 	          DBUS_TYPE_INVALID)) {
-		goto fail;
+		return 4096;
 	}
 
 	if (!dbus_message_get_args(reply_ptr,
@@ -992,22 +992,19 @@ JackDriver::buffer_size()
 		dbus_message_unref(reply_ptr);
 		dbus_error_free(&_dbus_error);
 		error_msg("decoding reply of GetBufferSize failed.");
-		goto fail;
+		return 4096;
 	}
 
 	dbus_message_unref(reply_ptr);
 
 	return buffer_size;
-
-fail:
-	return 4096; // something fake, patchage needs it to match combobox value
 }
 
 bool
 JackDriver::set_buffer_size(jack_nframes_t size)
 {
-	DBusMessage*  reply_ptr;
-	dbus_uint32_t buffer_size;
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t buffer_size = 0u;
 
 	buffer_size = size;
 
@@ -1029,8 +1026,8 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 float
 JackDriver::sample_rate()
 {
-	DBusMessage* reply_ptr;
-	double       sample_rate;
+	DBusMessage* reply_ptr   = nullptr;
+	double       sample_rate = 0.0;
 
 	if (!call(true,
 	          JACKDBUS_IFACE_CONTROL,
@@ -1059,10 +1056,10 @@ JackDriver::sample_rate()
 bool
 JackDriver::is_realtime() const
 {
-	DBusMessage* reply_ptr;
-	dbus_bool_t  realtime;
+	DBusMessage* reply_ptr = nullptr;
+	dbus_bool_t  realtime  = false;
+	auto*        me        = const_cast<JackDriver*>(this);
 
-	JackDriver* me = const_cast<JackDriver*>(this);
 	if (!me->call(true,
 	              JACKDBUS_IFACE_CONTROL,
 	              "IsRealtime",
@@ -1090,8 +1087,8 @@ JackDriver::is_realtime() const
 uint32_t
 JackDriver::get_xruns()
 {
-	DBusMessage*  reply_ptr;
-	dbus_uint32_t xruns;
+	DBusMessage*  reply_ptr = nullptr;
+	dbus_uint32_t xruns     = 0u;
 
 	if (_server_responding && !_server_started) {
 		return 0;
@@ -1124,7 +1121,7 @@ JackDriver::get_xruns()
 void
 JackDriver::reset_xruns()
 {
-	DBusMessage* reply_ptr;
+	DBusMessage* reply_ptr = nullptr;
 
 	if (!call(true,
 	          JACKDBUS_IFACE_CONTROL,
