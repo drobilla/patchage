@@ -42,12 +42,6 @@ struct PortID
 
 	PortID() = default;
 
-	PortID(const PortID& copy)
-	    : type(copy.type)
-	{
-		memcpy(&id, &copy.id, sizeof(id));
-	}
-
 #ifdef PATCHAGE_LIBJACK
 	explicit PortID(jack_port_id_t jack_id, bool = false)
 	    : type(Type::jack_id)
@@ -64,6 +58,22 @@ struct PortID
 		id.is_input  = in;
 	}
 #endif
+
+	PortID(const PortID& copy)
+	    : type(copy.type)
+	{
+		memcpy(&id, &copy.id, sizeof(id));
+	}
+
+	PortID& operator=(const PortID& copy)
+	{
+		if (&copy != this) {
+			type = copy.type;
+			memcpy(&id, &copy.id, sizeof(id));
+		}
+
+		return *this;
+	}
 
 	Type type = Type::nothing;
 

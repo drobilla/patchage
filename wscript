@@ -101,7 +101,6 @@ def configure(conf):
 
         autowaf.add_compiler_flags(conf.env, 'cxx', {
             'clang': [
-                '-Wno-deprecated-copy',
                 '-Wno-old-style-cast',
                 '-Wno-weak-vtables',
             ],
