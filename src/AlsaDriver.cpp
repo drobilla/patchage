@@ -119,21 +119,23 @@ AlsaDriver::refresh()
 	snd_seq_port_info_t* pinfo = nullptr;
 	snd_seq_port_info_alloca(&pinfo);
 
-	PatchageModule* parent = nullptr;
-	PatchagePort*   port   = nullptr;
-
 	// Create port views
-	while (snd_seq_query_next_client(_seq, cinfo) >= 0) {
-		snd_seq_port_info_set_client(pinfo,
-		                             snd_seq_client_info_get_client(cinfo));
-		snd_seq_port_info_set_port(pinfo, -1);
-		while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
-			const snd_seq_addr_t& addr = *snd_seq_port_info_get_addr(pinfo);
-			if (ignore(addr)) {
-				continue;
-			}
+	{
+		PatchageModule* parent = nullptr;
+		PatchagePort*   port   = nullptr;
 
-			create_port_view_internal(addr, parent, port);
+		while (snd_seq_query_next_client(_seq, cinfo) >= 0) {
+			snd_seq_port_info_set_client(pinfo,
+			                             snd_seq_client_info_get_client(cinfo));
+			snd_seq_port_info_set_port(pinfo, -1);
+			while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
+				const snd_seq_addr_t& addr = *snd_seq_port_info_get_addr(pinfo);
+				if (ignore(addr)) {
+					continue;
+				}
+
+				create_port_view_internal(addr, parent, port);
+			}
 		}
 	}
 
@@ -149,9 +151,9 @@ AlsaDriver::refresh()
 				continue;
 			}
 
-			PatchagePort* port =
+			PatchagePort* port1 =
 			    _app->canvas()->find_port(PortID(*addr, false));
-			if (!port) {
+			if (!port1) {
 				continue;
 			}
 
@@ -165,8 +167,8 @@ AlsaDriver::refresh()
 				if (addr2) {
 					const PortID  id2(*addr2, true);
 					PatchagePort* port2 = _app->canvas()->find_port(id2);
-					if (port2 && !_app->canvas()->get_edge(port, port2)) {
-						_app->canvas()->make_connection(port, port2);
+					if (port2 && !_app->canvas()->get_edge(port1, port2)) {
+						_app->canvas()->make_connection(port1, port2);
 					}
 				}
 
@@ -253,8 +255,8 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 	bool              is_duplex      = false;
 	bool              is_application = true;
 
-	int caps = snd_seq_port_info_get_capability(pinfo);
-	int type = snd_seq_port_info_get_type(pinfo);
+	const int caps = snd_seq_port_info_get_capability(pinfo);
+	const int type = snd_seq_port_info_get_type(pinfo);
 
 	// Figure out direction
 	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE)) {
@@ -288,17 +290,23 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 		}
 
 	} else { // split
-		ModuleType type = ((is_input) ? ModuleType::input : ModuleType::output);
-		parent = find_or_create_module(_app, addr.client, client_name, type);
-		if (!parent->get_port(port_name)) {
-			port = create_port(*parent, port_name, is_input, addr);
-			port->show();
+		{
+			const ModuleType module_type =
+			    ((is_input) ? ModuleType::input : ModuleType::output);
+
+			parent = find_or_create_module(
+			    _app, addr.client, client_name, module_type);
+			if (!parent->get_port(port_name)) {
+				port = create_port(*parent, port_name, is_input, addr);
+				port->show();
+			}
 		}
 
 		if (is_duplex) {
-			type = ((!is_input) ? ModuleType::input : ModuleType::output);
-			parent =
-			    find_or_create_module(_app, addr.client, client_name, type);
+			const ModuleType flipped_module_type =
+			    ((!is_input) ? ModuleType::input : ModuleType::output);
+			parent = find_or_create_module(
+			    _app, addr.client, client_name, flipped_module_type);
 			if (!parent->get_port(port_name)) {
 				port = create_port(*parent, port_name, !is_input, addr);
 				port->show();
