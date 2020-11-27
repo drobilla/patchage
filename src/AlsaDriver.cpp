@@ -16,6 +16,7 @@
 
 #include "AlsaDriver.hpp"
 
+#include "ClientID.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
@@ -222,7 +223,8 @@ AlsaDriver::find_or_create_module(Patchage*          patchage,
 {
 	PatchageModule* m = find_module(client_id, type);
 	if (!m) {
-		m = new PatchageModule(patchage, client_name, type);
+		m = new PatchageModule(
+		    patchage, client_name, type, ClientID::alsa(client_id));
 		m->load_location();
 		_app->canvas()->add_module(client_name, m);
 		_modules.insert(std::make_pair(client_id, m));

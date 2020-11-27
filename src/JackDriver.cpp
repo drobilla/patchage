@@ -16,6 +16,7 @@
 
 #include "JackDriver.hpp"
 
+#include "ClientID.hpp"
 #include "ILog.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
@@ -166,7 +167,8 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 
 	PatchageModule* parent = _app->canvas()->find_module(module_name, type);
 	if (!parent) {
-		parent = new PatchageModule(patchage, module_name, type);
+		parent = new PatchageModule(
+		    patchage, module_name, type, ClientID::jack(module_name));
 		parent->load_location();
 		patchage->canvas()->add_module(module_name, parent);
 	}
@@ -326,7 +328,8 @@ JackDriver::refresh()
 		PatchageModule* m = _app->canvas()->find_module(client1_name, type);
 
 		if (!m) {
-			m = new PatchageModule(_app, client1_name, type);
+			m = new PatchageModule(
+			    _app, client1_name, type, ClientID::jack(client1_name));
 			m->load_location();
 			_app->canvas()->add_module(client1_name, m);
 		}

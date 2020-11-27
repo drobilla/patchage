@@ -23,6 +23,7 @@
 PatchageModule::PatchageModule(Patchage*          app,
                                const std::string& name,
                                ModuleType         type,
+                               ClientID           id,
                                double             x,
                                double             y)
     : Module(*app->canvas(), name, x, y)
@@ -30,6 +31,7 @@ PatchageModule::PatchageModule(Patchage*          app,
     , _menu(nullptr)
     , _name(name)
     , _type(type)
+    , _id(std::move(id))
 {
 	signal_event().connect(sigc::mem_fun(this, &PatchageModule::on_event));
 

@@ -684,7 +684,7 @@ JackDriver::find_or_create_module(ModuleType type, const std::string& name)
 	PatchageModule* module = _app->canvas()->find_module(name, type);
 
 	if (!module) {
-		module = new PatchageModule(_app, name, type);
+		module = new PatchageModule(_app, name, type, ClientID::jack(name));
 		module->load_location();
 		_app->canvas()->add_module(name, module);
 	}

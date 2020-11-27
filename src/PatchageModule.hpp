@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_PATCHAGEMODULE_HPP
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
+#include "ClientID.hpp"
 #include "Configuration.hpp"
 #include "warnings.hpp"
 
@@ -38,6 +39,7 @@ public:
 	PatchageModule(Patchage*          app,
 	               const std::string& name,
 	               ModuleType         type,
+	               ClientID           id,
 	               double             x = 0,
 	               double             y = 0);
 
@@ -63,6 +65,7 @@ public:
 	void store_location(double x, double y);
 
 	ModuleType         type() const { return _type; }
+	ClientID           id() const { return _id; }
 	const std::string& name() const { return _name; }
 
 protected:
@@ -72,6 +75,7 @@ protected:
 	Gtk::Menu*  _menu;
 	std::string _name;
 	ModuleType  _type;
+	ClientID    _id;
 };
 
 #endif // PATCHAGE_PATCHAGEMODULE_HPP
