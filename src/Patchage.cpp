@@ -114,11 +114,6 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 	return 0;
 }
 
-struct ProjectList_column_record : public Gtk::TreeModel::ColumnRecord
-{
-	Gtk::TreeModelColumn<Glib::ustring> label;
-};
-
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
 
 Patchage::Patchage(int argc, char** argv)
