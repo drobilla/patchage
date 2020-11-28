@@ -33,8 +33,7 @@ class ILog;
 class Patchage;
 class PatchagePort;
 
-/** Handles all externally driven functionality, registering ports etc.
- */
+/// Driver for ALSA Sequencer ports
 class AlsaDriver : public Driver
 {
 public:

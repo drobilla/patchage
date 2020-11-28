@@ -61,8 +61,6 @@ JackDriver::~JackDriver()
 	detach();
 }
 
-/** Connect to Jack.
- */
 void
 JackDriver::attach(bool launch_daemon)
 {
@@ -126,8 +124,6 @@ is_jack_port(const PatchagePort* port)
 	        port->type() == PortType::jack_cv);
 }
 
-/** Destroy all JACK (canvas) ports.
- */
 void
 JackDriver::destroy_all()
 {
@@ -276,9 +272,6 @@ JackDriver::shutdown()
 	signal_detached.emit();
 }
 
-/** Refresh all Jack audio ports/connections.
- * To be called from GTK thread only.
- */
 void
 JackDriver::refresh()
 {

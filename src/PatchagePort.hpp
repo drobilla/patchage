@@ -35,8 +35,7 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <string>
 
-/** A Port on a PatchageModule
- */
+/// A port on a PatchageModule
 class PatchagePort : public Ganv::Port
 {
 public:

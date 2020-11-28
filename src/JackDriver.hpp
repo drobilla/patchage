@@ -33,11 +33,7 @@ class PatchageEvent;
 class PatchageModule;
 class PatchagePort;
 
-/** Handles all externally driven functionality, registering ports etc.
- *
- * Jack callbacks and connect methods and things like that live here.
- * Right now just for jack ports, but that will change...
- */
+/// Driver for JACK audio and midi ports
 class JackDriver : public Driver
 {
 public:

@@ -26,7 +26,7 @@
 class PatchagePort;
 class PatchageCanvas;
 
-/** Trival driver base class */
+/// Base class for drivers that handle system clients and ports
 class Driver
 {
 public:

@@ -54,7 +54,6 @@ AlsaDriver::~AlsaDriver()
 	detach();
 }
 
-/** Attach to ALSA. */
 void
 AlsaDriver::attach(bool /*launch_daemon*/)
 {
@@ -100,8 +99,6 @@ is_alsa_port(const PatchagePort* port)
 	return port->type() == PortType::alsa_midi;
 }
 
-/** Destroy all JACK (canvas) ports.
- */
 void
 AlsaDriver::destroy_all()
 {
@@ -110,8 +107,6 @@ AlsaDriver::destroy_all()
 	_port_addrs.clear();
 }
 
-/** Refresh all Alsa Midi ports and connections.
- */
 void
 AlsaDriver::refresh()
 {
@@ -402,10 +397,6 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 	return false;
 }
 
-/** Connects two Alsa Midi ports.
- *
- * \return Whether connection succeeded.
- */
 bool
 AlsaDriver::connect(const PortID tail_id, const PortID head_id)
 {
@@ -460,10 +451,6 @@ AlsaDriver::connect(const PortID tail_id, const PortID head_id)
 	return (!result);
 }
 
-/** Disconnects two Alsa Midi ports.
- *
- * \return Whether disconnection succeeded.
- */
 bool
 AlsaDriver::disconnect(const PortID tail_id, const PortID head_id)
 {

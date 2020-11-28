@@ -96,8 +96,6 @@ is_jack_port(const PatchagePort* port)
 	       port->type() == PortType::jack_midi;
 }
 
-/** Destroy all JACK (canvas) ports.
- */
 void
 JackDriver::destroy_all()
 {
@@ -152,7 +150,6 @@ JackDriver::on_jack_disappeared()
 	_server_started = false;
 }
 
-/** Handle signals we have subscribed for in attach(). */
 DBusHandlerResult
 JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
                               DBusMessage* message,
