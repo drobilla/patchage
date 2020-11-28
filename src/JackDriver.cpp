@@ -265,31 +265,6 @@ JackDriver::refresh(const EventSink& sink)
 }
 
 bool
-JackDriver::port_names(const PortID& id,
-                       std::string&  module_name,
-                       std::string&  port_name)
-{
-	jack_port_t* jack_port = nullptr;
-
-	if (id.type() == PortID::Type::jack) {
-		jack_port = jack_port_by_name(_client, id.jack_name().c_str());
-	}
-
-	if (!jack_port) {
-		module_name.clear();
-		port_name.clear();
-		return false;
-	}
-
-	const std::string full_name = jack_port_name(jack_port);
-
-	module_name = full_name.substr(0, full_name.find(':'));
-	port_name   = full_name.substr(full_name.find(':') + 1);
-
-	return true;
-}
-
-bool
 JackDriver::connect(const PortID tail_id, const PortID head_id)
 {
 	if (!_client) {

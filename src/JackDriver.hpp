@@ -48,13 +48,7 @@ public:
 
 	bool is_attached() const override { return (_client != nullptr); }
 
-	bool is_realtime() const { return _client && jack_is_realtime(_client); }
-
 	void refresh(const EventSink& sink) override;
-
-	bool port_names(const PortID& id,
-	                std::string&  module_name,
-	                std::string&  port_name);
 
 	bool connect(PortID tail_id, PortID head_id) override;
 	bool disconnect(PortID tail_id, PortID head_id) override;

@@ -810,37 +810,6 @@ JackDriver::sample_rate()
 	return sample_rate;
 }
 
-bool
-JackDriver::is_realtime() const
-{
-	DBusMessage* reply_ptr = nullptr;
-	dbus_bool_t  realtime  = false;
-	auto*        me        = const_cast<JackDriver*>(this);
-
-	if (!me->call(true,
-	              JACKDBUS_IFACE_CONTROL,
-	              "IsRealtime",
-	              &reply_ptr,
-	              DBUS_TYPE_INVALID)) {
-		return false;
-	}
-
-	if (!dbus_message_get_args(reply_ptr,
-	                           &me->_dbus_error,
-	                           DBUS_TYPE_BOOLEAN,
-	                           &realtime,
-	                           DBUS_TYPE_INVALID)) {
-		dbus_message_unref(reply_ptr);
-		dbus_error_free(&me->_dbus_error);
-		error_msg("Decoding reply of IsRealtime failed");
-		return false;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	return realtime;
-}
-
 uint32_t
 JackDriver::get_xruns()
 {

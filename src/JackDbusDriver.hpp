@@ -46,7 +46,6 @@ public:
 	void detach() override;
 
 	bool is_attached() const override;
-	bool is_realtime() const;
 
 	void refresh(const EventSink& sink) override;
 
