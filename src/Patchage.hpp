@@ -76,17 +76,10 @@ public:
 
 	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
-	Gtk::Window* window() { return _main_win.get(); }
-	ILog&        log() { return _log; }
-	Metadata&    metadata() { return _metadata; }
-
+	Gtk::Window*   window() { return _main_win.get(); }
+	ILog&          log() { return _log; }
+	Metadata&      metadata() { return _metadata; }
 	Configuration* conf() const { return _conf; }
-	JackDriver*    jack_driver() const { return _jack_driver; }
-#ifdef HAVE_ALSA
-	AlsaDriver* alsa_driver() const { return _alsa_driver; }
-#endif
-
-	Glib::RefPtr<Gtk::Builder> xml() { return _xml; }
 
 	void attach();
 	void save();

@@ -22,9 +22,7 @@
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 
-#include <map>
 #include <set>
-#include <string>
 
 class ILog;
 
@@ -51,8 +49,6 @@ public:
 
 	bool connect(PortID tail_id, PortID head_id) override;
 	bool disconnect(PortID tail_id, PortID head_id) override;
-
-	void print_addr(snd_seq_addr_t addr);
 
 private:
 	bool         create_refresh_port();

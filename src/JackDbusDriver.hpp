@@ -21,7 +21,6 @@
 #include "Driver.hpp"
 
 #include <dbus/dbus.h>
-#include <glibmm/thread.h>
 
 #include <cstdint>
 #include <string>
