@@ -1,3 +1,9 @@
+patchage (1.0.3) unstable;
+
+  * Fix connections with Jack DBus
+
+ -- David Robillard <d@drobilla.net>  Sat, 28 Nov 2020 08:53:57 +0000
+
 patchage (1.0.2) stable;
 
   * Add support for exporting canvas as PDF

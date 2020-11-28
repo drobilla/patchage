@@ -719,7 +719,7 @@ JackDriver::connect_ports(dbus_uint64_t /*connection_id*/,
 		return;
 	}
 
-	_app->canvas()->connect(port1, port2);
+	_app->canvas()->make_connection(port1, port2);
 }
 
 void
@@ -749,7 +749,7 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
 		return;
 	}
 
-	_app->canvas()->disconnect(port1, port2);
+	_app->canvas()->remove_edge_between(port1, port2);
 }
 
 void
