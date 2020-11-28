@@ -61,14 +61,14 @@ private:
 		assert(_type == Type::jack);
 	}
 
-	ClientID(const Type type, uint8_t alsa_id)
+	ClientID(const Type type, const uint8_t alsa_id)
 	    : _type{type}
 	    , _alsa_id{alsa_id}
 	{
 		assert(_type == Type::alsa);
 	}
 
-	Type        _type;        ///< Type that determines which field is active
+	Type        _type;        ///< Determines which field is active
 	std::string _jack_name{}; ///< Client name for Type::jack
 	uint8_t     _alsa_id{};   ///< Client ID for Type::alsa
 };

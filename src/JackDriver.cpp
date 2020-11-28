@@ -138,12 +138,13 @@ JackDriver::destroy_all()
 PatchagePort*
 JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
-	assert(id.type == PortID::Type::jack_id);
+	assert(id.type() == PortID::Type::jack);
 
-	jack_port_t* jack_port = jack_port_by_id(_client, id.id.jack_id);
+	jack_port_t* const jack_port =
+	    jack_port_by_name(_client, id.jack_name().c_str());
 	if (!jack_port) {
-		_log.error(fmt::format("[JACK] Failed to find port with ID \"{}\"",
-		                       id.id.jack_id));
+		_log.error(fmt::format("[JACK] Failed to find port with name \"{}\"",
+		                       id.jack_name()));
 		return nullptr;
 	}
 
@@ -261,7 +262,7 @@ JackDriver::create_port(PatchageModule& parent,
 	                             _app->show_human_names(),
 	                             order);
 
-	if (id.type != PortID::Type::nothing) {
+	if (id.type() != PortID::Type::nothing) {
 		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
 	}
 
@@ -280,8 +281,7 @@ JackDriver::shutdown()
 void
 JackDriver::refresh()
 {
-	const char** ports = nullptr;
-	jack_port_t* port  = nullptr;
+	jack_port_t* port = nullptr;
 
 	// Jack can take _client away from us at any time throughout here :/
 	// Shortest locks possible is the best solution I can figure out
@@ -293,8 +293,8 @@ JackDriver::refresh()
 		return;
 	}
 
-	ports =
-	    jack_get_ports(_client, nullptr, nullptr, 0); // get all existing ports
+	// Get all existing ports
+	const char** ports = jack_get_ports(_client, nullptr, nullptr, 0);
 
 	if (!ports) {
 		return;
@@ -333,7 +333,7 @@ JackDriver::refresh()
 		}
 
 		if (!m->get_port(jack_port_short_name(port))) {
-			create_port(*m, port, PortID());
+			create_port(*m, port, PortID::jack(ports[i]));
 		}
 	}
 
@@ -407,8 +407,8 @@ JackDriver::port_names(const PortID& id,
 {
 	jack_port_t* jack_port = nullptr;
 
-	if (id.type == PortID::Type::jack_id) {
-		jack_port = jack_port_by_id(_client, id.id.jack_id);
+	if (id.type() == PortID::Type::jack) {
+		jack_port = jack_port_by_name(_client, id.jack_name().c_str());
 	}
 
 	if (!jack_port) {
@@ -522,12 +522,15 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
+	jack_port_t* const port = jack_port_by_id(me->_client, port_id);
+	const char* const  name = jack_port_name(port);
+
 	if (registered) {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::port_creation, port_id));
+		me->_events.push(PatchageEvent(PatchageEvent::Type::port_creation,
+		                               PortID::jack(name)));
 	} else {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::port_destruction, port_id));
+		me->_events.push(PatchageEvent(PatchageEvent::Type::port_destruction,
+		                               PortID::jack(name)));
 	}
 }
 
@@ -540,12 +543,19 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 	auto* me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
+	jack_port_t* const src_port = jack_port_by_id(me->_client, src);
+	jack_port_t* const dst_port = jack_port_by_id(me->_client, dst);
+	const char* const  src_name = jack_port_name(src_port);
+	const char* const  dst_name = jack_port_name(dst_port);
+
 	if (connect) {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::connection, src, dst));
+		me->_events.push(PatchageEvent(PatchageEvent::Type::connection,
+		                               PortID::jack(src_name),
+		                               PortID::jack(dst_name)));
 	} else {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::disconnection, src, dst));
+		me->_events.push(PatchageEvent(PatchageEvent::Type::disconnection,
+		                               PortID::jack(src_name),
+		                               PortID::jack(dst_name)));
 	}
 }
 

@@ -85,44 +85,13 @@ PatchageCanvas::remove_module(const std::string& name)
 PatchagePort*
 PatchageCanvas::find_port(const PortID& id)
 {
-	PatchagePort* pp = nullptr;
-
 	auto i = _port_index.find(id);
 	if (i != _port_index.end()) {
 		assert(i->second->get_module());
 		return i->second;
 	}
 
-#ifdef PATCHAGE_LIBJACK
-	// Alsa ports are always indexed (or don't exist at all)
-	if (id.type == PortID::Type::jack_id) {
-		jack_port_t* jack_port =
-		    jack_port_by_id(_app->jack_driver()->client(), id.id.jack_id);
-		if (!jack_port) {
-			return nullptr;
-		}
-
-		std::string module_name;
-		std::string port_name;
-		_app->jack_driver()->port_names(id, module_name, port_name);
-
-		PatchageModule* module =
-		    find_module(module_name,
-		                (jack_port_flags(jack_port) & JackPortIsInput)
-		                    ? ModuleType::input
-		                    : ModuleType::output);
-
-		if (module) {
-			pp = module->get_port(port_name);
-		}
-
-		if (pp) {
-			index_port(id, pp);
-		}
-	}
-#endif // PATCHAGE_LIBJACK
-
-	return pp;
+	return nullptr;
 }
 
 void

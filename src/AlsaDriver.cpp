@@ -31,6 +31,16 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
+namespace {
+
+inline PortID
+addr_to_id(const snd_seq_addr_t& addr, bool is_input)
+{
+	return PortID::alsa(addr.client, addr.port, is_input);
+}
+
+} // namespace
+
 AlsaDriver::AlsaDriver(Patchage* app, ILog& log)
     : _app(app)
     , _log(log)
@@ -153,8 +163,8 @@ AlsaDriver::refresh()
 				continue;
 			}
 
-			PatchagePort* port1 =
-			    _app->canvas()->find_port(PortID(*addr, false));
+			PatchagePort* const port1 = _app->canvas()->find_port(
+			    PortID::alsa(addr->client, addr->port, false));
 			if (!port1) {
 				continue;
 			}
@@ -167,7 +177,8 @@ AlsaDriver::refresh()
 				const snd_seq_addr_t* addr2 =
 				    snd_seq_query_subscribe_get_addr(subsinfo);
 				if (addr2) {
-					const PortID  id2(*addr2, true);
+					const PortID id2 =
+					    PortID::alsa(addr2->client, addr2->port, true);
 					PatchagePort* port2 = _app->canvas()->find_port(id2);
 					if (port2 && !_app->canvas()->get_edge(port1, port2)) {
 						_app->canvas()->make_connection(port1, port2);
@@ -186,7 +197,8 @@ AlsaDriver::create_port_view(Patchage*, const PortID& id)
 {
 	PatchageModule* parent = nullptr;
 	PatchagePort*   port   = nullptr;
-	create_port_view_internal(id.id.alsa_addr, parent, port);
+	create_port_view_internal({id.alsa_client(), id.alsa_port()}, parent, port);
+
 	return port;
 }
 
@@ -324,7 +336,7 @@ AlsaDriver::create_port(PatchageModule&    parent,
                         bool               is_input,
                         snd_seq_addr_t     addr)
 {
-	const PortID id{addr, is_input};
+	const PortID id = PortID::alsa(addr.client, addr.port, is_input);
 
 	auto* ret =
 	    new PatchagePort(parent,
@@ -401,14 +413,18 @@ AlsaDriver::connect(const PortID       tail_id,
                     const std::string& head_client_name,
                     const std::string& head_port_name)
 {
-	if (tail_id.type != PortID::Type::alsa_addr ||
-	    head_id.type != PortID::Type::alsa_addr) {
+	if (tail_id.type() != PortID::Type::alsa ||
+	    head_id.type() != PortID::Type::alsa) {
 		_log.error("[ALSA] Attempt to connect non-ALSA ports");
 		return false;
 	}
 
-	const auto& tail_addr = tail_id.id.alsa_addr;
-	const auto& head_addr = head_id.id.alsa_addr;
+	const snd_seq_addr_t tail_addr = {tail_id.alsa_client(),
+	                                  tail_id.alsa_port()};
+
+	const snd_seq_addr_t head_addr = {head_id.alsa_client(),
+	                                  head_id.alsa_port()};
+
 	if (tail_addr.client == head_addr.client &&
 	    tail_addr.port == head_addr.port) {
 		_log.warning("[ALSA] Refusing to connect port to itself");
@@ -467,14 +483,17 @@ AlsaDriver::disconnect(const PortID       tail_id,
                        const std::string& head_client_name,
                        const std::string& head_port_name)
 {
-	if (tail_id.type != PortID::Type::alsa_addr ||
-	    head_id.type != PortID::Type::alsa_addr) {
+	if (tail_id.type() != PortID::Type::alsa ||
+	    head_id.type() != PortID::Type::alsa) {
 		_log.error("[ALSA] Attempt to disconnect non-ALSA ports");
 		return false;
 	}
 
-	const auto& tail_addr = tail_id.id.alsa_addr;
-	const auto& head_addr = head_id.id.alsa_addr;
+	const snd_seq_addr_t tail_addr = {tail_id.alsa_client(),
+	                                  tail_id.alsa_port()};
+
+	const snd_seq_addr_t head_addr = {head_id.alsa_client(),
+	                                  head_id.alsa_port()};
 
 	snd_seq_port_subscribe_t* subs = nullptr;
 	snd_seq_port_subscribe_malloc(&subs);
@@ -581,17 +600,19 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(PatchageEvent(PatchageEvent::Type::connection,
-				                           ev->data.connect.sender,
-				                           ev->data.connect.dest));
+				_events.push(
+				    PatchageEvent(PatchageEvent::Type::connection,
+				                  addr_to_id(ev->data.connect.sender, false),
+				                  addr_to_id(ev->data.connect.dest, true)));
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(PatchageEvent(PatchageEvent::Type::disconnection,
-				                           ev->data.connect.sender,
-				                           ev->data.connect.dest));
+				_events.push(
+				    PatchageEvent(PatchageEvent::Type::disconnection,
+				                  addr_to_id(ev->data.connect.sender, false),
+				                  addr_to_id(ev->data.connect.dest, true)));
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_START:
@@ -603,7 +624,7 @@ AlsaDriver::_refresh_main()
 			if (!ignore(ev->data.addr)) {
 				_events.push(PatchageEvent(
 				    PatchageEvent::Type::port_creation,
-				    PortID(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_EXIT:
@@ -612,15 +633,15 @@ AlsaDriver::_refresh_main()
 				// Delete both inputs and outputs (to handle duplex ports)
 				_events.push(
 				    PatchageEvent(PatchageEvent::Type::port_destruction,
-				                  PortID(ev->data.addr, true)));
+				                  addr_to_id(ev->data.addr, true)));
 				_events.push(
 				    PatchageEvent(PatchageEvent::Type::port_destruction,
-				                  PortID(ev->data.addr, false)));
+				                  addr_to_id(ev->data.addr, false)));
 
+				_port_addrs.erase(_app->canvas()->find_port(
+				    addr_to_id(ev->data.addr, false)));
 				_port_addrs.erase(
-				    _app->canvas()->find_port(PortID(ev->data.addr, false)));
-				_port_addrs.erase(
-				    _app->canvas()->find_port(PortID(ev->data.addr, true)));
+				    _app->canvas()->find_port(addr_to_id(ev->data.addr, true)));
 			}
 			break;
 		case SND_SEQ_EVENT_CLIENT_CHANGE:

@@ -54,7 +54,7 @@ public:
 	           is_input,
 	           color)
 	    , _type(type)
-	    , _id(id)
+	    , _id(std::move(id))
 	    , _name(name)
 	    , _human_name(human_name)
 	    , _order(order)

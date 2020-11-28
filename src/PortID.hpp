@@ -17,47 +17,20 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
-#include "patchage_config.h"
-
-#include "PatchagePort.hpp"
-
-#ifdef PATCHAGE_LIBJACK
-#	include <jack/jack.h>
-#endif
-#ifdef HAVE_ALSA
-#	include <alsa/asoundlib.h>
-#endif
-
-#include <cstring>
+#include <cassert>
 #include <iostream>
+#include <string>
+#include <tuple>
 
+/// An ID for some port on a client (program)
 struct PortID
 {
 	enum class Type
 	{
 		nothing,
-		jack_id,
-		alsa_addr,
+		jack,
+		alsa,
 	};
-
-	PortID() = default;
-
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	explicit PortID(uint32_t jack_id, bool = false)
-	    : type(Type::jack_id)
-	{
-		id.jack_id = jack_id;
-	}
-#endif
-
-#ifdef HAVE_ALSA
-	PortID(snd_seq_addr_t addr, bool in)
-	    : type(Type::alsa_addr)
-	{
-		id.alsa_addr = addr;
-		id.is_input  = in;
-	}
-#endif
 
 	PortID(const PortID& copy) = default;
 	PortID& operator=(const PortID& copy) = default;
@@ -67,76 +40,94 @@ struct PortID
 
 	~PortID() = default;
 
-	Type type = Type::nothing;
+	/// Return a null ID that refers to nothing
+	static PortID nothing() { return PortID{}; }
 
-	union
+	/// Return an ID for a JACK port by full name (like "client:port")
+	static PortID jack(std::string name)
 	{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		uint32_t jack_id;
-#endif
-#ifdef HAVE_ALSA
-		struct
-		{
-			snd_seq_addr_t alsa_addr;
-			bool           is_input : 1;
-		};
-#endif
-	} id = {};
+		return PortID{Type::jack, std::move(name)};
+	}
+
+	/// Return an ID for an ALSA Sequencer port by ID
+	static PortID
+	alsa(const uint8_t client_id, const uint8_t port, const bool is_input)
+	{
+		return PortID{Type::alsa, client_id, port, is_input};
+	}
+
+	Type               type() const { return _type; }
+	const std::string& jack_name() const { return _jack_name; }
+	uint8_t            alsa_client() const { return _alsa_client; }
+	uint8_t            alsa_port() const { return _alsa_port; }
+	bool               alsa_is_input() const { return _alsa_is_input; }
+
+private:
+	PortID() = default;
+
+	PortID(const Type type, std::string jack_name)
+	    : _type{type}
+	    , _jack_name{std::move(jack_name)}
+	{
+		assert(_type == Type::jack);
+	}
+
+	PortID(const Type    type,
+	       const uint8_t alsa_client,
+	       const uint8_t alsa_port,
+	       const bool    is_input)
+	    : _type{type}
+	    , _alsa_client{alsa_client}
+	    , _alsa_port{alsa_port}
+	    , _alsa_is_input{is_input}
+	{
+		assert(_type == Type::alsa);
+	}
+
+	Type        _type{Type::nothing}; ///< Determines which field is active
+	std::string _jack_name{};         ///< Full port name for Type::jack
+	uint8_t     _alsa_client{};       ///< Client ID for Type::alsa
+	uint8_t     _alsa_port{};         ///< Port ID for Type::alsa
+	bool        _alsa_is_input{};     ///< Input flag for Type::alsa
 };
 
 static inline std::ostream&
 operator<<(std::ostream& os, const PortID& id)
 {
-	switch (id.type) {
+	switch (id.type()) {
 	case PortID::Type::nothing:
 		return os << "(null)";
-	case PortID::Type::jack_id:
-#ifdef PATCHAGE_LIBJACK
-		return os << "jack:" << id.id.jack_id;
-#endif
-		break;
-	case PortID::Type::alsa_addr:
-#ifdef HAVE_ALSA
-		return os << "alsa:" << int(id.id.alsa_addr.client) << ":"
-		          << int(id.id.alsa_addr.port) << ":"
-		          << (id.id.is_input ? "in" : "out");
-#endif
-		break;
+	case PortID::Type::jack:
+		return os << "jack:" << id.jack_name();
+	case PortID::Type::alsa:
+		return os << "alsa:" << int(id.alsa_client()) << ":"
+		          << int(id.alsa_port()) << ":"
+		          << (id.alsa_is_input() ? "in" : "out");
 	}
+
 	assert(false);
 	return os;
 }
 
 static inline bool
-operator<(const PortID& a, const PortID& b)
+operator<(const PortID& lhs, const PortID& rhs)
 {
-	if (a.type != b.type) {
-		return a.type < b.type;
+	if (lhs.type() != rhs.type()) {
+		return lhs.type() < rhs.type();
 	}
 
-	switch (a.type) {
+	switch (lhs.type()) {
 	case PortID::Type::nothing:
 		return true;
-	case PortID::Type::jack_id:
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		return a.id.jack_id < b.id.jack_id;
-#endif
-		break;
-	case PortID::Type::alsa_addr:
-#ifdef HAVE_ALSA
-		if ((a.id.alsa_addr.client < b.id.alsa_addr.client) ||
-		    ((a.id.alsa_addr.client == b.id.alsa_addr.client) &&
-		     a.id.alsa_addr.port < b.id.alsa_addr.port)) {
-			return true;
-		} else if (a.id.alsa_addr.client == b.id.alsa_addr.client &&
-		           a.id.alsa_addr.port == b.id.alsa_addr.port) {
-			return (a.id.is_input < b.id.is_input);
-		} else {
-			return false;
-		}
-#endif
-		break;
+	case PortID::Type::jack:
+		return lhs.jack_name() < rhs.jack_name();
+	case PortID::Type::alsa:
+		return std::make_tuple(
+		           lhs.alsa_client(), lhs.alsa_port(), lhs.alsa_is_input()) <
+		       std::make_tuple(
+		           rhs.alsa_client(), rhs.alsa_port(), rhs.alsa_is_input());
 	}
+
 	assert(false);
 	return false;
 }

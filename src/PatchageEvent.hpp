@@ -22,19 +22,11 @@
 #include "PatchagePort.hpp"
 #include "PortID.hpp"
 
-#ifdef PATCHAGE_LIBJACK
-#	include <jack/jack.h>
-#endif
-#ifdef HAVE_ALSA
-#	include <alsa/asoundlib.h>
-#endif
-
 #include <cstring>
 
 class Patchage;
 
-/** A Driver event to be processed by the GUI thread.
- */
+/// An event from drivers that is processed by the GUI
 class PatchageEvent
 {
 public:
@@ -50,25 +42,22 @@ public:
 		disconnection,
 	};
 
-	explicit PatchageEvent(Type type = Type::noop)
-	    : _type(type)
-	{}
-
 	PatchageEvent(Type type, const char* str)
 	    : _str(g_strdup(str))
+	    , _port_1(PortID::nothing())
+	    , _port_2(PortID::nothing())
 	    , _type(type)
 	{}
 
-	template<typename P>
-	PatchageEvent(Type type, P port)
-	    : _port_1(port)
+	PatchageEvent(Type type, PortID port)
+	    : _port_1(std::move(port))
+	    , _port_2(PortID::nothing())
 	    , _type(type)
 	{}
 
-	template<typename P>
-	PatchageEvent(Type type, P port_1, P port_2)
-	    : _port_1(port_1, false)
-	    , _port_2(port_2, true)
+	PatchageEvent(Type type, PortID tail, PortID head)
+	    : _port_1(std::move(tail))
+	    , _port_2(std::move(head))
 	    , _type(type)
 	{}
 

@@ -54,6 +54,16 @@ PATCHAGE_RESTORE_WARNINGS
 
 //#define USE_FULL_REFRESH
 
+namespace {
+
+std::string
+full_name(const std::string& client_name, const std::string& port_name)
+{
+	return client_name + ":" + port_name;
+}
+
+} // namespace
+
 JackDriver::JackDriver(Patchage* app, ILog& log)
     : _app(app)
     , _log(log)
@@ -600,7 +610,7 @@ JackDriver::add_port(PatchageModule*    module,
 
 	new PatchagePort(*module,
 	                 type,
-	                 id,
+	                 std::move(id),
 	                 name,
 	                 "", // TODO: pretty name
 	                 is_input,
@@ -611,7 +621,7 @@ JackDriver::add_port(PatchageModule*    module,
 void
 JackDriver::add_port(dbus_uint64_t /*client_id*/,
                      const char*   client_name,
-                     dbus_uint64_t port_id,
+                     dbus_uint64_t /*port_id*/,
                      const char*   port_name,
                      dbus_uint32_t port_flags,
                      dbus_uint32_t port_type)
@@ -644,7 +654,7 @@ JackDriver::add_port(dbus_uint64_t /*client_id*/,
 
 	add_port(module,
 	         local_port_type,
-	         PortID{static_cast<jack_port_id_t>(port_id), false},
+	         PortID::jack(full_name(client_name, port_name)),
 	         port_name,
 	         port_flags & JACKDBUS_PORT_FLAG_INPUT);
 }
