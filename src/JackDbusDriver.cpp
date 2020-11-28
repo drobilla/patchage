@@ -435,7 +435,7 @@ JackDriver::call(bool          response_expected,
 	if (!reply_ptr) {
 		if (response_expected) {
 			error_msg(
-			    fmt::format("no reply from server when calling method {} ({})",
+			    fmt::format("No reply from server when calling method {} ({})",
 			                method,
 			                _dbus_error.message));
 		}
@@ -524,8 +524,8 @@ JackDriver::attach(bool launch_daemon)
 	// Connect to the bus
 	_dbus_connection = dbus_bus_get(DBUS_BUS_SESSION, &_dbus_error);
 	if (dbus_error_is_set(&_dbus_error)) {
-		error_msg("dbus_bus_get() failed");
-		error_msg(_dbus_error.message);
+		error_msg(
+		    fmt::format("dbus_bus_get() failed ({})", _dbus_error.message));
 		dbus_error_free(&_dbus_error);
 		return;
 	}
