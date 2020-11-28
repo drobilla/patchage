@@ -40,24 +40,20 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cassert>
 #include <cstring>
 #include <set>
-#include <sstream>
 #include <string>
 #include <unordered_set>
 #include <utility>
 
 JackDriver::JackDriver(ILog& log, EventSink emit_event)
     : Driver{std::move(emit_event)}
-    , _log(log)
-    , _client(nullptr)
+    , _log{log}
+    , _client{nullptr}
     , _last_pos{}
-    , _buffer_size(0)
-    , _xruns(0)
-    , _xrun_delay(0)
-    , _is_activated(false)
-{
-	_last_pos.frame = 0;
-	_last_pos.valid = {};
-}
+    , _buffer_size{0}
+    , _xruns{0}
+    , _xrun_delay{0}
+    , _is_activated{false}
+{}
 
 JackDriver::~JackDriver()
 {
@@ -65,42 +61,41 @@ JackDriver::~JackDriver()
 }
 
 void
-JackDriver::attach(bool launch_daemon)
+JackDriver::attach(const bool launch_daemon)
 {
-	// Already connected
 	if (_client) {
+		return; // Already connected
+	}
+
+	const jack_options_t options =
+	    (!launch_daemon) ? JackNoStartServer : JackNullOption;
+
+	if (!(_client = jack_client_open("Patchage", options, nullptr))) {
+		_log.error("[JACK] Unable to create client");
+		_is_activated = false;
 		return;
 	}
 
-	jack_options_t options =
-	    (!launch_daemon) ? JackNoStartServer : JackNullOption;
-	_client = jack_client_open("Patchage", options, nullptr);
-	if (_client == nullptr) {
-		_log.error("[JACK] Unable to create client");
+	jack_on_shutdown(_client, jack_shutdown_cb, this);
+	jack_set_client_registration_callback(
+	    _client, jack_client_registration_cb, this);
+	jack_set_port_registration_callback(
+	    _client, jack_port_registration_cb, this);
+	jack_set_port_connect_callback(_client, jack_port_connect_cb, this);
+	jack_set_xrun_callback(_client, jack_xrun_cb, this);
+
+	if (jack_activate(_client)) {
+		_log.error("[JACK] Client activation failed");
 		_is_activated = false;
-	} else {
-		jack_client_t* const client = _client;
-
-		jack_on_shutdown(client, jack_shutdown_cb, this);
-		jack_set_client_registration_callback(
-		    client, jack_client_registration_cb, this);
-		jack_set_port_registration_callback(
-		    client, jack_port_registration_cb, this);
-		jack_set_port_connect_callback(client, jack_port_connect_cb, this);
-		jack_set_xrun_callback(client, jack_xrun_cb, this);
-
-		_buffer_size = jack_get_buffer_size(client);
-
-		if (!jack_activate(client)) {
-			_is_activated = true;
-			signal_attached.emit();
-			std::stringstream ss;
-			_log.info("[JACK] Attached");
-		} else {
-			_log.error("[JACK] Client activation failed");
-			_is_activated = false;
-		}
+		_buffer_size  = 0;
+		return;
 	}
+
+	_is_activated = true;
+	_buffer_size  = jack_get_buffer_size(_client);
+
+	signal_attached.emit();
+	_log.info("[JACK] Attached");
 }
 
 void
@@ -113,6 +108,7 @@ JackDriver::detach()
 		jack_client_close(_client);
 		_client = nullptr;
 	}
+
 	_is_activated = false;
 	signal_detached.emit();
 	_log.info("[JACK] Detached");
@@ -277,15 +273,15 @@ JackDriver::connect(const PortID& tail_id, const PortID& head_id)
 	const int result =
 	    jack_connect(_client, tail_name.c_str(), head_name.c_str());
 
-	if (result == 0) {
-		_log.info(
-		    fmt::format("[JACK] Connected {} => {}", tail_name, head_name));
-	} else {
+	if (result) {
 		_log.error(fmt::format(
 		    "[JACK] Failed to connect {} => {}", tail_name, head_name));
+
+		return false;
 	}
 
-	return !result;
+	_log.info(fmt::format("[JACK] Connected {} => {}", tail_name, head_name));
+	return true;
 }
 
 bool
@@ -301,24 +297,23 @@ JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 	const int result =
 	    jack_disconnect(_client, tail_name.c_str(), head_name.c_str());
 
-	if (result == 0) {
-		_log.info(
-		    fmt::format("[JACK] Disconnected {} => {}", tail_name, head_name));
-	} else {
+	if (result) {
 		_log.error(fmt::format(
 		    "[JACK] Failed to disconnect {} => {}", tail_name, head_name));
+		return false;
 	}
 
-	return !result;
+	_log.info(
+	    fmt::format("[JACK] Disconnected {} => {}", tail_name, head_name));
+	return true;
 }
 
 void
-JackDriver::jack_client_registration_cb(const char* name,
-                                        int         registered,
-                                        void*       jack_driver)
+JackDriver::jack_client_registration_cb(const char* const name,
+                                        const int         registered,
+                                        void* const       jack_driver)
 {
 	auto* const me = static_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
 
 	if (registered) {
 		me->_emit_event(ClientCreationEvent{ClientID::jack(name), {name}});
@@ -328,12 +323,11 @@ JackDriver::jack_client_registration_cb(const char* name,
 }
 
 void
-JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
-                                      int            registered,
-                                      void*          jack_driver)
+JackDriver::jack_port_registration_cb(const jack_port_id_t port_id,
+                                      const int            registered,
+                                      void* const          jack_driver)
 {
-	auto* me = static_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
+	auto* const me = static_cast<JackDriver*>(jack_driver);
 
 	jack_port_t* const port = jack_port_by_id(me->_client, port_id);
 	const char* const  name = jack_port_name(port);
@@ -347,13 +341,12 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 }
 
 void
-JackDriver::jack_port_connect_cb(jack_port_id_t src,
-                                 jack_port_id_t dst,
-                                 int            connect,
-                                 void*          jack_driver)
+JackDriver::jack_port_connect_cb(const jack_port_id_t src,
+                                 const jack_port_id_t dst,
+                                 const int            connect,
+                                 void* const          jack_driver)
 {
-	auto* me = static_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
+	auto* const me = static_cast<JackDriver*>(jack_driver);
 
 	jack_port_t* const src_port = jack_port_by_id(me->_client, src);
 	jack_port_t* const dst_port = jack_port_by_id(me->_client, dst);
@@ -370,10 +363,9 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 }
 
 int
-JackDriver::jack_xrun_cb(void* jack_driver)
+JackDriver::jack_xrun_cb(void* const jack_driver)
 {
-	auto* me = static_cast<JackDriver*>(jack_driver);
-	assert(me->_client);
+	auto* const me = static_cast<JackDriver*>(jack_driver);
 
 	++me->_xruns;
 	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
@@ -384,27 +376,23 @@ JackDriver::jack_xrun_cb(void* jack_driver)
 }
 
 void
-JackDriver::jack_shutdown_cb(void* jack_driver)
+JackDriver::jack_shutdown_cb(void* const jack_driver)
 {
-	assert(jack_driver);
-	auto* me = static_cast<JackDriver*>(jack_driver);
-	me->_log.info("[JACK] Shutdown");
+	auto* const me = static_cast<JackDriver*>(jack_driver);
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
 	me->_client       = nullptr;
 	me->_is_activated = false;
 	me->signal_detached.emit();
+
+	me->_log.info("[JACK] Shutdown");
 }
 
 jack_nframes_t
 JackDriver::buffer_size()
 {
-	if (_is_activated) {
-		return _buffer_size;
-	}
-
-	return jack_get_buffer_size(_client);
+	return _is_activated ? _buffer_size : jack_get_buffer_size(_client);
 }
 
 void
@@ -417,21 +405,21 @@ JackDriver::reset_xruns()
 float
 JackDriver::get_max_dsp_load()
 {
-	float max_load = 0.0f;
-	if (_client) {
-		const float max_delay = jack_get_max_delayed_usecs(_client);
-		const float rate      = sample_rate();
-		const float size      = buffer_size();
-		const float period    = size / rate * 1000000; // usec
-
-		if (max_delay > period) {
-			max_load = 1.0;
-			jack_reset_max_delayed_usecs(_client);
-		} else {
-			max_load = max_delay / period;
-		}
+	if (!_client) {
+		return 0.0f;
 	}
-	return max_load;
+
+	const float max_delay = jack_get_max_delayed_usecs(_client);
+	const float rate      = sample_rate();
+	const float size      = buffer_size();
+	const float period    = size / rate * 1000000; // usec
+
+	if (max_delay > period) {
+		jack_reset_max_delayed_usecs(_client);
+		return 1.0f;
+	}
+
+	return max_delay / period;
 }
 
 void
@@ -445,12 +433,12 @@ JackDriver::reset_max_dsp_load()
 bool
 JackDriver::set_buffer_size(jack_nframes_t size)
 {
-	if (buffer_size() == size) {
+	if (!_client) {
+		_buffer_size = size;
 		return true;
 	}
 
-	if (!_client) {
-		_buffer_size = size;
+	if (buffer_size() == size) {
 		return true;
 	}
 
