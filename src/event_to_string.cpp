@@ -36,7 +36,8 @@ struct EventPrinter
 
 	std::string operator()(const ClientCreationEvent& event)
 	{
-		return fmt::format("Add client \"{}\"", event.id);
+		return fmt::format(
+		    "Add client \"{}\" (\"{}\")", event.id, event.info.label);
 	}
 
 	std::string operator()(const ClientDestructionEvent& event)
@@ -44,9 +45,48 @@ struct EventPrinter
 		return fmt::format("Remove client \"{}\"", event.id);
 	}
 
+	std::string operator()(const PortType port_type)
+	{
+		switch (port_type) {
+		case PortType::jack_audio:
+			return "JACK audio";
+		case PortType::jack_midi:
+			return "JACK MIDI";
+		case PortType::alsa_midi:
+			return "ALSA MIDI";
+		case PortType::jack_osc:
+			return "JACK OSC";
+		case PortType::jack_cv:
+			return "JACK CV";
+		}
+	}
+
+	std::string operator()(const SignalDirection direction)
+	{
+		switch (direction) {
+		case SignalDirection::input:
+			return "input";
+		case SignalDirection::output:
+			return "output";
+		case SignalDirection::duplex:
+			return "duplex";
+		}
+	}
+
 	std::string operator()(const PortCreationEvent& event)
 	{
-		return fmt::format("Add port \"{}\"", event.id);
+		auto result = fmt::format("Add{} {} {} port \"{}\" (\"{}\")",
+		                          event.info.is_terminal ? " terminal" : "",
+		                          (*this)(event.info.type),
+		                          (*this)(event.info.direction),
+		                          event.id,
+		                          event.info.label);
+
+		if (event.info.order.has_value()) {
+			result += fmt::format(" order: {}", *event.info.order);
+		}
+
+		return result;
 	}
 
 	std::string operator()(const PortDestructionEvent& event)
