@@ -68,13 +68,15 @@ PATCHAGE_RESTORE_WARNINGS
 
 #	include <gtkosxapplication.h>
 
-static gboolean
+namespace {
+
+gboolean
 can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
 {
 	return gtk_widget_is_sensitive(widget);
 }
 
-static void
+void
 terminate_cb(GtkosxApplication* app, gpointer data)
 {
 	Patchage* patchage = (Patchage*)data;
@@ -82,16 +84,20 @@ terminate_cb(GtkosxApplication* app, gpointer data)
 	Gtk::Main::quit();
 }
 
+} // namespace
+
 #endif
 
-static bool
+namespace {
+
+bool
 configure_cb(GtkWindow*, GdkEvent*, gpointer data)
 {
 	static_cast<Patchage*>(data)->store_window_location();
 	return FALSE;
 }
 
-static int
+int
 port_order(const GanvPort* a, const GanvPort* b, void*)
 {
 	const auto* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
@@ -113,6 +119,8 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 	}
 	return 0;
 }
+
+} // namespace
 
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
 
