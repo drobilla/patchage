@@ -91,11 +91,10 @@ private:
 
 	std::mutex _shutdown_mutex;
 
-	jack_position_t _last_pos;
-	jack_nframes_t  _buffer_size;
-	uint32_t        _xruns;
-	float           _xrun_delay;
-	bool            _is_activated : 1;
+	jack_nframes_t _buffer_size;
+	uint32_t       _xruns;
+	float          _xrun_delay;
+	bool           _is_activated : 1;
 };
 
 #endif // PATCHAGE_JACKDRIVER_HPP
