@@ -26,6 +26,7 @@
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 #include "PortNames.hpp"
+#include "PortType.hpp"
 #include "SignalDirection.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS

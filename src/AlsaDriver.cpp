@@ -21,6 +21,7 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "PortType.hpp"
 #include "SignalDirection.hpp"
 #include "handle_event.hpp"
 

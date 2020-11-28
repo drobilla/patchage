@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_CONFIGURATION_HPP
 #define PATCHAGE_CONFIGURATION_HPP
 
+#include "PortType.hpp"
 #include "SignalDirection.hpp"
 
 #include <boost/optional.hpp>
@@ -24,15 +25,6 @@
 #include <cstdint>
 #include <map>
 #include <string>
-
-enum class PortType
-{
-	jack_audio,
-	jack_midi,
-	alsa_midi,
-	jack_osc,
-	jack_cv,
-};
 
 #define N_PORT_TYPES 5
 

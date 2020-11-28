@@ -17,6 +17,7 @@
 #include "Legend.hpp"
 
 #include "Configuration.hpp"
+#include "PortType.hpp"
 
 #include <gtkmm/box.h>
 #include <gtkmm/colorbutton.h>
