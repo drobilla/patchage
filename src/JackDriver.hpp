@@ -31,15 +31,12 @@
 
 class ILog;
 class Patchage;
-class PatchageCanvas;
-class PatchageModule;
-class PatchagePort;
 
 /// Driver for JACK audio and midi ports
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(Patchage* app, ILog& log);
+	explicit JackDriver(ILog& log);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -56,15 +53,11 @@ public:
 
 	bool is_realtime() const { return _client && jack_is_realtime(_client); }
 
-	void refresh() override;
-	void destroy_all() override;
+	void refresh(const EventSink& sink) override;
 
 	bool port_names(const PortID& id,
 	                std::string&  module_name,
 	                std::string&  port_name);
-
-	PatchagePort*
-	create_port_view(Patchage* patchage, const PortID& id) override;
 
 	bool connect(PortID tail_id, PortID head_id) override;
 	bool disconnect(PortID tail_id, PortID head_id) override;
@@ -86,9 +79,6 @@ private:
 	ClientInfo get_client_info(const char* name);
 	PortInfo   get_port_info(const jack_port_t* port);
 
-	PatchagePort*
-	create_port(PatchageModule& parent, jack_port_t* port, const PortID& id);
-
 	void shutdown();
 
 	static void jack_client_registration_cb(const char* name,
@@ -108,7 +98,6 @@ private:
 
 	static void jack_shutdown_cb(void* jack_driver);
 
-	Patchage*      _app;
 	ILog&          _log;
 	jack_client_t* _client;
 

@@ -20,23 +20,21 @@
 
 #include "Driver.hpp"
 #include "Patchage.hpp"
-#include "PatchageModule.hpp"
 
 #include <dbus/dbus.h>
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 #include <jack/statistics.h>
 
+#include <queue>
 #include <string>
 
 class ILog;
-class PatchageCanvas;
-class PatchagePort;
 
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(Patchage* app, ILog& log);
+	explicit JackDriver(ILog& log);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -52,8 +50,7 @@ public:
 	bool is_attached() const override;
 	bool is_realtime() const;
 
-	void refresh() override;
-	void destroy_all() override;
+	void refresh(const EventSink& sink) override;
 
 	bool connect(PortID tail_id, PortID head_id) override;
 	bool disconnect(PortID tail_id, PortID head_id) override;
@@ -67,55 +64,17 @@ public:
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 
-	void process_events(Patchage*) override {}
-
-	PatchagePort*
-	create_port_view(Patchage* patchage, const PortID& ref) override;
+	void process_events(Patchage* app) override;
 
 private:
+	PortType patchage_port_type(dbus_uint32_t dbus_port_type) const;
+
+	PortInfo port_info(const std::string& port_name,
+	                   dbus_uint32_t      port_type,
+	                   dbus_uint32_t      port_flags) const;
+
 	void error_msg(const std::string& msg) const;
 	void info_msg(const std::string& msg) const;
-
-	PatchageModule*
-	find_or_create_module(SignalDirection type, const std::string& name);
-
-	void add_port(PatchageModule*    module,
-	              PortType           type,
-	              const PortID&      id,
-	              const std::string& name,
-	              bool               is_input);
-
-	void add_port(dbus_uint64_t client_id,
-	              const char*   client_name,
-	              dbus_uint64_t port_id,
-	              const char*   port_name,
-	              dbus_uint32_t port_flags,
-	              dbus_uint32_t port_type);
-
-	void remove_port(dbus_uint64_t client_id,
-	                 const char*   client_name,
-	                 dbus_uint64_t port_id,
-	                 const char*   port_name);
-
-	void connect_ports(dbus_uint64_t connection_id,
-	                   dbus_uint64_t client1_id,
-	                   const char*   client1_name,
-	                   dbus_uint64_t port1_id,
-	                   const char*   port1_name,
-	                   dbus_uint64_t client2_id,
-	                   const char*   client2_name,
-	                   dbus_uint64_t port2_id,
-	                   const char*   port2_name);
-
-	void disconnect_ports(dbus_uint64_t connection_id,
-	                      dbus_uint64_t client1_id,
-	                      const char*   client1_name,
-	                      dbus_uint64_t port1_id,
-	                      const char*   port1_name,
-	                      dbus_uint64_t client2_id,
-	                      const char*   client2_name,
-	                      dbus_uint64_t port2_id,
-	                      const char*   port2_name);
 
 	bool call(bool          response_expected,
 	          const char*   iface,
@@ -140,11 +99,12 @@ private:
 
 	void on_jack_disappeared();
 
-	Patchage*       _app;
 	ILog&           _log;
 	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;
 	float           _max_dsp_load;
+
+	std::queue<PatchageEvent> _events;
 
 	bool _server_responding;
 	bool _server_started;

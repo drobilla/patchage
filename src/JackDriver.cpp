@@ -21,8 +21,6 @@
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
-#include "PatchageModule.hpp"
-#include "PatchagePort.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
@@ -45,10 +43,10 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cstring>
 #include <set>
 #include <string>
+#include <unordered_set>
 
-JackDriver::JackDriver(Patchage* app, ILog& log)
-    : _app(app)
-    , _log(log)
+JackDriver::JackDriver(ILog& log)
+    : _log(log)
     , _client(nullptr)
     , _last_pos{}
     , _buffer_size(0)
@@ -117,78 +115,6 @@ JackDriver::detach()
 	_is_activated = false;
 	signal_detached.emit();
 	_log.info("[JACK] Detached");
-}
-
-static bool
-is_jack_port(const PatchagePort* port)
-{
-	return (port->type() == PortType::jack_audio ||
-	        port->type() == PortType::jack_midi ||
-	        port->type() == PortType::jack_osc ||
-	        port->type() == PortType::jack_cv);
-}
-
-void
-JackDriver::destroy_all()
-{
-	if (_app->canvas()) {
-		_app->canvas()->remove_ports(is_jack_port);
-	}
-}
-
-PatchagePort*
-JackDriver::create_port_view(Patchage* patchage, const PortID& id)
-{
-	assert(id.type() == PortID::Type::jack);
-
-	const auto client_id = id.client();
-
-	jack_port_t* const jack_port =
-	    jack_port_by_name(_client, id.jack_name().c_str());
-	if (!jack_port) {
-		_log.error(fmt::format("[JACK] Failed to find port with name \"{}\"",
-		                       id.jack_name()));
-		return nullptr;
-	}
-
-	const int jack_flags = jack_port_flags(jack_port);
-
-	std::string module_name;
-	std::string port_name;
-	port_names(id, module_name, port_name);
-
-	SignalDirection type = SignalDirection::duplex;
-	if (_app->conf()->get_module_split(module_name,
-	                                   (jack_flags & JackPortIsTerminal))) {
-		if (jack_flags & JackPortIsInput) {
-			type = SignalDirection::input;
-		} else {
-			type = SignalDirection::output;
-		}
-	}
-
-	PatchageModule* parent = _app->canvas()->find_module(client_id, type);
-	if (!parent) {
-		parent = new PatchageModule(
-		    patchage, module_name, type, ClientID::jack(module_name));
-		parent->load_location();
-		patchage->canvas()->add_module(client_id, parent);
-	}
-
-	if (parent->get_port(id)) {
-		_log.error(fmt::format("[JACK] Module \"{}\" already has port \"{}\"",
-		                       module_name,
-		                       port_name));
-		return nullptr;
-	}
-
-	PatchagePort* port = create_port(*parent, jack_port, id);
-	port->show();
-	if (port->is_input()) {
-		parent->set_is_source(false);
-	}
-
-	return port;
 }
 
 static std::string
@@ -266,32 +192,6 @@ JackDriver::get_port_info(const jack_port_t* const port)
 	return {label, type, direction, order, bool(flags & JackPortIsTerminal)};
 }
 
-PatchagePort*
-JackDriver::create_port(PatchageModule& parent,
-                        jack_port_t*    port,
-                        const PortID&   id)
-{
-	if (!port) {
-		return nullptr;
-	}
-
-	const auto info = get_port_info(port);
-
-	auto* ret = new PatchagePort(parent,
-	                             info.type,
-	                             id,
-	                             jack_port_short_name(port),
-	                             info.label,
-	                             (jack_port_flags(port) & JackPortIsInput),
-	                             _app->conf()->get_port_color(info.type),
-	                             _app->show_human_names(),
-	                             info.order);
-
-	_app->canvas()->index_port(id, ret);
-
-	return ret;
-}
-
 void
 JackDriver::shutdown()
 {
@@ -299,131 +199,65 @@ JackDriver::shutdown()
 }
 
 void
-JackDriver::refresh()
+JackDriver::refresh(const EventSink& sink)
 {
-	jack_port_t* port = nullptr;
-
-	// Jack can take _client away from us at any time throughout here :/
-	// Shortest locks possible is the best solution I can figure out
-
 	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
-	if (_client == nullptr) {
+	if (!_client) {
 		shutdown();
 		return;
 	}
 
 	// Get all existing ports
-	const char** ports = jack_get_ports(_client, nullptr, nullptr, 0);
-
+	const char** const ports = jack_get_ports(_client, nullptr, nullptr, 0);
 	if (!ports) {
 		return;
 	}
 
-	std::string client1_name;
-	std::string port1_name;
-	std::string client2_name;
-	std::string port2_name;
-	size_t      colon = std::string::npos;
+	// Get all client names (to only send a creation event once for each)
+	std::unordered_set<std::string> client_names;
+	for (auto i = 0u; ports[i]; ++i) {
+		client_names.insert(PortID::jack(ports[i]).client().jack_name());
+	}
 
-	// Add all ports
-	for (int i = 0; ports[i]; ++i) {
-		port = jack_port_by_name(_client, ports[i]);
+	// Emit all clients
+	for (const auto& client_name : client_names) {
+		sink({ClientCreationEvent{ClientID::jack(client_name),
+		                          get_client_info(client_name.c_str())}});
+	}
 
-		client1_name = ports[i];
-		client1_name = client1_name.substr(0, client1_name.find(':'));
+	// Emit all ports
+	for (auto i = 0u; ports[i]; ++i) {
+		const jack_port_t* const port = jack_port_by_name(_client, ports[i]);
 
-		SignalDirection type = SignalDirection::duplex;
-		if (_app->conf()->get_module_split(
-		        client1_name, (jack_port_flags(port) & JackPortIsTerminal))) {
+		sink({PortCreationEvent{PortID::jack(ports[i]), get_port_info(port)}});
+	}
+
+	// Get all connections (again to only create them once)
+	std::set<std::pair<std::string, std::string>> connections;
+	for (auto i = 0u; ports[i]; ++i) {
+		const jack_port_t* const port = jack_port_by_name(_client, ports[i]);
+		const char** const peers = jack_port_get_all_connections(_client, port);
+
+		if (peers) {
 			if (jack_port_flags(port) & JackPortIsInput) {
-				type = SignalDirection::input;
+				for (auto j = 0u; peers[j]; ++j) {
+					connections.emplace(peers[j], ports[i]);
+				}
 			} else {
-				type = SignalDirection::output;
+				for (auto j = 0u; peers[j]; ++j) {
+					connections.emplace(ports[i], peers[j]);
+				}
 			}
-		}
 
-		const auto port1_id   = PortID::jack(ports[i]);
-		const auto client1_id = ClientID::jack(client1_name);
-
-		PatchageModule* m = _app->canvas()->find_module(client1_id, type);
-
-		if (!m) {
-			m = new PatchageModule(_app, client1_name, type, client1_id);
-			m->load_location();
-			_app->canvas()->add_module(client1_id, m);
-		}
-
-		if (!m->get_port(port1_id)) {
-			create_port(*m, port, PortID::jack(ports[i]));
+			jack_free(peers);
 		}
 	}
 
-	// Add all connections
-	for (int i = 0; ports[i]; ++i) {
-		port = jack_port_by_name(_client, ports[i]);
-		const char** connected_ports =
-		    jack_port_get_all_connections(_client, port);
-
-		client1_name = ports[i];
-		colon        = client1_name.find(':');
-		port1_name   = client1_name.substr(colon + 1);
-		client1_name = client1_name.substr(0, colon);
-
-		const SignalDirection port1_type =
-		    (jack_port_flags(port) & JackPortIsInput) ? SignalDirection::input
-		                                              : SignalDirection::output;
-
-		const auto port1_id   = PortID::jack(ports[i]);
-		const auto client1_id = ClientID::jack(client1_name);
-
-		PatchageModule* client1_module =
-		    _app->canvas()->find_module(client1_id, port1_type);
-
-		if (connected_ports) {
-			for (int j = 0; connected_ports[j]; ++j) {
-
-				client2_name = connected_ports[j];
-				colon        = client2_name.find(':');
-				port2_name   = client2_name.substr(colon + 1);
-				client2_name = client2_name.substr(0, colon);
-
-				const auto port2_id   = PortID::jack(connected_ports[j]);
-				const auto client2_id = ClientID::jack(client2_name);
-
-				const SignalDirection port2_type =
-				    (port1_type == SignalDirection::input)
-				        ? SignalDirection::output
-				        : SignalDirection::input;
-
-				PatchageModule* client2_module =
-				    _app->canvas()->find_module(client2_id, port2_type);
-
-				Ganv::Port* port1 = client1_module->get_port(port1_id);
-				Ganv::Port* port2 = client2_module->get_port(port2_id);
-
-				if (!port1 || !port2) {
-					continue;
-				}
-
-				Ganv::Port* src = nullptr;
-				Ganv::Port* dst = nullptr;
-
-				if (port1->is_output() && port2->is_input()) {
-					src = port1;
-					dst = port2;
-				} else {
-					src = port2;
-					dst = port1;
-				}
-
-				if (src && dst && !_app->canvas()->get_edge(src, dst)) {
-					_app->canvas()->make_connection(src, dst);
-				}
-			}
-
-			jack_free(connected_ports);
-		}
+	// Emit all connections
+	for (const auto& connection : connections) {
+		sink({ConnectionEvent{PortID::jack(connection.first),
+		                      PortID::jack(connection.second)}});
 	}
 
 	jack_free(ports);

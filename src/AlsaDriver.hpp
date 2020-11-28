@@ -18,7 +18,6 @@
 #define PATCHAGE_ALSADRIVER_HPP
 
 #include "Driver.hpp"
-#include "PatchageModule.hpp"
 
 #include <alsa/asoundlib.h>
 #include <pthread.h>
@@ -31,13 +30,12 @@
 
 class ILog;
 class Patchage;
-class PatchagePort;
 
 /// Driver for ALSA Sequencer ports
 class AlsaDriver : public Driver
 {
 public:
-	explicit AlsaDriver(Patchage* app, ILog& log);
+	explicit AlsaDriver(ILog& log);
 
 	AlsaDriver(const AlsaDriver&) = delete;
 	AlsaDriver& operator=(const AlsaDriver&) = delete;
@@ -52,11 +50,7 @@ public:
 
 	bool is_attached() const override { return (_seq != nullptr); }
 
-	void refresh() override;
-	void destroy_all() override;
-
-	PatchagePort*
-	create_port_view(Patchage* patchage, const PortID& id) override;
+	void refresh(const EventSink& sink) override;
 
 	bool connect(PortID tail_id, PortID head_id) override;
 	bool disconnect(PortID tail_id, PortID head_id) override;
@@ -70,23 +64,6 @@ private:
 	static void* refresh_main(void* me);
 	void         _refresh_main();
 
-	PatchageModule* find_module(uint8_t client_id, SignalDirection type);
-
-	PatchageModule* find_or_create_module(Patchage*          patchage,
-	                                      uint8_t            client_id,
-	                                      const std::string& client_name,
-	                                      SignalDirection    type);
-
-	void create_port_view_internal(snd_seq_addr_t   addr,
-	                               PatchageModule*& parent,
-	                               PatchagePort*&   port);
-
-	PatchagePort* create_port(PatchageModule&    parent,
-	                          const std::string& name,
-	                          bool               is_input,
-	                          snd_seq_addr_t     addr);
-
-	Patchage*  _app;
 	ILog&      _log;
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
@@ -103,13 +80,9 @@ private:
 		}
 	};
 
-	using Ignored   = std::set<snd_seq_addr_t, SeqAddrComparator>;
-	using Modules   = std::multimap<uint8_t, PatchageModule*>;
-	using PortAddrs = std::map<PatchagePort*, PortID>;
+	using Ignored = std::set<snd_seq_addr_t, SeqAddrComparator>;
 
-	Ignored   _ignored;
-	Modules   _modules;
-	PortAddrs _port_addrs;
+	Ignored _ignored;
 
 	bool ignore(const snd_seq_addr_t& addr, bool add = true);
 };

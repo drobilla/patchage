@@ -36,6 +36,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
+class Patchage;
 class PatchageModule;
 class PatchagePort;
 class Connector;
@@ -44,6 +45,13 @@ class PatchageCanvas : public Ganv::Canvas
 {
 public:
 	PatchageCanvas(Connector& connector, int width, int height);
+
+	PatchageModule* create_module(Patchage&         patchage,
+	                              const ClientID&   id,
+	                              const ClientInfo& info);
+
+	PatchagePort*
+	create_port(Patchage& patchage, const PortID& id, const PortInfo& info);
 
 	PatchageModule* find_module(const ClientID& id, SignalDirection type);
 	PatchagePort*   find_port(const PortID& id);

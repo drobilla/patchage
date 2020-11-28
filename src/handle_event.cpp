@@ -15,25 +15,18 @@
  */
 
 #include "handle_event.hpp"
+#include "event_to_string.hpp"
 
 #include "PatchageEvent.hpp"
 
 #include "patchage_config.h"
 
-#include "Driver.hpp"
+#include "event_to_string.hpp"
+
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
-
-#if defined(HAVE_JACK_DBUS)
-#	include "JackDbusDriver.hpp"
-#elif defined(PATCHAGE_LIBJACK)
-#	include "JackDriver.hpp"
-#endif
-#ifdef HAVE_ALSA
-#	include "AlsaDriver.hpp"
-#endif
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
@@ -65,27 +58,14 @@ public:
 
 	void operator()(const PortCreationEvent& event)
 	{
-		Driver* driver = nullptr;
-		if (event.id.type() == PortID::Type::jack) {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-			driver = _patchage.jack_driver();
-#endif
-#ifdef HAVE_ALSA
-		} else if (event.id.type() == PortID::Type::alsa) {
-			driver = _patchage.alsa_driver();
-#endif
-		}
 		_patchage.metadata().set_port(event.id, event.info);
 
-		if (driver) {
-			PatchagePort* port = driver->create_port_view(&_patchage, event.id);
-			if (!port) {
-				_patchage.log().error(fmt::format(
-				    "Unable to create view for port \"{}\"", event.id));
-			}
-		} else {
+		auto* const port =
+		    _patchage.canvas()->create_port(_patchage, event.id, event.info);
+
+		if (!port) {
 			_patchage.log().error(
-			    fmt::format("Unknown type for port \"{}\"", event.id));
+			    fmt::format("Unable to create view for port \"{}\"", event.id));
 		}
 	}
 

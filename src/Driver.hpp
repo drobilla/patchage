@@ -21,16 +21,16 @@
 
 #include <sigc++/sigc++.h>
 
-#include <string>
+#include <functional>
 
 class Patchage;
-class PatchagePort;
-class PatchageCanvas;
 
 /// Base class for drivers that handle system clients and ports
 class Driver
 {
 public:
+	using EventSink = std::function<void(const PatchageEvent&)>;
+
 	Driver() = default;
 
 	Driver(const Driver&) = delete;
@@ -47,11 +47,7 @@ public:
 	virtual void detach()                   = 0;
 	virtual bool is_attached() const        = 0;
 
-	virtual void refresh()     = 0;
-	virtual void destroy_all() = 0;
-
-	virtual PatchagePort*
-	create_port_view(Patchage* patchage, const PortID& id) = 0;
+	virtual void refresh(const EventSink& sink) = 0;
 
 	virtual bool connect(PortID tail_id, PortID head_id)    = 0;
 	virtual bool disconnect(PortID tail_id, PortID head_id) = 0;

@@ -19,8 +19,10 @@
 #include "patchage_config.h"
 
 #include "Connector.hpp"
+#include "Patchage.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "PortNames.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
 
@@ -28,6 +30,11 @@
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
+PATCHAGE_RESTORE_WARNINGS
+
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+#include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
 PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
@@ -38,6 +45,84 @@ PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
 	signal_connect.connect(sigc::mem_fun(this, &PatchageCanvas::on_connect));
 	signal_disconnect.connect(
 	    sigc::mem_fun(this, &PatchageCanvas::on_disconnect));
+}
+
+PatchageModule*
+PatchageCanvas::create_module(Patchage&         patchage,
+                              const ClientID&   id,
+                              const ClientInfo& info)
+{
+	(void)patchage;
+	(void)id;
+	(void)info;
+	return nullptr;
+}
+
+PatchagePort*
+PatchageCanvas::create_port(Patchage&       patchage,
+                            const PortID&   id,
+                            const PortInfo& info)
+{
+	const auto client_id = id.client();
+
+	const auto port_name =
+	    ((id.type() == PortID::Type::alsa) ? info.label : PortNames(id).port());
+
+	// Figure out the client name, for ALSA we need the metadata cache
+	std::string client_name;
+	if (id.type() == PortID::Type::alsa) {
+		const auto client_info = patchage.metadata().client(client_id);
+		if (!client_info.has_value()) {
+			patchage.log().error(fmt::format(
+			    "Unable to add port \"{}\", client \"{}\" is unknown",
+			    id,
+			    client_id));
+
+			return nullptr;
+		}
+
+		client_name = client_info->label;
+	} else {
+		client_name = PortNames(id).client();
+	}
+
+	// Determine the module type to place the port on in case of splitting
+	SignalDirection module_type = SignalDirection::duplex;
+	if (patchage.conf()->get_module_split(client_name, info.is_terminal)) {
+		module_type = info.direction;
+	}
+
+	// Find or create parent module
+	PatchageModule* parent = find_module(client_id, module_type);
+	if (!parent) {
+		parent =
+		    new PatchageModule(&patchage, client_name, module_type, client_id);
+
+		parent->load_location();
+		add_module(client_id, parent);
+	}
+
+	if (parent->get_port(id)) {
+		// TODO: Update existing port?
+		patchage.log().error(fmt::format(
+		    "Module \"{}\" already has port \"{}\"", client_name, port_name));
+		return nullptr;
+	}
+
+	auto* const port =
+	    new PatchagePort(*parent,
+	                     info.type,
+	                     id,
+	                     port_name,
+	                     info.label,
+	                     info.direction == SignalDirection::input,
+	                     patchage.conf()->get_port_color(info.type),
+	                     patchage.show_human_names(),
+	                     info.order);
+
+	index_port(id, port);
+
+	return port;
 }
 
 PatchageModule*
@@ -199,7 +284,7 @@ PatchageCanvas::add_module(const ClientID& id, PatchageModule* module)
 		in_module  = module;
 		out_module = find_module(id, SignalDirection::output);
 	} else if (module->type() == SignalDirection::output) {
-		in_module  = find_module(id, SignalDirection::output);
+		in_module  = find_module(id, SignalDirection::input);
 		out_module = module;
 	}
 

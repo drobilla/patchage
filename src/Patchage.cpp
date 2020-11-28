@@ -22,6 +22,8 @@
 #include "PatchageEvent.hpp"
 #include "PatchagePort.hpp"
 #include "UIFile.hpp"
+#include "event_to_string.hpp"
+#include "handle_event.hpp"
 #include "patchage_config.h"
 #include "warnings.hpp"
 
@@ -342,7 +344,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = new JackDriver(this, _log);
+	_jack_driver = new JackDriver(_log);
 	_connector.add_driver(PortID::Type::jack, _jack_driver);
 
 	_jack_driver->signal_detached.connect(
@@ -355,7 +357,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #ifdef HAVE_ALSA
-	_alsa_driver = new AlsaDriver(this, _log);
+	_alsa_driver = new AlsaDriver(_log);
 	_connector.add_driver(PortID::Type::alsa, _alsa_driver);
 #endif
 
@@ -461,12 +463,19 @@ Patchage::idle_callback()
 	} else if (_driver_detached) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver && !_jack_driver->is_attached()) {
-			_jack_driver->destroy_all();
+			_canvas->remove_ports([](const PatchagePort* port) {
+				return (port->type() == PortType::jack_audio ||
+				        port->type() == PortType::jack_midi ||
+				        port->type() == PortType::jack_osc ||
+				        port->type() == PortType::jack_cv);
+			});
 		}
 #endif
 #ifdef HAVE_ALSA
 		if (_alsa_driver && !_alsa_driver->is_attached()) {
-			_alsa_driver->destroy_all();
+			_canvas->remove_ports([](const PatchagePort* port) {
+				return port->type() == PortType::alsa_midi;
+			});
 		}
 #endif
 	}
@@ -542,18 +551,22 @@ Patchage::zoom(double z)
 void
 Patchage::refresh()
 {
+	auto sink = [this](const PatchageEvent& event) {
+		handle_event(*this, event);
+	};
+
 	if (_canvas && _enable_refresh) {
 		_canvas->clear();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver) {
-			_jack_driver->refresh();
+			_jack_driver->refresh(sink);
 		}
 #endif
 
 #ifdef HAVE_ALSA
 		if (_alsa_driver) {
-			_alsa_driver->refresh();
+			_alsa_driver->refresh(sink);
 		}
 #endif
 	}
@@ -762,7 +775,8 @@ void
 Patchage::menu_alsa_connect()
 {
 	_alsa_driver->attach(false);
-	_alsa_driver->refresh();
+	_alsa_driver->refresh(
+	    [this](const PatchageEvent& event) { handle_event(*this, event); });
 }
 
 void

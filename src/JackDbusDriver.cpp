@@ -20,14 +20,12 @@
 #include "patchage_config.h"
 
 #include "Driver.hpp"
-#include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
-#include "PatchageModule.hpp"
-#include "PatchagePort.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
+#include "handle_event.hpp"
+#include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
@@ -57,19 +55,8 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_PORT_TYPE_AUDIO 0
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
-namespace {
-
-std::string
-full_name(const std::string& client_name, const std::string& port_name)
-{
-	return client_name + ":" + port_name;
-}
-
-} // namespace
-
-JackDriver::JackDriver(Patchage* app, ILog& log)
-    : _app(app)
-    , _log(log)
+JackDriver::JackDriver(ILog& log)
+    : _log(log)
     , _dbus_error()
     , _dbus_connection(nullptr)
     , _max_dsp_load(0.0f)
@@ -89,19 +76,6 @@ JackDriver::~JackDriver()
 	if (dbus_error_is_set(&_dbus_error)) {
 		dbus_error_free(&_dbus_error);
 	}
-}
-
-static bool
-is_jack_port(const PatchagePort* port)
-{
-	return port->type() == PortType::jack_audio ||
-	       port->type() == PortType::jack_midi;
-}
-
-void
-JackDriver::destroy_all()
-{
-	_app->canvas()->remove_ports(is_jack_port);
 }
 
 void
@@ -236,8 +210,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->add_port(
-		    client_id, client_name, port_id, port_name, port_flags, port_type);
+		me->_events.emplace(
+		    PortCreationEvent{PortID::jack(client_name, port_name),
+		                      me->port_info(port_name, port_type, port_flags)});
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -270,7 +245,8 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->remove_port(client_id, client_name, port_id, port_name);
+		me->_events.emplace(
+		    PortDestructionEvent{PortID::jack(client_name, port_name)});
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -313,15 +289,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->connect_ports(connection_id,
-		                  client_id,
-		                  client_name,
-		                  port_id,
-		                  port_name,
-		                  client2_id,
-		                  client2_name,
-		                  port2_id,
-		                  port2_name);
+		me->_events.emplace(
+		    ConnectionEvent{PortID::jack(client_name, port_name),
+		                    PortID::jack(client2_name, port2_name)});
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -364,15 +334,9 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->disconnect_ports(connection_id,
-		                     client_id,
-		                     client_name,
-		                     port_id,
-		                     port_name,
-		                     client2_id,
-		                     client2_name,
-		                     port2_id,
-		                     port2_name);
+		me->_events.emplace(
+		    DisconnectionEvent{PortID::jack(client_name, port_name),
+		                       PortID::jack(client2_name, port2_name)});
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -488,15 +452,11 @@ JackDriver::stop_server()
 	          "StopServer",
 	          &reply_ptr,
 	          DBUS_TYPE_INVALID)) {
-		return;
+		error_msg("Error stopping JACK server");
 	}
 
 	dbus_message_unref(reply_ptr);
-
-	if (!_server_started) {
-		_server_started = false;
-		signal_detached.emit();
-	}
+	signal_detached.emit();
 }
 
 void
@@ -563,179 +523,7 @@ JackDriver::is_attached() const
 }
 
 void
-JackDriver::add_port(PatchageModule*    module,
-                     PortType           type,
-                     const PortID&      id,
-                     const std::string& name,
-                     bool               is_input)
-{
-	if (module->get_port(id)) {
-		return;
-	}
-
-	auto* port = new PatchagePort(*module,
-	                              type,
-	                              id,
-	                              name,
-	                              "", // TODO: pretty name
-	                              is_input,
-	                              _app->conf()->get_port_color(type),
-	                              _app->show_human_names());
-
-	_app->canvas()->index_port(id, port);
-}
-
-void
-JackDriver::add_port(dbus_uint64_t /*client_id*/,
-                     const char* client_name,
-                     dbus_uint64_t /*port_id*/,
-                     const char*   port_name,
-                     dbus_uint32_t port_flags,
-                     dbus_uint32_t port_type)
-{
-	PortType local_port_type;
-
-	switch (port_type) {
-	case JACKDBUS_PORT_TYPE_AUDIO:
-		local_port_type = PortType::jack_audio;
-		break;
-	case JACKDBUS_PORT_TYPE_MIDI:
-		local_port_type = PortType::jack_midi;
-		break;
-	default:
-		error_msg("Unknown JACK D-Bus port type");
-		return;
-	}
-
-	SignalDirection type = SignalDirection::duplex;
-	if (_app->conf()->get_module_split(
-	        client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
-		if (port_flags & JACKDBUS_PORT_FLAG_INPUT) {
-			type = SignalDirection::input;
-		} else {
-			type = SignalDirection::output;
-		}
-	}
-
-	PatchageModule* module = find_or_create_module(type, client_name);
-
-	add_port(module,
-	         local_port_type,
-	         PortID::jack(full_name(client_name, port_name)),
-	         port_name,
-	         port_flags & JACKDBUS_PORT_FLAG_INPUT);
-}
-
-void
-JackDriver::remove_port(dbus_uint64_t /*client_id*/,
-                        const char* client_name,
-                        dbus_uint64_t /*port_id*/,
-                        const char* port_name)
-{
-	const auto          port_id = PortID::jack(client_name, port_name);
-	PatchagePort* const port    = _app->canvas()->find_port(port_id);
-	if (!port) {
-		error_msg("Unable to remove unknown port");
-		return;
-	}
-
-	auto* module = dynamic_cast<PatchageModule*>(port->get_module());
-
-	delete port;
-
-	// No empty modules (for now)
-	if (module->num_ports() == 0) {
-		delete module;
-	}
-
-	if (_app->canvas()->empty()) {
-		if (_server_started) {
-			signal_detached.emit();
-		}
-
-		_server_started = false;
-	}
-}
-
-PatchageModule*
-JackDriver::find_or_create_module(SignalDirection type, const std::string& name)
-{
-	const auto      id     = ClientID::jack(name);
-	PatchageModule* module = _app->canvas()->find_module(id, type);
-
-	if (!module) {
-		module = new PatchageModule(_app, name, type, id);
-		module->load_location();
-		_app->canvas()->add_module(id, module);
-	}
-
-	return module;
-}
-
-void
-JackDriver::connect_ports(dbus_uint64_t /*connection_id*/,
-                          dbus_uint64_t /*client1_id*/,
-                          const char* client1_name,
-                          dbus_uint64_t /*port1_id*/,
-                          const char* port1_name,
-                          dbus_uint64_t /*client2_id*/,
-                          const char* client2_name,
-                          dbus_uint64_t /*port2_id*/,
-                          const char* port2_name)
-{
-	const auto tail_id = PortID::jack(client1_name, port1_name);
-	const auto head_id = PortID::jack(client2_name, port2_name);
-
-	PatchagePort* const tail = _app->canvas()->find_port(tail_id);
-	if (!tail) {
-		error_msg(
-		    fmt::format("Unable to connect unknown port \"{}\"", tail_id));
-		return;
-	}
-
-	PatchagePort* const head = _app->canvas()->find_port(head_id);
-	if (!head) {
-		error_msg(
-		    fmt::format("Unable to connect unknown port \"{}\"", head_id));
-		return;
-	}
-
-	_app->canvas()->make_connection(tail, head);
-}
-
-void
-JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
-                             dbus_uint64_t /*client1_id*/,
-                             const char* client1_name,
-                             dbus_uint64_t /*port1_id*/,
-                             const char* port1_name,
-                             dbus_uint64_t /*client2_id*/,
-                             const char* client2_name,
-                             dbus_uint64_t /*port2_id*/,
-                             const char* port2_name)
-{
-	const auto tail_id = PortID::jack(client1_name, port1_name);
-	const auto head_id = PortID::jack(client2_name, port2_name);
-
-	PatchagePort* const tail = _app->canvas()->find_port(tail_id);
-	if (!tail) {
-		error_msg(
-		    fmt::format("Unable to disconnect unknown port \"{}\"", tail_id));
-		return;
-	}
-
-	PatchagePort* const head = _app->canvas()->find_port(head_id);
-	if (!head) {
-		error_msg(
-		    fmt::format("Unable to disconnect unknown port \"{}\"", head_id));
-		return;
-	}
-
-	_app->canvas()->remove_edge_between(tail, head);
-}
-
-void
-JackDriver::refresh()
+JackDriver::refresh(const EventSink& sink)
 {
 	DBusMessage*    reply_ptr              = nullptr;
 	DBusMessageIter iter                   = {};
@@ -784,10 +572,9 @@ JackDriver::refresh()
 	dbus_message_iter_get_basic(&iter, &version);
 	dbus_message_iter_next(&iter);
 
-	destroy_all();
-
 	_graph_version = version;
 
+	// Emit all clients and ports
 	for (dbus_message_iter_recurse(&iter, &clients_array_iter);
 	     dbus_message_iter_get_arg_type(&clients_array_iter) !=
 	     DBUS_TYPE_INVALID;
@@ -799,6 +586,9 @@ JackDriver::refresh()
 
 		dbus_message_iter_get_basic(&client_struct_iter, &client_name);
 		dbus_message_iter_next(&client_struct_iter);
+
+		// TODO: Pretty name?
+		sink({ClientCreationEvent{ClientID::jack(client_name), {client_name}}});
 
 		for (dbus_message_iter_recurse(&client_struct_iter, &ports_array_iter);
 		     dbus_message_iter_get_arg_type(&ports_array_iter) !=
@@ -818,12 +608,9 @@ JackDriver::refresh()
 			dbus_message_iter_get_basic(&port_struct_iter, &port_type);
 			dbus_message_iter_next(&port_struct_iter);
 
-			add_port(client_id,
-			         client_name,
-			         port_id,
-			         port_name,
-			         port_flags,
-			         port_type);
+			sink({PortCreationEvent{
+			    PortID::jack(client_name, port_name),
+			    port_info(port_name, port_type, port_flags)}});
 		}
 
 		dbus_message_iter_next(&client_struct_iter);
@@ -831,6 +618,7 @@ JackDriver::refresh()
 
 	dbus_message_iter_next(&iter);
 
+	// Emit all connections
 	for (dbus_message_iter_recurse(&iter, &connections_array_iter);
 	     dbus_message_iter_get_arg_type(&connections_array_iter) !=
 	     DBUS_TYPE_INVALID;
@@ -865,15 +653,8 @@ JackDriver::refresh()
 		dbus_message_iter_get_basic(&connection_struct_iter, &connection_id);
 		dbus_message_iter_next(&connection_struct_iter);
 
-		connect_ports(connection_id,
-		              client_id,
-		              client_name,
-		              port_id,
-		              port_name,
-		              client2_id,
-		              client2_name,
-		              port2_id,
-		              port2_name);
+		sink({ConnectionEvent{PortID::jack(client_name, port_name),
+		                      PortID::jack(client2_name, port2_name)}});
 	}
 }
 
@@ -1155,11 +936,37 @@ JackDriver::reset_max_dsp_load()
 	_max_dsp_load = 0.0;
 }
 
-PatchagePort*
-JackDriver::create_port_view(Patchage*, const PortID&)
+PortType
+JackDriver::patchage_port_type(const dbus_uint32_t dbus_port_type) const
 {
-	assert(false); // we dont use events at all
-	return nullptr;
+	switch (dbus_port_type) {
+	case JACKDBUS_PORT_TYPE_AUDIO:
+		return PortType::jack_audio;
+	case JACKDBUS_PORT_TYPE_MIDI:
+		return PortType::jack_midi;
+	default:
+		break;
+	}
+
+	error_msg(fmt::format("Unknown JACK D-Bus port type {}", dbus_port_type));
+	return PortType::jack_audio;
+}
+
+PortInfo
+JackDriver::port_info(const std::string&  port_name,
+                      const dbus_uint32_t port_type,
+                      const dbus_uint32_t port_flags) const
+{
+	const SignalDirection direction =
+	    ((port_flags & JACKDBUS_PORT_FLAG_INPUT) ? SignalDirection::input
+	                                             : SignalDirection::output);
+
+	// TODO: Metadata?
+	return {port_name,
+	        patchage_port_type(port_type),
+	        direction,
+	        {},
+	        bool(port_flags & JACKDBUS_PORT_FLAG_TERMINAL)};
 }
 
 void
@@ -1172,4 +979,14 @@ void
 JackDriver::info_msg(const std::string& msg) const
 {
 	_log.info(std::string{"[JACK] "} + msg);
+}
+
+void
+JackDriver::process_events(Patchage* app)
+{
+	while (!_events.empty()) {
+		PatchageEvent& ev = _events.front();
+		handle_event(*app, ev);
+		_events.pop();
+	}
 }
