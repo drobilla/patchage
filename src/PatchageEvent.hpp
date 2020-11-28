@@ -18,7 +18,9 @@
 #define PATCHAGE_PATCHAGEEVENT_HPP
 
 #include "ClientID.hpp"
+#include "ClientInfo.hpp"
 #include "PortID.hpp"
+#include "PortInfo.hpp"
 
 #include <boost/variant/variant.hpp>
 
@@ -26,7 +28,8 @@
 
 struct ClientCreationEvent
 {
-	ClientID id;
+	ClientID   id;
+	ClientInfo info;
 };
 
 struct ClientDestructionEvent
@@ -36,7 +39,8 @@ struct ClientDestructionEvent
 
 struct PortCreationEvent
 {
-	PortID id;
+	PortID   id;
+	PortInfo info;
 };
 
 struct PortDestructionEvent

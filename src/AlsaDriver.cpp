@@ -17,10 +17,12 @@
 #include "AlsaDriver.hpp"
 
 #include "ClientID.hpp"
+#include "ClientInfo.hpp"
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "PortInfo.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
 #include "handle_event.hpp"
@@ -37,10 +39,48 @@ PATCHAGE_RESTORE_WARNINGS
 
 namespace {
 
-inline PortID
-addr_to_id(const snd_seq_addr_t& addr, bool is_input)
+PortID
+addr_to_id(const snd_seq_addr_t& addr, const bool is_input)
 {
 	return PortID::alsa(addr.client, addr.port, is_input);
+}
+
+SignalDirection
+port_direction(const snd_seq_port_info_t* const pinfo)
+{
+	const int caps = snd_seq_port_info_get_capability(pinfo);
+
+	if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE)) {
+		return SignalDirection::duplex;
+	}
+
+	if (caps & SND_SEQ_PORT_CAP_READ) {
+		return SignalDirection::output;
+	}
+
+	if (caps & SND_SEQ_PORT_CAP_WRITE) {
+		return SignalDirection::input;
+	}
+
+	return SignalDirection::duplex;
+}
+
+ClientInfo
+client_info(snd_seq_client_info_t* const cinfo)
+{
+	return {snd_seq_client_info_get_name(cinfo)};
+}
+
+PortInfo
+port_info(const snd_seq_port_info_t* const pinfo)
+{
+	const int type = snd_seq_port_info_get_type(pinfo);
+
+	return {snd_seq_port_info_get_name(pinfo),
+	        PortType::alsa_midi,
+	        port_direction(pinfo),
+	        snd_seq_port_info_get_port(pinfo),
+	        (type & SND_SEQ_PORT_TYPE_APPLICATION) == 0};
 }
 
 } // namespace
@@ -568,7 +608,19 @@ AlsaDriver::_refresh_main()
 
 		switch (ev->type) {
 		case SND_SEQ_EVENT_CLIENT_START:
+			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
+			_events.emplace(ClientCreationEvent{
+			    ClientID::alsa(ev->data.addr.client),
+			    client_info(cinfo),
+			});
+			break;
+
 		case SND_SEQ_EVENT_CLIENT_EXIT:
+			_events.emplace(ClientDestructionEvent{
+			    ClientID::alsa(ev->data.addr.client),
+			});
+			break;
+
 		case SND_SEQ_EVENT_CLIENT_CHANGE:
 			break;
 
@@ -580,7 +632,9 @@ AlsaDriver::_refresh_main()
 
 			if (!ignore(ev->data.addr)) {
 				_events.emplace(PortCreationEvent{
-				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))});
+				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ)),
+				    port_info(pinfo),
+				});
 			}
 			break;
 

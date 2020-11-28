@@ -17,8 +17,10 @@
 #ifndef PATCHAGE_JACKDRIVER_HPP
 #define PATCHAGE_JACKDRIVER_HPP
 
+#include "ClientInfo.hpp"
 #include "Driver.hpp"
 #include "PatchageEvent.hpp"
+#include "PortInfo.hpp"
 
 #include <glibmm/thread.h>
 #include <jack/jack.h>
@@ -81,6 +83,9 @@ public:
 	void process_events(Patchage* app) override;
 
 private:
+	ClientInfo get_client_info(const char* name);
+	PortInfo   get_port_info(const jack_port_t* port);
+
 	PatchagePort*
 	create_port(PatchageModule& parent, jack_port_t* port, const PortID& id);
 

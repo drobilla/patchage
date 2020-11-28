@@ -191,12 +191,12 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 	return port;
 }
 
-#ifdef HAVE_JACK_METADATA
 static std::string
-get_property(jack_uuid_t subject, const char* key)
+get_property(const jack_uuid_t subject, const char* const key)
 {
 	std::string result;
 
+#ifdef HAVE_JACK_METADATA
 	char* value    = nullptr;
 	char* datatype = nullptr;
 	if (!jack_get_property(subject, key, &value, &datatype)) {
@@ -204,10 +204,67 @@ get_property(jack_uuid_t subject, const char* key)
 	}
 	jack_free(datatype);
 	jack_free(value);
+#else
+	(void)subject;
+	(void)key;
+#endif
 
 	return result;
 }
+
+ClientInfo
+JackDriver::get_client_info(const char* const name)
+{
+	return {name}; // TODO: Pretty name?
+}
+
+PortInfo
+JackDriver::get_port_info(const jack_port_t* const port)
+{
+	const auto        uuid  = jack_port_uuid(port);
+	const auto        flags = jack_port_flags(port);
+	const std::string name  = jack_port_name(port);
+	auto              label = PortNames{name}.port();
+
+	// Get pretty name to use as a label, if present
+#ifdef HAVE_JACK_METADATA
+	const auto pretty_name = get_property(uuid, JACK_METADATA_PRETTY_NAME);
+	if (!pretty_name.empty()) {
+		label = pretty_name;
+	}
 #endif
+
+	// Determine detailed type, using metadata for fancy types if possible
+	const char* const type_str = jack_port_type(port);
+	PortType          type     = PortType::jack_audio;
+	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
+		if (get_property(uuid, JACKEY_SIGNAL_TYPE) == "CV") {
+			type = PortType::jack_cv;
+		}
+	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
+		type = PortType::jack_midi;
+		if (get_property(uuid, JACKEY_EVENT_TYPES) == "OSC") {
+			type = PortType::jack_osc;
+		}
+	} else {
+		_log.warning(fmt::format(
+		    "[JACK] Port \"{}\" has unknown type \"{}\"", name, type_str));
+	}
+
+	// Get direction from port flags
+	const SignalDirection direction =
+	    ((flags & JackPortIsInput) ? SignalDirection::input
+	                               : SignalDirection::output);
+
+	// Get port order from metadata if possible
+	boost::optional<int> order;
+	const std::string    order_str = get_property(uuid, JACKEY_ORDER);
+	if (!order_str.empty()) {
+		order = atoi(order_str.c_str());
+	}
+
+	return {label, type, direction, order, bool(flags & JackPortIsTerminal)};
+}
 
 PatchagePort*
 JackDriver::create_port(PatchageModule& parent,
@@ -218,52 +275,17 @@ JackDriver::create_port(PatchageModule& parent,
 		return nullptr;
 	}
 
-	std::string          label;
-	boost::optional<int> order;
-
-#ifdef HAVE_JACK_METADATA
-	const jack_uuid_t uuid = jack_port_uuid(port);
-	if (_app->conf()->get_sort_ports()) {
-		const std::string order_str = get_property(uuid, JACKEY_ORDER);
-		label = get_property(uuid, JACK_METADATA_PRETTY_NAME);
-		if (!order_str.empty()) {
-			order = atoi(order_str.c_str());
-		}
-	}
-#endif
-
-	const char* const type_str  = jack_port_type(port);
-	PortType          port_type = PortType::jack_audio;
-	if (!strcmp(type_str, JACK_DEFAULT_AUDIO_TYPE)) {
-		port_type = PortType::jack_audio;
-#ifdef HAVE_JACK_METADATA
-		if (get_property(uuid, JACKEY_SIGNAL_TYPE) == "CV") {
-			port_type = PortType::jack_cv;
-		}
-#endif
-	} else if (!strcmp(type_str, JACK_DEFAULT_MIDI_TYPE)) {
-		port_type = PortType::jack_midi;
-#ifdef HAVE_JACK_METADATA
-		if (get_property(uuid, JACKEY_EVENT_TYPES) == "OSC") {
-			port_type = PortType::jack_osc;
-		}
-#endif
-	} else {
-		_log.warning(fmt::format("[JACK] Port \"{}\" has unknown type \"{}\"",
-		                         jack_port_name(port),
-		                         type_str));
-		return nullptr;
-	}
+	const auto info = get_port_info(port);
 
 	auto* ret = new PatchagePort(parent,
-	                             port_type,
+	                             info.type,
 	                             id,
 	                             jack_port_short_name(port),
-	                             label,
+	                             info.label,
 	                             (jack_port_flags(port) & JackPortIsInput),
-	                             _app->conf()->get_port_color(port_type),
+	                             _app->conf()->get_port_color(info.type),
 	                             _app->show_human_names(),
-	                             order);
+	                             info.order);
 
 	_app->canvas()->index_port(id, ret);
 
@@ -485,11 +507,11 @@ JackDriver::jack_client_registration_cb(const char* name,
                                         int         registered,
                                         void*       jack_driver)
 {
-	auto* me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackDriver*>(jack_driver);
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.emplace(ClientCreationEvent{ClientID::jack(name)});
+		me->_events.emplace(ClientCreationEvent{ClientID::jack(name), {name}});
 	} else {
 		me->_events.emplace(ClientDestructionEvent{ClientID::jack(name)});
 	}
@@ -505,11 +527,12 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 
 	jack_port_t* const port = jack_port_by_id(me->_client, port_id);
 	const char* const  name = jack_port_name(port);
+	const auto         id   = PortID::jack(name);
 
 	if (registered) {
-		me->_events.emplace(PortCreationEvent{PortID::jack(name)});
+		me->_events.emplace(PortCreationEvent{id, me->get_port_info(port)});
 	} else {
-		me->_events.emplace(PortDestructionEvent{PortID::jack(name)});
+		me->_events.emplace(PortDestructionEvent{id});
 	}
 }
 

@@ -24,13 +24,20 @@
 class PortNames
 {
 public:
+	explicit PortNames(const std::string& jack_name)
+	{
+		const auto colon = jack_name.find(':');
+
+		if (colon != std::string::npos) {
+			_client_name = jack_name.substr(0, colon);
+			_port_name   = jack_name.substr(colon + 1);
+		}
+	}
+
 	explicit PortNames(const PortID& id)
+	    : PortNames(id.jack_name())
 	{
 		assert(id.type() == PortID::Type::jack);
-
-		const auto colon = id.jack_name().find(':');
-		_client_name     = id.jack_name().substr(0, colon);
-		_port_name       = id.jack_name().substr(colon + 1);
 	}
 
 	const std::string& client() const { return _client_name; }
