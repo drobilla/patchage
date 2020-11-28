@@ -20,6 +20,7 @@
 #include "Legend.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
+#include "PatchagePort.hpp"
 #include "UIFile.hpp"
 #include "patchage_config.h"
 #include "warnings.hpp"

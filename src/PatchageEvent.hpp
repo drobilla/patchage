@@ -17,15 +17,12 @@
 #ifndef PATCHAGE_PATCHAGEEVENT_HPP
 #define PATCHAGE_PATCHAGEEVENT_HPP
 
-#include "PatchagePort.hpp"
+#include "ClientID.hpp"
 #include "PortID.hpp"
 
 #include <boost/variant/variant.hpp>
 
 #include <string>
-#include <utility>
-
-class Patchage;
 
 struct NoopEvent
 {};
@@ -70,9 +67,5 @@ using PatchageEvent = boost::variant<NoopEvent,
                                      PortDestructionEvent,
                                      ConnectionEvent,
                                      DisconnectionEvent>;
-
-/// Handle an event in the GUI
-void
-handle_event(Patchage& patchage, const PatchageEvent& event);
 
 #endif // PATCHAGE_PATCHAGEEVENT_HPP

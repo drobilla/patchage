@@ -22,7 +22,9 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+#include "PatchagePort.hpp"
 #include "PortNames.hpp"
+#include "handle_event.hpp"
 #include "patchage_config.h"
 
 #ifdef HAVE_JACK_METADATA

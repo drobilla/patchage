@@ -24,6 +24,7 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+#include "PatchagePort.hpp"
 #include "PortNames.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS

@@ -23,6 +23,7 @@
 
 #include <string>
 
+class Patchage;
 class PatchagePort;
 class PatchageCanvas;
 

@@ -14,6 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "handle_event.hpp"
+
 #include "PatchageEvent.hpp"
 
 #include "patchage_config.h"
@@ -22,6 +24,7 @@
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
+#include "PatchagePort.hpp"
 
 #if defined(HAVE_JACK_DBUS)
 #	include "JackDbusDriver.hpp"

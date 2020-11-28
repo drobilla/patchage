@@ -21,6 +21,7 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "handle_event.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
