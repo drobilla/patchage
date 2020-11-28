@@ -244,6 +244,7 @@ def build(bld):
             src/Configuration.cpp
             src/Connector.cpp
             src/Legend.cpp
+            src/Metadata.cpp
             src/Patchage.cpp
             src/PatchageCanvas.cpp
             src/PatchageModule.cpp

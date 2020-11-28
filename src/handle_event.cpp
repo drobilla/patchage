@@ -51,14 +51,16 @@ public:
 	    : _patchage{patchage}
 	{}
 
-	void operator()(const ClientCreationEvent&)
+	void operator()(const ClientCreationEvent& event)
 	{
 		// Don't create empty modules, they will be created when ports are added
+		_patchage.metadata().set_client(event.id, event.info);
 	}
 
 	void operator()(const ClientDestructionEvent& event)
 	{
 		_patchage.canvas()->remove_module(event.id);
+		_patchage.metadata().erase_client(event.id);
 	}
 
 	void operator()(const PortCreationEvent& event)
@@ -73,6 +75,7 @@ public:
 			driver = _patchage.alsa_driver();
 #endif
 		}
+		_patchage.metadata().set_port(event.id, event.info);
 
 		if (driver) {
 			PatchagePort* port = driver->create_port_view(&_patchage, event.id);
@@ -89,6 +92,7 @@ public:
 	void operator()(const PortDestructionEvent& event)
 	{
 		_patchage.canvas()->remove_port(event.id);
+		_patchage.metadata().erase_port(event.id);
 	}
 
 	void operator()(const ConnectionEvent& event)

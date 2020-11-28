@@ -41,6 +41,7 @@
 #include "Connector.hpp"
 #include "ILog.hpp"
 #include "Legend.hpp"
+#include "Metadata.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
 #include "patchage_config.h"
@@ -74,6 +75,7 @@ public:
 
 	Gtk::Window* window() { return _main_win.get(); }
 	ILog&        log() { return _log; }
+	Metadata&    metadata() { return _metadata; }
 
 	Configuration* conf() const { return _conf; }
 	JackDriver*    jack_driver() const { return _jack_driver; }
@@ -212,6 +214,7 @@ protected:
 	Legend*                     _legend;
 	TextViewLog                 _log;
 	Connector                   _connector;
+	Metadata                    _metadata;
 
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;
