@@ -234,7 +234,7 @@ AlsaDriver::find_or_create_module(Patchage*          patchage,
 		m = new PatchageModule(
 		    patchage, client_name, type, ClientID::alsa(client_id));
 		m->load_location();
-		_app->canvas()->add_module(client_name, m);
+		_app->canvas()->add_module(ClientID::alsa(client_id), m);
 		_modules.insert(std::make_pair(client_id, m));
 	}
 	return m;
@@ -292,10 +292,12 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 		split = _app->conf()->get_module_split(client_name, !is_application);
 	}
 
+	const auto port_id = PortID::alsa(addr.client, addr.port, is_input);
+
 	if (!split) {
 		parent = find_or_create_module(
 		    _app, addr.client, client_name, ModuleType::input_output);
-		if (!parent->get_port(port_name)) {
+		if (!parent->get_port(port_id)) {
 			port = create_port(*parent, port_name, is_input, addr);
 			port->show();
 		}
@@ -307,7 +309,7 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 
 			parent = find_or_create_module(
 			    _app, addr.client, client_name, module_type);
-			if (!parent->get_port(port_name)) {
+			if (!parent->get_port(port_id)) {
 				port = create_port(*parent, port_name, is_input, addr);
 				port->show();
 			}
@@ -318,7 +320,7 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 			    ((!is_input) ? ModuleType::input : ModuleType::output);
 			parent = find_or_create_module(
 			    _app, addr.client, client_name, flipped_module_type);
-			if (!parent->get_port(port_name)) {
+			if (!parent->get_port(port_id)) {
 				port = create_port(*parent, port_name, !is_input, addr);
 				port->show();
 			}

@@ -45,14 +45,11 @@ class PatchageCanvas : public Ganv::Canvas
 public:
 	PatchageCanvas(Connector& connector, int width, int height);
 
-	PatchageModule* find_module(const std::string& name, ModuleType type);
+	PatchageModule* find_module(const ClientID& id, ModuleType type);
 	PatchagePort*   find_port(const PortID& id);
 
-	void remove_module(const std::string& name);
+	void remove_module(const ClientID& id);
 	void remove_module(PatchageModule* module);
-
-	PatchagePort* find_port_by_name(const std::string& client_name,
-	                                const std::string& port_name);
 
 	void index_port(const PortID& id, PatchagePort* port)
 	{
@@ -61,7 +58,7 @@ public:
 
 	void remove_ports(bool (*pred)(const PatchagePort*));
 
-	void add_module(const std::string& name, PatchageModule* module);
+	void add_module(const ClientID& id, PatchageModule* module);
 
 	bool make_connection(Ganv::Node* tail, Ganv::Node* head);
 
@@ -71,7 +68,7 @@ public:
 
 private:
 	using PortIndex   = std::map<const PortID, PatchagePort*>;
-	using ModuleIndex = std::multimap<const std::string, PatchageModule*>;
+	using ModuleIndex = std::multimap<const ClientID, PatchageModule*>;
 
 	friend void disconnect_edge(GanvEdge*, void*);
 

@@ -137,6 +137,8 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 {
 	assert(id.type() == PortID::Type::jack);
 
+	const auto client_id = id.client();
+
 	jack_port_t* const jack_port =
 	    jack_port_by_name(_client, id.jack_name().c_str());
 	if (!jack_port) {
@@ -161,15 +163,15 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 		}
 	}
 
-	PatchageModule* parent = _app->canvas()->find_module(module_name, type);
+	PatchageModule* parent = _app->canvas()->find_module(client_id, type);
 	if (!parent) {
 		parent = new PatchageModule(
 		    patchage, module_name, type, ClientID::jack(module_name));
 		parent->load_location();
-		patchage->canvas()->add_module(module_name, parent);
+		patchage->canvas()->add_module(client_id, parent);
 	}
 
-	if (parent->get_port(port_name)) {
+	if (parent->get_port(id)) {
 		_log.error(fmt::format("[JACK] Module \"{}\" already has port \"{}\"",
 		                       module_name,
 		                       port_name));
@@ -315,16 +317,18 @@ JackDriver::refresh()
 			}
 		}
 
-		PatchageModule* m = _app->canvas()->find_module(client1_name, type);
+		const auto port1_id   = PortID::jack(ports[i]);
+		const auto client1_id = ClientID::jack(client1_name);
+
+		PatchageModule* m = _app->canvas()->find_module(client1_id, type);
 
 		if (!m) {
-			m = new PatchageModule(
-			    _app, client1_name, type, ClientID::jack(client1_name));
+			m = new PatchageModule(_app, client1_name, type, client1_id);
 			m->load_location();
-			_app->canvas()->add_module(client1_name, m);
+			_app->canvas()->add_module(client1_id, m);
 		}
 
-		if (!m->get_port(jack_port_short_name(port))) {
+		if (!m->get_port(port1_id)) {
 			create_port(*m, port, PortID::jack(ports[i]));
 		}
 	}
@@ -344,8 +348,11 @@ JackDriver::refresh()
 		                                  ? ModuleType::input
 		                                  : ModuleType::output;
 
+		const auto port1_id   = PortID::jack(ports[i]);
+		const auto client1_id = ClientID::jack(client1_name);
+
 		PatchageModule* client1_module =
-		    _app->canvas()->find_module(client1_name, port1_type);
+		    _app->canvas()->find_module(client1_id, port1_type);
 
 		if (connected_ports) {
 			for (int j = 0; connected_ports[j]; ++j) {
@@ -355,15 +362,18 @@ JackDriver::refresh()
 				port2_name   = client2_name.substr(colon + 1);
 				client2_name = client2_name.substr(0, colon);
 
+				const auto port2_id   = PortID::jack(connected_ports[j]);
+				const auto client2_id = ClientID::jack(client2_name);
+
 				const ModuleType port2_type = (port1_type == ModuleType::input)
 				                                  ? ModuleType::output
 				                                  : ModuleType::input;
 
 				PatchageModule* client2_module =
-				    _app->canvas()->find_module(client2_name, port2_type);
+				    _app->canvas()->find_module(client2_id, port2_type);
 
-				Ganv::Port* port1 = client1_module->get_port(port1_name);
-				Ganv::Port* port2 = client2_module->get_port(port2_name);
+				Ganv::Port* port1 = client1_module->get_port(port1_id);
+				Ganv::Port* port2 = client2_module->get_port(port2_id);
 
 				if (!port1 || !port2) {
 					continue;
@@ -474,9 +484,9 @@ JackDriver::jack_client_registration_cb(const char* name,
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.emplace(ClientCreationEvent{name});
+		me->_events.emplace(ClientCreationEvent{ClientID::jack(name)});
 	} else {
-		me->_events.emplace(ClientDestructionEvent{name});
+		me->_events.emplace(ClientDestructionEvent{ClientID::jack(name)});
 	}
 }
 

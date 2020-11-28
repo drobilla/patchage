@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
+#include "ClientID.hpp"
 #include "ClientType.hpp"
 
 #include <cassert>
@@ -44,11 +45,29 @@ struct PortID
 		return PortID{Type::jack, std::move(name)};
 	}
 
+	/// Return an ID for a JACK port by separate client and port name
+	static PortID
+	jack(const std::string& client_name, const std::string& port_name)
+	{
+		return PortID{Type::jack, client_name + ":" + port_name};
+	}
+
 	/// Return an ID for an ALSA Sequencer port by ID
 	static PortID
 	alsa(const uint8_t client_id, const uint8_t port, const bool is_input)
 	{
 		return PortID{Type::alsa, client_id, port, is_input};
+	}
+
+	/// Return the ID of the client that hosts this port
+	ClientID client() const
+	{
+		switch (_type) {
+		case Type::jack:
+			return ClientID::jack(_jack_name.substr(0, _jack_name.find(':')));
+		case Type::alsa:
+			return ClientID::alsa(_alsa_client);
+		}
 	}
 
 	Type               type() const { return _type; }
@@ -64,6 +83,8 @@ private:
 	{
 		assert(_type == Type::jack);
 		assert(_jack_name.find(':') != std::string::npos);
+		assert(_jack_name.find(':') > 0);
+		assert(_jack_name.find(':') < _jack_name.length() - 1);
 	}
 
 	PortID(const Type    type,
@@ -99,6 +120,27 @@ operator<<(std::ostream& os, const PortID& id)
 
 	assert(false);
 	return os;
+}
+
+static inline bool
+operator==(const PortID& lhs, const PortID& rhs)
+{
+	if (lhs.type() != rhs.type()) {
+		return false;
+	}
+
+	switch (lhs.type()) {
+	case PortID::Type::jack:
+		return lhs.jack_name() == rhs.jack_name();
+	case PortID::Type::alsa:
+		return std::make_tuple(
+		           lhs.alsa_client(), lhs.alsa_port(), lhs.alsa_is_input()) ==
+		       std::make_tuple(
+		           rhs.alsa_client(), rhs.alsa_port(), rhs.alsa_is_input());
+	}
+
+	assert(false);
+	return false;
 }
 
 static inline bool

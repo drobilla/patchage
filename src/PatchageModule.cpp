@@ -147,11 +147,11 @@ PatchageModule::menu_disconnect_all()
 }
 
 PatchagePort*
-PatchageModule::get_port(const std::string& name)
+PatchageModule::get_port(const PortID& id)
 {
 	for (Ganv::Port* p : *this) {
 		auto* pport = dynamic_cast<PatchagePort*>(p);
-		if (pport && pport->name() == name) {
+		if (pport && pport->id() == id) {
 			return pport;
 		}
 	}

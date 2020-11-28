@@ -28,6 +28,7 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
 #include <dbus/dbus-glib-lowlevel.h>
@@ -598,22 +599,24 @@ JackDriver::is_attached() const
 void
 JackDriver::add_port(PatchageModule*    module,
                      PortType           type,
-                     PortID             id,
+                     const PortID&      id,
                      const std::string& name,
                      bool               is_input)
 {
-	if (module->get_port(name)) {
+	if (module->get_port(id)) {
 		return;
 	}
 
-	new PatchagePort(*module,
-	                 type,
-	                 std::move(id),
-	                 name,
-	                 "", // TODO: pretty name
-	                 is_input,
-	                 _app->conf()->get_port_color(type),
-	                 _app->show_human_names());
+	auto* port = new PatchagePort(*module,
+	                              type,
+	                              id,
+	                              name,
+	                              "", // TODO: pretty name
+	                              is_input,
+	                              _app->conf()->get_port_color(type),
+	                              _app->show_human_names());
+
+	_app->canvas()->index_port(id, port);
 }
 
 void
@@ -663,8 +666,8 @@ JackDriver::remove_port(dbus_uint64_t /*client_id*/,
                         dbus_uint64_t /*port_id*/,
                         const char* port_name)
 {
-	PatchagePort* port =
-	    _app->canvas()->find_port_by_name(client_name, port_name);
+	const auto          port_id = PortID::jack(client_name, port_name);
+	PatchagePort* const port    = _app->canvas()->find_port(port_id);
 	if (!port) {
 		error_msg("Unable to remove unknown port");
 		return;
@@ -691,12 +694,13 @@ JackDriver::remove_port(dbus_uint64_t /*client_id*/,
 PatchageModule*
 JackDriver::find_or_create_module(ModuleType type, const std::string& name)
 {
-	PatchageModule* module = _app->canvas()->find_module(name, type);
+	const auto      id     = ClientID::jack(name);
+	PatchageModule* module = _app->canvas()->find_module(id, type);
 
 	if (!module) {
-		module = new PatchageModule(_app, name, type, ClientID::jack(name));
+		module = new PatchageModule(_app, name, type, id);
 		module->load_location();
-		_app->canvas()->add_module(name, module);
+		_app->canvas()->add_module(id, module);
 	}
 
 	return module;
@@ -713,23 +717,24 @@ JackDriver::connect_ports(dbus_uint64_t /*connection_id*/,
                           dbus_uint64_t /*port2_id*/,
                           const char* port2_name)
 {
-	PatchagePort* port1 =
-	    _app->canvas()->find_port_by_name(client1_name, port1_name);
-	if (!port1) {
-		error_msg(std::string{"Unable to connect unknown port '"} + port1_name +
-		          "' of client '" + client1_name + "'");
+	const auto tail_id = PortID::jack(client1_name, port1_name);
+	const auto head_id = PortID::jack(client2_name, port2_name);
+
+	PatchagePort* const tail = _app->canvas()->find_port(tail_id);
+	if (!tail) {
+		error_msg(
+		    fmt::format("Unable to connect unknown port \"{}\"", tail_id));
 		return;
 	}
 
-	PatchagePort* port2 =
-	    _app->canvas()->find_port_by_name(client2_name, port2_name);
-	if (!port2) {
-		error_msg(std::string{"Unable to connect unknown port '"} + port2_name +
-		          "' of client '" + client2_name + "'");
+	PatchagePort* const head = _app->canvas()->find_port(head_id);
+	if (!head) {
+		error_msg(
+		    fmt::format("Unable to connect unknown port \"{}\"", head_id));
 		return;
 	}
 
-	_app->canvas()->make_connection(port1, port2);
+	_app->canvas()->make_connection(tail, head);
 }
 
 void
@@ -743,23 +748,24 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
                              dbus_uint64_t /*port2_id*/,
                              const char* port2_name)
 {
-	PatchagePort* port1 =
-	    _app->canvas()->find_port_by_name(client1_name, port1_name);
-	if (!port1) {
-		error_msg(std::string{"Unable to disconnect unknown port '"} +
-		          port1_name + "' of client '" + client1_name + "'");
+	const auto tail_id = PortID::jack(client1_name, port1_name);
+	const auto head_id = PortID::jack(client2_name, port2_name);
+
+	PatchagePort* const tail = _app->canvas()->find_port(tail_id);
+	if (!tail) {
+		error_msg(
+		    fmt::format("Unable to disconnect unknown port \"{}\"", tail_id));
 		return;
 	}
 
-	PatchagePort* port2 =
-	    _app->canvas()->find_port_by_name(client2_name, port2_name);
-	if (!port2) {
-		error_msg(std::string{"Unable to disconnect unknown port '"} +
-		          port2_name + "' of client '" + client2_name + "'");
+	PatchagePort* const head = _app->canvas()->find_port(head_id);
+	if (!head) {
+		error_msg(
+		    fmt::format("Unable to disconnect unknown port \"{}\"", head_id));
 		return;
 	}
 
-	_app->canvas()->remove_edge_between(port1, port2);
+	_app->canvas()->remove_edge_between(tail, head);
 }
 
 void

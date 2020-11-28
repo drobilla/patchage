@@ -32,12 +32,12 @@ struct NoopEvent
 
 struct ClientCreationEvent
 {
-	std::string name;
+	ClientID id;
 };
 
 struct ClientDestructionEvent
 {
-	std::string name;
+	ClientID id;
 };
 
 struct PortCreationEvent

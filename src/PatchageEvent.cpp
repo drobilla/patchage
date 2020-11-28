@@ -57,7 +57,7 @@ public:
 
 	void operator()(const ClientDestructionEvent& event)
 	{
-		_patchage.canvas()->remove_module(event.name);
+		_patchage.canvas()->remove_module(event.id);
 	}
 
 	void operator()(const PortCreationEvent& event)

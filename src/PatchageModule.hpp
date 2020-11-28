@@ -30,6 +30,8 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <string>
 
+struct PortID;
+
 class Patchage;
 class PatchagePort;
 
@@ -57,7 +59,7 @@ public:
 	bool show_menu(GdkEventButton* ev);
 	void update_menu();
 
-	PatchagePort* get_port(const std::string& name);
+	PatchagePort* get_port(const PortID& id);
 
 	void load_location();
 	void menu_disconnect_all();

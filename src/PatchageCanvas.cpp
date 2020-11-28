@@ -40,23 +40,18 @@ PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
 }
 
 PatchageModule*
-PatchageCanvas::find_module(const std::string& name, ModuleType type)
+PatchageCanvas::find_module(const ClientID& id, const ModuleType type)
 {
-	const ModuleIndex::const_iterator i = _module_index.find(name);
-	if (i == _module_index.end()) {
-		return nullptr;
-	}
+	auto i = _module_index.find(id);
 
 	PatchageModule* io_module = nullptr;
-	for (ModuleIndex::const_iterator j = i;
-	     j != _module_index.end() && j->first == name;
-	     ++j) {
-		if (j->second->type() == type) {
-			return j->second;
+	for (; i != _module_index.end() && i->first == id; ++i) {
+		if (i->second->type() == type) {
+			return i->second;
 		}
 
-		if (j->second->type() == ModuleType::input_output) {
-			io_module = j->second;
+		if (i->second->type() == ModuleType::input_output) {
+			io_module = i->second;
 		}
 	}
 
@@ -65,13 +60,13 @@ PatchageCanvas::find_module(const std::string& name, ModuleType type)
 }
 
 void
-PatchageCanvas::remove_module(const std::string& name)
+PatchageCanvas::remove_module(const ClientID& id)
 {
-	auto i = _module_index.find(name);
+	auto i = _module_index.find(id);
 	while (i != _module_index.end()) {
 		PatchageModule* mod = i->second;
 		_module_index.erase(i);
-		i = _module_index.find(name);
+		i = _module_index.find(id);
 		delete mod;
 	}
 }
@@ -161,27 +156,6 @@ PatchageCanvas::remove_ports(bool (*pred)(const PatchagePort*))
 	}
 }
 
-PatchagePort*
-PatchageCanvas::find_port_by_name(const std::string& client_name,
-                                  const std::string& port_name)
-{
-	const ModuleIndex::const_iterator i = _module_index.find(client_name);
-	if (i == _module_index.end()) {
-		return nullptr;
-	}
-
-	for (ModuleIndex::const_iterator j = i;
-	     j != _module_index.end() && j->first == client_name;
-	     ++j) {
-		PatchagePort* port = j->second->get_port(port_name);
-		if (port) {
-			return port;
-		}
-	}
-
-	return nullptr;
-}
-
 void
 PatchageCanvas::on_connect(Ganv::Node* port1, Ganv::Node* port2)
 {
@@ -213,18 +187,18 @@ PatchageCanvas::on_disconnect(Ganv::Node* port1, Ganv::Node* port2)
 }
 
 void
-PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
+PatchageCanvas::add_module(const ClientID& id, PatchageModule* module)
 {
-	_module_index.insert(std::make_pair(name, module));
+	_module_index.emplace(id, module);
 
 	// Join partners, if applicable
 	PatchageModule* in_module  = nullptr;
 	PatchageModule* out_module = nullptr;
 	if (module->type() == ModuleType::input) {
 		in_module  = module;
-		out_module = find_module(name, ModuleType::output);
+		out_module = find_module(id, ModuleType::output);
 	} else if (module->type() == ModuleType::output) {
-		in_module  = find_module(name, ModuleType::output);
+		in_module  = find_module(id, ModuleType::output);
 		out_module = module;
 	}
 
@@ -264,8 +238,8 @@ void
 PatchageCanvas::remove_module(PatchageModule* module)
 {
 	// Remove module from cache
-	for (auto i = _module_index.find(module->get_label());
-	     i != _module_index.end() && i->first == module->get_label();
+	for (auto i = _module_index.find(module->id());
+	     i != _module_index.end() && i->first == module->id();
 	     ++i) {
 		if (i->second == module) {
 			_module_index.erase(i);

@@ -86,6 +86,24 @@ operator<<(std::ostream& os, const ClientID& id)
 }
 
 static inline bool
+operator==(const ClientID& lhs, const ClientID& rhs)
+{
+	if (lhs.type() != rhs.type()) {
+		return false;
+	}
+
+	switch (lhs.type()) {
+	case ClientID::Type::jack:
+		return lhs.jack_name() == rhs.jack_name();
+	case ClientID::Type::alsa:
+		return lhs.alsa_id() == rhs.alsa_id();
+	}
+
+	assert(false);
+	return false;
+}
+
+static inline bool
 operator<(const ClientID& lhs, const ClientID& rhs)
 {
 	if (lhs.type() != rhs.type()) {
