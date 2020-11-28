@@ -40,7 +40,7 @@ class PatchageModule : public Ganv::Module
 public:
 	PatchageModule(Patchage*          app,
 	               const std::string& name,
-	               ModuleType         type,
+	               SignalDirection    type,
 	               ClientID           id,
 	               double             x = 0,
 	               double             y = 0);
@@ -66,18 +66,18 @@ public:
 	void show_dialog() {}
 	void store_location(double x, double y);
 
-	ModuleType         type() const { return _type; }
+	SignalDirection    type() const { return _type; }
 	ClientID           id() const { return _id; }
 	const std::string& name() const { return _name; }
 
 protected:
 	bool on_event(GdkEvent* ev) override;
 
-	Patchage*   _app;
-	Gtk::Menu*  _menu;
-	std::string _name;
-	ModuleType  _type;
-	ClientID    _id;
+	Patchage*       _app;
+	Gtk::Menu*      _menu;
+	std::string     _name;
+	SignalDirection _type;
+	ClientID        _id;
 };
 
 #endif // PATCHAGE_PATCHAGEMODULE_HPP

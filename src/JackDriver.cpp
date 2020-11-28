@@ -155,13 +155,13 @@ JackDriver::create_port_view(Patchage* patchage, const PortID& id)
 	std::string port_name;
 	port_names(id, module_name, port_name);
 
-	ModuleType type = ModuleType::input_output;
+	SignalDirection type = SignalDirection::duplex;
 	if (_app->conf()->get_module_split(module_name,
 	                                   (jack_flags & JackPortIsTerminal))) {
 		if (jack_flags & JackPortIsInput) {
-			type = ModuleType::input;
+			type = SignalDirection::input;
 		} else {
-			type = ModuleType::output;
+			type = SignalDirection::output;
 		}
 	}
 
@@ -309,13 +309,13 @@ JackDriver::refresh()
 		client1_name = ports[i];
 		client1_name = client1_name.substr(0, client1_name.find(':'));
 
-		ModuleType type = ModuleType::input_output;
+		SignalDirection type = SignalDirection::duplex;
 		if (_app->conf()->get_module_split(
 		        client1_name, (jack_port_flags(port) & JackPortIsTerminal))) {
 			if (jack_port_flags(port) & JackPortIsInput) {
-				type = ModuleType::input;
+				type = SignalDirection::input;
 			} else {
-				type = ModuleType::output;
+				type = SignalDirection::output;
 			}
 		}
 
@@ -346,9 +346,9 @@ JackDriver::refresh()
 		port1_name   = client1_name.substr(colon + 1);
 		client1_name = client1_name.substr(0, colon);
 
-		const ModuleType port1_type = (jack_port_flags(port) & JackPortIsInput)
-		                                  ? ModuleType::input
-		                                  : ModuleType::output;
+		const SignalDirection port1_type =
+		    (jack_port_flags(port) & JackPortIsInput) ? SignalDirection::input
+		                                              : SignalDirection::output;
 
 		const auto port1_id   = PortID::jack(ports[i]);
 		const auto client1_id = ClientID::jack(client1_name);
@@ -367,9 +367,10 @@ JackDriver::refresh()
 				const auto port2_id   = PortID::jack(connected_ports[j]);
 				const auto client2_id = ClientID::jack(client2_name);
 
-				const ModuleType port2_type = (port1_type == ModuleType::input)
-				                                  ? ModuleType::output
-				                                  : ModuleType::input;
+				const SignalDirection port2_type =
+				    (port1_type == SignalDirection::input)
+				        ? SignalDirection::output
+				        : SignalDirection::input;
 
 				PatchageModule* client2_module =
 				    _app->canvas()->find_module(client2_id, port2_type);

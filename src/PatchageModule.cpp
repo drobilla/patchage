@@ -22,7 +22,7 @@
 
 PatchageModule::PatchageModule(Patchage*          app,
                                const std::string& name,
-                               ModuleType         type,
+                               SignalDirection         type,
                                ClientID           id,
                                double             x,
                                double             y)
@@ -56,7 +56,7 @@ PatchageModule::update_menu()
 		return;
 	}
 
-	if (_type == ModuleType::input_output) {
+	if (_type == SignalDirection::duplex) {
 		bool has_in  = false;
 		bool has_out = false;
 		for (const_iterator p = begin(); p != end(); ++p) {
@@ -79,7 +79,7 @@ PatchageModule::show_menu(GdkEventButton* ev)
 {
 	_menu                      = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
-	if (_type == ModuleType::input_output) {
+	if (_type == SignalDirection::duplex) {
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
 		    "_Split", sigc::mem_fun(this, &PatchageModule::split)));
 		update_menu();
@@ -125,7 +125,7 @@ PatchageModule::store_location(double x, double y)
 void
 PatchageModule::split()
 {
-	assert(_type == ModuleType::input_output);
+	assert(_type == SignalDirection::duplex);
 	_app->conf()->set_module_split(_name, true);
 	_app->refresh();
 }
@@ -133,7 +133,7 @@ PatchageModule::split()
 void
 PatchageModule::join()
 {
-	assert(_type != ModuleType::input_output);
+	assert(_type != SignalDirection::duplex);
 	_app->conf()->set_module_split(_name, false);
 	_app->refresh();
 }

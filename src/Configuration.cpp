@@ -79,7 +79,7 @@ Configuration::Configuration()
 
 bool
 Configuration::get_module_location(const std::string& name,
-                                   ModuleType         type,
+                                   SignalDirection    type,
                                    Coord&             loc)
 {
 	std::map<std::string, ModuleSettings>::const_iterator i =
@@ -89,11 +89,11 @@ Configuration::get_module_location(const std::string& name,
 	}
 
 	const ModuleSettings& settings = (*i).second;
-	if (type == ModuleType::input && settings.input_location) {
+	if (type == SignalDirection::input && settings.input_location) {
 		loc = *settings.input_location;
-	} else if (type == ModuleType::output && settings.output_location) {
+	} else if (type == SignalDirection::output && settings.output_location) {
 		loc = *settings.output_location;
-	} else if (type == ModuleType::input_output && settings.inout_location) {
+	} else if (type == SignalDirection::duplex && settings.inout_location) {
 		loc = *settings.inout_location;
 	} else {
 		return false;
@@ -104,26 +104,26 @@ Configuration::get_module_location(const std::string& name,
 
 void
 Configuration::set_module_location(const std::string& name,
-                                   ModuleType         type,
+                                   SignalDirection    type,
                                    Coord              loc)
 {
 	auto i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		i = _module_settings
 		        .insert(std::make_pair(
-		            name, ModuleSettings(type != ModuleType::input_output)))
+		            name, ModuleSettings(type != SignalDirection::duplex)))
 		        .first;
 	}
 
 	ModuleSettings& settings = (*i).second;
 	switch (type) {
-	case ModuleType::input:
+	case SignalDirection::input:
 		settings.input_location = loc;
 		break;
-	case ModuleType::output:
+	case SignalDirection::output:
 		settings.output_location = loc;
 		break;
-	case ModuleType::input_output:
+	case SignalDirection::duplex:
 		settings.inout_location = loc;
 		break;
 	}
@@ -254,15 +254,15 @@ Configuration::load()
 			file.ignore(1, '\"');
 			std::getline(file, name, '\"');
 
-			ModuleType  type = ModuleType::input;
-			std::string type_str;
+			SignalDirection type = SignalDirection::input;
+			std::string     type_str;
 			file >> type_str;
 			if (type_str == "input") {
-				type = ModuleType::input;
+				type = SignalDirection::input;
 			} else if (type_str == "output") {
-				type = ModuleType::output;
+				type = SignalDirection::output;
 			} else if (type_str == "inputoutput") {
-				type = ModuleType::input_output;
+				type = SignalDirection::duplex;
 			} else {
 				std::cerr << "error: bad position type `" << type_str
 				          << "' for module `" << name << "'" << std::endl;

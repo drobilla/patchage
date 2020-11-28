@@ -77,7 +77,7 @@ private:
 	void info_msg(const std::string& msg) const;
 
 	PatchageModule*
-	find_or_create_module(ModuleType type, const std::string& name);
+	find_or_create_module(SignalDirection type, const std::string& name);
 
 	void add_port(PatchageModule*    module,
 	              PortType           type,

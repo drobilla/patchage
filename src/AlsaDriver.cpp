@@ -200,7 +200,7 @@ AlsaDriver::create_port_view(Patchage*, const PortID& id)
 }
 
 PatchageModule*
-AlsaDriver::find_module(uint8_t client_id, ModuleType type)
+AlsaDriver::find_module(uint8_t client_id, SignalDirection type)
 {
 	const Modules::const_iterator i = _modules.find(client_id);
 	if (i == _modules.end()) {
@@ -215,7 +215,7 @@ AlsaDriver::find_module(uint8_t client_id, ModuleType type)
 			return j->second;
 		}
 
-		if (j->second->type() == ModuleType::input_output) {
+		if (j->second->type() == SignalDirection::duplex) {
 			io_module = j->second;
 		}
 	}
@@ -228,7 +228,7 @@ PatchageModule*
 AlsaDriver::find_or_create_module(Patchage*          patchage,
                                   uint8_t            client_id,
                                   const std::string& client_name,
-                                  ModuleType         type)
+                                  SignalDirection    type)
 {
 	PatchageModule* m = find_module(client_id, type);
 	if (!m) {
@@ -297,7 +297,7 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 
 	if (!split) {
 		parent = find_or_create_module(
-		    _app, addr.client, client_name, ModuleType::input_output);
+		    _app, addr.client, client_name, SignalDirection::duplex);
 		if (!parent->get_port(port_id)) {
 			port = create_port(*parent, port_name, is_input, addr);
 			port->show();
@@ -305,8 +305,8 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 
 	} else { // split
 		{
-			const ModuleType module_type =
-			    ((is_input) ? ModuleType::input : ModuleType::output);
+			const SignalDirection module_type =
+			    ((is_input) ? SignalDirection::input : SignalDirection::output);
 
 			parent = find_or_create_module(
 			    _app, addr.client, client_name, module_type);
@@ -317,8 +317,9 @@ AlsaDriver::create_port_view_internal(snd_seq_addr_t   addr,
 		}
 
 		if (is_duplex) {
-			const ModuleType flipped_module_type =
-			    ((!is_input) ? ModuleType::input : ModuleType::output);
+			const SignalDirection flipped_module_type =
+			    ((!is_input) ? SignalDirection::input
+			                 : SignalDirection::output);
 			parent = find_or_create_module(
 			    _app, addr.client, client_name, flipped_module_type);
 			if (!parent->get_port(port_id)) {

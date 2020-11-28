@@ -45,7 +45,7 @@ class PatchageCanvas : public Ganv::Canvas
 public:
 	PatchageCanvas(Connector& connector, int width, int height);
 
-	PatchageModule* find_module(const ClientID& id, ModuleType type);
+	PatchageModule* find_module(const ClientID& id, SignalDirection type);
 	PatchagePort*   find_port(const PortID& id);
 
 	void remove_module(const ClientID& id);

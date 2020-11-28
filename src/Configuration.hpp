@@ -23,11 +23,11 @@
 #include <map>
 #include <string>
 
-enum class ModuleType
+enum class SignalDirection
 {
 	input,
 	output,
-	input_output,
+	duplex,
 };
 
 enum class PortType
@@ -62,11 +62,13 @@ public:
 	void load();
 	void save();
 
-	bool
-	get_module_location(const std::string& name, ModuleType type, Coord& loc);
+	bool get_module_location(const std::string& name,
+	                         SignalDirection    type,
+	                         Coord&             loc);
 
-	void
-	set_module_location(const std::string& name, ModuleType type, Coord loc);
+	void set_module_location(const std::string& name,
+	                         SignalDirection    type,
+	                         Coord              loc);
 
 	void set_module_split(const std::string& name, bool split);
 	bool get_module_split(const std::string& name, bool default_val) const;

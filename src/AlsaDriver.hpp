@@ -70,12 +70,12 @@ private:
 	static void* refresh_main(void* me);
 	void         _refresh_main();
 
-	PatchageModule* find_module(uint8_t client_id, ModuleType type);
+	PatchageModule* find_module(uint8_t client_id, SignalDirection type);
 
 	PatchageModule* find_or_create_module(Patchage*          patchage,
 	                                      uint8_t            client_id,
 	                                      const std::string& client_name,
-	                                      ModuleType         type);
+	                                      SignalDirection    type);
 
 	void create_port_view_internal(snd_seq_addr_t   addr,
 	                               PatchageModule*& parent,

@@ -40,7 +40,7 @@ PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
 }
 
 PatchageModule*
-PatchageCanvas::find_module(const ClientID& id, const ModuleType type)
+PatchageCanvas::find_module(const ClientID& id, const SignalDirection type)
 {
 	auto i = _module_index.find(id);
 
@@ -50,7 +50,7 @@ PatchageCanvas::find_module(const ClientID& id, const ModuleType type)
 			return i->second;
 		}
 
-		if (i->second->type() == ModuleType::input_output) {
+		if (i->second->type() == SignalDirection::duplex) {
 			io_module = i->second;
 		}
 	}
@@ -194,11 +194,11 @@ PatchageCanvas::add_module(const ClientID& id, PatchageModule* module)
 	// Join partners, if applicable
 	PatchageModule* in_module  = nullptr;
 	PatchageModule* out_module = nullptr;
-	if (module->type() == ModuleType::input) {
+	if (module->type() == SignalDirection::input) {
 		in_module  = module;
-		out_module = find_module(id, ModuleType::output);
-	} else if (module->type() == ModuleType::output) {
-		in_module  = find_module(id, ModuleType::output);
+		out_module = find_module(id, SignalDirection::output);
+	} else if (module->type() == SignalDirection::output) {
+		in_module  = find_module(id, SignalDirection::output);
 		out_module = module;
 	}
 

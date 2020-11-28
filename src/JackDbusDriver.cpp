@@ -642,13 +642,13 @@ JackDriver::add_port(dbus_uint64_t /*client_id*/,
 		return;
 	}
 
-	ModuleType type = ModuleType::input_output;
+	SignalDirection type = SignalDirection::duplex;
 	if (_app->conf()->get_module_split(
 	        client_name, port_flags & JACKDBUS_PORT_FLAG_TERMINAL)) {
 		if (port_flags & JACKDBUS_PORT_FLAG_INPUT) {
-			type = ModuleType::input;
+			type = SignalDirection::input;
 		} else {
-			type = ModuleType::output;
+			type = SignalDirection::output;
 		}
 	}
 
@@ -693,7 +693,7 @@ JackDriver::remove_port(dbus_uint64_t /*client_id*/,
 }
 
 PatchageModule*
-JackDriver::find_or_create_module(ModuleType type, const std::string& name)
+JackDriver::find_or_create_module(SignalDirection type, const std::string& name)
 {
 	const auto      id     = ClientID::jack(name);
 	PatchageModule* module = _app->canvas()->find_module(id, type);
