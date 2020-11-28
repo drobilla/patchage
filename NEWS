@@ -18,7 +18,7 @@ patchage (1.0.2) stable;
   * Support Jack CV and OSC via metadata
   * Upgrade to waf 2.0.19
 
- -- David Robillard <d@drobilla.net>  Thu, 09 Apr 2020 14:29:59 +0200
+ -- David Robillard <d@drobilla.net>  Thu, 09 Apr 2020 12:29:59 +0000
 
 patchage (1.0.0) stable;
 
