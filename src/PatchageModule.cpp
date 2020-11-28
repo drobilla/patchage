@@ -60,7 +60,7 @@ PatchageModule::update_menu()
 	if (_type == SignalDirection::duplex) {
 		bool has_in  = false;
 		bool has_out = false;
-		for (const_iterator p = begin(); p != end(); ++p) {
+		for (auto p = begin(); p != end(); ++p) {
 			if ((*p)->is_input()) {
 				has_in = true;
 			} else {

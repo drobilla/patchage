@@ -83,8 +83,7 @@ Configuration::get_module_location(const std::string& name,
                                    SignalDirection    type,
                                    Coord&             loc) const
 {
-	std::map<std::string, ModuleSettings>::const_iterator i =
-	    _module_settings.find(name);
+	auto i = _module_settings.find(name);
 	if (i == _module_settings.end()) {
 		return false;
 	}
