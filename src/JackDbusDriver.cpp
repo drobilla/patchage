@@ -55,8 +55,6 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_PORT_TYPE_AUDIO 0
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
-//#define USE_FULL_REFRESH
-
 namespace {
 
 std::string
@@ -204,34 +202,6 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 		}
 	}
 
-#if defined(USE_FULL_REFRESH)
-	if (dbus_message_is_signal(
-	        message, JACKDBUS_IFACE_PATCHBAY, "GraphChanged")) {
-		if (!dbus_message_get_args(message,
-		                           &me->_dbus_error,
-		                           DBUS_TYPE_UINT64,
-		                           &new_graph_version,
-		                           DBUS_TYPE_INVALID)) {
-			me->error_msg(
-			    fmt::format("dbus_message_get_args() failed to extract "
-			                "GraphChanged signal arguments ({})",
-			                me->_dbus_error.message));
-			dbus_error_free(&me->_dbus_error);
-			return DBUS_HANDLER_RESULT_HANDLED;
-		}
-
-		if (!me->_server_started) {
-			me->_server_started = true;
-			me->signal_attached.emit();
-		}
-
-		if (new_graph_version > me->_graph_version) {
-			me->refresh_internal(false);
-		}
-
-		return DBUS_HANDLER_RESULT_HANDLED;
-	}
-#else
 	if (dbus_message_is_signal(
 	        message, JACKDBUS_IFACE_PATCHBAY, "PortAppeared")) {
 		if (!dbus_message_get_args(message,
@@ -404,7 +374,6 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
-#endif
 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -546,12 +515,6 @@ JackDriver::attach(bool launch_daemon)
 	                   "type='signal',interface='" DBUS_INTERFACE_DBUS
 	                   "',member=NameOwnerChanged,arg0='org.jackaudio.service'",
 	                   nullptr);
-#if defined(USE_FULL_REFRESH)
-	dbus_bus_add_match(_dbus_connection,
-	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
-	                   "',member=GraphChanged",
-	                   nullptr);
-#else
 	dbus_bus_add_match(_dbus_connection,
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortAppeared",
@@ -568,7 +531,7 @@ JackDriver::attach(bool launch_daemon)
 	                   "type='signal',interface='" JACKDBUS_IFACE_PATCHBAY
 	                   "',member=PortsDisconnected",
 	                   nullptr);
-#endif
+
 	dbus_connection_add_filter(
 	    _dbus_connection, dbus_message_hook, this, nullptr);
 
@@ -770,7 +733,7 @@ JackDriver::disconnect_ports(dbus_uint64_t /*connection_id*/,
 }
 
 void
-JackDriver::refresh_internal(bool force)
+JackDriver::refresh()
 {
 	DBusMessage*    reply_ptr              = nullptr;
 	DBusMessageIter iter                   = {};
@@ -793,12 +756,6 @@ JackDriver::refresh_internal(bool force)
 	dbus_uint64_t   port2_id               = 0u;
 	const char*     port2_name             = nullptr;
 	dbus_uint64_t   connection_id          = 0u;
-
-	if (force) {
-		version = 0; // workaround module split/join stupidity
-	} else {
-		version = _graph_version;
-	}
 
 	if (!call(true,
 	          JACKDBUS_IFACE_PATCHBAY,
@@ -824,11 +781,6 @@ JackDriver::refresh_internal(bool force)
 
 	dbus_message_iter_get_basic(&iter, &version);
 	dbus_message_iter_next(&iter);
-
-	if (!force && version <= _graph_version) {
-		dbus_message_unref(reply_ptr);
-		return;
-	}
 
 	destroy_all();
 
@@ -921,12 +873,6 @@ JackDriver::refresh_internal(bool force)
 		              port2_id,
 		              port2_name);
 	}
-}
-
-void
-JackDriver::refresh()
-{
-	refresh_internal(true);
 }
 
 bool

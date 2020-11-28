@@ -132,8 +132,6 @@ private:
 
 	void stop_server();
 
-	void refresh_internal(bool force);
-
 	static DBusHandlerResult dbus_message_hook(DBusConnection* connection,
 	                                           DBusMessage*    message,
 	                                           void*           jack_driver);
