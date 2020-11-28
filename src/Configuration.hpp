@@ -17,18 +17,13 @@
 #ifndef PATCHAGE_CONFIGURATION_HPP
 #define PATCHAGE_CONFIGURATION_HPP
 
+#include "SignalDirection.hpp"
+
 #include <boost/optional.hpp>
 
 #include <cstdint>
 #include <map>
 #include <string>
-
-enum class SignalDirection
-{
-	input,
-	output,
-	duplex,
-};
 
 enum class PortType
 {

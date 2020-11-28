@@ -21,6 +21,7 @@
 #include "Connector.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
+#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 #include <set>

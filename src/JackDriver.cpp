@@ -24,6 +24,7 @@
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 #include "PortNames.hpp"
+#include "SignalDirection.hpp"
 #include "handle_event.hpp"
 #include "patchage_config.h"
 

@@ -19,10 +19,11 @@
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchagePort.hpp"
+#include "SignalDirection.hpp"
 
 PatchageModule::PatchageModule(Patchage*          app,
                                const std::string& name,
-                               SignalDirection         type,
+                               SignalDirection    type,
                                ClientID           id,
                                double             x,
                                double             y)

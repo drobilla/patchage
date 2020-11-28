@@ -17,6 +17,7 @@
 #include "Configuration.hpp"
 
 #include "Patchage.hpp"
+#include "SignalDirection.hpp"
 
 #include <cctype>
 #include <cstdlib>
