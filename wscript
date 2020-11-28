@@ -246,6 +246,7 @@ def build(bld):
             src/PatchageCanvas.cpp
             src/PatchageModule.cpp
             src/TextViewLog.cpp
+            src/event_to_string.cpp
             src/handle_event.cpp
             src/main.cpp
     '''
