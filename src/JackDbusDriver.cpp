@@ -723,7 +723,7 @@ JackDriver::disconnect(const PortID tail_id, const PortID head_id)
 	return true;
 }
 
-jack_nframes_t
+uint32_t
 JackDriver::buffer_size()
 {
 	DBusMessage*  reply_ptr   = nullptr;
@@ -758,7 +758,7 @@ JackDriver::buffer_size()
 }
 
 bool
-JackDriver::set_buffer_size(jack_nframes_t size)
+JackDriver::set_buffer_size(const uint32_t size)
 {
 	DBusMessage*  reply_ptr   = nullptr;
 	dbus_uint32_t buffer_size = 0u;

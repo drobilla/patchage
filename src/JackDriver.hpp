@@ -24,12 +24,13 @@
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 
+#include <cstdint>
 #include <mutex>
 #include <string>
 
 class ILog;
 
-/// Driver for JACK audio and midi ports
+/// Driver for JACK audio and midi ports that uses libjack
 class JackDriver : public Driver
 {
 public:
@@ -58,9 +59,9 @@ public:
 	float    get_max_dsp_load();
 	void     reset_max_dsp_load();
 
-	jack_nframes_t sample_rate() { return jack_get_sample_rate(_client); }
-	jack_nframes_t buffer_size();
-	bool           set_buffer_size(jack_nframes_t size);
+	uint32_t sample_rate() { return jack_get_sample_rate(_client); }
+	uint32_t buffer_size();
+	bool     set_buffer_size(jack_nframes_t size);
 
 private:
 	ClientInfo get_client_info(const char* name);

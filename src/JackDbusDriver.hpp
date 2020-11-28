@@ -22,13 +22,13 @@
 
 #include <dbus/dbus.h>
 #include <glibmm/thread.h>
-#include <jack/jack.h>
-#include <jack/statistics.h>
 
+#include <cstdint>
 #include <string>
 
 class ILog;
 
+/// Driver for JACK audio and midi ports that uses D-Bus
 class JackDriver : public Driver
 {
 public:
@@ -57,9 +57,9 @@ public:
 	float    get_max_dsp_load();
 	void     reset_max_dsp_load();
 
-	float          sample_rate();
-	jack_nframes_t buffer_size();
-	bool           set_buffer_size(jack_nframes_t size);
+	float    sample_rate();
+	uint32_t buffer_size();
+	bool     set_buffer_size(uint32_t size);
 
 private:
 	PortType patchage_port_type(dbus_uint32_t dbus_port_type) const;

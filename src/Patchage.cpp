@@ -59,6 +59,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gtkmm/treemodel.h>
 
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
 
@@ -478,8 +479,8 @@ Patchage::update_toolbar()
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {
-		const jack_nframes_t buffer_size = _jack_driver->buffer_size();
-		const jack_nframes_t sample_rate = _jack_driver->sample_rate();
+		const auto buffer_size = _jack_driver->buffer_size();
+		const auto sample_rate = _jack_driver->sample_rate();
 		if (sample_rate != 0) {
 			const int latency_ms =
 			    lrintf(buffer_size * 1000 / float(sample_rate));
@@ -960,7 +961,7 @@ Patchage::buffer_size_changed()
 	if (selected == -1) {
 		update_toolbar();
 	} else {
-		const jack_nframes_t buffer_size = 1 << (selected + 5);
+		const uint32_t buffer_size = 1u << (selected + 5);
 		_jack_driver->set_buffer_size(buffer_size);
 		update_toolbar();
 	}
