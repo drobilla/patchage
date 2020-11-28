@@ -17,6 +17,7 @@
 
 #include "JackDbusDriver.hpp"
 
+#include "ClientType.hpp"
 #include "Driver.hpp"
 #include "ILog.hpp"
 #include "PatchageEvent.hpp"
@@ -85,18 +86,18 @@ JackDriver::update_attached()
 
 	if (!_server_responding) {
 		if (was_attached) {
-			signal_detached.emit();
+			_emit_event(DriverDetachmentEvent{ClientType::jack});
 		}
 		return;
 	}
 
 	if (_server_started && !was_attached) {
-		signal_attached.emit();
+		_emit_event(DriverAttachmentEvent{ClientType::jack});
 		return;
 	}
 
 	if (!_server_started && was_attached) {
-		signal_detached.emit();
+		_emit_event(DriverDetachmentEvent{ClientType::jack});
 		return;
 	}
 }
@@ -119,7 +120,7 @@ JackDriver::on_jack_disappeared()
 	_server_responding = false;
 
 	if (_server_started) {
-		signal_detached.emit();
+		_emit_event(DriverDetachmentEvent{ClientType::jack});
 	}
 
 	_server_started = false;
@@ -206,7 +207,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
 		if (!me->_server_started) {
 			me->_server_started = true;
-			me->signal_attached.emit();
+			me->_emit_event(DriverAttachmentEvent{ClientType::jack});
 		}
 
 		me->_emit_event(
@@ -241,7 +242,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
 		if (!me->_server_started) {
 			me->_server_started = true;
-			me->signal_attached.emit();
+			me->_emit_event(DriverAttachmentEvent{ClientType::jack});
 		}
 
 		me->_emit_event(
@@ -285,7 +286,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
 		if (!me->_server_started) {
 			me->_server_started = true;
-			me->signal_attached.emit();
+			me->_emit_event(DriverAttachmentEvent{ClientType::jack});
 		}
 
 		me->_emit_event(
@@ -330,7 +331,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
 		if (!me->_server_started) {
 			me->_server_started = true;
-			me->signal_attached.emit();
+			me->_emit_event(DriverAttachmentEvent{ClientType::jack});
 		}
 
 		me->_emit_event(
@@ -455,7 +456,7 @@ JackDriver::stop_server()
 	}
 
 	dbus_message_unref(reply_ptr);
-	signal_detached.emit();
+	_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
 void

@@ -16,6 +16,7 @@
 
 #include "event_to_string.hpp"
 
+#include "ClientType.hpp"
 #include "PatchageEvent.hpp"
 #include "warnings.hpp"
 
@@ -33,6 +34,26 @@ namespace {
 struct EventPrinter
 {
 	using result_type = std::string; ///< For boost::apply_visitor
+
+	std::string operator()(const ClientType type)
+	{
+		switch (type) {
+		case ClientType::jack:
+			return "JACK";
+		case ClientType::alsa:
+			return "ALSA";
+		}
+	}
+
+	std::string operator()(const DriverAttachmentEvent& event)
+	{
+		return fmt::format("Attached to {}", (*this)(event.type));
+	}
+
+	std::string operator()(const DriverDetachmentEvent& event)
+	{
+		return fmt::format("Detached from {}", (*this)(event.type));
+	}
 
 	std::string operator()(const ClientCreationEvent& event)
 	{

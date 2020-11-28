@@ -324,9 +324,6 @@ Patchage::Patchage(int argc, char** argv)
 
 	_connector.add_driver(PortID::Type::jack, _jack_driver.get());
 
-	_jack_driver->signal_detached.connect(
-	    sigc::mem_fun(this, &Patchage::driver_detached));
-
 	_menu_jack_connect->signal_activate().connect(sigc::bind(
 	    sigc::mem_fun(_jack_driver.get(), &JackDriver::attach), true));
 	_menu_jack_disconnect->signal_activate().connect(
@@ -340,7 +337,6 @@ Patchage::Patchage(int argc, char** argv)
 	_connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
 #endif
 
-	connect_widgets();
 	update_state();
 	_menu_view_toolbar->set_active(_conf.get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf.get_sprung_layout());
@@ -406,6 +402,7 @@ Patchage::attach()
 
 	_enable_refresh = true;
 
+	process_events();
 	refresh();
 	update_toolbar();
 }
@@ -540,6 +537,38 @@ Patchage::refresh()
 }
 
 void
+Patchage::driver_attached(const ClientType type)
+{
+	switch (type) {
+	case ClientType::jack:
+		_menu_jack_connect->set_sensitive(false);
+		_menu_jack_disconnect->set_sensitive(true);
+		refresh();
+		break;
+	case ClientType::alsa:
+		_menu_alsa_connect->set_sensitive(false);
+		_menu_alsa_disconnect->set_sensitive(true);
+		refresh();
+		break;
+	}
+}
+
+void
+Patchage::driver_detached(const ClientType type)
+{
+	switch (type) {
+	case ClientType::jack:
+		_menu_jack_connect->set_sensitive(true);
+		_menu_jack_disconnect->set_sensitive(false);
+		break;
+	case ClientType::alsa:
+		_menu_alsa_connect->set_sensitive(true);
+		_menu_alsa_disconnect->set_sensitive(false);
+		break;
+	}
+}
+
+void
 Patchage::store_window_location()
 {
 	int loc_x = 0;
@@ -600,48 +629,6 @@ Patchage::process_events()
 		handle_event(*this, _driver_events.front());
 		_driver_events.pop();
 	}
-}
-
-/** Update the sensitivity status of menus to reflect the present.
- *
- * (eg. disable "Connect to Jack" when Patchage is already connected to Jack)
- */
-void
-Patchage::connect_widgets()
-{
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver->signal_attached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive),
-	    false));
-	_jack_driver->signal_attached.connect(
-	    sigc::mem_fun(this, &Patchage::refresh));
-	_jack_driver->signal_attached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive),
-	    true));
-
-	_jack_driver->signal_detached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_jack_connect, &Gtk::MenuItem::set_sensitive),
-	    true));
-	_jack_driver->signal_detached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_jack_disconnect, &Gtk::MenuItem::set_sensitive),
-	    false));
-#endif
-
-#ifdef HAVE_ALSA
-	_alsa_driver->signal_attached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive),
-	    false));
-	_alsa_driver->signal_attached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive),
-	    true));
-
-	_alsa_driver->signal_detached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_alsa_connect, &Gtk::MenuItem::set_sensitive),
-	    true));
-	_alsa_driver->signal_detached.connect(sigc::bind(
-	    sigc::mem_fun(*_menu_alsa_disconnect, &Gtk::MenuItem::set_sensitive),
-	    false));
-#endif
 }
 
 #ifdef HAVE_ALSA

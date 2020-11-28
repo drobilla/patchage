@@ -19,8 +19,6 @@
 
 #include "PatchageEvent.hpp"
 
-#include <sigc++/sigc++.h>
-
 #include <functional>
 #include <utility>
 
@@ -53,9 +51,6 @@ public:
 	virtual bool connect(const PortID& tail_id, const PortID& head_id) = 0;
 
 	virtual bool disconnect(const PortID& tail_id, const PortID& head_id) = 0;
-
-	sigc::signal<void> signal_attached;
-	sigc::signal<void> signal_detached;
 
 protected:
 	EventSink _emit_event;

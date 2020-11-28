@@ -18,6 +18,7 @@
 
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
+#include "ClientType.hpp"
 #include "ILog.hpp"
 #include "PortInfo.hpp"
 #include "PortType.hpp"
@@ -103,7 +104,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 		_log.error("[ALSA] Unable to attach");
 		_seq = nullptr;
 	} else {
-		_log.info("[ALSA] Attached");
+		_emit_event(DriverAttachmentEvent{ClientType::alsa});
 
 		snd_seq_set_client_name(_seq, "Patchage");
 
@@ -116,8 +117,6 @@ AlsaDriver::attach(bool /*launch_daemon*/)
 		if (ret) {
 			_log.error("[ALSA] Failed to start refresh thread");
 		}
-
-		signal_attached.emit();
 	}
 }
 
@@ -129,8 +128,7 @@ AlsaDriver::detach()
 		pthread_join(_refresh_thread, nullptr);
 		snd_seq_close(_seq);
 		_seq = nullptr;
-		signal_detached.emit();
-		_log.info("[ALSA] Detached");
+		_emit_event(DriverDetachmentEvent{ClientType::alsa});
 	}
 }
 

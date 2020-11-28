@@ -38,6 +38,7 @@
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
+#include "ClientType.hpp"
 #include "Connector.hpp"
 #include "ILog.hpp"
 #include "Legend.hpp"
@@ -85,9 +86,10 @@ public:
 	void save();
 	void quit() { _main_win->hide(); }
 
-	void        refresh();
-	inline void queue_refresh() { _refresh = true; }
-	inline void driver_detached() { _driver_detached = true; }
+	void refresh();
+
+	void driver_attached(ClientType type);
+	void driver_detached(ClientType type);
 
 	void update_state();
 	void store_window_location();
@@ -96,6 +98,7 @@ public:
 	{
 		return _menu_view_human_names->get_active();
 	}
+
 	bool sort_ports() const { return _menu_view_sort_ports->get_active(); }
 
 protected:
@@ -109,8 +112,6 @@ protected:
 
 	void on_driver_event(const PatchageEvent& event);
 	void process_events();
-
-	void connect_widgets();
 
 	void on_arrange();
 	void on_sprung_layout_toggled();

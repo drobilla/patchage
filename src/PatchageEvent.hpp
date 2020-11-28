@@ -19,12 +19,23 @@
 
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
+#include "ClientType.hpp"
 #include "PortID.hpp"
 #include "PortInfo.hpp"
 
 #include <boost/variant/variant.hpp>
 
 #include <string>
+
+struct DriverAttachmentEvent
+{
+	ClientType type;
+};
+
+struct DriverDetachmentEvent
+{
+	ClientType type;
+};
 
 struct ClientCreationEvent
 {
@@ -61,7 +72,9 @@ struct DisconnectionEvent
 };
 
 /// An event from drivers that is processed by the GUI
-using PatchageEvent = boost::variant<ClientCreationEvent,
+using PatchageEvent = boost::variant<DriverAttachmentEvent,
+                                     DriverDetachmentEvent,
+                                     ClientCreationEvent,
                                      ClientDestructionEvent,
                                      PortCreationEvent,
                                      PortDestructionEvent,

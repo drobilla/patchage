@@ -60,12 +60,13 @@ PatchageModule::update_menu()
 	if (_type == SignalDirection::duplex) {
 		bool has_in  = false;
 		bool has_out = false;
-		for (auto p = begin(); p != end(); ++p) {
-			if ((*p)->is_input()) {
+		for (const auto* p : *this) {
+			if (p->is_input()) {
 				has_in = true;
 			} else {
 				has_out = true;
 			}
+
 			if (has_in && has_out) {
 				_menu->items()[0].show(); // Show "Split" menu item
 				return;

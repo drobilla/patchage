@@ -17,6 +17,7 @@
 #include "JackDriver.hpp"
 
 #include "ClientID.hpp"
+#include "ClientType.hpp"
 #include "ILog.hpp"
 #include "PatchageEvent.hpp"
 #include "PortNames.hpp"
@@ -93,8 +94,7 @@ JackDriver::attach(const bool launch_daemon)
 	_is_activated = true;
 	_buffer_size  = jack_get_buffer_size(_client);
 
-	signal_attached.emit();
-	_log.info("[JACK] Attached");
+	_emit_event(DriverAttachmentEvent{ClientType::jack});
 }
 
 void
@@ -109,8 +109,7 @@ JackDriver::detach()
 	}
 
 	_is_activated = false;
-	signal_detached.emit();
-	_log.info("[JACK] Detached");
+	_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
 static std::string
@@ -191,7 +190,7 @@ JackDriver::get_port_info(const jack_port_t* const port)
 void
 JackDriver::shutdown()
 {
-	signal_detached.emit();
+	_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
 void
@@ -380,9 +379,8 @@ JackDriver::jack_shutdown_cb(void* const jack_driver)
 
 	me->_client       = nullptr;
 	me->_is_activated = false;
-	me->signal_detached.emit();
 
-	me->_log.info("[JACK] Shutdown");
+	me->_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
 jack_nframes_t

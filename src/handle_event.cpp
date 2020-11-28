@@ -38,6 +38,16 @@ public:
 	    : _patchage{patchage}
 	{}
 
+	void operator()(const DriverAttachmentEvent& event)
+	{
+		_patchage.driver_attached(event.type);
+	}
+
+	void operator()(const DriverDetachmentEvent& event)
+	{
+		_patchage.driver_detached(event.type);
+	}
+
 	void operator()(const ClientCreationEvent& event)
 	{
 		// Don't create empty modules, they will be created when ports are added
