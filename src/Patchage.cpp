@@ -166,9 +166,6 @@ Patchage::Patchage(int argc, char** argv)
     , _connector(_log)
     , _pane_initialized(false)
     , _attach(true)
-    , _driver_detached(false)
-    , _refresh(false)
-    , _enable_refresh(true)
     , _jack_driver_autoattach(true)
 #ifdef HAVE_ALSA
     , _alsa_driver_autoattach(true)
@@ -386,8 +383,6 @@ Patchage::~Patchage()
 void
 Patchage::attach()
 {
-	_enable_refresh = false;
-
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver_autoattach) {
 		_jack_driver->attach(true);
@@ -399,8 +394,6 @@ Patchage::attach()
 		_alsa_driver->attach(false);
 	}
 #endif
-
-	_enable_refresh = true;
 
 	process_events();
 	refresh();
@@ -419,32 +412,6 @@ Patchage::idle_callback()
 
 	// Process any events from drivers
 	process_events();
-
-	// Do a full refresh
-	if (_refresh) {
-		refresh();
-	} else if (_driver_detached) {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		if (_jack_driver && !_jack_driver->is_attached()) {
-			_canvas->remove_ports([](const PatchagePort* port) {
-				return (port->type() == PortType::jack_audio ||
-				        port->type() == PortType::jack_midi ||
-				        port->type() == PortType::jack_osc ||
-				        port->type() == PortType::jack_cv);
-			});
-		}
-#endif
-#ifdef HAVE_ALSA
-		if (_alsa_driver && !_alsa_driver->is_attached()) {
-			_canvas->remove_ports([](const PatchagePort* port) {
-				return port->type() == PortType::alsa_midi;
-			});
-		}
-#endif
-	}
-
-	_refresh         = false;
-	_driver_detached = false;
 
 	// Update load every 5 idle callbacks
 	static int count = 0;
@@ -519,7 +486,7 @@ Patchage::refresh()
 		handle_event(*this, event);
 	};
 
-	if (_canvas && _enable_refresh) {
+	if (_canvas) {
 		_canvas->clear();
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -541,12 +508,24 @@ Patchage::driver_attached(const ClientType type)
 	case ClientType::jack:
 		_menu_jack_connect->set_sensitive(false);
 		_menu_jack_disconnect->set_sensitive(true);
-		refresh();
+
+		if (_jack_driver) {
+			_jack_driver->refresh([this](const PatchageEvent& event) {
+				handle_event(*this, event);
+			});
+		}
+
 		break;
 	case ClientType::alsa:
 		_menu_alsa_connect->set_sensitive(false);
 		_menu_alsa_disconnect->set_sensitive(true);
-		refresh();
+
+		if (_alsa_driver) {
+			_alsa_driver->refresh([this](const PatchageEvent& event) {
+				handle_event(*this, event);
+			});
+		}
+
 		break;
 	}
 }
@@ -558,10 +537,26 @@ Patchage::driver_detached(const ClientType type)
 	case ClientType::jack:
 		_menu_jack_connect->set_sensitive(true);
 		_menu_jack_disconnect->set_sensitive(false);
+
+		if (_jack_driver && !_jack_driver->is_attached()) {
+			_canvas->remove_ports([](const PatchagePort* port) {
+				return (port->type() == PortType::jack_audio ||
+				        port->type() == PortType::jack_midi ||
+				        port->type() == PortType::jack_osc ||
+				        port->type() == PortType::jack_cv);
+			});
+		}
+
 		break;
+
 	case ClientType::alsa:
 		_menu_alsa_connect->set_sensitive(true);
 		_menu_alsa_disconnect->set_sensitive(false);
+
+		_canvas->remove_ports([](const PatchagePort* port) {
+			return port->type() == PortType::alsa_midi;
+		});
+
 		break;
 	}
 }

@@ -211,9 +211,6 @@ protected:
 
 	bool _pane_initialized;
 	bool _attach;
-	bool _driver_detached;
-	bool _refresh;
-	bool _enable_refresh;
 	bool _jack_driver_autoattach;
 #ifdef HAVE_ALSA
 	bool _alsa_driver_autoattach;
