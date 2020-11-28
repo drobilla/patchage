@@ -17,6 +17,8 @@
 #ifndef PATCHAGE_PORTID_HPP
 #define PATCHAGE_PORTID_HPP
 
+#include "ClientType.hpp"
+
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -26,11 +28,7 @@
 /// An ID for some port on a client (program)
 struct PortID
 {
-	enum class Type
-	{
-		jack,
-		alsa,
-	};
+	using Type = ClientType;
 
 	PortID(const PortID& copy) = default;
 	PortID& operator=(const PortID& copy) = default;
