@@ -259,9 +259,7 @@ JackDriver::create_port(PatchageModule& parent,
 	                             _app->show_human_names(),
 	                             order);
 
-	if (id.type() != PortID::Type::nothing) {
-		dynamic_cast<PatchageCanvas*>(parent.canvas())->index_port(id, ret);
-	}
+	_app->canvas()->index_port(id, ret);
 
 	return ret;
 }

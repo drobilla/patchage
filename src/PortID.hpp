@@ -28,7 +28,6 @@ struct PortID
 {
 	enum class Type
 	{
-		nothing,
 		jack,
 		alsa,
 	};
@@ -40,9 +39,6 @@ struct PortID
 	PortID& operator=(PortID&& id) = default;
 
 	~PortID() = default;
-
-	/// Return a null ID that refers to nothing
-	static PortID nothing() { return PortID{}; }
 
 	/// Return an ID for a JACK port by full name (like "client:port")
 	static PortID jack(std::string name)
@@ -64,8 +60,6 @@ struct PortID
 	bool               alsa_is_input() const { return _alsa_is_input; }
 
 private:
-	PortID() = default;
-
 	PortID(const Type type, std::string jack_name)
 	    : _type{type}
 	    , _jack_name{std::move(jack_name)}
@@ -86,19 +80,17 @@ private:
 		assert(_type == Type::alsa);
 	}
 
-	Type        _type{Type::nothing}; ///< Determines which field is active
-	std::string _jack_name{};         ///< Full port name for Type::jack
-	uint8_t     _alsa_client{};       ///< Client ID for Type::alsa
-	uint8_t     _alsa_port{};         ///< Port ID for Type::alsa
-	bool        _alsa_is_input{};     ///< Input flag for Type::alsa
+	Type        _type;            ///< Determines which field is active
+	std::string _jack_name;       ///< Full port name for Type::jack
+	uint8_t     _alsa_client{};   ///< Client ID for Type::alsa
+	uint8_t     _alsa_port{};     ///< Port ID for Type::alsa
+	bool        _alsa_is_input{}; ///< Input flag for Type::alsa
 };
 
 static inline std::ostream&
 operator<<(std::ostream& os, const PortID& id)
 {
 	switch (id.type()) {
-	case PortID::Type::nothing:
-		return os << "(null)";
 	case PortID::Type::jack:
 		return os << "jack:" << id.jack_name();
 	case PortID::Type::alsa:
@@ -119,8 +111,6 @@ operator<(const PortID& lhs, const PortID& rhs)
 	}
 
 	switch (lhs.type()) {
-	case PortID::Type::nothing:
-		return true;
 	case PortID::Type::jack:
 		return lhs.jack_name() < rhs.jack_name();
 	case PortID::Type::alsa:
