@@ -1053,8 +1053,8 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 float
 JackDriver::sample_rate()
 {
-	DBusMessage* reply_ptr   = nullptr;
-	double       sample_rate = 0.0;
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t sample_rate = 0u;
 
 	if (!call(true,
 	          JACKDBUS_IFACE_CONTROL,
@@ -1066,7 +1066,7 @@ JackDriver::sample_rate()
 
 	if (!dbus_message_get_args(reply_ptr,
 	                           &_dbus_error,
-	                           DBUS_TYPE_DOUBLE,
+	                           DBUS_TYPE_UINT32,
 	                           &sample_rate,
 	                           DBUS_TYPE_INVALID)) {
 		dbus_message_unref(reply_ptr);
