@@ -34,10 +34,6 @@
 #	include <jack/statistics.h>
 #endif
 
-#ifdef PATCHAGE_JACK_SESSION
-#	include <jack/session.h>
-#endif
-
 #ifdef HAVE_ALSA
 #	include "AlsaDriver.hpp"
 #endif
@@ -146,9 +142,6 @@ Patchage::Patchage(int argc, char** argv)
     , INIT_WIDGET(_menu_help_about)
     , INIT_WIDGET(_menu_jack_connect)
     , INIT_WIDGET(_menu_jack_disconnect)
-    , INIT_WIDGET(_menu_open_session)
-    , INIT_WIDGET(_menu_save_session)
-    , INIT_WIDGET(_menu_save_close_session)
     , INIT_WIDGET(_menu_view_arrange)
     , INIT_WIDGET(_menu_view_sprung_layout)
     , INIT_WIDGET(_menu_view_messages)
@@ -244,19 +237,6 @@ Patchage::Patchage(int argc, char** argv)
 	    sigc::mem_fun(this, &Patchage::buffer_size_changed));
 	_status_text->signal_size_allocate().connect(
 	    sigc::mem_fun(this, &Patchage::on_messages_resized));
-
-#ifdef PATCHAGE_JACK_SESSION
-	_menu_open_session->signal_activate().connect(
-	    sigc::mem_fun(this, &Patchage::show_open_session_dialog));
-	_menu_save_session->signal_activate().connect(
-	    sigc::mem_fun(this, &Patchage::show_save_session_dialog));
-	_menu_save_close_session->signal_activate().connect(
-	    sigc::mem_fun(this, &Patchage::show_save_close_session_dialog));
-#else
-	_menu_open_session->hide();
-	_menu_save_session->hide();
-	_menu_save_close_session->hide();
-#endif
 
 #ifdef HAVE_ALSA
 	_menu_alsa_connect->signal_activate().connect(
@@ -668,119 +648,6 @@ Patchage::connect_widgets()
 	    false));
 #endif
 }
-
-#ifdef PATCHAGE_JACK_SESSION
-void
-Patchage::show_open_session_dialog()
-{
-	Gtk::FileChooserDialog dialog(
-	    *_main_win, "Open Session", Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER);
-
-	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
-	Gtk::Button* open_but =
-	    dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
-	open_but->property_has_default() = true;
-
-	if (dialog.run() != Gtk::RESPONSE_OK) {
-		return;
-	}
-
-	const std::string dir = dialog.get_filename();
-	if (g_chdir(dir.c_str())) {
-		_log.error(
-		    fmt::format("Failed to switch to session directory \"{}\"", dir));
-		return;
-	}
-
-	if (system("./jack-session") < 0) {
-		_log.error(
-		    fmt::format("Error executing \"./jack-session\" in {}", dir));
-	} else {
-		_log.info(fmt::format("Loaded session {}", dir));
-	}
-}
-
-static void
-print_edge(GanvEdge* edge, void* data)
-{
-	std::ofstream* script = (std::ofstream*)data;
-	Ganv::Edge*    edgemm = Glib::wrap(edge);
-
-	PatchagePort* src = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
-	PatchagePort* dst = dynamic_cast<PatchagePort*>((edgemm)->get_head());
-
-	if (!src || !dst || src->type() == ALSA_MIDI || dst->type() == ALSA_MIDI) {
-		return;
-	}
-
-	(*script) << "jack_connect '" << src->full_name() << "' '"
-	          << dst->full_name() << "' &\n";
-}
-
-void
-Patchage::save_session(bool close)
-{
-	Gtk::FileChooserDialog dialog(
-	    *_main_win, "Save Session", Gtk::FILE_CHOOSER_ACTION_SAVE);
-
-	dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
-	Gtk::Button* save_but =
-	    dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
-	save_but->property_has_default() = true;
-
-	if (dialog.run() != Gtk::RESPONSE_OK) {
-		return;
-	}
-
-	std::string path = dialog.get_filename();
-	if (g_mkdir_with_parents(path.c_str(), 0740)) {
-		_log.error(fmt::format("Failed to create session directory {}", path));
-		return;
-	}
-
-	path += '/';
-	jack_session_command_t* cmd =
-	    jack_session_notify(_jack_driver->client(),
-	                        nullptr,
-	                        close ? JackSessionSaveAndQuit : JackSessionSave,
-	                        path.c_str());
-
-	const std::string script_path = path + "jack-session";
-	std::ofstream     script(script_path.c_str());
-	script << "#!/bin/sh\n\n";
-
-	const std::string var("${SESSION_DIR}");
-	for (int c = 0; cmd[c].uuid; ++c) {
-		std::string  command = cmd[c].command;
-		const size_t index   = command.find(var);
-		if (index != std::string::npos) {
-			command.replace(index, var.length(), cmd[c].client_name);
-		}
-
-		script << command << " &\n";
-	}
-
-	script << "\nsleep 3\n\n";
-
-	_canvas->for_each_edge(print_edge, &script);
-
-	script.close();
-	g_chmod(script_path.c_str(), 0740);
-}
-
-void
-Patchage::show_save_session_dialog()
-{
-	save_session(false);
-}
-
-void
-Patchage::show_save_close_session_dialog()
-{
-	save_session(true);
-}
-
-#endif
 
 #ifdef HAVE_ALSA
 void

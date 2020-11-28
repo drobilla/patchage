@@ -38,11 +38,10 @@ def options(ctx):
 
     ctx.add_flags(
         opt,
-        {'jack-dbus':           'use Jack via D-Bus',
-         'jack-session-manage': 'include JACK session management support',
-         'no-alsa':             'do not build Alsa Sequencer support',
-         'no-binloc':           'do not find files from executable location',
-         'light-theme':         'use light coloured theme'})
+        {'jack-dbus':   'use Jack via D-Bus',
+         'no-alsa':     'do not build Alsa Sequencer support',
+         'no-binloc':   'do not find files from executable location',
+         'light-theme': 'use light coloured theme'})
 
 
 def configure(conf):
@@ -170,9 +169,6 @@ def configure(conf):
                                                      char**''',
                                 mandatory   = False)
 
-            if Options.options.jack_session_manage:
-                conf.define('PATCHAGE_JACK_SESSION', 1)
-
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
         conf.check_pkg('alsa',
@@ -220,7 +216,6 @@ def configure(conf):
          'App human name':          conf.env.APP_HUMAN_NAME,
          'Jack (D-Bus)':            conf.is_defined('HAVE_JACK_DBUS'),
          'Jack (libjack)':          conf.is_defined('PATCHAGE_LIBJACK'),
-         'Jack Session Management': conf.is_defined('PATCHAGE_JACK_SESSION'),
          'Jack Metadata':           conf.is_defined('HAVE_JACK_METADATA'),
          'Alsa Sequencer':          bool(conf.env.HAVE_ALSA)})
 

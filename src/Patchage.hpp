@@ -85,11 +85,6 @@ public:
 #ifdef HAVE_ALSA
 	AlsaDriver* alsa_driver() const { return _alsa_driver; }
 #endif
-#ifdef PATCHAGE_JACK_SESSION
-	void show_open_session_dialog();
-	void show_save_session_dialog();
-	void show_save_close_session_dialog();
-#endif
 
 	Glib::RefPtr<Gtk::Builder> xml() { return _xml; }
 
@@ -169,10 +164,6 @@ protected:
 	void        menu_alsa_disconnect();
 #endif
 
-#ifdef PATCHAGE_JACK_SESSION
-	void save_session(bool close);
-#endif
-
 	std::shared_ptr<PatchageCanvas> _canvas;
 
 	JackDriver*    _jack_driver;
@@ -194,9 +185,6 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_help_about;
 	Widget<Gtk::MenuItem>       _menu_jack_connect;
 	Widget<Gtk::MenuItem>       _menu_jack_disconnect;
-	Widget<Gtk::MenuItem>       _menu_open_session;
-	Widget<Gtk::MenuItem>       _menu_save_session;
-	Widget<Gtk::MenuItem>       _menu_save_close_session;
 	Widget<Gtk::MenuItem>       _menu_view_arrange;
 	Widget<Gtk::CheckMenuItem>  _menu_view_sprung_layout;
 	Widget<Gtk::CheckMenuItem>  _menu_view_messages;
