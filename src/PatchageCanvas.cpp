@@ -18,31 +18,25 @@
 
 #include "patchage_config.h"
 
-#include "Patchage.hpp"
+#include "Connector.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 #include "warnings.hpp"
 
-#if defined(HAVE_JACK_DBUS)
-#	include "JackDbusDriver.hpp"
-#elif defined(PATCHAGE_LIBJACK)
-#	include "JackDriver.hpp"
-#endif
-#ifdef HAVE_ALSA
-#	include "AlsaDriver.hpp"
-#endif
+#include <set>
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-PatchageCanvas::PatchageCanvas(Patchage* app, int width, int height)
+PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
     : Ganv::Canvas(width, height)
-    , _app(app)
+    , _connector(connector)
 {
 	signal_event.connect(sigc::mem_fun(this, &PatchageCanvas::on_event));
-	signal_connect.connect(sigc::mem_fun(this, &PatchageCanvas::connect));
-	signal_disconnect.connect(sigc::mem_fun(this, &PatchageCanvas::disconnect));
+	signal_connect.connect(sigc::mem_fun(this, &PatchageCanvas::on_connect));
+	signal_disconnect.connect(
+	    sigc::mem_fun(this, &PatchageCanvas::on_disconnect));
 }
 
 PatchageModule*
@@ -189,71 +183,32 @@ PatchageCanvas::find_port_by_name(const std::string& client_name,
 }
 
 void
-PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
+PatchageCanvas::on_connect(Ganv::Node* port1, Ganv::Node* port2)
 {
-	auto* p1 = dynamic_cast<PatchagePort*>(port1);
-	auto* p2 = dynamic_cast<PatchagePort*>(port2);
-	if (!p1 || !p2) {
-		return;
-	}
+	auto* const p1 = dynamic_cast<PatchagePort*>(port1);
+	auto* const p2 = dynamic_cast<PatchagePort*>(port2);
 
-	if ((p1->type() == PortType::jack_audio &&
-	     p2->type() == PortType::jack_audio) ||
-	    (p1->type() == PortType::jack_midi &&
-	     p2->type() == PortType::jack_midi) ||
-	    (p1->type() == PortType::jack_audio &&
-	     p2->type() == PortType::jack_cv) ||
-	    (p1->type() == PortType::jack_cv && p2->type() == PortType::jack_cv) ||
-	    (p1->type() == PortType::jack_osc &&
-	     p2->type() == PortType::jack_osc)) {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		_app->jack_driver()->connect(p1->id(), p2->id());
-#endif
-#ifdef HAVE_ALSA
-	} else if (p1->type() == PortType::alsa_midi &&
-	           p2->type() == PortType::alsa_midi) {
-		_app->alsa_driver()->connect(p1->id(), p2->id());
-#endif
-	} else {
-		_app->log().warning("Cannot make connection, incompatible port types");
+	if (p1 && p2) {
+		if (p1->is_output() && p2->is_input()) {
+			_connector.connect(p1->id(), p2->id());
+		} else if (p2->is_output() && p1->is_input()) {
+			_connector.connect(p2->id(), p1->id());
+		}
 	}
 }
 
 void
-PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
+PatchageCanvas::on_disconnect(Ganv::Node* port1, Ganv::Node* port2)
 {
-	auto* input  = dynamic_cast<PatchagePort*>(port1);
-	auto* output = dynamic_cast<PatchagePort*>(port2);
-	if (!input || !output) {
-		return;
-	}
+	auto* const p1 = dynamic_cast<PatchagePort*>(port1);
+	auto* const p2 = dynamic_cast<PatchagePort*>(port2);
 
-	if (input->is_output() && output->is_input()) {
-		// Damn, guessed wrong
-		PatchagePort* swap = input;
-		input              = output;
-		output             = swap;
-	}
-
-	if (!input || !output || input->is_output() || output->is_input()) {
-		_app->log().error("Attempt to disconnect mismatched/unknown ports");
-		return;
-	}
-
-	if (input->type() == PortType::jack_audio ||
-	    input->type() == PortType::jack_midi ||
-	    input->type() == PortType::jack_cv ||
-	    input->type() == PortType::jack_osc) {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		_app->jack_driver()->disconnect(output->id(), input->id());
-
-#endif
-#ifdef HAVE_ALSA
-	} else if (input->type() == PortType::alsa_midi) {
-		_app->alsa_driver()->disconnect(output->id(), input->id());
-#endif
-	} else {
-		_app->log().error("Attempt to disconnect ports with strange types");
+	if (p1 && p2) {
+		if (p1->is_output() && p2->is_input()) {
+			_connector.disconnect(p1->id(), p2->id());
+		} else if (p2->is_output() && p1->is_input()) {
+			_connector.disconnect(p2->id(), p1->id());
+		}
 	}
 }
 
@@ -278,12 +233,12 @@ PatchageCanvas::add_module(const std::string& name, PatchageModule* module)
 	}
 }
 
-static void
+void
 disconnect_edge(GanvEdge* edge, void* data)
 {
 	auto*       canvas = static_cast<PatchageCanvas*>(data);
 	Ganv::Edge* edgemm = Glib::wrap(edge);
-	canvas->disconnect(edgemm->get_tail(), edgemm->get_head());
+	canvas->on_disconnect(edgemm->get_tail(), edgemm->get_head());
 }
 
 bool

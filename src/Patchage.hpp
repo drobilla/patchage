@@ -38,6 +38,7 @@
 #include <gtkmm/viewport.h>
 #include <gtkmm/window.h>
 
+#include "Connector.hpp"
 #include "ILog.hpp"
 #include "Legend.hpp"
 #include "TextViewLog.hpp"
@@ -210,6 +211,7 @@ protected:
 	Widget<Gtk::TextView>       _status_text;
 	Legend*                     _legend;
 	TextViewLog                 _log;
+	Connector                   _connector;
 
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;

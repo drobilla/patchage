@@ -36,14 +36,14 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
-class Patchage;
 class PatchageModule;
 class PatchagePort;
+class Connector;
 
 class PatchageCanvas : public Ganv::Canvas
 {
 public:
-	PatchageCanvas(Patchage* _app, int width, int height);
+	PatchageCanvas(Connector& connector, int width, int height);
 
 	PatchageModule* find_module(const std::string& name, ModuleType type);
 	PatchagePort*   find_port(const PortID& id);
@@ -53,10 +53,6 @@ public:
 
 	PatchagePort* find_port_by_name(const std::string& client_name,
 	                                const std::string& port_name);
-
-	void connect(Ganv::Node* port1, Ganv::Node* port2);
-
-	void disconnect(Ganv::Node* port1, Ganv::Node* port2);
 
 	void index_port(const PortID& id, PatchagePort* port)
 	{
@@ -77,10 +73,15 @@ private:
 	using PortIndex   = std::map<const PortID, PatchagePort*>;
 	using ModuleIndex = std::multimap<const std::string, PatchageModule*>;
 
+	friend void disconnect_edge(GanvEdge*, void*);
+
 	bool on_event(GdkEvent* ev);
 	bool on_connection_event(Ganv::Edge* c, GdkEvent* ev);
 
-	Patchage*   _app;
+	void on_connect(Ganv::Node* port1, Ganv::Node* port2);
+	void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);
+
+	Connector&  _connector;
 	PortIndex   _port_index;
 	ModuleIndex _module_index;
 };

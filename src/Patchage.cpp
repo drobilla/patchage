@@ -168,6 +168,7 @@ Patchage::Patchage(int argc, char** argv)
     , INIT_WIDGET(_status_text)
     , _legend(nullptr)
     , _log(_status_text)
+    , _connector(_log)
     , _pane_initialized(false)
     , _attach(true)
     , _driver_detached(false)
@@ -179,7 +180,7 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 {
 	_conf   = new Configuration();
-	_canvas = std::make_shared<PatchageCanvas>(this, 1600 * 2, 1200 * 2);
+	_canvas = std::make_shared<PatchageCanvas>(_connector, 1600 * 2, 1200 * 2);
 
 	while (argc > 0) {
 		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
@@ -338,6 +339,8 @@ Patchage::Patchage(int argc, char** argv)
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver = new JackDriver(this, _log);
+	_connector.add_driver(PortID::Type::jack, _jack_driver);
+
 	_jack_driver->signal_detached.connect(
 	    sigc::mem_fun(this, &Patchage::driver_detached));
 
@@ -349,6 +352,7 @@ Patchage::Patchage(int argc, char** argv)
 
 #ifdef HAVE_ALSA
 	_alsa_driver = new AlsaDriver(this, _log);
+	_connector.add_driver(PortID::Type::alsa, _alsa_driver);
 #endif
 
 	connect_widgets();
