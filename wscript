@@ -158,18 +158,20 @@ def configure(conf):
 
         if conf.env.HAVE_JACK:
             conf.define('PATCHAGE_LIBJACK', 1)
-            if Options.options.jack_session_manage:
-                conf.define('PATCHAGE_JACK_SESSION', 1)
-                conf.check_function('cxx', 'jack_get_property',
-                                    header_name = 'jack/metadata.h',
-                                    define_name = 'HAVE_JACK_METADATA',
-                                    uselib      = 'JACK',
-                                    return_type = 'int',
-                                    arg_types   = '''jack_uuid_t,
+
+            conf.check_function('cxx', 'jack_get_property',
+                                header_name = 'jack/metadata.h',
+                                define_name = 'HAVE_JACK_METADATA',
+                                uselib      = 'JACK',
+                                return_type = 'int',
+                                arg_types   = '''jack_uuid_t,
                                                      const char*,
                                                      char**,
                                                      char**''',
-                                    mandatory   = False)
+                                mandatory   = False)
+
+            if Options.options.jack_session_manage:
+                conf.define('PATCHAGE_JACK_SESSION', 1)
 
     # Use Alsa if present unless --no-alsa
     if not Options.options.no_alsa:
