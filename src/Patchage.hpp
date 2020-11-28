@@ -152,12 +152,10 @@ protected:
 	std::mutex                _events_mutex;
 	std::queue<PatchageEvent> _driver_events;
 
-#ifdef HAVE_ALSA
 	std::unique_ptr<Driver> _alsa_driver;
 
 	void menu_alsa_connect();
 	void menu_alsa_disconnect();
-#endif
 
 	std::shared_ptr<PatchageCanvas> _canvas;
 

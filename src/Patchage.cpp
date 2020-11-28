@@ -528,11 +528,9 @@ Patchage::refresh()
 		}
 #endif
 
-#ifdef HAVE_ALSA
 		if (_alsa_driver) {
 			_alsa_driver->refresh(sink);
 		}
-#endif
 	}
 }
 
@@ -631,22 +629,21 @@ Patchage::process_events()
 	}
 }
 
-#ifdef HAVE_ALSA
 void
 Patchage::menu_alsa_connect()
 {
-	_alsa_driver->attach(false);
-	_alsa_driver->refresh(
-	    [this](const PatchageEvent& event) { handle_event(*this, event); });
+	if (_alsa_driver) {
+		_alsa_driver->attach(false);
+	}
 }
 
 void
 Patchage::menu_alsa_disconnect()
 {
-	_alsa_driver->detach();
-	refresh();
+	if (_alsa_driver) {
+		_alsa_driver->detach();
+	}
 }
-#endif
 
 void
 Patchage::on_arrange()
