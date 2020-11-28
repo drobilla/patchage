@@ -187,7 +187,7 @@ JackDriver::get_port_info(const jack_port_t* const port)
 	boost::optional<int> order;
 	const std::string    order_str = get_property(uuid, JACKEY_ORDER);
 	if (!order_str.empty()) {
-		order = atoi(order_str.c_str());
+		order = std::stoi(order_str);
 	}
 
 	return {label, type, direction, order, bool(flags & JackPortIsTerminal)};
