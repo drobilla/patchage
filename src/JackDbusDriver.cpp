@@ -571,6 +571,8 @@ JackDriver::attach(bool launch_daemon)
 	if (launch_daemon) {
 		start_server();
 	}
+
+	_log.info("[JACK] Attached to bus");
 }
 
 void
