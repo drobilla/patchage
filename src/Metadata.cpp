@@ -16,6 +16,13 @@
 
 #include "Metadata.hpp"
 
+#include "ClientID.hpp"
+#include "ClientInfo.hpp"
+#include "PortID.hpp"
+#include "PortInfo.hpp"
+
+#include <boost/optional.hpp>
+
 boost::optional<ClientInfo>
 Metadata::client(const ClientID& id)
 {

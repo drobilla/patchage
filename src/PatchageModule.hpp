@@ -18,7 +18,7 @@
 #define PATCHAGE_PATCHAGEMODULE_HPP
 
 #include "ClientID.hpp"
-#include "Configuration.hpp"
+#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS

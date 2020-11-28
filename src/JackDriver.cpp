@@ -18,16 +18,15 @@
 
 #include "ClientID.hpp"
 #include "ILog.hpp"
-#include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
+#include "jackey.h"
 #include "patchage_config.h"
+#include "warnings.hpp"
 
 #ifdef HAVE_JACK_METADATA
-#	include "jackey.h"
 #	include <jack/metadata.h>
 #endif
 

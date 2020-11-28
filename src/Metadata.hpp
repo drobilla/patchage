@@ -25,7 +25,6 @@
 #include <boost/optional.hpp>
 
 #include <map>
-#include <string>
 
 /// Cache of metadata about clients and ports beyond their IDs
 class Metadata

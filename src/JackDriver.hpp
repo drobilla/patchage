@@ -21,7 +21,6 @@
 #include "Driver.hpp"
 #include "PortInfo.hpp"
 
-#include <glibmm/thread.h>
 #include <jack/jack.h>
 
 #include <cstdint>

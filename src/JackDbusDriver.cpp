@@ -17,8 +17,6 @@
 
 #include "JackDbusDriver.hpp"
 
-#include "patchage_config.h"
-
 #include "Driver.hpp"
 #include "ILog.hpp"
 #include "PatchageEvent.hpp"

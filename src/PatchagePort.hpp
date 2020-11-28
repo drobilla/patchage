@@ -17,8 +17,6 @@
 #ifndef PATCHAGE_PATCHAGEPORT_HPP
 #define PATCHAGE_PATCHAGEPORT_HPP
 
-#include "patchage_config.h"
-
 #include "Configuration.hpp"
 #include "PatchageCanvas.hpp"
 #include "PatchageModule.hpp"

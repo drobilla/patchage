@@ -18,11 +18,11 @@
 
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
-#include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
+#include "ILog.hpp"
 #include "PortInfo.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
+#include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>

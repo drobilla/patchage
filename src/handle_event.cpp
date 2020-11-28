@@ -15,16 +15,10 @@
  */
 
 #include "handle_event.hpp"
-#include "event_to_string.hpp"
-
-#include "PatchageEvent.hpp"
-
-#include "patchage_config.h"
-
-#include "event_to_string.hpp"
 
 #include "Patchage.hpp"
 #include "PatchageCanvas.hpp"
+#include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
 #include "PatchagePort.hpp"
 

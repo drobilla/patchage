@@ -20,7 +20,6 @@
 
 #include <dlfcn.h>
 
-#include <cassert>
 #include <climits>
 #include <cstdlib>
 #include <string>

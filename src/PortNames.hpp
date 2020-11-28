@@ -17,6 +17,8 @@
 #ifndef PATCHAGE_PORTNAMES_HPP
 #define PATCHAGE_PORTNAMES_HPP
 
+#include "PortID.hpp"
+
 #include <cassert>
 #include <string>
 
