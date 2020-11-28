@@ -20,11 +20,11 @@
 #include "patchage_config.h"
 
 #include "Driver.hpp"
+#include "ILog.hpp"
 #include "PatchageEvent.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
-#include "handle_event.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
@@ -55,8 +55,9 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_PORT_TYPE_AUDIO 0
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
-JackDriver::JackDriver(ILog& log)
-    : _log(log)
+JackDriver::JackDriver(ILog& log, EventSink emit_event)
+    : Driver{std::move(emit_event)}
+    , _log(log)
     , _dbus_error()
     , _dbus_connection(nullptr)
     , _max_dsp_load(0.0f)
@@ -210,7 +211,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->_events.emplace(
+		me->_emit_event(
 		    PortCreationEvent{PortID::jack(client_name, port_name),
 		                      me->port_info(port_name, port_type, port_flags)});
 
@@ -245,7 +246,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->_events.emplace(
+		me->_emit_event(
 		    PortDestructionEvent{PortID::jack(client_name, port_name)});
 
 		return DBUS_HANDLER_RESULT_HANDLED;
@@ -289,7 +290,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->_events.emplace(
+		me->_emit_event(
 		    ConnectionEvent{PortID::jack(client_name, port_name),
 		                    PortID::jack(client2_name, port2_name)});
 
@@ -334,7 +335,7 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 			me->signal_attached.emit();
 		}
 
-		me->_events.emplace(
+		me->_emit_event(
 		    DisconnectionEvent{PortID::jack(client_name, port_name),
 		                       PortID::jack(client2_name, port2_name)});
 
@@ -979,14 +980,4 @@ void
 JackDriver::info_msg(const std::string& msg) const
 {
 	_log.info(std::string{"[JACK] "} + msg);
-}
-
-void
-JackDriver::process_events(Patchage* app)
-{
-	while (!_events.empty()) {
-		PatchageEvent& ev = _events.front();
-		handle_event(*app, ev);
-		_events.pop();
-	}
 }

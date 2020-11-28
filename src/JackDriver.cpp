@@ -24,7 +24,6 @@
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
-#include "handle_event.hpp"
 #include "patchage_config.h"
 
 #ifdef HAVE_JACK_METADATA
@@ -44,9 +43,11 @@ PATCHAGE_RESTORE_WARNINGS
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <utility>
 
-JackDriver::JackDriver(ILog& log)
-    : _log(log)
+JackDriver::JackDriver(ILog& log, EventSink emit_event)
+    : Driver{std::move(emit_event)}
+    , _log(log)
     , _client(nullptr)
     , _last_pos{}
     , _buffer_size(0)
@@ -345,9 +346,9 @@ JackDriver::jack_client_registration_cb(const char* name,
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.emplace(ClientCreationEvent{ClientID::jack(name), {name}});
+		me->_emit_event(ClientCreationEvent{ClientID::jack(name), {name}});
 	} else {
-		me->_events.emplace(ClientDestructionEvent{ClientID::jack(name)});
+		me->_emit_event(ClientDestructionEvent{ClientID::jack(name)});
 	}
 }
 
@@ -364,9 +365,9 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 	const auto         id   = PortID::jack(name);
 
 	if (registered) {
-		me->_events.emplace(PortCreationEvent{id, me->get_port_info(port)});
+		me->_emit_event(PortCreationEvent{id, me->get_port_info(port)});
 	} else {
-		me->_events.emplace(PortDestructionEvent{id});
+		me->_emit_event(PortDestructionEvent{id});
 	}
 }
 
@@ -385,10 +386,10 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 	const char* const  dst_name = jack_port_name(dst_port);
 
 	if (connect) {
-		me->_events.emplace(
+		me->_emit_event(
 		    ConnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
 	} else {
-		me->_events.emplace(
+		me->_emit_event(
 		    DisconnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
 	}
 }
@@ -485,14 +486,4 @@ JackDriver::set_buffer_size(jack_nframes_t size)
 
 	_buffer_size = size;
 	return true;
-}
-
-void
-JackDriver::process_events(Patchage* app)
-{
-	while (!_events.empty()) {
-		PatchageEvent& ev = _events.front();
-		handle_event(*app, ev);
-		_events.pop();
-	}
 }

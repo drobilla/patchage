@@ -19,24 +19,21 @@
 
 #include "ClientInfo.hpp"
 #include "Driver.hpp"
-#include "PatchageEvent.hpp"
 #include "PortInfo.hpp"
 
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 
 #include <mutex>
-#include <queue>
 #include <string>
 
 class ILog;
-class Patchage;
 
 /// Driver for JACK audio and midi ports
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(ILog& log);
+	explicit JackDriver(ILog& log, EventSink emit_event);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -73,8 +70,6 @@ public:
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
 
-	void process_events(Patchage* app) override;
-
 private:
 	ClientInfo get_client_info(const char* name);
 	PortInfo   get_port_info(const jack_port_t* port);
@@ -100,8 +95,6 @@ private:
 
 	ILog&          _log;
 	jack_client_t* _client;
-
-	std::queue<PatchageEvent> _events;
 
 	std::mutex _shutdown_mutex;
 

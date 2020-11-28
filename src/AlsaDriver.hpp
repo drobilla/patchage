@@ -23,19 +23,16 @@
 #include <pthread.h>
 
 #include <map>
-#include <mutex>
-#include <queue>
 #include <set>
 #include <string>
 
 class ILog;
-class Patchage;
 
 /// Driver for ALSA Sequencer ports
 class AlsaDriver : public Driver
 {
 public:
-	explicit AlsaDriver(ILog& log);
+	explicit AlsaDriver(ILog& log, EventSink emit_event);
 
 	AlsaDriver(const AlsaDriver&) = delete;
 	AlsaDriver& operator=(const AlsaDriver&) = delete;
@@ -57,8 +54,6 @@ public:
 
 	void print_addr(snd_seq_addr_t addr);
 
-	void process_events(Patchage* app) override;
-
 private:
 	bool         create_refresh_port();
 	static void* refresh_main(void* me);
@@ -67,9 +62,6 @@ private:
 	ILog&      _log;
 	snd_seq_t* _seq;
 	pthread_t  _refresh_thread;
-
-	std::mutex                _events_mutex;
-	std::queue<PatchageEvent> _events;
 
 	struct SeqAddrComparator
 	{

@@ -42,11 +42,14 @@
 #include "ILog.hpp"
 #include "Legend.hpp"
 #include "Metadata.hpp"
+#include "PatchageEvent.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
 #include "patchage_config.h"
 
 #include <memory>
+#include <mutex>
+#include <queue>
 #include <set>
 #include <string>
 
@@ -116,6 +119,9 @@ protected:
 		Gtk::TreeModelColumn<Glib::ustring> label;
 	};
 
+	void on_driver_event(const PatchageEvent& event);
+	void process_events();
+
 	void connect_widgets();
 
 	void on_arrange();
@@ -153,6 +159,9 @@ protected:
 	void buffer_size_changed();
 
 	Glib::RefPtr<Gtk::Builder> _xml;
+
+	std::mutex                _events_mutex;
+	std::queue<PatchageEvent> _driver_events;
 
 #ifdef HAVE_ALSA
 	AlsaDriver* _alsa_driver;

@@ -19,14 +19,12 @@
 #define PATCHAGE_JACKDBUSDRIVER_HPP
 
 #include "Driver.hpp"
-#include "Patchage.hpp"
 
 #include <dbus/dbus.h>
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 #include <jack/statistics.h>
 
-#include <queue>
 #include <string>
 
 class ILog;
@@ -34,7 +32,7 @@ class ILog;
 class JackDriver : public Driver
 {
 public:
-	explicit JackDriver(ILog& log);
+	explicit JackDriver(ILog& log, EventSink emit_event);
 
 	JackDriver(const JackDriver&) = delete;
 	JackDriver& operator=(const JackDriver&) = delete;
@@ -63,8 +61,6 @@ public:
 	float          sample_rate();
 	jack_nframes_t buffer_size();
 	bool           set_buffer_size(jack_nframes_t size);
-
-	void process_events(Patchage* app) override;
 
 private:
 	PortType patchage_port_type(dbus_uint32_t dbus_port_type) const;
@@ -103,8 +99,6 @@ private:
 	DBusError       _dbus_error;
 	DBusConnection* _dbus_connection;
 	float           _max_dsp_load;
-
-	std::queue<PatchageEvent> _events;
 
 	bool _server_responding;
 	bool _server_started;

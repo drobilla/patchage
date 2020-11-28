@@ -344,7 +344,9 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = new JackDriver(_log);
+	_jack_driver = new JackDriver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+
 	_connector.add_driver(PortID::Type::jack, _jack_driver);
 
 	_jack_driver->signal_detached.connect(
@@ -357,7 +359,9 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #ifdef HAVE_ALSA
-	_alsa_driver = new AlsaDriver(_log);
+	_alsa_driver = new AlsaDriver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+
 	_connector.add_driver(PortID::Type::alsa, _alsa_driver);
 #endif
 
@@ -443,19 +447,8 @@ Patchage::idle_callback()
 		_attach = false;
 	}
 
-	// Process any JACK events
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_jack_driver) {
-		_jack_driver->process_events(this);
-	}
-#endif
-
-	// Process any ALSA events
-#ifdef HAVE_ALSA
-	if (_alsa_driver) {
-		_alsa_driver->process_events(this);
-	}
-#endif
+	// Process any events from drivers
+	process_events();
 
 	// Do a full refresh
 	if (_refresh) {
@@ -613,6 +606,25 @@ void
 Patchage::update_state()
 {
 	_canvas->for_each_node(load_module_location, nullptr);
+}
+
+void
+Patchage::on_driver_event(const PatchageEvent& event)
+{
+	std::lock_guard<std::mutex> lock{_events_mutex};
+
+	_driver_events.emplace(event);
+}
+
+void
+Patchage::process_events()
+{
+	std::lock_guard<std::mutex> lock{_events_mutex};
+
+	while (!_driver_events.empty()) {
+		handle_event(*this, _driver_events.front());
+		_driver_events.pop();
+	}
 }
 
 /** Update the sensitivity status of menus to reflect the present.

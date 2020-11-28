@@ -22,6 +22,7 @@
 #include <sigc++/sigc++.h>
 
 #include <functional>
+#include <utility>
 
 class Patchage;
 
@@ -31,7 +32,9 @@ class Driver
 public:
 	using EventSink = std::function<void(const PatchageEvent&)>;
 
-	Driver() = default;
+	explicit Driver(EventSink emit_event)
+	    : _emit_event{std::move(emit_event)}
+	{}
 
 	Driver(const Driver&) = delete;
 	Driver& operator=(const Driver&) = delete;
@@ -40,8 +43,6 @@ public:
 	Driver& operator=(Driver&&) = delete;
 
 	virtual ~Driver() = default;
-
-	virtual void process_events(Patchage* app) = 0;
 
 	virtual void attach(bool launch_daemon) = 0;
 	virtual void detach()                   = 0;
@@ -54,6 +55,9 @@ public:
 
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;
+
+protected:
+	EventSink _emit_event;
 };
 
 #endif // PATCHAGE_DRIVER_HPP

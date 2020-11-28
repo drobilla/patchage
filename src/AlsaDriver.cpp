@@ -23,7 +23,6 @@
 #include "PortInfo.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
-#include "handle_event.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
@@ -84,8 +83,9 @@ port_info(const snd_seq_port_info_t* const pinfo)
 
 } // namespace
 
-AlsaDriver::AlsaDriver(ILog& log)
-    : _log(log)
+AlsaDriver::AlsaDriver(ILog& log, EventSink emit_event)
+    : Driver{std::move(emit_event)}
+    , _log(log)
     , _seq(nullptr)
     , _refresh_thread{}
 {}
@@ -425,19 +425,17 @@ AlsaDriver::_refresh_main()
 	while (snd_seq_event_input(_seq, &ev) > 0) {
 		assert(ev);
 
-		std::lock_guard<std::mutex> lock{_events_mutex};
-
 		switch (ev->type) {
 		case SND_SEQ_EVENT_CLIENT_START:
 			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
-			_events.emplace(ClientCreationEvent{
+			_emit_event(ClientCreationEvent{
 			    ClientID::alsa(ev->data.addr.client),
 			    client_info(cinfo),
 			});
 			break;
 
 		case SND_SEQ_EVENT_CLIENT_EXIT:
-			_events.emplace(ClientDestructionEvent{
+			_emit_event(ClientDestructionEvent{
 			    ClientID::alsa(ev->data.addr.client),
 			});
 			break;
@@ -452,7 +450,7 @@ AlsaDriver::_refresh_main()
 			caps = snd_seq_port_info_get_capability(pinfo);
 
 			if (!ignore(ev->data.addr)) {
-				_events.emplace(PortCreationEvent{
+				_emit_event(PortCreationEvent{
 				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ)),
 				    port_info(pinfo),
 				});
@@ -463,9 +461,9 @@ AlsaDriver::_refresh_main()
 			if (!ignore(ev->data.addr, false)) {
 				// Note: getting caps at this point does not work
 				// Delete both inputs and outputs (to handle duplex ports)
-				_events.emplace(
+				_emit_event(
 				    PortDestructionEvent{addr_to_id(ev->data.addr, true)});
-				_events.emplace(
+				_emit_event(
 				    PortDestructionEvent{addr_to_id(ev->data.addr, false)});
 			}
 			break;
@@ -476,7 +474,7 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.emplace(
+				_emit_event(
 				    ConnectionEvent{addr_to_id(ev->data.connect.sender, false),
 				                    addr_to_id(ev->data.connect.dest, true)});
 			}
@@ -485,7 +483,7 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.emplace(DisconnectionEvent{
+				_emit_event(DisconnectionEvent{
 				    addr_to_id(ev->data.connect.sender, false),
 				    addr_to_id(ev->data.connect.dest, true)});
 			}
@@ -495,17 +493,5 @@ AlsaDriver::_refresh_main()
 		default:
 			break;
 		}
-	}
-}
-
-void
-AlsaDriver::process_events(Patchage* app)
-{
-	std::lock_guard<std::mutex> lock{_events_mutex};
-
-	while (!_events.empty()) {
-		PatchageEvent& ev = _events.front();
-		handle_event(*app, ev);
-		_events.pop();
 	}
 }
