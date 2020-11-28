@@ -24,9 +24,6 @@
 
 #include <string>
 
-struct NoopEvent
-{};
-
 struct ClientCreationEvent
 {
 	ClientID id;
@@ -60,8 +57,7 @@ struct DisconnectionEvent
 };
 
 /// An event from drivers that is processed by the GUI
-using PatchageEvent = boost::variant<NoopEvent,
-                                     ClientCreationEvent,
+using PatchageEvent = boost::variant<ClientCreationEvent,
                                      ClientDestructionEvent,
                                      PortCreationEvent,
                                      PortDestructionEvent,

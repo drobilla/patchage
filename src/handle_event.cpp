@@ -51,8 +51,6 @@ public:
 	    : _patchage{patchage}
 	{}
 
-	void operator()(const NoopEvent&) {}
-
 	void operator()(const ClientCreationEvent&)
 	{
 		// Don't create empty modules, they will be created when ports are added
