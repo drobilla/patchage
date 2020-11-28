@@ -18,12 +18,12 @@
 #define PATCHAGE_JACKDRIVER_HPP
 
 #include "Driver.hpp"
-#include "Queue.hpp"
 
 #include <glibmm/thread.h>
 #include <jack/jack.h>
 
 #include <mutex>
+#include <queue>
 #include <string>
 
 class ILog;
@@ -122,7 +122,7 @@ private:
 	ILog&          _log;
 	jack_client_t* _client;
 
-	Queue<PatchageEvent> _events;
+	std::queue<PatchageEvent> _events;
 
 	std::mutex _shutdown_mutex;
 

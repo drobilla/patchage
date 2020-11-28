@@ -22,7 +22,6 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
-#include "Queue.hpp"
 #include "patchage_config.h"
 
 #ifdef HAVE_JACK_METADATA
@@ -46,7 +45,6 @@ JackDriver::JackDriver(Patchage* app, ILog& log)
     : _app(app)
     , _log(log)
     , _client(nullptr)
-    , _events(128)
     , _last_pos{}
     , _buffer_size(0)
     , _xruns(0)
