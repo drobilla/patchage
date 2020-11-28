@@ -518,6 +518,7 @@ void
 Patchage::refresh()
 {
 	auto sink = [this](const PatchageEvent& event) {
+		_log.info(event_to_string(event));
 		handle_event(*this, event);
 	};
 
@@ -595,6 +596,7 @@ Patchage::process_events()
 	std::lock_guard<std::mutex> lock{_events_mutex};
 
 	while (!_driver_events.empty()) {
+		_log.info(event_to_string(_driver_events.front()));
 		handle_event(*this, _driver_events.front());
 		_driver_events.pop();
 	}

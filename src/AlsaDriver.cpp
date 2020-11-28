@@ -308,9 +308,7 @@ AlsaDriver::connect(const PortID& tail_id, const PortID& head_id)
 		result = false;
 	}
 
-	if (result) {
-		_log.info(fmt::format("[ALSA] Connected {} => {}", tail_id, head_id));
-	} else {
+	if (!result) {
 		_log.error(
 		    fmt::format("[ALSA] Failed to connect {} => {}", tail_id, head_id));
 	}
@@ -356,8 +354,6 @@ AlsaDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 		                       snd_strerror(ret)));
 		return false;
 	}
-
-	_log.info(fmt::format("[ALSA] Disconnected {} => {}", tail_id, head_id));
 
 	return true;
 }
