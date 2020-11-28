@@ -567,22 +567,11 @@ AlsaDriver::_refresh_main()
 		std::lock_guard<std::mutex> lock{_events_mutex};
 
 		switch (ev->type) {
-		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
-			if (!ignore(ev->data.connect.sender) &&
-			    !ignore(ev->data.connect.dest)) {
-				_events.emplace(
-				    ConnectionEvent{addr_to_id(ev->data.connect.sender, false),
-				                    addr_to_id(ev->data.connect.dest, true)});
-			}
+		case SND_SEQ_EVENT_CLIENT_START:
+		case SND_SEQ_EVENT_CLIENT_EXIT:
+		case SND_SEQ_EVENT_CLIENT_CHANGE:
 			break;
-		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
-			if (!ignore(ev->data.connect.sender) &&
-			    !ignore(ev->data.connect.dest)) {
-				_events.emplace(DisconnectionEvent{
-				    addr_to_id(ev->data.connect.sender, false),
-				    addr_to_id(ev->data.connect.dest, true)});
-			}
-			break;
+
 		case SND_SEQ_EVENT_PORT_START:
 			snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
 			snd_seq_get_any_port_info(
@@ -594,6 +583,7 @@ AlsaDriver::_refresh_main()
 				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))});
 			}
 			break;
+
 		case SND_SEQ_EVENT_PORT_EXIT:
 			if (!ignore(ev->data.addr, false)) {
 				// Note: getting caps at this point does not work
@@ -609,13 +599,30 @@ AlsaDriver::_refresh_main()
 				    _app->canvas()->find_port(addr_to_id(ev->data.addr, true)));
 			}
 			break;
-		case SND_SEQ_EVENT_CLIENT_CHANGE:
-		case SND_SEQ_EVENT_CLIENT_EXIT:
-		case SND_SEQ_EVENT_CLIENT_START:
+
 		case SND_SEQ_EVENT_PORT_CHANGE:
+			break;
+
+		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
+			if (!ignore(ev->data.connect.sender) &&
+			    !ignore(ev->data.connect.dest)) {
+				_events.emplace(
+				    ConnectionEvent{addr_to_id(ev->data.connect.sender, false),
+				                    addr_to_id(ev->data.connect.dest, true)});
+			}
+			break;
+
+		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
+			if (!ignore(ev->data.connect.sender) &&
+			    !ignore(ev->data.connect.dest)) {
+				_events.emplace(DisconnectionEvent{
+				    addr_to_id(ev->data.connect.sender, false),
+				    addr_to_id(ev->data.connect.dest, true)});
+			}
+			break;
+
 		case SND_SEQ_EVENT_RESET:
 		default:
-			//_events.push(PatchageEvent(PatchageEvent::REFRESH));
 			break;
 		}
 	}
