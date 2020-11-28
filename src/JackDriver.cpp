@@ -279,7 +279,6 @@ JackDriver::connect(const PortID& tail_id, const PortID& head_id)
 		return false;
 	}
 
-	_log.info(fmt::format("[JACK] Connected {} => {}", tail_name, head_name));
 	return true;
 }
 
@@ -302,8 +301,6 @@ JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 		return false;
 	}
 
-	_log.info(
-	    fmt::format("[JACK] Disconnected {} => {}", tail_name, head_name));
 	return true;
 }
 

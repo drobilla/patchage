@@ -518,7 +518,7 @@ void
 Patchage::refresh()
 {
 	auto sink = [this](const PatchageEvent& event) {
-		_log.info(event_to_string(event));
+		_log.info("Refresh: " + event_to_string(event));
 		handle_event(*this, event);
 	};
 
