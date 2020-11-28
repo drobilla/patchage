@@ -564,19 +564,17 @@ AlsaDriver::_refresh_main()
 		case SND_SEQ_EVENT_PORT_SUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(
-				    PatchageEvent(PatchageEvent::Type::connection,
-				                  addr_to_id(ev->data.connect.sender, false),
-				                  addr_to_id(ev->data.connect.dest, true)));
+				_events.emplace(
+				    ConnectionEvent{addr_to_id(ev->data.connect.sender, false),
+				                    addr_to_id(ev->data.connect.dest, true)});
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
 			if (!ignore(ev->data.connect.sender) &&
 			    !ignore(ev->data.connect.dest)) {
-				_events.push(
-				    PatchageEvent(PatchageEvent::Type::disconnection,
-				                  addr_to_id(ev->data.connect.sender, false),
-				                  addr_to_id(ev->data.connect.dest, true)));
+				_events.emplace(DisconnectionEvent{
+				    addr_to_id(ev->data.connect.sender, false),
+				    addr_to_id(ev->data.connect.dest, true)});
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_START:
@@ -586,21 +584,18 @@ AlsaDriver::_refresh_main()
 			caps = snd_seq_port_info_get_capability(pinfo);
 
 			if (!ignore(ev->data.addr)) {
-				_events.push(PatchageEvent(
-				    PatchageEvent::Type::port_creation,
-				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))));
+				_events.emplace(PortCreationEvent{
+				    addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ))});
 			}
 			break;
 		case SND_SEQ_EVENT_PORT_EXIT:
 			if (!ignore(ev->data.addr, false)) {
 				// Note: getting caps at this point does not work
 				// Delete both inputs and outputs (to handle duplex ports)
-				_events.push(
-				    PatchageEvent(PatchageEvent::Type::port_destruction,
-				                  addr_to_id(ev->data.addr, true)));
-				_events.push(
-				    PatchageEvent(PatchageEvent::Type::port_destruction,
-				                  addr_to_id(ev->data.addr, false)));
+				_events.emplace(
+				    PortDestructionEvent{addr_to_id(ev->data.addr, true)});
+				_events.emplace(
+				    PortDestructionEvent{addr_to_id(ev->data.addr, false)});
 
 				_port_addrs.erase(_app->canvas()->find_port(
 				    addr_to_id(ev->data.addr, false)));
@@ -627,7 +622,7 @@ AlsaDriver::process_events(Patchage* app)
 
 	while (!_events.empty()) {
 		PatchageEvent& ev = _events.front();
-		ev.execute(app);
+		handle_event(*app, ev);
 		_events.pop();
 	}
 }

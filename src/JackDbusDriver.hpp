@@ -31,7 +31,6 @@
 
 class ILog;
 class PatchageCanvas;
-class PatchageEvent;
 class PatchagePort;
 
 class JackDriver : public Driver

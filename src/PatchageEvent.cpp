@@ -37,78 +37,100 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
-void
-PatchageEvent::execute(Patchage* patchage)
+namespace {
+
+class EventHandler
 {
-	if (_type == Type::refresh) {
-		patchage->refresh();
+public:
+	using result_type = void; ///< For boost::apply_visitor
 
-	} else if (_type == Type::client_creation) {
-		// No empty modules (for now)
-		g_free(_str);
-		_str = nullptr;
+	explicit EventHandler(Patchage& patchage)
+	    : _patchage{patchage}
+	{}
 
-	} else if (_type == Type::client_destruction) {
-		patchage->canvas()->remove_module(_str);
-		g_free(_str);
-		_str = nullptr;
+	void operator()(const NoopEvent&) {}
 
-	} else if (_type == Type::port_creation) {
+	void operator()(const ClientCreationEvent&)
+	{
+		// Don't create empty modules, they will be created when ports are added
+	}
 
+	void operator()(const ClientDestructionEvent& event)
+	{
+		_patchage.canvas()->remove_module(event.name);
+	}
+
+	void operator()(const PortCreationEvent& event)
+	{
 		Driver* driver = nullptr;
-		if (_port_1.type() == PortID::Type::jack) {
+		if (event.id.type() == PortID::Type::jack) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-			driver = patchage->jack_driver();
+			driver = _patchage.jack_driver();
 #endif
 #ifdef HAVE_ALSA
-		} else if (_port_1.type() == PortID::Type::alsa) {
-			driver = patchage->alsa_driver();
+		} else if (event.id.type() == PortID::Type::alsa) {
+			driver = _patchage.alsa_driver();
 #endif
 		}
 
 		if (driver) {
-			PatchagePort* port = driver->create_port_view(patchage, _port_1);
+			PatchagePort* port = driver->create_port_view(&_patchage, event.id);
 			if (!port) {
-				patchage->log().error(fmt::format(
-				    "Unable to create view for port \"{}\"", _port_1));
+				_patchage.log().error(fmt::format(
+				    "Unable to create view for port \"{}\"", event.id));
 			}
 		} else {
-			patchage->log().error(
-			    fmt::format("Unknown type for port \"{}\"", _port_1));
-		}
-
-	} else if (_type == Type::port_destruction) {
-
-		patchage->canvas()->remove_port(_port_1);
-
-	} else if (_type == Type::connection) {
-
-		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
-		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
-
-		if (!port_1) {
-			patchage->log().error(
-			    fmt::format("Unable to find port \"{}\" to connect", _port_1));
-		} else if (!port_2) {
-			patchage->log().error(
-			    fmt::format("Unable to find port \"{}\" to connect", _port_2));
-		} else {
-			patchage->canvas()->make_connection(port_1, port_2);
-		}
-
-	} else if (_type == Type::disconnection) {
-
-		PatchagePort* port_1 = patchage->canvas()->find_port(_port_1);
-		PatchagePort* port_2 = patchage->canvas()->find_port(_port_2);
-
-		if (!port_1) {
-			patchage->log().error(fmt::format(
-			    "Unable to find port \"{}\" to disconnect", _port_1));
-		} else if (!port_2) {
-			patchage->log().error(fmt::format(
-			    "Unable to find port \"{}\" to disconnect", _port_2));
-		} else {
-			patchage->canvas()->remove_edge_between(port_1, port_2);
+			_patchage.log().error(
+			    fmt::format("Unknown type for port \"{}\"", event.id));
 		}
 	}
+
+	void operator()(const PortDestructionEvent& event)
+	{
+		_patchage.canvas()->remove_port(event.id);
+	}
+
+	void operator()(const ConnectionEvent& event)
+	{
+		PatchagePort* port_1 = _patchage.canvas()->find_port(event.tail);
+		PatchagePort* port_2 = _patchage.canvas()->find_port(event.head);
+
+		if (!port_1) {
+			_patchage.log().error(fmt::format(
+			    "Unable to find port \"{}\" to connect", event.tail));
+		} else if (!port_2) {
+			_patchage.log().error(fmt::format(
+			    "Unable to find port \"{}\" to connect", event.head));
+		} else {
+			_patchage.canvas()->make_connection(port_1, port_2);
+		}
+	}
+
+	void operator()(const DisconnectionEvent& event)
+	{
+		PatchagePort* port_1 = _patchage.canvas()->find_port(event.tail);
+		PatchagePort* port_2 = _patchage.canvas()->find_port(event.head);
+
+		if (!port_1) {
+			_patchage.log().error(fmt::format(
+			    "Unable to find port \"{}\" to disconnect", event.tail));
+		} else if (!port_2) {
+			_patchage.log().error(fmt::format(
+			    "Unable to find port \"{}\" to disconnect", event.head));
+		} else {
+			_patchage.canvas()->remove_edge_between(port_1, port_2);
+		}
+	}
+
+private:
+	Patchage& _patchage;
+};
+
+} // namespace
+
+void
+handle_event(Patchage& patchage, const PatchageEvent& event)
+{
+	EventHandler handler{patchage};
+	boost::apply_visitor(handler, event);
 }

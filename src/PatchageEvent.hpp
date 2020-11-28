@@ -17,59 +17,62 @@
 #ifndef PATCHAGE_PATCHAGEEVENT_HPP
 #define PATCHAGE_PATCHAGEEVENT_HPP
 
-#include "patchage_config.h"
-
 #include "PatchagePort.hpp"
 #include "PortID.hpp"
 
-#include <cstring>
+#include <boost/variant/variant.hpp>
+
+#include <string>
+#include <utility>
 
 class Patchage;
 
-/// An event from drivers that is processed by the GUI
-class PatchageEvent
+struct NoopEvent
+{};
+
+struct ClientCreationEvent
 {
-public:
-	enum class Type : uint8_t
-	{
-		noop,
-		refresh,
-		client_creation,
-		client_destruction,
-		port_creation,
-		port_destruction,
-		connection,
-		disconnection,
-	};
-
-	PatchageEvent(Type type, const char* str)
-	    : _str(g_strdup(str))
-	    , _port_1(PortID::nothing())
-	    , _port_2(PortID::nothing())
-	    , _type(type)
-	{}
-
-	PatchageEvent(Type type, PortID port)
-	    : _port_1(std::move(port))
-	    , _port_2(PortID::nothing())
-	    , _type(type)
-	{}
-
-	PatchageEvent(Type type, PortID tail, PortID head)
-	    : _port_1(std::move(tail))
-	    , _port_2(std::move(head))
-	    , _type(type)
-	{}
-
-	void execute(Patchage* patchage);
-
-	inline Type type() const { return _type; }
-
-private:
-	char*  _str{nullptr};
-	PortID _port_1;
-	PortID _port_2;
-	Type   _type;
+	std::string name;
 };
+
+struct ClientDestructionEvent
+{
+	std::string name;
+};
+
+struct PortCreationEvent
+{
+	PortID id;
+};
+
+struct PortDestructionEvent
+{
+	PortID id;
+};
+
+struct ConnectionEvent
+{
+	PortID tail;
+	PortID head;
+};
+
+struct DisconnectionEvent
+{
+	PortID tail;
+	PortID head;
+};
+
+/// An event from drivers that is processed by the GUI
+using PatchageEvent = boost::variant<NoopEvent,
+                                     ClientCreationEvent,
+                                     ClientDestructionEvent,
+                                     PortCreationEvent,
+                                     PortDestructionEvent,
+                                     ConnectionEvent,
+                                     DisconnectionEvent>;
+
+/// Handle an event in the GUI
+void
+handle_event(Patchage& patchage, const PatchageEvent& event);
 
 #endif // PATCHAGE_PATCHAGEEVENT_HPP

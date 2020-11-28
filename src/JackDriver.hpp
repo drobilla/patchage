@@ -18,6 +18,7 @@
 #define PATCHAGE_JACKDRIVER_HPP
 
 #include "Driver.hpp"
+#include "PatchageEvent.hpp"
 
 #include <glibmm/thread.h>
 #include <jack/jack.h>
@@ -29,7 +30,6 @@
 class ILog;
 class Patchage;
 class PatchageCanvas;
-class PatchageEvent;
 class PatchageModule;
 class PatchagePort;
 

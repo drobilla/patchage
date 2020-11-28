@@ -187,6 +187,7 @@ def configure(conf):
 
     # Boost headers
     conf.check_cxx(header_name='boost/optional.hpp')
+    conf.check_cxx(header_name='boost/variant.hpp')
 
     # Check for system provided fmt
     conf.check_pkg('fmt',

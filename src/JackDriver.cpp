@@ -476,11 +476,9 @@ JackDriver::jack_client_registration_cb(const char* name,
 	assert(me->_client);
 
 	if (registered) {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::client_creation, name));
+		me->_events.emplace(ClientCreationEvent{name});
 	} else {
-		me->_events.push(
-		    PatchageEvent(PatchageEvent::Type::client_destruction, name));
+		me->_events.emplace(ClientDestructionEvent{name});
 	}
 }
 
@@ -496,11 +494,9 @@ JackDriver::jack_port_registration_cb(jack_port_id_t port_id,
 	const char* const  name = jack_port_name(port);
 
 	if (registered) {
-		me->_events.push(PatchageEvent(PatchageEvent::Type::port_creation,
-		                               PortID::jack(name)));
+		me->_events.emplace(PortCreationEvent{PortID::jack(name)});
 	} else {
-		me->_events.push(PatchageEvent(PatchageEvent::Type::port_destruction,
-		                               PortID::jack(name)));
+		me->_events.emplace(PortDestructionEvent{PortID::jack(name)});
 	}
 }
 
@@ -519,13 +515,11 @@ JackDriver::jack_port_connect_cb(jack_port_id_t src,
 	const char* const  dst_name = jack_port_name(dst_port);
 
 	if (connect) {
-		me->_events.push(PatchageEvent(PatchageEvent::Type::connection,
-		                               PortID::jack(src_name),
-		                               PortID::jack(dst_name)));
+		me->_events.emplace(
+		    ConnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
 	} else {
-		me->_events.push(PatchageEvent(PatchageEvent::Type::disconnection,
-		                               PortID::jack(src_name),
-		                               PortID::jack(dst_name)));
+		me->_events.emplace(
+		    DisconnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
 	}
 }
 
@@ -628,7 +622,7 @@ JackDriver::process_events(Patchage* app)
 {
 	while (!_events.empty()) {
 		PatchageEvent& ev = _events.front();
-		ev.execute(app);
+		handle_event(*app, ev);
 		_events.pop();
 	}
 }
