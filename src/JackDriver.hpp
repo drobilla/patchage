@@ -51,8 +51,9 @@ public:
 
 	void refresh(const EventSink& sink) override;
 
-	bool connect(PortID tail_id, PortID head_id) override;
-	bool disconnect(PortID tail_id, PortID head_id) override;
+	bool connect(const PortID& tail_id, const PortID& head_id) override;
+
+	bool disconnect(const PortID& tail_id, const PortID& head_id) override;
 
 	uint32_t get_xruns() const { return _xruns; }
 	void     reset_xruns();

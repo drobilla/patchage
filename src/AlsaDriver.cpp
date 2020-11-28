@@ -265,7 +265,7 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
 }
 
 bool
-AlsaDriver::connect(const PortID tail_id, const PortID head_id)
+AlsaDriver::connect(const PortID& tail_id, const PortID& head_id)
 {
 	if (tail_id.type() != PortID::Type::alsa ||
 	    head_id.type() != PortID::Type::alsa) {
@@ -319,7 +319,7 @@ AlsaDriver::connect(const PortID tail_id, const PortID head_id)
 }
 
 bool
-AlsaDriver::disconnect(const PortID tail_id, const PortID head_id)
+AlsaDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 {
 	if (tail_id.type() != PortID::Type::alsa ||
 	    head_id.type() != PortID::Type::alsa) {

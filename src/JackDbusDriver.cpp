@@ -660,7 +660,7 @@ JackDriver::refresh(const EventSink& sink)
 }
 
 bool
-JackDriver::connect(const PortID tail_id, const PortID head_id)
+JackDriver::connect(const PortID& tail_id, const PortID& head_id)
 {
 	const auto        tail_names       = PortNames(tail_id);
 	const auto        head_names       = PortNames(head_id);
@@ -692,7 +692,7 @@ JackDriver::connect(const PortID tail_id, const PortID head_id)
 }
 
 bool
-JackDriver::disconnect(const PortID tail_id, const PortID head_id)
+JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 {
 	const auto        tail_names       = PortNames(tail_id);
 	const auto        head_names       = PortNames(head_id);

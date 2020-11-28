@@ -265,7 +265,7 @@ JackDriver::refresh(const EventSink& sink)
 }
 
 bool
-JackDriver::connect(const PortID tail_id, const PortID head_id)
+JackDriver::connect(const PortID& tail_id, const PortID& head_id)
 {
 	if (!_client) {
 		return false;
@@ -289,7 +289,7 @@ JackDriver::connect(const PortID tail_id, const PortID head_id)
 }
 
 bool
-JackDriver::disconnect(const PortID tail_id, const PortID head_id)
+JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 {
 	if (!_client) {
 		return false;

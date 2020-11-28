@@ -50,8 +50,9 @@ public:
 
 	virtual void refresh(const EventSink& sink) = 0;
 
-	virtual bool connect(PortID tail_id, PortID head_id)    = 0;
-	virtual bool disconnect(PortID tail_id, PortID head_id) = 0;
+	virtual bool connect(const PortID& tail_id, const PortID& head_id) = 0;
+
+	virtual bool disconnect(const PortID& tail_id, const PortID& head_id) = 0;
 
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;
