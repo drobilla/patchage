@@ -40,6 +40,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cassert>
 #include <cstring>
 #include <set>
+#include <sstream>
 #include <string>
 #include <unordered_set>
 #include <utility>
