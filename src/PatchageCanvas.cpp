@@ -207,22 +207,12 @@ PatchageCanvas::connect(Ganv::Node* port1, Ganv::Node* port2)
 	    (p1->type() == PortType::jack_osc &&
 	     p2->type() == PortType::jack_osc)) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		_app->jack_driver()->connect(p1->id(),
-		                             p1->module_name(),
-		                             p1->name(),
-		                             p2->id(),
-		                             p2->module_name(),
-		                             p2->name());
+		_app->jack_driver()->connect(p1->id(), p2->id());
 #endif
 #ifdef HAVE_ALSA
 	} else if (p1->type() == PortType::alsa_midi &&
 	           p2->type() == PortType::alsa_midi) {
-		_app->alsa_driver()->connect(p1->id(),
-		                             p1->module_name(),
-		                             p1->name(),
-		                             p2->id(),
-		                             p2->module_name(),
-		                             p2->name());
+		_app->alsa_driver()->connect(p1->id(), p2->id());
 #endif
 	} else {
 		_app->log().warning("Cannot make connection, incompatible port types");
@@ -255,22 +245,12 @@ PatchageCanvas::disconnect(Ganv::Node* port1, Ganv::Node* port2)
 	    input->type() == PortType::jack_cv ||
 	    input->type() == PortType::jack_osc) {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		_app->jack_driver()->disconnect(output->id(),
-		                                output->module_name(),
-		                                output->name(),
-		                                input->id(),
-		                                input->module_name(),
-		                                input->name());
+		_app->jack_driver()->disconnect(output->id(), input->id());
 
 #endif
 #ifdef HAVE_ALSA
 	} else if (input->type() == PortType::alsa_midi) {
-		_app->alsa_driver()->disconnect(output->id(),
-		                                output->module_name(),
-		                                output->name(),
-		                                input->id(),
-		                                input->module_name(),
-		                                input->name());
+		_app->alsa_driver()->disconnect(output->id(), input->id());
 #endif
 	} else {
 		_app->log().error("Attempt to disconnect ports with strange types");

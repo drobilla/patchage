@@ -52,19 +52,8 @@ public:
 	virtual PatchagePort*
 	create_port_view(Patchage* patchage, const PortID& id) = 0;
 
-	virtual bool connect(PortID             tail_id,
-	                     const std::string& tail_client_name,
-	                     const std::string& tail_port_name,
-	                     PortID             head_id,
-	                     const std::string& head_client_name,
-	                     const std::string& head_port_name) = 0;
-
-	virtual bool disconnect(PortID             tail_id,
-	                        const std::string& tail_client_name,
-	                        const std::string& tail_port_name,
-	                        PortID             head_id,
-	                        const std::string& head_client_name,
-	                        const std::string& head_port_name) = 0;
+	virtual bool connect(PortID tail_id, PortID head_id)    = 0;
+	virtual bool disconnect(PortID tail_id, PortID head_id) = 0;
 
 	sigc::signal<void> signal_attached;
 	sigc::signal<void> signal_detached;

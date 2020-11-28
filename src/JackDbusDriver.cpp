@@ -24,6 +24,7 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+#include "PortNames.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
@@ -620,7 +621,7 @@ JackDriver::add_port(PatchageModule*    module,
 
 void
 JackDriver::add_port(dbus_uint64_t /*client_id*/,
-                     const char*   client_name,
+                     const char* client_name,
                      dbus_uint64_t /*port_id*/,
                      const char*   port_name,
                      dbus_uint32_t port_flags,
@@ -925,15 +926,14 @@ JackDriver::refresh()
 }
 
 bool
-JackDriver::connect(const PortID       tail_id,
-                    const std::string& tail_client_name,
-                    const std::string& tail_port_name,
-                    const PortID       head_id,
-                    const std::string& head_client_name,
-                    const std::string& head_port_name)
+JackDriver::connect(const PortID tail_id, const PortID head_id)
 {
-	(void)tail_id;
-	(void)head_id;
+	const auto        tail_names       = PortNames(tail_id);
+	const auto        head_names       = PortNames(head_id);
+	const char* const tail_client_name = tail_names.client().c_str();
+	const char* const tail_port_name   = tail_names.port().c_str();
+	const char* const head_client_name = head_names.client().c_str();
+	const char* const head_port_name   = head_names.port().c_str();
 
 	DBusMessage* reply_ptr = nullptr;
 
@@ -958,15 +958,14 @@ JackDriver::connect(const PortID       tail_id,
 }
 
 bool
-JackDriver::disconnect(const PortID       tail_id,
-                       const std::string& tail_client_name,
-                       const std::string& tail_port_name,
-                       const PortID       head_id,
-                       const std::string& head_client_name,
-                       const std::string& head_port_name)
+JackDriver::disconnect(const PortID tail_id, const PortID head_id)
 {
-	(void)tail_id;
-	(void)head_id;
+	const auto        tail_names       = PortNames(tail_id);
+	const auto        head_names       = PortNames(head_id);
+	const char* const tail_client_name = tail_names.client().c_str();
+	const char* const tail_port_name   = tail_names.port().c_str();
+	const char* const head_client_name = head_names.client().c_str();
+	const char* const head_port_name   = head_names.port().c_str();
 
 	DBusMessage* reply_ptr = nullptr;
 

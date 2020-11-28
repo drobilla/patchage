@@ -24,6 +24,7 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
 #include <cassert>
@@ -406,12 +407,7 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
  * \return Whether connection succeeded.
  */
 bool
-AlsaDriver::connect(const PortID       tail_id,
-                    const std::string& tail_client_name,
-                    const std::string& tail_port_name,
-                    const PortID       head_id,
-                    const std::string& head_client_name,
-                    const std::string& head_port_name)
+AlsaDriver::connect(const PortID tail_id, const PortID head_id)
 {
 	if (tail_id.type() != PortID::Type::alsa ||
 	    head_id.type() != PortID::Type::alsa) {
@@ -455,17 +451,10 @@ AlsaDriver::connect(const PortID       tail_id,
 	}
 
 	if (result) {
-		_log.info(fmt::format("[ALSA] Connected {}:{} => {}:{}",
-		                      tail_client_name,
-		                      tail_port_name,
-		                      head_client_name,
-		                      head_port_name));
+		_log.info(fmt::format("[ALSA] Connected {} => {}", tail_id, head_id));
 	} else {
-		_log.error(fmt::format("[ALSA] Failed to connect {}:{} => {}:{}",
-		                       tail_client_name,
-		                       tail_port_name,
-		                       head_client_name,
-		                       head_port_name));
+		_log.error(
+		    fmt::format("[ALSA] Failed to connect {} => {}", tail_id, head_id));
 	}
 
 	return (!result);
@@ -476,12 +465,7 @@ AlsaDriver::connect(const PortID       tail_id,
  * \return Whether disconnection succeeded.
  */
 bool
-AlsaDriver::disconnect(const PortID       tail_id,
-                       const std::string& tail_client_name,
-                       const std::string& tail_port_name,
-                       const PortID       head_id,
-                       const std::string& head_client_name,
-                       const std::string& head_port_name)
+AlsaDriver::disconnect(const PortID tail_id, const PortID head_id)
 {
 	if (tail_id.type() != PortID::Type::alsa ||
 	    head_id.type() != PortID::Type::alsa) {
@@ -512,21 +496,14 @@ AlsaDriver::disconnect(const PortID       tail_id,
 
 	int ret = snd_seq_unsubscribe_port(_seq, subs);
 	if (ret < 0) {
-		_log.error(
-		    fmt::format("[ALSA] Failed to disconnect {}:{} => {}:{} ({})",
-		                tail_client_name,
-		                tail_port_name,
-		                head_client_name,
-		                head_port_name,
-		                snd_strerror(ret)));
+		_log.error(fmt::format("[ALSA] Failed to disconnect {} => {} ({})",
+		                       tail_id,
+		                       head_id,
+		                       snd_strerror(ret)));
 		return false;
 	}
 
-	_log.info(fmt::format("[ALSA] Disconnected {}:{} => {}:{}",
-	                      tail_client_name,
-	                      tail_port_name,
-	                      head_client_name,
-	                      head_port_name));
+	_log.info(fmt::format("[ALSA] Disconnected {} => {}", tail_id, head_id));
 
 	return true;
 }

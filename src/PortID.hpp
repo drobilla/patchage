@@ -70,6 +70,7 @@ private:
 	    , _jack_name{std::move(jack_name)}
 	{
 		assert(_type == Type::jack);
+		assert(_jack_name.find(':') != std::string::npos);
 	}
 
 	PortID(const Type    type,

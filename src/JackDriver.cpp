@@ -22,6 +22,7 @@
 #include "PatchageCanvas.hpp"
 #include "PatchageEvent.hpp"
 #include "PatchageModule.hpp"
+#include "PortNames.hpp"
 #include "patchage_config.h"
 
 #ifdef HAVE_JACK_METADATA
@@ -425,27 +426,15 @@ JackDriver::port_names(const PortID& id,
 	return true;
 }
 
-/** Connects two Jack audio ports.
- * To be called from GTK thread only.
- * \return Whether connection succeeded.
- */
 bool
-JackDriver::connect(const PortID       tail_id,
-                    const std::string& tail_client_name,
-                    const std::string& tail_port_name,
-                    const PortID       head_id,
-                    const std::string& head_client_name,
-                    const std::string& head_port_name)
+JackDriver::connect(const PortID tail_id, const PortID head_id)
 {
-	(void)tail_id;
-	(void)head_id;
-
 	if (!_client) {
 		return false;
 	}
 
-	const auto tail_name = tail_client_name + ":" + tail_port_name;
-	const auto head_name = head_client_name + ":" + head_port_name;
+	const auto& tail_name = tail_id.jack_name();
+	const auto& head_name = head_id.jack_name();
 
 	const int result =
 	    jack_connect(_client, tail_name.c_str(), head_name.c_str());
@@ -461,27 +450,15 @@ JackDriver::connect(const PortID       tail_id,
 	return !result;
 }
 
-/** Disconnects two Jack audio ports.
- * To be called from GTK thread only.
- * \return Whether disconnection succeeded.
- */
 bool
-JackDriver::disconnect(const PortID       tail_id,
-                       const std::string& tail_client_name,
-                       const std::string& tail_port_name,
-                       const PortID       head_id,
-                       const std::string& head_client_name,
-                       const std::string& head_port_name)
+JackDriver::disconnect(const PortID tail_id, const PortID head_id)
 {
-	(void)tail_id;
-	(void)head_id;
-
 	if (!_client) {
 		return false;
 	}
 
-	const auto tail_name = tail_client_name + ":" + tail_port_name;
-	const auto head_name = head_client_name + ":" + head_port_name;
+	const auto& tail_name = tail_id.jack_name();
+	const auto& head_name = head_id.jack_name();
 
 	const int result =
 	    jack_disconnect(_client, tail_name.c_str(), head_name.c_str());

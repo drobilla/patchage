@@ -56,19 +56,8 @@ public:
 	void refresh() override;
 	void destroy_all() override;
 
-	bool connect(PortID             tail_id,
-	             const std::string& tail_client_name,
-	             const std::string& tail_port_name,
-	             PortID             head_id,
-	             const std::string& head_client_name,
-	             const std::string& head_port_name) override;
-
-	bool disconnect(PortID             tail_id,
-	                const std::string& tail_client_name,
-	                const std::string& tail_port_name,
-	                PortID             head_id,
-	                const std::string& head_client_name,
-	                const std::string& head_port_name) override;
+	bool connect(PortID tail_id, PortID head_id) override;
+	bool disconnect(PortID tail_id, PortID head_id) override;
 
 	uint32_t get_xruns();
 	void     reset_xruns();
