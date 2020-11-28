@@ -125,9 +125,6 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 
 Patchage::Patchage(int argc, char** argv)
     : _xml(UIFile::open("patchage"))
-#ifdef HAVE_ALSA
-    , _alsa_driver(nullptr)
-#endif
     , _jack_driver(nullptr)
     , _conf(nullptr)
     , _gtk_main(nullptr)
@@ -340,10 +337,10 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #ifdef HAVE_ALSA
-	_alsa_driver = new AlsaDriver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+	_alsa_driver = std::unique_ptr<Driver>{new AlsaDriver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); })};
 
-	_connector.add_driver(PortID::Type::alsa, _alsa_driver);
+	_connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
 #endif
 
 	connect_widgets();
@@ -386,7 +383,7 @@ Patchage::~Patchage()
 	delete _jack_driver;
 #endif
 #ifdef HAVE_ALSA
-	delete _alsa_driver;
+	_alsa_driver.reset();
 #endif
 
 	delete _conf;
