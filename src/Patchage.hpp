@@ -75,10 +75,11 @@ public:
 
 	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
-	Gtk::Window*   window() { return _main_win.get(); }
-	ILog&          log() { return _log; }
-	Metadata&      metadata() { return _metadata; }
-	Configuration* conf() const { return _conf; }
+	Gtk::Window*         window() { return _main_win.get(); }
+	ILog&                log() { return _log; }
+	Metadata&            metadata() { return _metadata; }
+	const Configuration& conf() const { return _conf; }
+	Configuration&       conf() { return _conf; }
 
 	void attach();
 	void save();
@@ -159,8 +160,8 @@ protected:
 
 	std::shared_ptr<PatchageCanvas> _canvas;
 
-	JackDriver*    _jack_driver;
-	Configuration* _conf;
+	std::unique_ptr<JackDriver> _jack_driver;
+	Configuration               _conf;
 
 	Gtk::Main* _gtk_main;
 

@@ -125,8 +125,6 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 
 Patchage::Patchage(int argc, char** argv)
     : _xml(UIFile::open("patchage"))
-    , _jack_driver(nullptr)
-    , _conf(nullptr)
     , _gtk_main(nullptr)
     , INIT_WIDGET(_about_win)
     , INIT_WIDGET(_main_scrolledwin)
@@ -176,7 +174,6 @@ Patchage::Patchage(int argc, char** argv)
     , _alsa_driver_autoattach(true)
 #endif
 {
-	_conf   = new Configuration();
 	_canvas = std::make_shared<PatchageCanvas>(_connector, 1600 * 2, 1200 * 2);
 
 	while (argc > 0) {
@@ -291,21 +288,21 @@ Patchage::Patchage(int argc, char** argv)
 	_canvas->widget().show();
 	_main_win->present();
 
-	_conf->set_font_size(_canvas->get_default_font_size());
-	_conf->load();
-	_canvas->set_zoom(_conf->get_zoom());
-	_canvas->set_font_size(_conf->get_font_size());
-	if (_conf->get_sort_ports()) {
+	_conf.set_font_size(_canvas->get_default_font_size());
+	_conf.load();
+	_canvas->set_zoom(_conf.get_zoom());
+	_canvas->set_font_size(_conf.get_font_size());
+	if (_conf.get_sort_ports()) {
 		_canvas->set_port_order(port_order, nullptr);
 	}
 
-	_main_win->resize(static_cast<int>(_conf->get_window_size().x),
-	                  static_cast<int>(_conf->get_window_size().y));
+	_main_win->resize(static_cast<int>(_conf.get_window_size().x),
+	                  static_cast<int>(_conf.get_window_size().y));
 
-	_main_win->move(static_cast<int>(_conf->get_window_location().x),
-	                static_cast<int>(_conf->get_window_location().y));
+	_main_win->move(static_cast<int>(_conf.get_window_location().x),
+	                static_cast<int>(_conf.get_window_location().y));
 
-	_legend = new Legend(*_conf);
+	_legend = new Legend(_conf);
 	_legend->signal_color_changed.connect(
 	    sigc::mem_fun(this, &Patchage::on_legend_color_change));
 	_legend_alignment->add(*Gtk::manage(_legend));
@@ -322,18 +319,18 @@ Patchage::Patchage(int argc, char** argv)
 #endif
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = new JackDriver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+	_jack_driver = std::unique_ptr<JackDriver>{new JackDriver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); })};
 
-	_connector.add_driver(PortID::Type::jack, _jack_driver);
+	_connector.add_driver(PortID::Type::jack, _jack_driver.get());
 
 	_jack_driver->signal_detached.connect(
 	    sigc::mem_fun(this, &Patchage::driver_detached));
 
-	_menu_jack_connect->signal_activate().connect(
-	    sigc::bind(sigc::mem_fun(_jack_driver, &JackDriver::attach), true));
+	_menu_jack_connect->signal_activate().connect(sigc::bind(
+	    sigc::mem_fun(_jack_driver.get(), &JackDriver::attach), true));
 	_menu_jack_disconnect->signal_activate().connect(
-	    sigc::mem_fun(_jack_driver, &JackDriver::detach));
+	    sigc::mem_fun(_jack_driver.get(), &JackDriver::detach));
 #endif
 
 #ifdef HAVE_ALSA
@@ -345,9 +342,9 @@ Patchage::Patchage(int argc, char** argv)
 
 	connect_widgets();
 	update_state();
-	_menu_view_toolbar->set_active(_conf->get_show_toolbar());
-	_menu_view_sprung_layout->set_active(_conf->get_sprung_layout());
-	_menu_view_sort_ports->set_active(_conf->get_sort_ports());
+	_menu_view_toolbar->set_active(_conf.get_show_toolbar());
+	_menu_view_sprung_layout->set_active(_conf.get_sprung_layout());
+	_menu_view_sort_ports->set_active(_conf.get_sort_ports());
 
 	g_signal_connect(
 	    _main_win->gobj(), "configure-event", G_CALLBACK(configure_cb), this);
@@ -380,13 +377,11 @@ Patchage::Patchage(int argc, char** argv)
 Patchage::~Patchage()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	delete _jack_driver;
+	_jack_driver.reset();
 #endif
 #ifdef HAVE_ALSA
 	_alsa_driver.reset();
 #endif
-
-	delete _conf;
 
 	_about_win.destroy();
 	_xml.reset();
@@ -421,7 +416,7 @@ Patchage::idle_callback()
 	// Initial run, attach
 	if (_attach) {
 		attach();
-		_menu_view_messages->set_active(_conf->get_show_messages());
+		_menu_view_messages->set_active(_conf.get_show_messages());
 		_attach = false;
 	}
 
@@ -515,7 +510,7 @@ Patchage::update_load()
 void
 Patchage::zoom(double z)
 {
-	_conf->set_zoom(z);
+	_conf.set_zoom(z);
 	_canvas->set_zoom(z);
 }
 
@@ -554,8 +549,8 @@ Patchage::store_window_location()
 	int size_y = 0;
 	_main_win->get_size(size_x, size_y);
 
-	_conf->set_window_location({double(loc_x), double(loc_y)});
-	_conf->set_window_size({double(size_x), double(size_y)});
+	_conf.set_window_location({double(loc_x), double(loc_y)});
+	_conf.set_window_size({double(size_x), double(size_y)});
 }
 
 void
@@ -678,7 +673,7 @@ Patchage::on_sprung_layout_toggled()
 	const bool sprung = _menu_view_sprung_layout->get_active();
 
 	_canvas->set_sprung_layout(sprung);
-	_conf->set_sprung_layout(sprung);
+	_conf.set_sprung_layout(sprung);
 }
 
 void
@@ -718,7 +713,7 @@ Patchage::on_view_sort_ports()
 {
 	const bool sort_ports = this->sort_ports();
 	_canvas->set_port_order(sort_ports ? port_order : nullptr, nullptr);
-	_conf->set_sort_ports(sort_ports);
+	_conf.set_sort_ports(sort_ports);
 	refresh();
 }
 
@@ -727,7 +722,7 @@ Patchage::on_zoom_in()
 {
 	const float zoom = _canvas->get_zoom() * 1.25;
 	_canvas->set_zoom(zoom);
-	_conf->set_zoom(zoom);
+	_conf.set_zoom(zoom);
 }
 
 void
@@ -735,21 +730,21 @@ Patchage::on_zoom_out()
 {
 	const float zoom = _canvas->get_zoom() * 0.75;
 	_canvas->set_zoom(zoom);
-	_conf->set_zoom(zoom);
+	_conf.set_zoom(zoom);
 }
 
 void
 Patchage::on_zoom_normal()
 {
 	_canvas->set_zoom(1.0);
-	_conf->set_zoom(1.0);
+	_conf.set_zoom(1.0);
 }
 
 void
 Patchage::on_zoom_full()
 {
 	_canvas->zoom_full();
-	_conf->set_zoom(_canvas->get_zoom());
+	_conf.set_zoom(_canvas->get_zoom());
 }
 
 void
@@ -757,7 +752,7 @@ Patchage::on_increase_font_size()
 {
 	const float points = _canvas->get_font_size() + 1.0;
 	_canvas->set_font_size(points);
-	_conf->set_font_size(points);
+	_conf.set_font_size(points);
 }
 
 void
@@ -765,14 +760,14 @@ Patchage::on_decrease_font_size()
 {
 	const float points = _canvas->get_font_size() - 1.0;
 	_canvas->set_font_size(points);
-	_conf->set_font_size(points);
+	_conf.set_font_size(points);
 }
 
 void
 Patchage::on_normal_font_size()
 {
 	_canvas->set_font_size(_canvas->get_default_font_size());
-	_conf->set_font_size(_canvas->get_default_font_size());
+	_conf.set_font_size(_canvas->get_default_font_size());
 }
 
 static inline guint
@@ -804,8 +799,7 @@ update_port_colors(GanvNode* node, void* data)
 	for (Ganv::Port* p : *pmod) {
 		auto* port = dynamic_cast<PatchagePort*>(p);
 		if (port) {
-			const uint32_t rgba =
-			    patchage->conf()->get_port_color(port->type());
+			const uint32_t rgba = patchage->conf().get_port_color(port->type());
 			port->set_fill_color(rgba);
 			port->set_border_color(highlight_color(rgba, 0x20));
 		}
@@ -820,14 +814,14 @@ update_edge_color(GanvEdge* edge, void* data)
 
 	auto* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
 	if (tail) {
-		edgemm->set_color(patchage->conf()->get_port_color(tail->type()));
+		edgemm->set_color(patchage->conf().get_port_color(tail->type()));
 	}
 }
 
 void
 Patchage::on_legend_color_change(PortType id, const std::string&, uint32_t rgba)
 {
-	_conf->set_port_color(id, rgba);
+	_conf.set_port_color(id, rgba);
 	_canvas->for_each_node(update_port_colors, this);
 	_canvas->for_each_edge(update_edge_color, this);
 }
@@ -836,14 +830,14 @@ void
 Patchage::on_messages_resized(Gtk::Allocation&)
 {
 	const int max_pos = _main_paned->get_allocation().get_height();
-	_conf->set_messages_height(max_pos - _main_paned->get_position());
+	_conf.set_messages_height(max_pos - _main_paned->get_position());
 }
 
 void
 Patchage::save()
 {
-	_conf->set_zoom(_canvas->get_zoom()); // Can be changed by ganv
-	_conf->save();
+	_conf.set_zoom(_canvas->get_zoom()); // Can be changed by ganv
+	_conf.save();
 }
 
 void
@@ -915,7 +909,7 @@ Patchage::on_view_messages()
 		if (!_pane_initialized) {
 			const int min_height  = _log.min_height();
 			const int max_pos     = _main_paned->get_allocation().get_height();
-			const int conf_height = _conf->get_messages_height();
+			const int conf_height = _conf.get_messages_height();
 			_main_paned->set_position(max_pos -
 			                          std::max(conf_height, min_height));
 
@@ -925,10 +919,10 @@ Patchage::on_view_messages()
 		_log_scrolledwindow->show();
 		_status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(),
 		                             0);
-		_conf->set_show_messages(true);
+		_conf.set_show_messages(true);
 	} else {
 		_log_scrolledwindow->hide();
-		_conf->set_show_messages(false);
+		_conf.set_show_messages(false);
 	}
 }
 
@@ -940,7 +934,7 @@ Patchage::on_view_toolbar()
 	} else {
 		_toolbar->hide();
 	}
-	_conf->set_show_toolbar(_menu_view_toolbar->get_active());
+	_conf.set_show_toolbar(_menu_view_toolbar->get_active());
 }
 
 bool

@@ -110,7 +110,7 @@ PatchageModule::load_location()
 {
 	Coord loc;
 
-	if (_app->conf()->get_module_location(_name, _type, loc)) {
+	if (_app->conf().get_module_location(_name, _type, loc)) {
 		move_to(loc.x, loc.y);
 	} else {
 		move_to(20 + rand() % 640, 20 + rand() % 480);
@@ -120,14 +120,14 @@ PatchageModule::load_location()
 void
 PatchageModule::store_location(double x, double y)
 {
-	_app->conf()->set_module_location(_name, _type, {x, y});
+	_app->conf().set_module_location(_name, _type, {x, y});
 }
 
 void
 PatchageModule::split()
 {
 	assert(_type == SignalDirection::duplex);
-	_app->conf()->set_module_split(_name, true);
+	_app->conf().set_module_split(_name, true);
 	_app->refresh();
 }
 
@@ -135,7 +135,7 @@ void
 PatchageModule::join()
 {
 	assert(_type != SignalDirection::duplex);
-	_app->conf()->set_module_split(_name, false);
+	_app->conf().set_module_split(_name, false);
 	_app->refresh();
 }
 

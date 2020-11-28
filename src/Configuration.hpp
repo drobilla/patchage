@@ -51,7 +51,7 @@ public:
 
 	bool get_module_location(const std::string& name,
 	                         SignalDirection    type,
-	                         Coord&             loc);
+	                         Coord&             loc) const;
 
 	void set_module_location(const std::string& name,
 	                         SignalDirection    type,

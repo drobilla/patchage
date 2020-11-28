@@ -88,7 +88,7 @@ PatchageCanvas::create_port(Patchage&       patchage,
 
 	// Determine the module type to place the port on in case of splitting
 	SignalDirection module_type = SignalDirection::duplex;
-	if (patchage.conf()->get_module_split(client_name, info.is_terminal)) {
+	if (patchage.conf().get_module_split(client_name, info.is_terminal)) {
 		module_type = info.direction;
 	}
 
@@ -116,7 +116,7 @@ PatchageCanvas::create_port(Patchage&       patchage,
 	                     port_name,
 	                     info.label,
 	                     info.direction == SignalDirection::input,
-	                     patchage.conf()->get_port_color(info.type),
+	                     patchage.conf().get_port_color(info.type),
 	                     patchage.show_human_names(),
 	                     info.order);
 
