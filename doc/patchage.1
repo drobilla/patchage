@@ -1,23 +1,24 @@
-.TH PATCHAGE 1 "15 Dec 2010"
+.TH PATCHAGE 1 "29 Nov 2020"
 
 .SH NAME
-.B patchage \- Graphically connect JACK and ALSA Audio/MIDI ports
+.B patchage \- Graphically connect JACK and ALSA Audio and MIDI ports
 
 .SH SYNOPSIS
-.B Patchage
-provides a graphical interface to connect Jack/Alsa Audio/MIDI inputs
-and outputs.  Each application is represented on a canvas as a "module"
-with inputs on the left and outputs on the right.  Modules can be arranged
-manually or automatically to have a clear display of the current setup.
+patchage [\fIOPTION\fR]...
+
+.SH DESCRIPTION
+Patchage provides a graphical interface to connect JACK and ALSA inputs and outputs.
+Each application is represented on a canvas as a \*(lqmodule\*(rq, with inputs on the left and outputs on the right.
+Modules can be arranged manually or automatically to have a clear display of the current setup.
 
 .SH OPTIONS
 .TP
-\fB\-h\fR, \fB\-\-help\fR
-Print the command line options.
-
-.TP
 \fB\-A\fR, \fB\-\-no\-alsa\fR
 Do not automatically attach to ALSA.
+
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print the command line options and exit.
 
 .TP
 \fB\-J\fR, \fB\-\-no\-jack\fR

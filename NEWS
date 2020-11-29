@@ -2,9 +2,10 @@ patchage (1.0.3) unstable;
 
   * Fix making and breaking connections with Jack DBus
   * Fix sample rate with Jack DBus
+  * Improve man page
   * Remove Jack session support
 
- -- David Robillard <d@drobilla.net>  Sat, 28 Nov 2020 21:29:22 +0000
+ -- David Robillard <d@drobilla.net>  Sun, 29 Nov 2020 10:00:53 +0000
 
 patchage (1.0.2) stable;
 
