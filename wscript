@@ -208,6 +208,7 @@ def configure(conf):
     conf.define('PATCHAGE_DATA_DIR', os.path.join(
         conf.env.DATADIR, conf.env.APP_INSTALL_NAME))
 
+    conf.define('PATCHAGE_VERSION', PATCHAGE_VERSION)
     conf.write_config_header('patchage_config.h', remove=False)
 
     autowaf.display_summary(
