@@ -26,8 +26,9 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <gtkmm/menu_elems.h>
+#include <gtkmm/menu.h>
 
+#include <memory>
 #include <string>
 
 namespace patchage {
@@ -44,8 +45,8 @@ public:
 	             const std::string& name,
 	             SignalDirection    type,
 	             ClientID           id,
-	             double             x = 0,
-	             double             y = 0);
+	             double             x = 0.0,
+	             double             y = 0.0);
 
 	CanvasModule(const CanvasModule&) = delete;
 	CanvasModule& operator=(const CanvasModule&) = delete;
@@ -55,17 +56,16 @@ public:
 
 	~CanvasModule() override;
 
-	void split();
-	void join();
-
 	bool show_menu(GdkEventButton* ev);
 	void update_menu();
+
+	void split();
+	void join();
+	void disconnect_all();
 
 	CanvasPort* get_port(const PortID& id);
 
 	void load_location();
-	void menu_disconnect_all();
-	void show_dialog() {}
 	void store_location(double x, double y);
 
 	SignalDirection    type() const { return _type; }

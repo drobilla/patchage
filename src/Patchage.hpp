@@ -83,7 +83,6 @@ public:
 	void driver_attached(ClientType type);
 	void driver_detached(ClientType type);
 
-	void update_state();
 	void store_window_location();
 
 	bool show_human_names() const
@@ -137,7 +136,6 @@ protected:
 
 	bool on_scroll(GdkEventScroll* ev);
 
-	void zoom(double z);
 	bool idle_callback();
 	void clear_load();
 	bool update_load();

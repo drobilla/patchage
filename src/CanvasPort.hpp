@@ -69,20 +69,6 @@ public:
 
 	~CanvasPort() override = default;
 
-	/** Returns the name of the module/client this port is one */
-	std::string module_name() const
-	{
-		auto* pmod = dynamic_cast<CanvasModule*>(get_module());
-		return std::string(pmod->name());
-	}
-
-	/** Returns the full name of this port, as "modulename:portname" */
-	std::string full_name() const
-	{
-		auto* pmod = dynamic_cast<CanvasModule*>(get_module());
-		return std::string(pmod->name()) + ":" + _name;
-	}
-
 	void show_human_name(bool human)
 	{
 		if (human && !_human_name.empty()) {

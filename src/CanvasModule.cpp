@@ -16,6 +16,8 @@
 
 #include "CanvasModule.hpp"
 
+#include <gtkmm/menu_elems.h>
+
 #include "Canvas.hpp"
 #include "CanvasPort.hpp"
 #include "Patchage.hpp"
@@ -82,6 +84,7 @@ CanvasModule::show_menu(GdkEventButton* ev)
 {
 	_menu                      = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
+
 	if (_type == SignalDirection::duplex) {
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
 		    "_Split", sigc::mem_fun(this, &CanvasModule::split)));
@@ -90,9 +93,9 @@ CanvasModule::show_menu(GdkEventButton* ev)
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
 		    "_Join", sigc::mem_fun(this, &CanvasModule::join)));
 	}
+
 	items.push_back(Gtk::Menu_Helpers::MenuElem(
-	    "_Disconnect All",
-	    sigc::mem_fun(this, &CanvasModule::menu_disconnect_all)));
+	    "_Disconnect All", sigc::mem_fun(this, &CanvasModule::disconnect_all)));
 
 	_menu->popup(ev->button, ev->time);
 	return true;
@@ -147,7 +150,7 @@ CanvasModule::join()
 }
 
 void
-CanvasModule::menu_disconnect_all()
+CanvasModule::disconnect_all()
 {
 	for (Ganv::Port* p : *this) {
 		p->disconnect();

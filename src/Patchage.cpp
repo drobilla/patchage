@@ -112,6 +112,18 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 	return 0;
 }
 
+static void
+load_module_location(GanvNode* node, void*)
+{
+	if (GANV_IS_MODULE(node)) {
+		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+		auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
+		if (pmod) {
+			pmod->load_location();
+		}
+	}
+}
+
 } // namespace
 
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
@@ -305,7 +317,8 @@ Patchage::Patchage(Options options)
 		_menu_alsa_disconnect->set_sensitive(false);
 	}
 
-	update_state();
+	_canvas->for_each_node(load_module_location, nullptr);
+
 	_menu_view_toolbar->set_active(_conf.get_show_toolbar());
 	_menu_view_sprung_layout->set_active(_conf.get_sprung_layout());
 	_menu_view_sort_ports->set_active(_conf.get_sort_ports());
@@ -437,13 +450,6 @@ Patchage::update_load()
 }
 
 void
-Patchage::zoom(double z)
-{
-	_conf.set_zoom(z);
-	_canvas->set_zoom(z);
-}
-
-void
 Patchage::refresh()
 {
 	auto sink = [this](const Event& event) {
@@ -546,24 +552,6 @@ Patchage::clear_load()
 	if (_jack_driver) {
 		_jack_driver->reset_xruns();
 	}
-}
-
-static void
-load_module_location(GanvNode* node, void*)
-{
-	if (GANV_IS_MODULE(node)) {
-		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-		auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-		if (pmod) {
-			pmod->load_location();
-		}
-	}
-}
-
-void
-Patchage::update_state()
-{
-	_canvas->for_each_node(load_module_location, nullptr);
 }
 
 void
