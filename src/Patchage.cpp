@@ -430,7 +430,7 @@ Patchage::update_load()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {
-		const auto xruns = _jack_driver->get_xruns();
+		const auto xruns = _jack_driver->xruns();
 		if (xruns > 0u) {
 			_dropouts_label->set_text(fmt::format(" Dropouts: {}", xruns));
 			_dropouts_label->show();

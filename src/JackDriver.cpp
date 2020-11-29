@@ -46,7 +46,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <utility>
 
 JackDriver::JackDriver(ILog& log, EventSink emit_event)
-    : Driver{std::move(emit_event)}
+    : AudioDriver{std::move(emit_event)}
     , _log{log}
     , _is_activated{false}
 {}
@@ -106,6 +106,12 @@ JackDriver::detach()
 
 	_is_activated = false;
 	_emit_event(DriverDetachmentEvent{ClientType::jack});
+}
+
+bool
+JackDriver::is_attached() const
+{
+	return _client != nullptr;
 }
 
 static std::string
@@ -299,6 +305,51 @@ JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 	return true;
 }
 
+uint32_t
+JackDriver::xruns()
+{
+	return _xruns;
+}
+
+void
+JackDriver::reset_xruns()
+{
+	_xruns = 0;
+}
+
+uint32_t
+JackDriver::buffer_size()
+{
+	return _is_activated ? _buffer_size : jack_get_buffer_size(_client);
+}
+
+bool
+JackDriver::set_buffer_size(const uint32_t frames)
+{
+	if (!_client) {
+		_buffer_size = frames;
+		return true;
+	}
+
+	if (buffer_size() == frames) {
+		return true;
+	}
+
+	if (jack_set_buffer_size(_client, frames)) {
+		_log.error("[JACK] Unable to set buffer size");
+		return false;
+	}
+
+	_buffer_size = frames;
+	return true;
+}
+
+uint32_t
+JackDriver::sample_rate()
+{
+	return jack_get_sample_rate(_client);
+}
+
 void
 JackDriver::jack_client_registration_cb(const char* const name,
                                         const int         registered,
@@ -374,37 +425,4 @@ JackDriver::jack_shutdown_cb(void* const jack_driver)
 	me->_is_activated = false;
 
 	me->_emit_event(DriverDetachmentEvent{ClientType::jack});
-}
-
-jack_nframes_t
-JackDriver::buffer_size()
-{
-	return _is_activated ? _buffer_size : jack_get_buffer_size(_client);
-}
-
-void
-JackDriver::reset_xruns()
-{
-	_xruns = 0;
-}
-
-bool
-JackDriver::set_buffer_size(jack_nframes_t size)
-{
-	if (!_client) {
-		_buffer_size = size;
-		return true;
-	}
-
-	if (buffer_size() == size) {
-		return true;
-	}
-
-	if (jack_set_buffer_size(_client, size)) {
-		_log.error("[JACK] Unable to set buffer size");
-		return false;
-	}
-
-	_buffer_size = size;
-	return true;
 }

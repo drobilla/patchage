@@ -55,7 +55,7 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
 JackDriver::JackDriver(ILog& log, EventSink emit_event)
-    : Driver{std::move(emit_event)}
+    : AudioDriver{std::move(emit_event)}
     , _log(log)
     , _dbus_error()
     , _dbus_connection(nullptr)
@@ -722,94 +722,7 @@ JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 }
 
 uint32_t
-JackDriver::buffer_size()
-{
-	DBusMessage*  reply_ptr   = nullptr;
-	dbus_uint32_t buffer_size = 0u;
-
-	if (_server_responding && !_server_started) {
-		return 4096;
-	}
-
-	if (!call(true,
-	          JACKDBUS_IFACE_CONTROL,
-	          "GetBufferSize",
-	          &reply_ptr,
-	          DBUS_TYPE_INVALID)) {
-		return 4096;
-	}
-
-	if (!dbus_message_get_args(reply_ptr,
-	                           &_dbus_error,
-	                           DBUS_TYPE_UINT32,
-	                           &buffer_size,
-	                           DBUS_TYPE_INVALID)) {
-		dbus_message_unref(reply_ptr);
-		dbus_error_free(&_dbus_error);
-		error_msg("Decoding reply of GetBufferSize failed");
-		return 4096;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	return buffer_size;
-}
-
-bool
-JackDriver::set_buffer_size(const uint32_t size)
-{
-	DBusMessage*  reply_ptr   = nullptr;
-	dbus_uint32_t buffer_size = 0u;
-
-	buffer_size = size;
-
-	if (!call(true,
-	          JACKDBUS_IFACE_CONTROL,
-	          "SetBufferSize",
-	          &reply_ptr,
-	          DBUS_TYPE_UINT32,
-	          &buffer_size,
-	          DBUS_TYPE_INVALID)) {
-		return false;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	return true;
-}
-
-float
-JackDriver::sample_rate()
-{
-	DBusMessage*  reply_ptr   = nullptr;
-	dbus_uint32_t sample_rate = 0u;
-
-	if (!call(true,
-	          JACKDBUS_IFACE_CONTROL,
-	          "GetSampleRate",
-	          &reply_ptr,
-	          DBUS_TYPE_INVALID)) {
-		return false;
-	}
-
-	if (!dbus_message_get_args(reply_ptr,
-	                           &_dbus_error,
-	                           DBUS_TYPE_UINT32,
-	                           &sample_rate,
-	                           DBUS_TYPE_INVALID)) {
-		dbus_message_unref(reply_ptr);
-		dbus_error_free(&_dbus_error);
-		error_msg("Decoding reply of GetSampleRate failed");
-		return false;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	return sample_rate;
-}
-
-uint32_t
-JackDriver::get_xruns()
+JackDriver::xruns()
 {
 	DBusMessage*  reply_ptr = nullptr;
 	dbus_uint32_t xruns     = 0u;
@@ -856,6 +769,91 @@ JackDriver::reset_xruns()
 	}
 
 	dbus_message_unref(reply_ptr);
+}
+
+uint32_t
+JackDriver::buffer_size()
+{
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t buffer_size = 0u;
+
+	if (_server_responding && !_server_started) {
+		return 4096;
+	}
+
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetBufferSize",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
+		return 4096;
+	}
+
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_UINT32,
+	                           &buffer_size,
+	                           DBUS_TYPE_INVALID)) {
+		dbus_message_unref(reply_ptr);
+		dbus_error_free(&_dbus_error);
+		error_msg("Decoding reply of GetBufferSize failed");
+		return 4096;
+	}
+
+	dbus_message_unref(reply_ptr);
+
+	return buffer_size;
+}
+
+bool
+JackDriver::set_buffer_size(const uint32_t frames)
+{
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t buffer_size = frames;
+
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "SetBufferSize",
+	          &reply_ptr,
+	          DBUS_TYPE_UINT32,
+	          &buffer_size,
+	          DBUS_TYPE_INVALID)) {
+		return false;
+	}
+
+	dbus_message_unref(reply_ptr);
+
+	return true;
+}
+
+uint32_t
+JackDriver::sample_rate()
+{
+	DBusMessage*  reply_ptr   = nullptr;
+	dbus_uint32_t sample_rate = 0u;
+
+	if (!call(true,
+	          JACKDBUS_IFACE_CONTROL,
+	          "GetSampleRate",
+	          &reply_ptr,
+	          DBUS_TYPE_INVALID)) {
+		return false;
+	}
+
+	if (!dbus_message_get_args(reply_ptr,
+	                           &_dbus_error,
+	                           DBUS_TYPE_UINT32,
+	                           &sample_rate,
+	                           DBUS_TYPE_INVALID)) {
+		dbus_message_unref(reply_ptr);
+		dbus_error_free(&_dbus_error);
+		error_msg("Decoding reply of GetSampleRate failed");
+		return false;
+	}
+
+	dbus_message_unref(reply_ptr);
+
+	return sample_rate;
 }
 
 PortType

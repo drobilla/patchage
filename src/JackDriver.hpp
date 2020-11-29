@@ -17,8 +17,8 @@
 #ifndef PATCHAGE_JACKDRIVER_HPP
 #define PATCHAGE_JACKDRIVER_HPP
 
+#include "AudioDriver.hpp"
 #include "ClientInfo.hpp"
-#include "Driver.hpp"
 #include "PortInfo.hpp"
 
 #include <jack/jack.h>
@@ -30,7 +30,7 @@
 class ILog;
 
 /// Driver for JACK audio and midi ports that uses libjack
-class JackDriver : public Driver
+class JackDriver : public AudioDriver
 {
 public:
 	explicit JackDriver(ILog& log, EventSink emit_event);
@@ -43,23 +43,20 @@ public:
 
 	~JackDriver() override;
 
+	// Driver interface
 	void attach(bool launch_daemon) override;
 	void detach() override;
-
-	bool is_attached() const override { return (_client != nullptr); }
-
+	bool is_attached() const override;
 	void refresh(const EventSink& sink) override;
-
 	bool connect(const PortID& tail_id, const PortID& head_id) override;
-
 	bool disconnect(const PortID& tail_id, const PortID& head_id) override;
 
-	uint32_t get_xruns() const { return _xruns; }
-	void     reset_xruns();
-
-	uint32_t sample_rate() { return jack_get_sample_rate(_client); }
-	uint32_t buffer_size();
-	bool     set_buffer_size(jack_nframes_t size);
+	// AudioDriver interface
+	uint32_t xruns() override;
+	void     reset_xruns() override;
+	uint32_t buffer_size() override;
+	bool     set_buffer_size(uint32_t frames) override;
+	uint32_t sample_rate() override;
 
 private:
 	ClientInfo get_client_info(const char* name);
