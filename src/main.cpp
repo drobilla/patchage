@@ -82,6 +82,17 @@ print_usage()
 	std::cout << "  -J, --no-jack  Do not automatically attack to JACK.\n";
 }
 
+void
+print_version()
+{
+	std::cout << "Patchage " PATCHAGE_VERSION << R"(
+Copyright 2007-2020 David Robillard <d@drobilla.net>.
+License GPLv3+: <http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+)";
+}
+
 } // namespace
 
 int
@@ -111,6 +122,9 @@ main(int argc, char** argv)
 				options.alsa_driver_autoattach = false;
 			} else if (!strcmp(*argv, "-J") || !strcmp(*argv, "--no-jack")) {
 				options.jack_driver_autoattach = false;
+			} else if (!strcmp(*argv, "-V") || !strcmp(*argv, "--version")) {
+				print_version();
+				return 0;
 			} else {
 				std::cerr << "patchage: invalid option -- '" << *argv << "'\n";
 				print_usage();
