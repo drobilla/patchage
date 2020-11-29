@@ -54,4 +54,10 @@
 
 #endif
 
+#if defined(__GNUC__)
+#	define PATCHAGE_UNREACHABLE() __builtin_unreachable()
+#else
+#	define PATCHAGE_UNREACHABLE()
+#endif
+
 #endif // PATCHAGE_WARNINGS_HPP

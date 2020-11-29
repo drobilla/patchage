@@ -43,6 +43,8 @@ struct EventPrinter
 		case ClientType::alsa:
 			return "ALSA";
 		}
+
+		PATCHAGE_UNREACHABLE();
 	}
 
 	std::string operator()(const DriverAttachmentEvent& event)
@@ -80,6 +82,8 @@ struct EventPrinter
 		case PortType::jack_cv:
 			return "JACK CV";
 		}
+
+		PATCHAGE_UNREACHABLE();
 	}
 
 	std::string operator()(const SignalDirection direction)
@@ -92,6 +96,8 @@ struct EventPrinter
 		case SignalDirection::duplex:
 			return "duplex";
 		}
+
+		PATCHAGE_UNREACHABLE();
 	}
 
 	std::string operator()(const PortCreationEvent& event)

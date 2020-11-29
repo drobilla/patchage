@@ -19,6 +19,7 @@
 
 #include "ClientID.hpp"
 #include "ClientType.hpp"
+#include "warnings.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -68,6 +69,8 @@ struct PortID
 		case Type::alsa:
 			return ClientID::alsa(_alsa_client);
 		}
+
+		PATCHAGE_UNREACHABLE();
 	}
 
 	Type               type() const { return _type; }
