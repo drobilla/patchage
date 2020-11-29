@@ -41,5 +41,7 @@
 		<key>PANGO_RC_FILE</key>
 		<string>Resources/pangorc</string>
 	</dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Patchage needs access to the microphone in order to work with the JACK server.</string>
 </dict>
 </plist>
