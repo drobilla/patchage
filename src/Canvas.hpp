@@ -44,10 +44,6 @@ class Canvas : public Ganv::Canvas
 public:
 	Canvas(Connector& connector, int width, int height);
 
-	CanvasModule* create_module(Patchage&         patchage,
-	                            const ClientID&   id,
-	                            const ClientInfo& info);
-
 	CanvasPort*
 	create_port(Patchage& patchage, const PortID& id, const PortInfo& info);
 
@@ -56,11 +52,6 @@ public:
 
 	void remove_module(const ClientID& id);
 	void remove_module(CanvasModule* module);
-
-	void index_port(const PortID& id, CanvasPort* port)
-	{
-		_port_index.insert(std::make_pair(id, port));
-	}
 
 	void remove_ports(bool (*pred)(const CanvasPort*));
 
@@ -79,7 +70,6 @@ private:
 	friend void disconnect_edge(GanvEdge*, void*);
 
 	bool on_event(GdkEvent* ev);
-	bool on_connection_event(Ganv::Edge* c, GdkEvent* ev);
 
 	void on_connect(Ganv::Node* port1, Ganv::Node* port2);
 	void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);

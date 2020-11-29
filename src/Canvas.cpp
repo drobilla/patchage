@@ -48,17 +48,6 @@ Canvas::Canvas(Connector& connector, int width, int height)
 	signal_disconnect.connect(sigc::mem_fun(this, &Canvas::on_disconnect));
 }
 
-CanvasModule*
-Canvas::create_module(Patchage&         patchage,
-                      const ClientID&   id,
-                      const ClientInfo& info)
-{
-	(void)patchage;
-	(void)id;
-	(void)info;
-	return nullptr;
-}
-
 CanvasPort*
 Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 {
@@ -118,7 +107,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 	                                  patchage.show_human_names(),
 	                                  info.order);
 
-	index_port(id, port);
+	_port_index.insert(std::make_pair(id, port));
 
 	return port;
 }
