@@ -311,7 +311,8 @@ Patchage::Patchage(int argc, char** argv)
 		_about_win->set_logo(Gdk::Pixbuf::create_from_file(
 		    bundle_location() + "/Resources/Patchage.icns"));
 	} catch (const Glib::Exception& e) {
-		_log.error(fmt::format("Failed to set logo ({})", e.what()));
+		_log.error(
+		    fmt::format("Failed to set logo ({})", std::string(e.what())));
 	}
 #endif
 
