@@ -85,8 +85,6 @@ private:
 	ClientInfo get_client_info(const char* name);
 	PortInfo   get_port_info(const jack_port_t* port);
 
-	void shutdown();
-
 	static void jack_client_registration_cb(const char* name,
 	                                        int         registered,
 	                                        void*       jack_driver);
@@ -259,18 +257,12 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
 }
 
 void
-JackLibDriver::shutdown()
-{
-	_emit_event(DriverDetachmentEvent{ClientType::jack});
-}
-
-void
 JackLibDriver::refresh(const EventSink& sink)
 {
 	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
 	if (!_client) {
-		shutdown();
+		_emit_event(DriverDetachmentEvent{ClientType::jack});
 		return;
 	}
 
