@@ -17,11 +17,15 @@
 #ifndef PATCHAGE_CLIENTTYPE_HPP
 #define PATCHAGE_CLIENTTYPE_HPP
 
+namespace patchage {
+
 /// A type of client (program) with supported ports
 enum class ClientType
 {
 	jack,
 	alsa,
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_CLIENTTYPE_HPP

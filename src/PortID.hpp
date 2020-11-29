@@ -27,6 +27,8 @@
 #include <tuple>
 #include <utility>
 
+namespace patchage {
+
 /// An ID for some port on a client (program)
 struct PortID
 {
@@ -167,12 +169,14 @@ operator<(const PortID& lhs, const PortID& rhs)
 	return false;
 }
 
+} // namespace patchage
+
 namespace std {
 
 template<>
-struct hash<PortID::Type>
+struct hash<patchage::PortID::Type>
 {
-	size_t operator()(const PortID::Type& v) const noexcept
+	size_t operator()(const patchage::PortID::Type& v) const noexcept
 	{
 		return hash<unsigned>()(static_cast<unsigned>(v));
 	}

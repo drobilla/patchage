@@ -49,6 +49,9 @@ PATCHAGE_RESTORE_WARNINGS
 #include <unordered_set>
 #include <utility>
 
+namespace patchage {
+namespace {
+
 /// Driver for JACK audio and midi ports that uses libjack
 class JackLibDriver : public AudioDriver
 {
@@ -180,7 +183,7 @@ JackLibDriver::is_attached() const
 	return _client != nullptr;
 }
 
-static std::string
+std::string
 get_property(const jack_uuid_t subject, const char* const key)
 {
 	std::string result;
@@ -493,9 +496,13 @@ JackLibDriver::jack_shutdown_cb(void* const jack_driver)
 	me->_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
+} // namespace
+
 std::unique_ptr<AudioDriver>
 make_jack_driver(ILog& log, Driver::EventSink emit_event)
 {
 	return std::unique_ptr<AudioDriver>{
 	    new JackLibDriver{log, std::move(emit_event)}};
 }
+
+} // namespace patchage

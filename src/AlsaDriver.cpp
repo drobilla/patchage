@@ -40,6 +40,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
+namespace patchage {
 namespace {
 
 /// Driver for ALSA Sequencer ports
@@ -135,8 +136,6 @@ port_info(const snd_seq_port_info_t* const pinfo)
 	        snd_seq_port_info_get_port(pinfo),
 	        (type & SND_SEQ_PORT_TYPE_APPLICATION) == 0};
 }
-
-} // namespace
 
 AlsaDriver::AlsaDriver(ILog& log, EventSink emit_event)
     : Driver{std::move(emit_event)}
@@ -544,8 +543,12 @@ AlsaDriver::_refresh_main()
 	}
 }
 
+} // namespace
+
 std::unique_ptr<Driver>
 make_alsa_driver(ILog& log, Driver::EventSink emit_event)
 {
 	return std::unique_ptr<Driver>{new AlsaDriver{log, std::move(emit_event)}};
 }
+
+} // namespace patchage

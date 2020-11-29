@@ -24,6 +24,8 @@
 #include <gtkmm/texttag.h>
 #include <gtkmm/textview.h>
 
+namespace patchage {
+
 /// Log that writes colored messages to a Gtk TextView
 class TextViewLog : public ILog
 {
@@ -52,5 +54,7 @@ private:
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;
 	Widget<Gtk::TextView>&     _text_view;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_TEXTVIEWLOG_HPP

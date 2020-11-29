@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace patchage {
+
 template<typename W>
 class Widget
 {
@@ -50,5 +52,7 @@ public:
 private:
 	W* _me;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_WIDGET_HPP

@@ -22,6 +22,8 @@
 #include <functional>
 #include <utility>
 
+namespace patchage {
+
 /// Base class for drivers that handle system clients and ports
 class Driver
 {
@@ -61,5 +63,7 @@ public:
 protected:
 	EventSink _emit_event; ///< Sink for emitting "live" events
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_DRIVER_HPP

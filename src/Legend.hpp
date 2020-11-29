@@ -25,6 +25,8 @@
 
 #include <string>
 
+namespace patchage {
+
 class Legend : public Gtk::HBox
 {
 public:
@@ -38,5 +40,7 @@ public:
 
 	sigc::signal<void, PortType, std::string, uint32_t> signal_color_changed;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_LEGEND_HPP

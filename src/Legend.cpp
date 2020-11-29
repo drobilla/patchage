@@ -26,6 +26,8 @@
 
 #include <string>
 
+namespace patchage {
+
 Legend::Legend(const Configuration& configuration)
 {
 	add_button(PortType::jack_audio,
@@ -84,3 +86,5 @@ Legend::on_color_set(const PortType          id,
 
 	signal_color_changed.emit(id, label, rgba);
 }
+
+} // namespace patchage

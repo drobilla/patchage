@@ -22,6 +22,8 @@
 
 #include <memory>
 
+namespace patchage {
+
 class ILog;
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
@@ -38,5 +40,7 @@ make_jack_driver(ILog&, Driver::EventSink)
 }
 
 #endif
+
+} // namespace patchage
 
 #endif // PATCHAGE_MAKE_JACK_DRIVER_HPP

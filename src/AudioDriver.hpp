@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+namespace patchage {
+
 /// Base class for drivers that work with an audio system
 class AudioDriver : public Driver
 {
@@ -44,5 +46,7 @@ public:
 	/// Return the current sample rate in Hz
 	virtual uint32_t sample_rate() = 0;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_AUDIODRIVER_HPP

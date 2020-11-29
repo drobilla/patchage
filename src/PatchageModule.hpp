@@ -30,6 +30,8 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <string>
 
+namespace patchage {
+
 struct PortID;
 
 class Patchage;
@@ -79,5 +81,7 @@ protected:
 	SignalDirection _type;
 	ClientID        _id;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PATCHAGEMODULE_HPP

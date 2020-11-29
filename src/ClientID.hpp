@@ -25,6 +25,8 @@
 #include <string>
 #include <utility>
 
+namespace patchage {
+
 /// An ID for some client (program) that has ports
 struct ClientID
 {
@@ -120,5 +122,7 @@ operator<(const ClientID& lhs, const ClientID& rhs)
 	assert(false);
 	return false;
 }
+
+} // namespace patchage
 
 #endif // PATCHAGE_CLIENTID_HPP

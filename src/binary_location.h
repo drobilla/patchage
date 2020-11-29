@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <string>
 
+namespace patchage {
+
 /** Return the absolute path of the binary. */
 inline std::string
 binary_location()
@@ -54,3 +56,5 @@ bundle_location()
 	}
 	return binary.substr(0, binary.find_last_of('/'));
 }
+
+} // namespace patchage

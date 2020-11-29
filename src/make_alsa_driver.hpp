@@ -22,6 +22,8 @@
 
 #include <memory>
 
+namespace patchage {
+
 class ILog;
 
 #if defined(HAVE_ALSA)
@@ -38,5 +40,7 @@ make_alsa_driver(ILog&, Driver::EventSink)
 }
 
 #endif
+
+} // namespace patchage
 
 #endif // PATCHAGE_MAKE_ALSA_DRIVER_HPP

@@ -78,6 +78,8 @@ terminate_cb(GtkosxApplication* app, gpointer data)
 
 #endif
 
+namespace patchage {
+
 namespace {
 
 bool
@@ -893,3 +895,5 @@ Patchage::buffer_size_changed()
 		}
 	}
 }
+
+} // namespace patchage

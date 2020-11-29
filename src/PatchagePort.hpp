@@ -33,6 +33,8 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <string>
 
+namespace patchage {
+
 /// A port on a PatchageModule
 class PatchagePort : public Ganv::Port
 {
@@ -117,5 +119,7 @@ private:
 	std::string          _human_name;
 	boost::optional<int> _order;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PATCHAGEPORT_HPP

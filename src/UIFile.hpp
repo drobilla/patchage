@@ -30,6 +30,8 @@
 #include <sstream>
 #include <string>
 
+namespace patchage {
+
 class UIFile
 {
 public:
@@ -66,5 +68,7 @@ public:
 		return Glib::RefPtr<Gtk::Builder>();
 	}
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_UIFILE_HPP

@@ -27,6 +27,8 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
+namespace patchage {
+
 namespace {
 
 class EventHandler
@@ -123,3 +125,5 @@ handle_event(Patchage& patchage, const PatchageEvent& event)
 	EventHandler handler{patchage};
 	boost::apply_visitor(handler, event);
 }
+
+} // namespace patchage

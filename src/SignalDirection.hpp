@@ -17,11 +17,15 @@
 #ifndef PATCHAGE_SIGNALDIRECTION_HPP
 #define PATCHAGE_SIGNALDIRECTION_HPP
 
+namespace patchage {
+
 enum class SignalDirection
 {
 	input,
 	output,
 	duplex,
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_SIGNALDIRECTION_HPP

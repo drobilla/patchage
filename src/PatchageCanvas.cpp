@@ -37,6 +37,8 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
+namespace patchage {
+
 PatchageCanvas::PatchageCanvas(Connector& connector, int width, int height)
     : Ganv::Canvas(width, height)
     , _connector(connector)
@@ -341,3 +343,5 @@ PatchageCanvas::clear()
 	_module_index.clear();
 	Ganv::Canvas::clear();
 }
+
+} // namespace patchage

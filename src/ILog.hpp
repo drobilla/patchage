@@ -19,6 +19,8 @@
 
 #include <string>
 
+namespace patchage {
+
 /// Interface for writing log messages
 class ILog
 {
@@ -37,5 +39,7 @@ public:
 	virtual void warning(const std::string& msg) = 0;
 	virtual void error(const std::string& msg)   = 0;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_ILOG_HPP

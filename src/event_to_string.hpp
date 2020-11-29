@@ -22,10 +22,14 @@
 #include <iosfwd>
 #include <string>
 
+namespace patchage {
+
 std::string
 event_to_string(const PatchageEvent& event);
 
 std::ostream&
 operator<<(std::ostream& os, const PatchageEvent& event);
+
+} // namespace patchage
 
 #endif // PATCHAGE_EVENT_TO_STRING_HPP

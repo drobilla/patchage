@@ -22,6 +22,8 @@
 #include <cassert>
 #include <string>
 
+namespace patchage {
+
 /// Utility class that splits a Jack port ID into client and client names
 class PortNames
 {
@@ -49,5 +51,7 @@ private:
 	std::string _client_name;
 	std::string _port_name;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PORTNAMES_HPP

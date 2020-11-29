@@ -29,6 +29,8 @@ PATCHAGE_RESTORE_WARNINGS
 #include <iostream>
 #include <string>
 
+namespace patchage {
+
 namespace {
 
 struct EventPrinter
@@ -147,3 +149,5 @@ operator<<(std::ostream& os, const PatchageEvent& event)
 {
 	return os << event_to_string(event);
 }
+
+} // namespace patchage

@@ -54,6 +54,9 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_PORT_TYPE_AUDIO 0
 #define JACKDBUS_PORT_TYPE_MIDI  1
 
+namespace patchage {
+namespace {
+
 /// Driver for JACK audio and midi ports that uses D-Bus
 class JackDriver : public AudioDriver
 {
@@ -973,9 +976,13 @@ JackDriver::info_msg(const std::string& msg) const
 	_log.info(std::string{"[JACK] "} + msg);
 }
 
+} // namespace
+
 std::unique_ptr<AudioDriver>
 make_jack_driver(ILog& log, Driver::EventSink emit_event)
 {
 	return std::unique_ptr<AudioDriver>{
 	    new JackDriver{log, std::move(emit_event)}};
 }
+
+} // namespace patchage

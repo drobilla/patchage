@@ -111,7 +111,7 @@ main(int argc, char** argv)
 		--argc;
 
 		// Parse command line options
-		Options options;
+		patchage::Options options;
 		while (argc > 0) {
 			if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
 				print_usage();
@@ -136,7 +136,7 @@ main(int argc, char** argv)
 		}
 
 		// Run until main loop is finished
-		Patchage patchage(options);
+		patchage::Patchage patchage(options);
 		Gtk::Main::run(*patchage.window());
 		patchage.save();
 

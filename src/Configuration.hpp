@@ -28,6 +28,8 @@
 
 #define N_PORT_TYPES 5
 
+namespace patchage {
+
 struct Coord
 {
 	Coord() = default;
@@ -130,5 +132,7 @@ private:
 	bool  _show_messages   = false;
 	bool  _sort_ports      = true;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_CONFIGURATION_HPP

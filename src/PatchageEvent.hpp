@@ -27,6 +27,8 @@
 
 #include <string>
 
+namespace patchage {
+
 struct DriverAttachmentEvent
 {
 	ClientType type;
@@ -80,5 +82,7 @@ using PatchageEvent = boost::variant<DriverAttachmentEvent,
                                      PortDestructionEvent,
                                      ConnectionEvent,
                                      DisconnectionEvent>;
+
+} // namespace patchage
 
 #endif // PATCHAGE_PATCHAGEEVENT_HPP

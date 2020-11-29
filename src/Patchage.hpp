@@ -53,6 +53,8 @@
 #include <queue>
 #include <string>
 
+namespace patchage {
+
 class AudioDriver;
 class PatchageCanvas;
 class Configuration;
@@ -206,5 +208,7 @@ protected:
 	bool    _pane_initialized;
 	bool    _attach;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PATCHAGE_HPP

@@ -32,6 +32,8 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <utility>
 
+namespace patchage {
+
 class Patchage;
 class PatchageModule;
 class PatchagePort;
@@ -86,5 +88,7 @@ private:
 	PortIndex   _port_index;
 	ModuleIndex _module_index;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PATCHAGECANVAS_HPP

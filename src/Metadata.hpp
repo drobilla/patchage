@@ -26,6 +26,8 @@
 
 #include <map>
 
+namespace patchage {
+
 /// Cache of metadata about clients and ports beyond their IDs
 class Metadata
 {
@@ -48,5 +50,7 @@ private:
 	ClientData _client_data;
 	PortData   _port_data;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_METADATA_HPP

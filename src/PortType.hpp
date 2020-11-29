@@ -17,6 +17,8 @@
 #ifndef PATCHAGE_PORTTYPE_HPP
 #define PATCHAGE_PORTTYPE_HPP
 
+namespace patchage {
+
 enum class PortType
 {
 	jack_audio,
@@ -25,5 +27,7 @@ enum class PortType
 	jack_osc,
 	jack_cv,
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PORTTYPE_HPP

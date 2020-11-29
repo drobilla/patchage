@@ -23,6 +23,8 @@
 #include <boost/optional.hpp>
 #include <string>
 
+namespace patchage {
+
 /// Extra information about a port not expressed in its ID
 struct PortInfo
 {
@@ -32,5 +34,7 @@ struct PortInfo
 	boost::optional<int> order;       ///< Order key on client
 	bool                 is_terminal; ///< True if this is a system port
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_PORTINFO_HPP

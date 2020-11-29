@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace patchage {
+
 TextViewLog::TextViewLog(Widget<Gtk::TextView>& text_view)
     : _error_tag{Gtk::TextTag::create()}
     , _warning_tag{Gtk::TextTag::create()}
@@ -81,3 +83,5 @@ TextViewLog::min_height() const
 
 	return line_height + 2 * _text_view->get_pixels_inside_wrap();
 }
+
+} // namespace patchage

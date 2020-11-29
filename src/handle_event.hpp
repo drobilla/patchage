@@ -19,10 +19,14 @@
 
 #include "PatchageEvent.hpp"
 
+namespace patchage {
+
 class Patchage;
 
 /// Handle an event in the GUI
 void
 handle_event(Patchage& patchage, const PatchageEvent& event);
+
+} // namespace patchage
 
 #endif // PATCHAGE_HANDLE_EVENT_HPP

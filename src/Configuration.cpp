@@ -27,6 +27,8 @@
 #include <limits>
 #include <vector>
 
+namespace patchage {
+
 static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
                                                           "JACK_MIDI",
                                                           "ALSA_MIDI",
@@ -358,3 +360,5 @@ Configuration::save()
 
 	file.close();
 }
+
+} // namespace patchage

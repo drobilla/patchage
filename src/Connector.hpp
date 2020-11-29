@@ -21,6 +21,8 @@
 
 #include <unordered_map>
 
+namespace patchage {
+
 class Driver;
 class ILog;
 
@@ -39,5 +41,7 @@ private:
 	ILog&                                     _log;
 	std::unordered_map<PortID::Type, Driver*> _drivers;
 };
+
+} // namespace patchage
 
 #endif // PATCHAGE_CONNECTOR_HPP

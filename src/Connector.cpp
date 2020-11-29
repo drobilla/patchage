@@ -22,6 +22,8 @@
 
 #include <unordered_map>
 
+namespace patchage {
+
 Connector::Connector(ILog& log)
     : _log(log)
 {}
@@ -65,3 +67,5 @@ Connector::disconnect(const PortID& tail, const PortID& head)
 
 	d->second->disconnect(tail, head);
 }
+
+} // namespace patchage

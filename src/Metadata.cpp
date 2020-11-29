@@ -23,6 +23,8 @@
 
 #include <boost/optional.hpp>
 
+namespace patchage {
+
 boost::optional<ClientInfo>
 Metadata::client(const ClientID& id)
 {
@@ -78,3 +80,5 @@ Metadata::erase_port(const PortID& id)
 {
 	_port_data.erase(id);
 }
+
+} // namespace patchage

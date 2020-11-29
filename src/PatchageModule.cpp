@@ -21,6 +21,8 @@
 #include "PatchagePort.hpp"
 #include "SignalDirection.hpp"
 
+namespace patchage {
+
 PatchageModule::PatchageModule(Patchage*          app,
                                const std::string& name,
                                SignalDirection    type,
@@ -160,3 +162,5 @@ PatchageModule::get_port(const PortID& id)
 
 	return nullptr;
 }
+
+} // namespace patchage
