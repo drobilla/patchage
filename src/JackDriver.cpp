@@ -359,9 +359,6 @@ JackDriver::jack_xrun_cb(void* const jack_driver)
 	auto* const me = static_cast<JackDriver*>(jack_driver);
 
 	++me->_xruns;
-	me->_xrun_delay = jack_get_xrun_delayed_usecs(me->_client);
-
-	jack_reset_max_delayed_usecs(me->_client);
 
 	return 0;
 }
@@ -388,36 +385,7 @@ JackDriver::buffer_size()
 void
 JackDriver::reset_xruns()
 {
-	_xruns      = 0;
-	_xrun_delay = 0;
-}
-
-float
-JackDriver::get_max_dsp_load()
-{
-	if (!_client) {
-		return 0.0f;
-	}
-
-	const float max_delay = jack_get_max_delayed_usecs(_client);
-	const float rate      = sample_rate();
-	const float size      = buffer_size();
-	const float period    = size / rate * 1000000; // usec
-
-	if (max_delay > period) {
-		jack_reset_max_delayed_usecs(_client);
-		return 1.0f;
-	}
-
-	return max_delay / period;
-}
-
-void
-JackDriver::reset_max_dsp_load()
-{
-	if (_client) {
-		jack_reset_max_delayed_usecs(_client);
-	}
+	_xruns = 0;
 }
 
 bool

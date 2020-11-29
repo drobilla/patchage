@@ -59,7 +59,6 @@ JackDriver::JackDriver(ILog& log, EventSink emit_event)
     , _log(log)
     , _dbus_error()
     , _dbus_connection(nullptr)
-    , _max_dsp_load(0.0f)
     , _server_responding(false)
     , _server_started(false)
     , _graph_version(0)
@@ -857,52 +856,6 @@ JackDriver::reset_xruns()
 	}
 
 	dbus_message_unref(reply_ptr);
-}
-
-float
-JackDriver::get_max_dsp_load()
-{
-	DBusMessage* reply_ptr = nullptr;
-	double       load      = 0.0;
-
-	if (_server_responding && !_server_started) {
-		return 0.0;
-	}
-
-	if (!call(true,
-	          JACKDBUS_IFACE_CONTROL,
-	          "GetLoad",
-	          &reply_ptr,
-	          DBUS_TYPE_INVALID)) {
-		return 0.0;
-	}
-
-	if (!dbus_message_get_args(reply_ptr,
-	                           &_dbus_error,
-	                           DBUS_TYPE_DOUBLE,
-	                           &load,
-	                           DBUS_TYPE_INVALID)) {
-		dbus_message_unref(reply_ptr);
-		dbus_error_free(&_dbus_error);
-		error_msg("Decoding reply of GetLoad failed");
-		return 0.0;
-	}
-
-	dbus_message_unref(reply_ptr);
-
-	load /= 100.0; // convert from percent to [0..1]
-
-	if (load > static_cast<double>(_max_dsp_load)) {
-		_max_dsp_load = static_cast<float>(load);
-	}
-
-	return _max_dsp_load;
-}
-
-void
-JackDriver::reset_max_dsp_load()
-{
-	_max_dsp_load = 0.0;
 }
 
 PortType

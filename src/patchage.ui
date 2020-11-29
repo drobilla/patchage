@@ -330,51 +330,6 @@
             <property name="icon_size">1</property>
             <property name="icon_size_set">True</property>
             <child>
-              <object class="GtkToolButton" id="clear_load_but">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="has_tooltip">True</property>
-                <property name="tooltip_markup">Clear the dropout indicator</property>
-                <property name="tooltip_text" translatable="yes">Clear dropout indicator.</property>
-                <property name="stock_id">gtk-clear</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem" id="toolitem30">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkAlignment" id="alignment3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="yscale">0</property>
-                    <child>
-                      <object class="GtkProgressBar" id="xrun_progress">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup">Drouput (XRun) Indicator
-
-The bar represents the percentage of available time used for audio processing (i.e. the DSP load).  If the bar reaches 100%, a dropout will occur.</property>
-                        <property name="tooltip_text" translatable="yes">Load and dropout gauge.  The bar shows the percentage of available time used for audio processing.  If it reaches 100%, a dropout will occur.</property>
-                        <property name="show_text">True</property>
-                        <property name="pulse_step">0.10000000149</property>
-                        <property name="text" translatable="yes">0 Dropouts</property>
-                        <property name="discrete_blocks">100</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkToolItem" id="toolitem28">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -390,24 +345,12 @@ The bar represents the percentage of available time used for audio processing (i
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkLabel" id="label10">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> / </property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkComboBox" id="buf_size_combo">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
                             <property name="tooltip_markup">Jack buffer length in frames</property>
-                            <property name="tooltip_text" translatable="yes">Jack buffer length in frames</property>
+                            <property name="tooltip_text" translatable="yes">Jack buffer length in frames.</property>
                             <property name="border_width">1</property>
                           </object>
                           <packing>
@@ -435,6 +378,36 @@ The bar represents the percentage of available time used for audio processing (i
               </object>
               <packing>
                 <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolItem" id="toolitem30">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="dropouts_label">
+                    <property name="can_focus">False</property>
+                    <property name="visible">False</property>
+                    <property name="label" translatable="yes"> Dropouts: 0</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolButton" id="clear_load_but">
+                <property name="visible">False</property>
+                <property name="can_focus">False</property>
+                <property name="has_tooltip">True</property>
+                <property name="tooltip_markup">Clear the dropout indicator</property>
+                <property name="tooltip_text" translatable="yes">Clear dropout indicator.</property>
+                <property name="stock_id">gtk-clear</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>

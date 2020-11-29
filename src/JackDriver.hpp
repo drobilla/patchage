@@ -56,8 +56,6 @@ public:
 
 	uint32_t get_xruns() const { return _xruns; }
 	void     reset_xruns();
-	float    get_max_dsp_load();
-	void     reset_max_dsp_load();
 
 	uint32_t sample_rate() { return jack_get_sample_rate(_client); }
 	uint32_t buffer_size();
@@ -92,7 +90,6 @@ private:
 	jack_client_t* _client      = nullptr;
 	jack_nframes_t _buffer_size = 0u;
 	uint32_t       _xruns       = 0u;
-	float          _xrun_delay  = 0.0f;
 
 	bool _is_activated : 1;
 };

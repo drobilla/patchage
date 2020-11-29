@@ -30,7 +30,6 @@
 #include <gtkmm/menubar.h>
 #include <gtkmm/menuitem.h>
 #include <gtkmm/paned.h>
-#include <gtkmm/progressbar.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/textview.h>
 #include <gtkmm/toolbar.h>
@@ -195,7 +194,7 @@ protected:
 	Widget<Gtk::MenuItem>       _menu_normal_font_size;
 	Widget<Gtk::Toolbar>        _toolbar;
 	Widget<Gtk::ToolButton>     _clear_load_but;
-	Widget<Gtk::ProgressBar>    _xrun_progress;
+	Widget<Gtk::Label>          _dropouts_label;
 	Widget<Gtk::ComboBox>       _buf_size_combo;
 	Widget<Gtk::Label>          _latency_label;
 	Widget<Gtk::Alignment>      _legend_alignment;

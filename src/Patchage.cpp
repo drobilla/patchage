@@ -154,7 +154,7 @@ Patchage::Patchage(Options options)
     , INIT_WIDGET(_menu_normal_font_size)
     , INIT_WIDGET(_toolbar)
     , INIT_WIDGET(_clear_load_but)
-    , INIT_WIDGET(_xrun_progress)
+    , INIT_WIDGET(_dropouts_label)
     , INIT_WIDGET(_buf_size_combo)
     , INIT_WIDGET(_latency_label)
     , INIT_WIDGET(_legend_alignment)
@@ -430,10 +430,16 @@ Patchage::update_load()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	if (_jack_driver->is_attached()) {
-		char buf[8];
-		snprintf(buf, sizeof(buf), "%u", _jack_driver->get_xruns());
-		_xrun_progress->set_text(std::string(buf) + " Dropouts");
-		_xrun_progress->set_fraction(_jack_driver->get_max_dsp_load());
+		const auto xruns = _jack_driver->get_xruns();
+		if (xruns > 0u) {
+			_dropouts_label->set_text(fmt::format(" Dropouts: {}", xruns));
+			_dropouts_label->show();
+			_clear_load_but->show();
+		} else {
+			_dropouts_label->set_text(" Dropouts: 0");
+			_dropouts_label->hide();
+			_clear_load_but->hide();
+		}
 	}
 #endif
 
@@ -549,9 +555,10 @@ void
 Patchage::clear_load()
 {
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_xrun_progress->set_fraction(0.0);
+	_dropouts_label->set_text(" Dropouts: 0");
+	_dropouts_label->hide();
+	_clear_load_but->hide();
 	_jack_driver->reset_xruns();
-	_jack_driver->reset_max_dsp_load();
 #endif
 }
 
