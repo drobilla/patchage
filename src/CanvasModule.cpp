@@ -115,7 +115,12 @@ CanvasModule::load_location()
 	if (_app->conf().get_module_location(_name, _type, loc)) {
 		move_to(loc.x, loc.y);
 	} else {
-		move_to(20 + rand() % 640, 20 + rand() % 480);
+		const double x = 20 + rand() % 640;
+		const double y = 20 + rand() % 480;
+
+		// Move, then store generated location so it is stable
+		move_to(x, y);
+		store_location(x, y);
 	}
 }
 

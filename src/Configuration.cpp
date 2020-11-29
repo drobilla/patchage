@@ -346,9 +346,12 @@ Configuration::save()
 		const ModuleSettings& settings = s.second;
 
 		if (settings.split) {
-			if (settings.input_location && settings.output_location) {
+			if (settings.input_location) {
 				write_module_position(
 				    file, name, "input", *settings.input_location);
+			}
+
+			if (settings.output_location) {
 				write_module_position(
 				    file, name, "output", *settings.output_location);
 			}
