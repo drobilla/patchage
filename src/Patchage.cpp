@@ -101,20 +101,21 @@ PATCHAGE_RESTORE_WARNINGS
 
 #ifdef PATCHAGE_GTK_OSX
 
+#	include <gtkmm/main.h>
 #	include <gtkosxapplication.h>
 
 namespace {
 
 gboolean
-can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
+can_activate_cb(GtkWidget* widget, guint, gpointer)
 {
 	return gtk_widget_is_sensitive(widget);
 }
 
 void
-terminate_cb(GtkosxApplication* app, gpointer data)
+terminate_cb(GtkosxApplication*, gpointer data)
 {
-	Patchage* patchage = (Patchage*)data;
+	auto* patchage = static_cast<patchage::Patchage*>(data);
 	patchage->save();
 	Gtk::Main::quit();
 }
@@ -379,8 +380,9 @@ Patchage::Patchage(Options options)
 
 #ifdef PATCHAGE_GTK_OSX
 	// Set up Mac menu bar
-	GtkosxApplication* osxapp =
-	    (GtkosxApplication*)g_object_new(GTKOSX_TYPE_APPLICATION, nullptr);
+	GtkosxApplication* osxapp = static_cast<GtkosxApplication*>(
+	    g_object_new(GTKOSX_TYPE_APPLICATION, nullptr));
+
 	_menubar->hide();
 	_menu_file_quit->hide();
 	gtkosx_application_set_menu_bar(osxapp, GTK_MENU_SHELL(_menubar->gobj()));
