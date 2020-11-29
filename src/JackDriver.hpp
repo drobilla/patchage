@@ -86,15 +86,15 @@ private:
 
 	static void jack_shutdown_cb(void* jack_driver);
 
-	ILog&          _log;
-	jack_client_t* _client;
-
+	ILog&      _log;
 	std::mutex _shutdown_mutex;
 
-	jack_nframes_t _buffer_size;
-	uint32_t       _xruns;
-	float          _xrun_delay;
-	bool           _is_activated : 1;
+	jack_client_t* _client      = nullptr;
+	jack_nframes_t _buffer_size = 0u;
+	uint32_t       _xruns       = 0u;
+	float          _xrun_delay  = 0.0f;
+
+	bool _is_activated : 1;
 };
 
 #endif // PATCHAGE_JACKDRIVER_HPP

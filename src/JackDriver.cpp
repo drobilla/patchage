@@ -48,10 +48,6 @@ PATCHAGE_RESTORE_WARNINGS
 JackDriver::JackDriver(ILog& log, EventSink emit_event)
     : Driver{std::move(emit_event)}
     , _log{log}
-    , _client{nullptr}
-    , _buffer_size{0}
-    , _xruns{0}
-    , _xrun_delay{0}
     , _is_activated{false}
 {}
 
