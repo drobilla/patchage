@@ -22,8 +22,6 @@
 #include <functional>
 #include <utility>
 
-class Patchage;
-
 /// Base class for drivers that handle system clients and ports
 class Driver
 {
@@ -42,18 +40,26 @@ public:
 
 	virtual ~Driver() = default;
 
+	/// Connect to the underlying system API
 	virtual void attach(bool launch_daemon) = 0;
-	virtual void detach()                   = 0;
-	virtual bool is_attached() const        = 0;
 
+	/// Disconnect from the underlying system API
+	virtual void detach() = 0;
+
+	/// Return true iff the driver is active and connected to the system
+	virtual bool is_attached() const = 0;
+
+	/// Send events to `sink` that describe the complete current system state
 	virtual void refresh(const EventSink& sink) = 0;
 
+	/// Make a connection between ports
 	virtual bool connect(const PortID& tail_id, const PortID& head_id) = 0;
 
+	/// Remove a connection between ports
 	virtual bool disconnect(const PortID& tail_id, const PortID& head_id) = 0;
 
 protected:
-	EventSink _emit_event;
+	EventSink _emit_event; ///< Sink for emitting "live" events
 };
 
 #endif // PATCHAGE_DRIVER_HPP
