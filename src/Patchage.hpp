@@ -54,7 +54,7 @@
 #include <set>
 #include <string>
 
-class JackDriver;
+class AudioDriver;
 class PatchageCanvas;
 class Configuration;
 
@@ -159,8 +159,8 @@ protected:
 
 	std::shared_ptr<PatchageCanvas> _canvas;
 
-	std::unique_ptr<JackDriver> _jack_driver;
-	Configuration               _conf;
+	std::unique_ptr<AudioDriver> _jack_driver;
+	Configuration                _conf;
 
 	Gtk::Main* _gtk_main;
 

@@ -289,15 +289,15 @@ Patchage::Patchage(Options options)
 #endif
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = std::unique_ptr<JackDriver>{new JackDriver(
+	_jack_driver = std::unique_ptr<AudioDriver>{new JackDriver(
 	    _log, [this](const PatchageEvent& event) { on_driver_event(event); })};
 
 	_connector.add_driver(PortID::Type::jack, _jack_driver.get());
 
 	_menu_jack_connect->signal_activate().connect(sigc::bind(
-	    sigc::mem_fun(_jack_driver.get(), &JackDriver::attach), true));
+	    sigc::mem_fun(_jack_driver.get(), &AudioDriver::attach), true));
 	_menu_jack_disconnect->signal_activate().connect(
-	    sigc::mem_fun(_jack_driver.get(), &JackDriver::detach));
+	    sigc::mem_fun(_jack_driver.get(), &AudioDriver::detach));
 #endif
 
 #ifdef HAVE_ALSA
@@ -342,13 +342,8 @@ Patchage::Patchage(Options options)
 
 Patchage::~Patchage()
 {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_jack_driver.reset();
-#endif
-#ifdef HAVE_ALSA
 	_alsa_driver.reset();
-#endif
-
 	_about_win.destroy();
 	_xml.reset();
 }
