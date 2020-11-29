@@ -503,14 +503,12 @@ Patchage::driver_detached(const ClientType type)
 		_menu_jack_connect->set_sensitive(true);
 		_menu_jack_disconnect->set_sensitive(false);
 
-		if (_jack_driver && !_jack_driver->is_attached()) {
-			_canvas->remove_ports([](const CanvasPort* port) {
-				return (port->type() == PortType::jack_audio ||
-				        port->type() == PortType::jack_midi ||
-				        port->type() == PortType::jack_osc ||
-				        port->type() == PortType::jack_cv);
-			});
-		}
+		_canvas->remove_ports([](const CanvasPort* port) {
+			return (port->type() == PortType::jack_audio ||
+			        port->type() == PortType::jack_midi ||
+			        port->type() == PortType::jack_osc ||
+			        port->type() == PortType::jack_cv);
+		});
 
 		break;
 
