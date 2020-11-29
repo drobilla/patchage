@@ -154,9 +154,6 @@ protected:
 
 	std::unique_ptr<Driver> _alsa_driver;
 
-	void menu_alsa_connect();
-	void menu_alsa_disconnect();
-
 	std::shared_ptr<PatchageCanvas> _canvas;
 
 	std::unique_ptr<AudioDriver> _jack_driver;

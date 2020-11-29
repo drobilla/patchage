@@ -251,7 +251,7 @@ def build(bld):
     if bld.is_defined('HAVE_JACK_DBUS'):
         prog.source += ' src/JackDbusDriver.cpp '
     if bld.is_defined('PATCHAGE_LIBJACK'):
-        prog.source += ' src/JackDriver.cpp '
+        prog.source += ' src/JackLibDriver.cpp '
         prog.uselib += ' JACK NEWJACK '
     if bld.env.HAVE_ALSA:
         prog.source += ' src/AlsaDriver.cpp '

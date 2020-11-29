@@ -14,16 +14,18 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "JackDriver.hpp"
-
+#include "AudioDriver.hpp"
 #include "ClientID.hpp"
+#include "ClientInfo.hpp"
 #include "ClientType.hpp"
 #include "ILog.hpp"
 #include "PatchageEvent.hpp"
+#include "PortInfo.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
 #include "jackey.h"
+#include "make_jack_driver.hpp"
 #include "patchage_config.h"
 #include "warnings.hpp"
 
@@ -39,25 +41,89 @@ PATCHAGE_RESTORE_WARNINGS
 #include <jack/statistics.h>
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
+#include <mutex>
 #include <set>
 #include <string>
 #include <unordered_set>
 #include <utility>
 
-JackDriver::JackDriver(ILog& log, EventSink emit_event)
+/// Driver for JACK audio and midi ports that uses libjack
+class JackLibDriver : public AudioDriver
+{
+public:
+	explicit JackLibDriver(ILog& log, EventSink emit_event);
+
+	JackLibDriver(const JackLibDriver&) = delete;
+	JackLibDriver& operator=(const JackLibDriver&) = delete;
+
+	JackLibDriver(JackLibDriver&&) = delete;
+	JackLibDriver& operator=(JackLibDriver&&) = delete;
+
+	~JackLibDriver() override;
+
+	// Driver interface
+	void attach(bool launch_daemon) override;
+	void detach() override;
+	bool is_attached() const override;
+	void refresh(const EventSink& sink) override;
+	bool connect(const PortID& tail_id, const PortID& head_id) override;
+	bool disconnect(const PortID& tail_id, const PortID& head_id) override;
+
+	// AudioDriver interface
+	uint32_t xruns() override;
+	void     reset_xruns() override;
+	uint32_t buffer_size() override;
+	bool     set_buffer_size(uint32_t frames) override;
+	uint32_t sample_rate() override;
+
+private:
+	ClientInfo get_client_info(const char* name);
+	PortInfo   get_port_info(const jack_port_t* port);
+
+	void shutdown();
+
+	static void jack_client_registration_cb(const char* name,
+	                                        int         registered,
+	                                        void*       jack_driver);
+
+	static void jack_port_registration_cb(jack_port_id_t port_id,
+	                                      int            registered,
+	                                      void*          jack_driver);
+
+	static void jack_port_connect_cb(jack_port_id_t src,
+	                                 jack_port_id_t dst,
+	                                 int            connect,
+	                                 void*          jack_driver);
+
+	static int jack_xrun_cb(void* jack_driver);
+
+	static void jack_shutdown_cb(void* jack_driver);
+
+	ILog&      _log;
+	std::mutex _shutdown_mutex;
+
+	jack_client_t* _client      = nullptr;
+	jack_nframes_t _buffer_size = 0u;
+	uint32_t       _xruns       = 0u;
+
+	bool _is_activated : 1;
+};
+
+JackLibDriver::JackLibDriver(ILog& log, EventSink emit_event)
     : AudioDriver{std::move(emit_event)}
     , _log{log}
     , _is_activated{false}
 {}
 
-JackDriver::~JackDriver()
+JackLibDriver::~JackLibDriver()
 {
 	detach();
 }
 
 void
-JackDriver::attach(const bool launch_daemon)
+JackLibDriver::attach(const bool launch_daemon)
 {
 	if (_client) {
 		return; // Already connected
@@ -94,7 +160,7 @@ JackDriver::attach(const bool launch_daemon)
 }
 
 void
-JackDriver::detach()
+JackLibDriver::detach()
 {
 	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
@@ -109,7 +175,7 @@ JackDriver::detach()
 }
 
 bool
-JackDriver::is_attached() const
+JackLibDriver::is_attached() const
 {
 	return _client != nullptr;
 }
@@ -136,13 +202,13 @@ get_property(const jack_uuid_t subject, const char* const key)
 }
 
 ClientInfo
-JackDriver::get_client_info(const char* const name)
+JackLibDriver::get_client_info(const char* const name)
 {
 	return {name}; // TODO: Pretty name?
 }
 
 PortInfo
-JackDriver::get_port_info(const jack_port_t* const port)
+JackLibDriver::get_port_info(const jack_port_t* const port)
 {
 	const auto        uuid  = jack_port_uuid(port);
 	const auto        flags = jack_port_flags(port);
@@ -190,13 +256,13 @@ JackDriver::get_port_info(const jack_port_t* const port)
 }
 
 void
-JackDriver::shutdown()
+JackLibDriver::shutdown()
 {
 	_emit_event(DriverDetachmentEvent{ClientType::jack});
 }
 
 void
-JackDriver::refresh(const EventSink& sink)
+JackLibDriver::refresh(const EventSink& sink)
 {
 	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
@@ -261,7 +327,7 @@ JackDriver::refresh(const EventSink& sink)
 }
 
 bool
-JackDriver::connect(const PortID& tail_id, const PortID& head_id)
+JackLibDriver::connect(const PortID& tail_id, const PortID& head_id)
 {
 	if (!_client) {
 		return false;
@@ -284,7 +350,7 @@ JackDriver::connect(const PortID& tail_id, const PortID& head_id)
 }
 
 bool
-JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
+JackLibDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 {
 	if (!_client) {
 		return false;
@@ -306,25 +372,25 @@ JackDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 }
 
 uint32_t
-JackDriver::xruns()
+JackLibDriver::xruns()
 {
 	return _xruns;
 }
 
 void
-JackDriver::reset_xruns()
+JackLibDriver::reset_xruns()
 {
 	_xruns = 0;
 }
 
 uint32_t
-JackDriver::buffer_size()
+JackLibDriver::buffer_size()
 {
 	return _is_activated ? _buffer_size : jack_get_buffer_size(_client);
 }
 
 bool
-JackDriver::set_buffer_size(const uint32_t frames)
+JackLibDriver::set_buffer_size(const uint32_t frames)
 {
 	if (!_client) {
 		_buffer_size = frames;
@@ -345,17 +411,17 @@ JackDriver::set_buffer_size(const uint32_t frames)
 }
 
 uint32_t
-JackDriver::sample_rate()
+JackLibDriver::sample_rate()
 {
 	return jack_get_sample_rate(_client);
 }
 
 void
-JackDriver::jack_client_registration_cb(const char* const name,
-                                        const int         registered,
-                                        void* const       jack_driver)
+JackLibDriver::jack_client_registration_cb(const char* const name,
+                                           const int         registered,
+                                           void* const       jack_driver)
 {
-	auto* const me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(jack_driver);
 
 	if (registered) {
 		me->_emit_event(ClientCreationEvent{ClientID::jack(name), {name}});
@@ -365,11 +431,11 @@ JackDriver::jack_client_registration_cb(const char* const name,
 }
 
 void
-JackDriver::jack_port_registration_cb(const jack_port_id_t port_id,
-                                      const int            registered,
-                                      void* const          jack_driver)
+JackLibDriver::jack_port_registration_cb(const jack_port_id_t port_id,
+                                         const int            registered,
+                                         void* const          jack_driver)
 {
-	auto* const me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(jack_driver);
 
 	jack_port_t* const port = jack_port_by_id(me->_client, port_id);
 	const char* const  name = jack_port_name(port);
@@ -383,12 +449,12 @@ JackDriver::jack_port_registration_cb(const jack_port_id_t port_id,
 }
 
 void
-JackDriver::jack_port_connect_cb(const jack_port_id_t src,
-                                 const jack_port_id_t dst,
-                                 const int            connect,
-                                 void* const          jack_driver)
+JackLibDriver::jack_port_connect_cb(const jack_port_id_t src,
+                                    const jack_port_id_t dst,
+                                    const int            connect,
+                                    void* const          jack_driver)
 {
-	auto* const me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(jack_driver);
 
 	jack_port_t* const src_port = jack_port_by_id(me->_client, src);
 	jack_port_t* const dst_port = jack_port_by_id(me->_client, dst);
@@ -405,9 +471,9 @@ JackDriver::jack_port_connect_cb(const jack_port_id_t src,
 }
 
 int
-JackDriver::jack_xrun_cb(void* const jack_driver)
+JackLibDriver::jack_xrun_cb(void* const jack_driver)
 {
-	auto* const me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(jack_driver);
 
 	++me->_xruns;
 
@@ -415,9 +481,9 @@ JackDriver::jack_xrun_cb(void* const jack_driver)
 }
 
 void
-JackDriver::jack_shutdown_cb(void* const jack_driver)
+JackLibDriver::jack_shutdown_cb(void* const jack_driver)
 {
-	auto* const me = static_cast<JackDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(jack_driver);
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
@@ -425,4 +491,11 @@ JackDriver::jack_shutdown_cb(void* const jack_driver)
 	me->_is_activated = false;
 
 	me->_emit_event(DriverDetachmentEvent{ClientType::jack});
+}
+
+std::unique_ptr<AudioDriver>
+make_jack_driver(ILog& log, Driver::EventSink emit_event)
+{
+	return std::unique_ptr<AudioDriver>{
+	    new JackLibDriver{log, std::move(emit_event)}};
 }

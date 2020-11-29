@@ -24,19 +24,10 @@
 #include "UIFile.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
+#include "make_alsa_driver.hpp"
+#include "make_jack_driver.hpp"
 #include "patchage_config.h"
 #include "warnings.hpp"
-
-#if defined(HAVE_JACK_DBUS)
-#	include "JackDbusDriver.hpp"
-#elif defined(PATCHAGE_LIBJACK)
-#	include "JackDriver.hpp"
-#	include <jack/statistics.h>
-#endif
-
-#ifdef HAVE_ALSA
-#	include "AlsaDriver.hpp"
-#endif
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
@@ -202,16 +193,6 @@ Patchage::Patchage(Options options)
 	_status_text->signal_size_allocate().connect(
 	    sigc::mem_fun(this, &Patchage::on_messages_resized));
 
-#ifdef HAVE_ALSA
-	_menu_alsa_connect->signal_activate().connect(
-	    sigc::mem_fun(this, &Patchage::menu_alsa_connect));
-	_menu_alsa_disconnect->signal_activate().connect(
-	    sigc::mem_fun(this, &Patchage::menu_alsa_disconnect));
-#else
-	_menu_alsa_connect->set_sensitive(false);
-	_menu_alsa_disconnect->set_sensitive(false);
-#endif
-
 	_menu_file_quit->signal_activate().connect(
 	    sigc::mem_fun(this, &Patchage::on_quit));
 	_menu_export_image->signal_activate().connect(
@@ -288,24 +269,38 @@ Patchage::Patchage(Options options)
 	}
 #endif
 
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver = std::unique_ptr<AudioDriver>{new JackDriver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); })};
+	// Make Jack driver if possible
+	_jack_driver = make_jack_driver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
 
-	_connector.add_driver(PortID::Type::jack, _jack_driver.get());
+	if (_jack_driver) {
+		_connector.add_driver(PortID::Type::jack, _jack_driver.get());
 
-	_menu_jack_connect->signal_activate().connect(sigc::bind(
-	    sigc::mem_fun(_jack_driver.get(), &AudioDriver::attach), true));
-	_menu_jack_disconnect->signal_activate().connect(
-	    sigc::mem_fun(_jack_driver.get(), &AudioDriver::detach));
-#endif
+		_menu_jack_connect->signal_activate().connect(sigc::bind(
+		    sigc::mem_fun(_jack_driver.get(), &AudioDriver::attach), true));
+		_menu_jack_disconnect->signal_activate().connect(
+		    sigc::mem_fun(_jack_driver.get(), &AudioDriver::detach));
+	} else {
+		_menu_jack_connect->set_sensitive(false);
+		_menu_jack_disconnect->set_sensitive(false);
+	}
 
-#ifdef HAVE_ALSA
-	_alsa_driver = std::unique_ptr<Driver>{new AlsaDriver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); })};
+	// Make ALSA driver if possible
+	_alsa_driver = make_alsa_driver(
+	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
 
-	_connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
-#endif
+	if (_alsa_driver) {
+		_connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
+
+		_menu_alsa_connect->signal_activate().connect(sigc::bind(
+		    sigc::mem_fun(_alsa_driver.get(), &Driver::attach), false));
+		_menu_alsa_disconnect->signal_activate().connect(
+		    sigc::mem_fun(_alsa_driver.get(), &Driver::detach));
+
+	} else {
+		_menu_alsa_connect->set_sensitive(false);
+		_menu_alsa_disconnect->set_sensitive(false);
+	}
 
 	update_state();
 	_menu_view_toolbar->set_active(_conf.get_show_toolbar());
@@ -397,8 +392,7 @@ Patchage::update_toolbar()
 
 	updating = true;
 
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_jack_driver->is_attached()) {
+	if (_jack_driver && _jack_driver->is_attached()) {
 		const auto buffer_size = _jack_driver->buffer_size();
 		const auto sample_rate = _jack_driver->sample_rate();
 		if (sample_rate != 0) {
@@ -415,7 +409,7 @@ Patchage::update_toolbar()
 			return;
 		}
 	}
-#endif
+
 	_latency_label->set_visible(false);
 	updating = false;
 }
@@ -423,8 +417,7 @@ Patchage::update_toolbar()
 bool
 Patchage::update_load()
 {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_jack_driver->is_attached()) {
+	if (_jack_driver && _jack_driver->is_attached()) {
 		const auto xruns = _jack_driver->xruns();
 		if (xruns > 0u) {
 			_dropouts_label->set_text(fmt::format(" Dropouts: {}", xruns));
@@ -436,7 +429,6 @@ Patchage::update_load()
 			_clear_load_but->hide();
 		}
 	}
-#endif
 
 	return true;
 }
@@ -459,11 +451,9 @@ Patchage::refresh()
 	if (_canvas) {
 		_canvas->clear();
 
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 		if (_jack_driver) {
 			_jack_driver->refresh(sink);
 		}
-#endif
 
 		if (_alsa_driver) {
 			_alsa_driver->refresh(sink);
@@ -549,12 +539,12 @@ Patchage::store_window_location()
 void
 Patchage::clear_load()
 {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
 	_dropouts_label->set_text(" Dropouts: 0");
 	_dropouts_label->hide();
 	_clear_load_but->hide();
-	_jack_driver->reset_xruns();
-#endif
+	if (_jack_driver) {
+		_jack_driver->reset_xruns();
+	}
 }
 
 static void
@@ -592,22 +582,6 @@ Patchage::process_events()
 		_log.info(event_to_string(_driver_events.front()));
 		handle_event(*this, _driver_events.front());
 		_driver_events.pop();
-	}
-}
-
-void
-Patchage::menu_alsa_connect()
-{
-	if (_alsa_driver) {
-		_alsa_driver->attach(false);
-	}
-}
-
-void
-Patchage::menu_alsa_disconnect()
-{
-	if (_alsa_driver) {
-		_alsa_driver->detach();
 	}
 }
 
@@ -795,12 +769,14 @@ Patchage::save()
 void
 Patchage::on_quit()
 {
-#ifdef HAVE_ALSA
-	_alsa_driver->detach();
-#endif
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	_jack_driver->detach();
-#endif
+	if (_alsa_driver) {
+		_alsa_driver->detach();
+	}
+
+	if (_jack_driver) {
+		_jack_driver->detach();
+	}
+
 	_main_win->hide();
 }
 
@@ -898,15 +874,15 @@ Patchage::on_scroll(GdkEventScroll*)
 void
 Patchage::buffer_size_changed()
 {
-#if defined(HAVE_JACK) || defined(HAVE_JACK_DBUS)
-	const int selected = _buf_size_combo->get_active_row_number();
+	if (_jack_driver) {
+		const int selected = _buf_size_combo->get_active_row_number();
 
-	if (selected == -1) {
-		update_toolbar();
-	} else {
-		const uint32_t buffer_size = 1u << (selected + 5);
-		_jack_driver->set_buffer_size(buffer_size);
-		update_toolbar();
+		if (selected == -1) {
+			update_toolbar();
+		} else {
+			const uint32_t buffer_size = 1u << (selected + 5);
+			_jack_driver->set_buffer_size(buffer_size);
+			update_toolbar();
+		}
 	}
-#endif
 }
