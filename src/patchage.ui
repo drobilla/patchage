@@ -360,7 +360,7 @@
                         <property name="tooltip_markup">Drouput (XRun) Indicator
 
 The bar represents the percentage of available time used for audio processing (i.e. the DSP load).  If the bar reaches 100%, a dropout will occur.</property>
-                        <property name="tooltip_text" translatable="yes">Load and dropout gauge.  The bar shows the percentage of available time used for audio processing.  If it reaches 100%, a dropout will occur, and the bar is reset.  Click to reset.</property>
+                        <property name="tooltip_text" translatable="yes">Load and dropout gauge.  The bar shows the percentage of available time used for audio processing.  If it reaches 100%, a dropout will occur.</property>
                         <property name="show_text">True</property>
                         <property name="pulse_step">0.10000000149</property>
                         <property name="text" translatable="yes">0 Dropouts</property>
