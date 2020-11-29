@@ -17,7 +17,7 @@
 #ifndef PATCHAGE_EVENT_TO_STRING_HPP
 #define PATCHAGE_EVENT_TO_STRING_HPP
 
-#include "PatchageEvent.hpp"
+#include "Event.hpp"
 
 #include <iosfwd>
 #include <string>
@@ -25,10 +25,10 @@
 namespace patchage {
 
 std::string
-event_to_string(const PatchageEvent& event);
+event_to_string(const Event& event);
 
 std::ostream&
-operator<<(std::ostream& os, const PatchageEvent& event);
+operator<<(std::ostream& os, const Event& event);
 
 } // namespace patchage
 

@@ -74,14 +74,14 @@ struct DisconnectionEvent
 };
 
 /// An event from drivers that is processed by the GUI
-using PatchageEvent = boost::variant<DriverAttachmentEvent,
-                                     DriverDetachmentEvent,
-                                     ClientCreationEvent,
-                                     ClientDestructionEvent,
-                                     PortCreationEvent,
-                                     PortDestructionEvent,
-                                     ConnectionEvent,
-                                     DisconnectionEvent>;
+using Event = boost::variant<DriverAttachmentEvent,
+                             DriverDetachmentEvent,
+                             ClientCreationEvent,
+                             ClientDestructionEvent,
+                             PortCreationEvent,
+                             PortDestructionEvent,
+                             ConnectionEvent,
+                             DisconnectionEvent>;
 
 } // namespace patchage
 

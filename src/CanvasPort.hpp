@@ -17,9 +17,9 @@
 #ifndef PATCHAGE_PATCHAGEPORT_HPP
 #define PATCHAGE_PATCHAGEPORT_HPP
 
+#include "Canvas.hpp"
+#include "CanvasModule.hpp"
 #include "Configuration.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchageModule.hpp"
 #include "PortID.hpp"
 #include "warnings.hpp"
 
@@ -35,19 +35,19 @@ PATCHAGE_RESTORE_WARNINGS
 
 namespace patchage {
 
-/// A port on a PatchageModule
-class PatchagePort : public Ganv::Port
+/// A port on a CanvasModule
+class CanvasPort : public Ganv::Port
 {
 public:
-	PatchagePort(Ganv::Module&        module,
-	             PortType             type,
-	             PortID               id,
-	             const std::string&   name,
-	             const std::string&   human_name,
-	             bool                 is_input,
-	             uint32_t             color,
-	             bool                 show_human_name,
-	             boost::optional<int> order = boost::optional<int>())
+	CanvasPort(Ganv::Module&        module,
+	           PortType             type,
+	           PortID               id,
+	           const std::string&   name,
+	           const std::string&   human_name,
+	           bool                 is_input,
+	           uint32_t             color,
+	           bool                 show_human_name,
+	           boost::optional<int> order = boost::optional<int>())
 	    : Port(module,
 	           (show_human_name && !human_name.empty()) ? human_name : name,
 	           is_input,
@@ -58,28 +58,28 @@ public:
 	    , _human_name(human_name)
 	    , _order(order)
 	{
-		signal_event().connect(sigc::mem_fun(this, &PatchagePort::on_event));
+		signal_event().connect(sigc::mem_fun(this, &CanvasPort::on_event));
 	}
 
-	PatchagePort(const PatchagePort&) = delete;
-	PatchagePort& operator=(const PatchagePort&) = delete;
+	CanvasPort(const CanvasPort&) = delete;
+	CanvasPort& operator=(const CanvasPort&) = delete;
 
-	PatchagePort(PatchagePort&&) = delete;
-	PatchagePort& operator=(PatchagePort&&) = delete;
+	CanvasPort(CanvasPort&&) = delete;
+	CanvasPort& operator=(CanvasPort&&) = delete;
 
-	~PatchagePort() override = default;
+	~CanvasPort() override = default;
 
 	/** Returns the name of the module/client this port is one */
 	std::string module_name() const
 	{
-		auto* pmod = dynamic_cast<PatchageModule*>(get_module());
+		auto* pmod = dynamic_cast<CanvasModule*>(get_module());
 		return std::string(pmod->name());
 	}
 
 	/** Returns the full name of this port, as "modulename:portname" */
 	std::string full_name() const
 	{
-		auto* pmod = dynamic_cast<PatchageModule*>(get_module());
+		auto* pmod = dynamic_cast<CanvasModule*>(get_module());
 		return std::string(pmod->name()) + ":" + _name;
 	}
 

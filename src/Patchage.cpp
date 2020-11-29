@@ -16,11 +16,11 @@
 
 #include "Patchage.hpp"
 
+#include "Canvas.hpp"
+#include "CanvasPort.hpp"
 #include "Configuration.hpp"
+#include "Event.hpp"
 #include "Legend.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchageEvent.hpp"
-#include "PatchagePort.hpp"
 #include "UIFile.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
@@ -92,8 +92,8 @@ configure_cb(GtkWindow*, GdkEvent*, gpointer data)
 int
 port_order(const GanvPort* a, const GanvPort* b, void*)
 {
-	const auto* pa = dynamic_cast<const PatchagePort*>(Glib::wrap(a));
-	const auto* pb = dynamic_cast<const PatchagePort*>(Glib::wrap(b));
+	const auto* pa = dynamic_cast<const CanvasPort*>(Glib::wrap(a));
+	const auto* pb = dynamic_cast<const CanvasPort*>(Glib::wrap(b));
 	if (pa && pb) {
 		if (pa->order() && pb->order()) {
 			return *pa->order() - *pb->order();
@@ -161,8 +161,8 @@ Patchage::Patchage(Options options)
     , _pane_initialized(false)
     , _attach(true)
 {
-	_canvas = std::unique_ptr<PatchageCanvas>{
-	    new PatchageCanvas(_connector, 1600 * 2, 1200 * 2)};
+	_canvas =
+	    std::unique_ptr<Canvas>{new Canvas(_connector, 1600 * 2, 1200 * 2)};
 
 	Glib::set_application_name("Patchage");
 	_about_win->property_program_name()   = "Patchage";
@@ -274,7 +274,7 @@ Patchage::Patchage(Options options)
 
 	// Make Jack driver if possible
 	_jack_driver = make_jack_driver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+	    _log, [this](const Event& event) { on_driver_event(event); });
 
 	if (_jack_driver) {
 		_connector.add_driver(PortID::Type::jack, _jack_driver.get());
@@ -290,7 +290,7 @@ Patchage::Patchage(Options options)
 
 	// Make ALSA driver if possible
 	_alsa_driver = make_alsa_driver(
-	    _log, [this](const PatchageEvent& event) { on_driver_event(event); });
+	    _log, [this](const Event& event) { on_driver_event(event); });
 
 	if (_alsa_driver) {
 		_connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
@@ -446,7 +446,7 @@ Patchage::zoom(double z)
 void
 Patchage::refresh()
 {
-	auto sink = [this](const PatchageEvent& event) {
+	auto sink = [this](const Event& event) {
 		_log.info("Refresh: " + event_to_string(event));
 		handle_event(*this, event);
 	};
@@ -473,9 +473,8 @@ Patchage::driver_attached(const ClientType type)
 		_menu_jack_disconnect->set_sensitive(true);
 
 		if (_jack_driver) {
-			_jack_driver->refresh([this](const PatchageEvent& event) {
-				handle_event(*this, event);
-			});
+			_jack_driver->refresh(
+			    [this](const Event& event) { handle_event(*this, event); });
 		}
 
 		break;
@@ -484,9 +483,8 @@ Patchage::driver_attached(const ClientType type)
 		_menu_alsa_disconnect->set_sensitive(true);
 
 		if (_alsa_driver) {
-			_alsa_driver->refresh([this](const PatchageEvent& event) {
-				handle_event(*this, event);
-			});
+			_alsa_driver->refresh(
+			    [this](const Event& event) { handle_event(*this, event); });
 		}
 
 		break;
@@ -502,7 +500,7 @@ Patchage::driver_detached(const ClientType type)
 		_menu_jack_disconnect->set_sensitive(false);
 
 		if (_jack_driver && !_jack_driver->is_attached()) {
-			_canvas->remove_ports([](const PatchagePort* port) {
+			_canvas->remove_ports([](const CanvasPort* port) {
 				return (port->type() == PortType::jack_audio ||
 				        port->type() == PortType::jack_midi ||
 				        port->type() == PortType::jack_osc ||
@@ -516,7 +514,7 @@ Patchage::driver_detached(const ClientType type)
 		_menu_alsa_connect->set_sensitive(true);
 		_menu_alsa_disconnect->set_sensitive(false);
 
-		_canvas->remove_ports([](const PatchagePort* port) {
+		_canvas->remove_ports([](const CanvasPort* port) {
 			return port->type() == PortType::alsa_midi;
 		});
 
@@ -555,7 +553,7 @@ load_module_location(GanvNode* node, void*)
 {
 	if (GANV_IS_MODULE(node)) {
 		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-		auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
+		auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
 		if (pmod) {
 			pmod->load_location();
 		}
@@ -569,7 +567,7 @@ Patchage::update_state()
 }
 
 void
-Patchage::on_driver_event(const PatchageEvent& event)
+Patchage::on_driver_event(const Event& event)
 {
 	std::lock_guard<std::mutex> lock{_events_mutex};
 
@@ -618,10 +616,10 @@ update_labels(GanvNode* node, void* data)
 	const bool human_names = *static_cast<const bool*>(data);
 	if (GANV_IS_MODULE(node)) {
 		Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-		auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
+		auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
 		if (pmod) {
 			for (Ganv::Port* gport : *gmod) {
-				auto* pport = dynamic_cast<PatchagePort*>(gport);
+				auto* pport = dynamic_cast<CanvasPort*>(gport);
 				if (pport) {
 					pport->show_human_name(human_names);
 				}
@@ -720,13 +718,13 @@ update_port_colors(GanvNode* node, void* data)
 	}
 
 	Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-	auto*         pmod = dynamic_cast<PatchageModule*>(gmod);
+	auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
 	if (!pmod) {
 		return;
 	}
 
 	for (Ganv::Port* p : *pmod) {
-		auto* port = dynamic_cast<PatchagePort*>(p);
+		auto* port = dynamic_cast<CanvasPort*>(p);
 		if (port) {
 			const uint32_t rgba = patchage->conf().get_port_color(port->type());
 			port->set_fill_color(rgba);
@@ -741,7 +739,7 @@ update_edge_color(GanvEdge* edge, void* data)
 	auto*       patchage = static_cast<Patchage*>(data);
 	Ganv::Edge* edgemm   = Glib::wrap(edge);
 
-	auto* tail = dynamic_cast<PatchagePort*>((edgemm)->get_tail());
+	auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
 	if (tail) {
 		edgemm->set_color(patchage->conf().get_port_color(tail->type()));
 	}

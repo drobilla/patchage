@@ -17,7 +17,7 @@
 #include "event_to_string.hpp"
 
 #include "ClientType.hpp"
-#include "PatchageEvent.hpp"
+#include "Event.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
@@ -138,14 +138,14 @@ struct EventPrinter
 } // namespace
 
 std::string
-event_to_string(const PatchageEvent& event)
+event_to_string(const Event& event)
 {
 	EventPrinter printer;
 	return boost::apply_visitor(printer, event);
 }
 
 std::ostream&
-operator<<(std::ostream& os, const PatchageEvent& event)
+operator<<(std::ostream& os, const Event& event)
 {
 	return os << event_to_string(event);
 }

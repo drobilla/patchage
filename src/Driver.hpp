@@ -17,7 +17,7 @@
 #ifndef PATCHAGE_DRIVER_HPP
 #define PATCHAGE_DRIVER_HPP
 
-#include "PatchageEvent.hpp"
+#include "Event.hpp"
 
 #include <functional>
 #include <utility>
@@ -28,7 +28,7 @@ namespace patchage {
 class Driver
 {
 public:
-	using EventSink = std::function<void(const PatchageEvent&)>;
+	using EventSink = std::function<void(const Event&)>;
 
 	explicit Driver(EventSink emit_event)
 	    : _emit_event{std::move(emit_event)}

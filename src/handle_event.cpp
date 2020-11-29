@@ -16,11 +16,11 @@
 
 #include "handle_event.hpp"
 
+#include "Canvas.hpp"
+#include "CanvasModule.hpp"
+#include "CanvasPort.hpp"
+#include "Event.hpp"
 #include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchageEvent.hpp"
-#include "PatchageModule.hpp"
-#include "PatchagePort.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
@@ -83,8 +83,8 @@ public:
 
 	void operator()(const ConnectionEvent& event)
 	{
-		PatchagePort* port_1 = _patchage.canvas()->find_port(event.tail);
-		PatchagePort* port_2 = _patchage.canvas()->find_port(event.head);
+		CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
+		CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
 
 		if (!port_1) {
 			_patchage.log().error(fmt::format(
@@ -99,8 +99,8 @@ public:
 
 	void operator()(const DisconnectionEvent& event)
 	{
-		PatchagePort* port_1 = _patchage.canvas()->find_port(event.tail);
-		PatchagePort* port_2 = _patchage.canvas()->find_port(event.head);
+		CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
+		CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
 
 		if (!port_1) {
 			_patchage.log().error(fmt::format(
@@ -120,7 +120,7 @@ private:
 } // namespace
 
 void
-handle_event(Patchage& patchage, const PatchageEvent& event)
+handle_event(Patchage& patchage, const Event& event)
 {
 	EventHandler handler{patchage};
 	boost::apply_visitor(handler, event);

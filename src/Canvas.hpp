@@ -19,8 +19,8 @@
 
 #include "patchage_config.h"
 
-#include "PatchageEvent.hpp"
-#include "PatchageModule.hpp"
+#include "CanvasModule.hpp"
+#include "Event.hpp"
 #include "PortID.hpp"
 #include "warnings.hpp"
 
@@ -35,36 +35,36 @@ PATCHAGE_RESTORE_WARNINGS
 namespace patchage {
 
 class Patchage;
-class PatchageModule;
-class PatchagePort;
+class CanvasModule;
+class CanvasPort;
 class Connector;
 
-class PatchageCanvas : public Ganv::Canvas
+class Canvas : public Ganv::Canvas
 {
 public:
-	PatchageCanvas(Connector& connector, int width, int height);
+	Canvas(Connector& connector, int width, int height);
 
-	PatchageModule* create_module(Patchage&         patchage,
-	                              const ClientID&   id,
-	                              const ClientInfo& info);
+	CanvasModule* create_module(Patchage&         patchage,
+	                            const ClientID&   id,
+	                            const ClientInfo& info);
 
-	PatchagePort*
+	CanvasPort*
 	create_port(Patchage& patchage, const PortID& id, const PortInfo& info);
 
-	PatchageModule* find_module(const ClientID& id, SignalDirection type);
-	PatchagePort*   find_port(const PortID& id);
+	CanvasModule* find_module(const ClientID& id, SignalDirection type);
+	CanvasPort*   find_port(const PortID& id);
 
 	void remove_module(const ClientID& id);
-	void remove_module(PatchageModule* module);
+	void remove_module(CanvasModule* module);
 
-	void index_port(const PortID& id, PatchagePort* port)
+	void index_port(const PortID& id, CanvasPort* port)
 	{
 		_port_index.insert(std::make_pair(id, port));
 	}
 
-	void remove_ports(bool (*pred)(const PatchagePort*));
+	void remove_ports(bool (*pred)(const CanvasPort*));
 
-	void add_module(const ClientID& id, PatchageModule* module);
+	void add_module(const ClientID& id, CanvasModule* module);
 
 	bool make_connection(Ganv::Node* tail, Ganv::Node* head);
 
@@ -73,8 +73,8 @@ public:
 	void clear() override;
 
 private:
-	using PortIndex   = std::map<const PortID, PatchagePort*>;
-	using ModuleIndex = std::multimap<const ClientID, PatchageModule*>;
+	using PortIndex   = std::map<const PortID, CanvasPort*>;
+	using ModuleIndex = std::multimap<const ClientID, CanvasModule*>;
 
 	friend void disconnect_edge(GanvEdge*, void*);
 

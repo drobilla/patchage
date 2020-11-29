@@ -14,21 +14,21 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PatchageModule.hpp"
+#include "CanvasModule.hpp"
 
+#include "Canvas.hpp"
+#include "CanvasPort.hpp"
 #include "Patchage.hpp"
-#include "PatchageCanvas.hpp"
-#include "PatchagePort.hpp"
 #include "SignalDirection.hpp"
 
 namespace patchage {
 
-PatchageModule::PatchageModule(Patchage*          app,
-                               const std::string& name,
-                               SignalDirection    type,
-                               ClientID           id,
-                               double             x,
-                               double             y)
+CanvasModule::CanvasModule(Patchage*          app,
+                           const std::string& name,
+                           SignalDirection    type,
+                           ClientID           id,
+                           double             x,
+                           double             y)
     : Module(*app->canvas(), name, x, y)
     , _app(app)
     , _menu(nullptr)
@@ -36,16 +36,15 @@ PatchageModule::PatchageModule(Patchage*          app,
     , _type(type)
     , _id(std::move(id))
 {
-	signal_event().connect(sigc::mem_fun(this, &PatchageModule::on_event));
+	signal_event().connect(sigc::mem_fun(this, &CanvasModule::on_event));
 
-	signal_moved().connect(
-	    sigc::mem_fun(this, &PatchageModule::store_location));
+	signal_moved().connect(sigc::mem_fun(this, &CanvasModule::store_location));
 
 	// Set as source by default, turned off if input ports added
 	set_is_source(true);
 }
 
-PatchageModule::~PatchageModule()
+CanvasModule::~CanvasModule()
 {
 	_app->canvas()->remove_module(this);
 	delete _menu;
@@ -53,7 +52,7 @@ PatchageModule::~PatchageModule()
 }
 
 void
-PatchageModule::update_menu()
+CanvasModule::update_menu()
 {
 	if (!_menu) {
 		return;
@@ -79,28 +78,28 @@ PatchageModule::update_menu()
 }
 
 bool
-PatchageModule::show_menu(GdkEventButton* ev)
+CanvasModule::show_menu(GdkEventButton* ev)
 {
 	_menu                      = new Gtk::Menu();
 	Gtk::Menu::MenuList& items = _menu->items();
 	if (_type == SignalDirection::duplex) {
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
-		    "_Split", sigc::mem_fun(this, &PatchageModule::split)));
+		    "_Split", sigc::mem_fun(this, &CanvasModule::split)));
 		update_menu();
 	} else {
 		items.push_back(Gtk::Menu_Helpers::MenuElem(
-		    "_Join", sigc::mem_fun(this, &PatchageModule::join)));
+		    "_Join", sigc::mem_fun(this, &CanvasModule::join)));
 	}
 	items.push_back(Gtk::Menu_Helpers::MenuElem(
 	    "_Disconnect All",
-	    sigc::mem_fun(this, &PatchageModule::menu_disconnect_all)));
+	    sigc::mem_fun(this, &CanvasModule::menu_disconnect_all)));
 
 	_menu->popup(ev->button, ev->time);
 	return true;
 }
 
 bool
-PatchageModule::on_event(GdkEvent* ev)
+CanvasModule::on_event(GdkEvent* ev)
 {
 	if (ev->type == GDK_BUTTON_PRESS && ev->button.button == 3) {
 		return show_menu(&ev->button);
@@ -109,7 +108,7 @@ PatchageModule::on_event(GdkEvent* ev)
 }
 
 void
-PatchageModule::load_location()
+CanvasModule::load_location()
 {
 	Coord loc;
 
@@ -121,13 +120,13 @@ PatchageModule::load_location()
 }
 
 void
-PatchageModule::store_location(double x, double y)
+CanvasModule::store_location(double x, double y)
 {
 	_app->conf().set_module_location(_name, _type, {x, y});
 }
 
 void
-PatchageModule::split()
+CanvasModule::split()
 {
 	assert(_type == SignalDirection::duplex);
 	_app->conf().set_module_split(_name, true);
@@ -135,7 +134,7 @@ PatchageModule::split()
 }
 
 void
-PatchageModule::join()
+CanvasModule::join()
 {
 	assert(_type != SignalDirection::duplex);
 	_app->conf().set_module_split(_name, false);
@@ -143,18 +142,18 @@ PatchageModule::join()
 }
 
 void
-PatchageModule::menu_disconnect_all()
+CanvasModule::menu_disconnect_all()
 {
 	for (Ganv::Port* p : *this) {
 		p->disconnect();
 	}
 }
 
-PatchagePort*
-PatchageModule::get_port(const PortID& id)
+CanvasPort*
+CanvasModule::get_port(const PortID& id)
 {
 	for (Ganv::Port* p : *this) {
-		auto* pport = dynamic_cast<PatchagePort*>(p);
+		auto* pport = dynamic_cast<CanvasPort*>(p);
 		if (pport && pport->id() == id) {
 			return pport;
 		}

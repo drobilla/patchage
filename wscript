@@ -236,13 +236,13 @@ def build(bld):
                uselib       = 'DBUS GANV DBUS_GLIB FMT GTKMM GTHREAD GTK_OSX',
                install_path = '${BINDIR}')
     prog.source = '''
+            src/Canvas.cpp
+            src/CanvasModule.cpp
             src/Configuration.cpp
             src/Connector.cpp
             src/Legend.cpp
             src/Metadata.cpp
             src/Patchage.cpp
-            src/PatchageCanvas.cpp
-            src/PatchageModule.cpp
             src/TextViewLog.cpp
             src/event_to_string.cpp
             src/handle_event.cpp

@@ -34,26 +34,26 @@ namespace patchage {
 
 struct PortID;
 
+class CanvasPort;
 class Patchage;
-class PatchagePort;
 
-class PatchageModule : public Ganv::Module
+class CanvasModule : public Ganv::Module
 {
 public:
-	PatchageModule(Patchage*          app,
-	               const std::string& name,
-	               SignalDirection    type,
-	               ClientID           id,
-	               double             x = 0,
-	               double             y = 0);
+	CanvasModule(Patchage*          app,
+	             const std::string& name,
+	             SignalDirection    type,
+	             ClientID           id,
+	             double             x = 0,
+	             double             y = 0);
 
-	PatchageModule(const PatchageModule&) = delete;
-	PatchageModule& operator=(const PatchageModule&) = delete;
+	CanvasModule(const CanvasModule&) = delete;
+	CanvasModule& operator=(const CanvasModule&) = delete;
 
-	PatchageModule(PatchageModule&&) = delete;
-	PatchageModule& operator=(PatchageModule&&) = delete;
+	CanvasModule(CanvasModule&&) = delete;
+	CanvasModule& operator=(CanvasModule&&) = delete;
 
-	~PatchageModule() override;
+	~CanvasModule() override;
 
 	void split();
 	void join();
@@ -61,7 +61,7 @@ public:
 	bool show_menu(GdkEventButton* ev);
 	void update_menu();
 
-	PatchagePort* get_port(const PortID& id);
+	CanvasPort* get_port(const PortID& id);
 
 	void load_location();
 	void menu_disconnect_all();

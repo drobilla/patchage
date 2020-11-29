@@ -39,11 +39,11 @@
 
 #include "ClientType.hpp"
 #include "Connector.hpp"
+#include "Event.hpp"
 #include "ILog.hpp"
 #include "Legend.hpp"
 #include "Metadata.hpp"
 #include "Options.hpp"
-#include "PatchageEvent.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
 #include "patchage_config.h"
@@ -56,7 +56,7 @@
 namespace patchage {
 
 class AudioDriver;
-class PatchageCanvas;
+class Canvas;
 class Configuration;
 
 /// Main application class
@@ -73,7 +73,7 @@ public:
 	Patchage(Patchage&&) = delete;
 	Patchage& operator=(Patchage&&) = delete;
 
-	const std::unique_ptr<PatchageCanvas>& canvas() const { return _canvas; }
+	const std::unique_ptr<Canvas>& canvas() const { return _canvas; }
 
 	void attach();
 	void refresh();
@@ -108,7 +108,7 @@ protected:
 		Gtk::TreeModelColumn<Glib::ustring> label;
 	};
 
-	void on_driver_event(const PatchageEvent& event);
+	void on_driver_event(const Event& event);
 	void process_events();
 
 	void on_arrange();
@@ -147,12 +147,12 @@ protected:
 
 	Glib::RefPtr<Gtk::Builder> _xml;
 
-	std::mutex                _events_mutex;
-	std::queue<PatchageEvent> _driver_events;
+	std::mutex        _events_mutex;
+	std::queue<Event> _driver_events;
 
 	std::unique_ptr<Driver> _alsa_driver;
 
-	std::unique_ptr<PatchageCanvas> _canvas;
+	std::unique_ptr<Canvas> _canvas;
 
 	std::unique_ptr<AudioDriver> _jack_driver;
 	Configuration                _conf;

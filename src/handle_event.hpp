@@ -17,7 +17,7 @@
 #ifndef PATCHAGE_HANDLE_EVENT_HPP
 #define PATCHAGE_HANDLE_EVENT_HPP
 
-#include "PatchageEvent.hpp"
+#include "Event.hpp"
 
 namespace patchage {
 
@@ -25,7 +25,7 @@ class Patchage;
 
 /// Handle an event in the GUI
 void
-handle_event(Patchage& patchage, const PatchageEvent& event);
+handle_event(Patchage& patchage, const Event& event);
 
 } // namespace patchage
 
