@@ -768,6 +768,12 @@ Patchage::save()
 }
 
 void
+Patchage::quit()
+{
+	_main_win->hide();
+}
+
+void
 Patchage::on_quit()
 {
 	if (_alsa_driver) {

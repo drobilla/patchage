@@ -51,21 +51,18 @@
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <set>
 #include <string>
 
 class AudioDriver;
 class PatchageCanvas;
 class Configuration;
 
-namespace Ganv {
-class Module;
-} // namespace Ganv
-
+/// Main application class
 class Patchage
 {
 public:
 	explicit Patchage(Options options);
+
 	~Patchage();
 
 	Patchage(const Patchage&) = delete;
@@ -76,17 +73,10 @@ public:
 
 	const std::unique_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
-	Gtk::Window*         window() { return _main_win.get(); }
-	ILog&                log() { return _log; }
-	Metadata&            metadata() { return _metadata; }
-	const Configuration& conf() const { return _conf; }
-	Configuration&       conf() { return _conf; }
-
 	void attach();
-	void save();
-	void quit() { _main_win->hide(); }
-
 	void refresh();
+	void save();
+	void quit();
 
 	void driver_attached(ClientType type);
 	void driver_detached(ClientType type);
@@ -100,6 +90,12 @@ public:
 	}
 
 	bool sort_ports() const { return _menu_view_sort_ports->get_active(); }
+
+	Gtk::Window*         window() { return _main_win.get(); }
+	ILog&                log() { return _log; }
+	Metadata&            metadata() { return _metadata; }
+	const Configuration& conf() const { return _conf; }
+	Configuration&       conf() { return _conf; }
 
 protected:
 	class BufferSizeColumns : public Gtk::TreeModel::ColumnRecord
