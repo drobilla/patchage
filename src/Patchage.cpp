@@ -159,7 +159,8 @@ Patchage::Patchage(Options options)
     , _pane_initialized(false)
     , _attach(true)
 {
-	_canvas = std::make_shared<PatchageCanvas>(_connector, 1600 * 2, 1200 * 2);
+	_canvas = std::unique_ptr<PatchageCanvas>{
+	    new PatchageCanvas(_connector, 1600 * 2, 1200 * 2)};
 
 	Glib::set_application_name("Patchage");
 	_about_win->property_program_name()   = "Patchage";

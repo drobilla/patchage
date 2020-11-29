@@ -74,7 +74,7 @@ public:
 	Patchage(Patchage&&) = delete;
 	Patchage& operator=(Patchage&&) = delete;
 
-	const std::shared_ptr<PatchageCanvas>& canvas() const { return _canvas; }
+	const std::unique_ptr<PatchageCanvas>& canvas() const { return _canvas; }
 
 	Gtk::Window*         window() { return _main_win.get(); }
 	ILog&                log() { return _log; }
@@ -154,7 +154,7 @@ protected:
 
 	std::unique_ptr<Driver> _alsa_driver;
 
-	std::shared_ptr<PatchageCanvas> _canvas;
+	std::unique_ptr<PatchageCanvas> _canvas;
 
 	std::unique_ptr<AudioDriver> _jack_driver;
 	Configuration                _conf;
