@@ -52,7 +52,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <sstream>
 
 #ifdef PATCHAGE_GTK_OSX
 
@@ -412,12 +411,11 @@ Patchage::update_toolbar()
 		const auto buffer_size = _jack_driver->buffer_size();
 		const auto sample_rate = _jack_driver->sample_rate();
 		if (sample_rate != 0) {
-			const int latency_ms =
+			const auto latency_ms =
 			    lrintf(buffer_size * 1000 / float(sample_rate));
-			std::stringstream ss;
-			ss << " frames @ " << (sample_rate / 1000) << "kHz (" << latency_ms
-			   << "ms)";
-			_latency_label->set_label(ss.str());
+
+			_latency_label->set_label(fmt::format(
+			    " frames @ {} kHz ({} ms)", sample_rate / 1000, latency_ms));
 			_latency_label->set_visible(true);
 			_buf_size_combo->set_active(
 			    static_cast<int>(log2f(_jack_driver->buffer_size()) - 5));
