@@ -101,11 +101,10 @@ private:
 	ILog&      _log;
 	std::mutex _shutdown_mutex;
 
-	jack_client_t* _client      = nullptr;
-	jack_nframes_t _buffer_size = 0u;
-	uint32_t       _xruns       = 0u;
-
-	bool _is_activated : 1;
+	jack_client_t* _client       = nullptr;
+	jack_nframes_t _buffer_size  = 0u;
+	uint32_t       _xruns        = 0u;
+	bool           _is_activated = false;
 };
 
 JackLibDriver::JackLibDriver(ILog& log, EventSink emit_event)
