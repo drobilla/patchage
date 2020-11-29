@@ -25,11 +25,15 @@
 #	include <string>
 #endif
 
+#include "Options.hpp"
 #include "Patchage.hpp"
+#include "patchage_config.h"
 
 #include <glibmm/exception.h>
 
 #include <iostream>
+
+namespace {
 
 #ifdef __APPLE__
 void
@@ -67,6 +71,19 @@ set_bundle_environment()
 }
 #endif
 
+void
+print_usage()
+{
+	std::cout << "Usage: patchage [OPTION]...\n";
+	std::cout << "Visually connect JACK and ALSA Audio and MIDI ports.\n\n";
+	std::cout << "Options:\n";
+	std::cout << "  -h, --help     Display this help and exit.\n";
+	std::cout << "  -A, --no-alsa  Do not automatically attach to ALSA.\n";
+	std::cout << "  -J, --no-jack  Do not automatically attack to JACK.\n";
+}
+
+} // namespace
+
 int
 main(int argc, char** argv)
 {
@@ -79,8 +96,33 @@ main(int argc, char** argv)
 		Glib::thread_init();
 
 		Gtk::Main app(argc, argv);
+		++argv;
+		--argc;
 
-		Patchage patchage(argc, argv);
+		// Parse command line options
+		Options options;
+		while (argc > 0) {
+			if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
+				print_usage();
+				return 0;
+			}
+
+			if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
+				options.alsa_driver_autoattach = false;
+			} else if (!strcmp(*argv, "-J") || !strcmp(*argv, "--no-jack")) {
+				options.jack_driver_autoattach = false;
+			} else {
+				std::cerr << "patchage: invalid option -- '" << *argv << "'\n";
+				print_usage();
+				return 1;
+			}
+
+			++argv;
+			--argc;
+		}
+
+		// Run until main loop is finished
+		Patchage patchage(options);
 		Gtk::Main::run(*patchage.window());
 		patchage.save();
 

@@ -43,6 +43,7 @@
 #include "ILog.hpp"
 #include "Legend.hpp"
 #include "Metadata.hpp"
+#include "Options.hpp"
 #include "PatchageEvent.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
@@ -65,7 +66,7 @@ class Module;
 class Patchage
 {
 public:
-	Patchage(int argc, char** argv);
+	explicit Patchage(Options options);
 	~Patchage();
 
 	Patchage(const Patchage&) = delete;
@@ -209,12 +210,9 @@ protected:
 	Glib::RefPtr<Gtk::TextTag> _error_tag;
 	Glib::RefPtr<Gtk::TextTag> _warning_tag;
 
-	bool _pane_initialized;
-	bool _attach;
-	bool _jack_driver_autoattach;
-#ifdef HAVE_ALSA
-	bool _alsa_driver_autoattach;
-#endif
+	Options _options;
+	bool    _pane_initialized;
+	bool    _attach;
 };
 
 #endif // PATCHAGE_PATCHAGE_HPP

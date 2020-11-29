@@ -61,7 +61,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <fstream>
+#include <sstream>
 
 #ifdef PATCHAGE_GTK_OSX
 
@@ -123,7 +123,7 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
 
-Patchage::Patchage(int argc, char** argv)
+Patchage::Patchage(Options options)
     : _xml(UIFile::open("patchage"))
     , _gtk_main(nullptr)
     , INIT_WIDGET(_about_win)
@@ -164,39 +164,11 @@ Patchage::Patchage(int argc, char** argv)
     , _legend(nullptr)
     , _log(_status_text)
     , _connector(_log)
+    , _options{options}
     , _pane_initialized(false)
     , _attach(true)
-    , _jack_driver_autoattach(true)
-#ifdef HAVE_ALSA
-    , _alsa_driver_autoattach(true)
-#endif
 {
 	_canvas = std::make_shared<PatchageCanvas>(_connector, 1600 * 2, 1200 * 2);
-
-	while (argc > 0) {
-		if (!strcmp(*argv, "-h") || !strcmp(*argv, "--help")) {
-			std::cout << "Usage: patchage [OPTION]...\n";
-			std::cout << "Visually connect JACK and ALSA Audio/MIDI ports.\n\n";
-			std::cout << "Options:\n";
-			std::cout << "\t-h  --help     Show this help\n";
-			std::cout
-			    << "\t-A  --no-alsa  Do not automatically attach to ALSA\n";
-			std::cout
-			    << "\t-J  --no-jack  Do not automatically attack to JACK\n";
-			exit(0);
-#ifdef HAVE_ALSA
-		} else if (!strcmp(*argv, "-A") || !strcmp(*argv, "--no-alsa")) {
-			_alsa_driver_autoattach = false;
-#endif
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-		} else if (!strcmp(*argv, "-J") || !strcmp(*argv, "--no-jack")) {
-			_jack_driver_autoattach = false;
-#endif
-		}
-
-		argv++;
-		argc--;
-	}
 
 	Glib::set_application_name("Patchage");
 	_about_win->property_program_name()   = "Patchage";
@@ -384,17 +356,13 @@ Patchage::~Patchage()
 void
 Patchage::attach()
 {
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-	if (_jack_driver_autoattach) {
+	if (_jack_driver && _options.jack_driver_autoattach) {
 		_jack_driver->attach(true);
 	}
-#endif
 
-#ifdef HAVE_ALSA
-	if (_alsa_driver_autoattach) {
+	if (_alsa_driver && _options.alsa_driver_autoattach) {
 		_alsa_driver->attach(false);
 	}
-#endif
 
 	process_events();
 	refresh();
