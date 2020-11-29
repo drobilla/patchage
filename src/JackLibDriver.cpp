@@ -255,7 +255,6 @@ JackLibDriver::refresh(const EventSink& sink)
 	std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
 	if (!_client) {
-		_emit_event(DriverDetachmentEvent{ClientType::jack});
 		return;
 	}
 
@@ -472,6 +471,15 @@ void
 JackLibDriver::on_shutdown(void* const driver)
 {
 	auto* const me = static_cast<JackLibDriver*>(driver);
+
+	/* Note that the JACK documentation lies about this situation.  It says the
+	   client must not call jack_client_close() here... except that is exactly
+	   what libjack does if a shutdown callback isn't registered.  Despite
+	   that, doing so here hangs forever.  Handling it "properly" like a signal
+	   handler and calling jack_client_close() in another thread also hangs.
+
+	   So, since JACK is a hot mess and it's impossible to gracefully handle
+	   this situation, just leak the client. */
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
