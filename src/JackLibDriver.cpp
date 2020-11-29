@@ -85,22 +85,18 @@ private:
 	ClientInfo get_client_info(const char* name);
 	PortInfo   get_port_info(const jack_port_t* port);
 
-	static void jack_client_registration_cb(const char* name,
-	                                        int         registered,
-	                                        void*       jack_driver);
+	static void on_client(const char* name, int registered, void* driver);
 
-	static void jack_port_registration_cb(jack_port_id_t port_id,
-	                                      int            registered,
-	                                      void*          jack_driver);
+	static void on_port(jack_port_id_t port_id, int registered, void* driver);
 
-	static void jack_port_connect_cb(jack_port_id_t src,
-	                                 jack_port_id_t dst,
-	                                 int            connect,
-	                                 void*          jack_driver);
+	static void on_connection(jack_port_id_t src,
+	                          jack_port_id_t dst,
+	                          int            connect,
+	                          void*          driver);
 
-	static int jack_xrun_cb(void* jack_driver);
+	static int on_xrun(void* driver);
 
-	static void jack_shutdown_cb(void* jack_driver);
+	static void on_shutdown(void* driver);
 
 	ILog&      _log;
 	std::mutex _shutdown_mutex;
@@ -139,13 +135,11 @@ JackLibDriver::attach(const bool launch_daemon)
 		return;
 	}
 
-	jack_on_shutdown(_client, jack_shutdown_cb, this);
-	jack_set_client_registration_callback(
-	    _client, jack_client_registration_cb, this);
-	jack_set_port_registration_callback(
-	    _client, jack_port_registration_cb, this);
-	jack_set_port_connect_callback(_client, jack_port_connect_cb, this);
-	jack_set_xrun_callback(_client, jack_xrun_cb, this);
+	jack_on_shutdown(_client, on_shutdown, this);
+	jack_set_client_registration_callback(_client, on_client, this);
+	jack_set_port_registration_callback(_client, on_port, this);
+	jack_set_port_connect_callback(_client, on_connection, this);
+	jack_set_xrun_callback(_client, on_xrun, this);
 
 	if (jack_activate(_client)) {
 		_log.error("[JACK] Client activation failed");
@@ -412,11 +406,11 @@ JackLibDriver::sample_rate()
 }
 
 void
-JackLibDriver::jack_client_registration_cb(const char* const name,
-                                           const int         registered,
-                                           void* const       jack_driver)
+JackLibDriver::on_client(const char* const name,
+                         const int         registered,
+                         void* const       driver)
 {
-	auto* const me = static_cast<JackLibDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(driver);
 
 	if (registered) {
 		me->_emit_event(ClientCreationEvent{ClientID::jack(name), {name}});
@@ -426,11 +420,11 @@ JackLibDriver::jack_client_registration_cb(const char* const name,
 }
 
 void
-JackLibDriver::jack_port_registration_cb(const jack_port_id_t port_id,
-                                         const int            registered,
-                                         void* const          jack_driver)
+JackLibDriver::on_port(const jack_port_id_t port_id,
+                       const int            registered,
+                       void* const          driver)
 {
-	auto* const me = static_cast<JackLibDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(driver);
 
 	jack_port_t* const port = jack_port_by_id(me->_client, port_id);
 	const char* const  name = jack_port_name(port);
@@ -444,12 +438,12 @@ JackLibDriver::jack_port_registration_cb(const jack_port_id_t port_id,
 }
 
 void
-JackLibDriver::jack_port_connect_cb(const jack_port_id_t src,
-                                    const jack_port_id_t dst,
-                                    const int            connect,
-                                    void* const          jack_driver)
+JackLibDriver::on_connection(const jack_port_id_t src,
+                             const jack_port_id_t dst,
+                             const int            connect,
+                             void* const          driver)
 {
-	auto* const me = static_cast<JackLibDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(driver);
 
 	jack_port_t* const src_port = jack_port_by_id(me->_client, src);
 	jack_port_t* const dst_port = jack_port_by_id(me->_client, dst);
@@ -466,9 +460,9 @@ JackLibDriver::jack_port_connect_cb(const jack_port_id_t src,
 }
 
 int
-JackLibDriver::jack_xrun_cb(void* const jack_driver)
+JackLibDriver::on_xrun(void* const driver)
 {
-	auto* const me = static_cast<JackLibDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(driver);
 
 	++me->_xruns;
 
@@ -476,9 +470,9 @@ JackLibDriver::jack_xrun_cb(void* const jack_driver)
 }
 
 void
-JackLibDriver::jack_shutdown_cb(void* const jack_driver)
+JackLibDriver::on_shutdown(void* const driver)
 {
-	auto* const me = static_cast<JackLibDriver*>(jack_driver);
+	auto* const me = static_cast<JackLibDriver*>(driver);
 
 	std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
