@@ -111,7 +111,7 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 	return 0;
 }
 
-static void
+void
 load_module_location(GanvNode* node, void*)
 {
 	if (GANV_IS_MODULE(node)) {

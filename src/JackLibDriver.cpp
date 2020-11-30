@@ -110,7 +110,6 @@ private:
 JackLibDriver::JackLibDriver(ILog& log, EventSink emit_event)
     : AudioDriver{std::move(emit_event)}
     , _log{log}
-    , _is_activated{false}
 {}
 
 JackLibDriver::~JackLibDriver()
