@@ -62,7 +62,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 		const auto client_info = patchage.metadata().client(client_id);
 		if (!client_info.has_value()) {
 			patchage.log().error(fmt::format(
-			    "Unable to add port \"{}\", client \"{}\" is unknown",
+			    R"(Unable to add port "{}", client "{}" is unknown)",
 			    id,
 			    client_id));
 
@@ -93,7 +93,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 	if (parent->get_port(id)) {
 		// TODO: Update existing port?
 		patchage.log().error(fmt::format(
-		    "Module \"{}\" already has port \"{}\"", client_name, port_name));
+		    R"(Module "{}" already has port "{}")", client_name, port_name));
 		return nullptr;
 	}
 

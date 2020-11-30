@@ -230,7 +230,7 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
 		}
 	} else {
 		_log.warning(fmt::format(
-		    "[JACK] Port \"{}\" has unknown type \"{}\"", name, type_str));
+		    R"([JACK] Port "{}" has unknown type "{}")", name, type_str));
 	}
 
 	// Get direction from port flags

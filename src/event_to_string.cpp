@@ -62,12 +62,12 @@ struct EventPrinter
 	std::string operator()(const ClientCreationEvent& event)
 	{
 		return fmt::format(
-		    "Add client \"{}\" (\"{}\")", event.id, event.info.label);
+		    R"(Add client "{}" ("{}"))", event.id, event.info.label);
 	}
 
 	std::string operator()(const ClientDestructionEvent& event)
 	{
-		return fmt::format("Remove client \"{}\"", event.id);
+		return fmt::format(R"(Add{} {} {} port "{}" ("{}"))", event.id);
 	}
 
 	std::string operator()(const PortType port_type)
@@ -131,7 +131,7 @@ struct EventPrinter
 	std::string operator()(const DisconnectionEvent& event)
 	{
 		return fmt::format(
-		    "Disconnect \"{}\" from \"{}\"", event.tail, event.head);
+		    R"(Disconnect "{}" from "{}")", event.tail, event.head);
 	}
 };
 
