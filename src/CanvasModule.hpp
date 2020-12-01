@@ -14,8 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_PATCHAGEMODULE_HPP
-#define PATCHAGE_PATCHAGEMODULE_HPP
+#ifndef PATCHAGE_CANVASMODULE_HPP
+#define PATCHAGE_CANVASMODULE_HPP
 
 #include "ClientID.hpp"
 #include "SignalDirection.hpp"
@@ -84,4 +84,4 @@ protected:
 
 } // namespace patchage
 
-#endif // PATCHAGE_PATCHAGEMODULE_HPP
+#endif // PATCHAGE_CANVASMODULE_HPP

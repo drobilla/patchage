@@ -14,8 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_PATCHAGEEVENT_HPP
-#define PATCHAGE_PATCHAGEEVENT_HPP
+#ifndef PATCHAGE_EVENT_HPP
+#define PATCHAGE_EVENT_HPP
 
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
@@ -85,4 +85,4 @@ using Event = boost::variant<DriverAttachmentEvent,
 
 } // namespace patchage
 
-#endif // PATCHAGE_PATCHAGEEVENT_HPP
+#endif // PATCHAGE_EVENT_HPP

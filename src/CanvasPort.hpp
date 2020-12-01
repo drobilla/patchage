@@ -14,8 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_PATCHAGEPORT_HPP
-#define PATCHAGE_PATCHAGEPORT_HPP
+#ifndef PATCHAGE_CANVASPORT_HPP
+#define PATCHAGE_CANVASPORT_HPP
 
 #include "Canvas.hpp"
 #include "CanvasModule.hpp"
@@ -108,4 +108,4 @@ private:
 
 } // namespace patchage
 
-#endif // PATCHAGE_PATCHAGEPORT_HPP
+#endif // PATCHAGE_CANVASPORT_HPP

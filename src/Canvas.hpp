@@ -14,8 +14,8 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_PATCHAGECANVAS_HPP
-#define PATCHAGE_PATCHAGECANVAS_HPP
+#ifndef PATCHAGE_CANVAS_HPP
+#define PATCHAGE_CANVAS_HPP
 
 #include "patchage_config.h"
 
@@ -81,4 +81,4 @@ private:
 
 } // namespace patchage
 
-#endif // PATCHAGE_PATCHAGECANVAS_HPP
+#endif // PATCHAGE_CANVAS_HPP
