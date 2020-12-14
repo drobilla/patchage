@@ -20,7 +20,7 @@
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
 
-#include <boost/optional.hpp>
+#include <boost/optional/optional.hpp>
 #include <string>
 
 namespace patchage {

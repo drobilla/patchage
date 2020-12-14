@@ -17,21 +17,31 @@
 #ifndef PATCHAGE_CANVASPORT_HPP
 #define PATCHAGE_CANVASPORT_HPP
 
-#include "Canvas.hpp"
-#include "CanvasModule.hpp"
-#include "Configuration.hpp"
 #include "PortID.hpp"
+#include "PortType.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
-#include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
+#include <boost/optional/optional.hpp>
+#include <gdk/gdk.h>
+#include <gdkmm/event.h>
 #include <gtkmm/menu.h>
+#include <gtkmm/menu_elems.h>
 #include <gtkmm/menushell.h>
+#include <gtkmm/object.h>
+#include <sigc++/functors/mem_fun.h>
+#include <sigc++/signal.h>
 
+#include <cstdint>
 #include <string>
+#include <utility>
+
+namespace Ganv {
+class Module;
+} // namespace Ganv
 
 namespace patchage {
 

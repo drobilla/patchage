@@ -16,12 +16,30 @@
 
 #include "CanvasModule.hpp"
 
-#include <gtkmm/menu_elems.h>
-
 #include "Canvas.hpp"
 #include "CanvasPort.hpp"
+#include "Configuration.hpp"
 #include "Patchage.hpp"
+#include "PortID.hpp"
 #include "SignalDirection.hpp"
+#include "warnings.hpp"
+
+PATCHAGE_DISABLE_GANV_WARNINGS
+#include "ganv/Port.hpp"
+PATCHAGE_RESTORE_WARNINGS
+
+#include <glibmm/helperlist.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/menu_elems.h>
+#include <gtkmm/menuitem.h>
+#include <gtkmm/menushell.h>
+#include <sigc++/functors/mem_fun.h>
+#include <sigc++/signal.h>
+
+#include <cassert>
+#include <cstdlib>
+#include <memory>
+#include <utility>
 
 namespace patchage {
 

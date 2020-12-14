@@ -21,7 +21,9 @@
 #include "PortID.hpp"
 #include "PortInfo.hpp"
 
-#include <boost/optional.hpp>
+#include <boost/optional/optional.hpp>
+
+#include <utility>
 
 namespace patchage {
 

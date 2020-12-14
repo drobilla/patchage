@@ -17,14 +17,23 @@
 #ifndef PATCHAGE_TEXTVIEWLOG_HPP
 #define PATCHAGE_TEXTVIEWLOG_HPP
 
+// IWYU pragma: no_include <gtkmm/texttag.h>
+
 #include "ILog.hpp"
-#include "Widget.hpp"
 
 #include <glibmm/refptr.h>
-#include <gtkmm/texttag.h>
-#include <gtkmm/textview.h>
+
+#include <string>
+
+namespace Gtk {
+class TextView;
+class TextTag; // IWYU pragma: keep
+} // namespace Gtk
 
 namespace patchage {
+
+template<typename W>
+class Widget;
 
 /// Log that writes colored messages to a Gtk TextView
 class TextViewLog : public ILog

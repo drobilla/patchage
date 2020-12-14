@@ -30,7 +30,12 @@
 #include "patchage_config.h"
 
 #include <glibmm/exception.h>
+#include <glibmm/thread.h>
+#include <glibmm/ustring.h>
+#include <gtkmm/main.h>
 
+#include <cstring>
+#include <exception>
 #include <iostream>
 
 namespace {

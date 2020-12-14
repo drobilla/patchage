@@ -23,13 +23,16 @@
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Module.hpp"
-#include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <gtkmm/menu.h>
+#include <gdk/gdk.h>
+#include <gdkmm/event.h>
 
-#include <memory>
 #include <string>
+
+namespace Gtk {
+class Menu;
+} // namespace Gtk
 
 namespace patchage {
 

@@ -25,8 +25,6 @@
 
 #include <boost/variant/variant.hpp>
 
-#include <string>
-
 namespace patchage {
 
 struct DriverAttachmentEvent

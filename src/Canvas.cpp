@@ -16,26 +16,37 @@
 
 #include "Canvas.hpp"
 
-#include "patchage_config.h"
-
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
+#include "ClientInfo.hpp"
+#include "Configuration.hpp"
 #include "Connector.hpp"
+#include "ILog.hpp"
+#include "Metadata.hpp"
 #include "Patchage.hpp"
+#include "PortInfo.hpp"
 #include "PortNames.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
 
-#include <set>
-
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
+#include "ganv/Module.hpp"
+#include "ganv/Node.hpp"
+#include "ganv/Port.hpp"
+#include "ganv/module.h"
 PATCHAGE_RESTORE_WARNINGS
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
+
+#include <cassert>
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <utility>
 
 namespace patchage {
 

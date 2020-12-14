@@ -18,6 +18,7 @@
 
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
+#include "patchage_config.h"
 
 #include <cctype>
 #include <cstdlib>

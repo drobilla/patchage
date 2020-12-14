@@ -17,22 +17,27 @@
 #ifndef PATCHAGE_CANVAS_HPP
 #define PATCHAGE_CANVAS_HPP
 
-#include "patchage_config.h"
-
-#include "CanvasModule.hpp"
-#include "Event.hpp"
+#include "ClientID.hpp"
 #include "PortID.hpp"
+#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Canvas.hpp"
+#include "ganv/types.h"
 PATCHAGE_RESTORE_WARNINGS
 
+#include <gdkmm/event.h>
+
 #include <map>
-#include <string>
-#include <utility>
+
+namespace Ganv {
+class Node;
+} // namespace Ganv
 
 namespace patchage {
+
+struct PortInfo;
 
 class Patchage;
 class CanvasModule;

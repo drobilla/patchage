@@ -17,15 +17,23 @@
 #include "handle_event.hpp"
 
 #include "Canvas.hpp"
-#include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
 #include "Event.hpp"
+#include "ILog.hpp"
+#include "Metadata.hpp"
 #include "Patchage.hpp"
+#include "PortID.hpp"
+#include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
+
+#include <boost/variant/apply_visitor.hpp>
+
+#include <iosfwd>
+#include <memory>
 
 namespace patchage {
 

@@ -23,11 +23,13 @@
 #	include "binary_location.h"
 #endif
 
+#include <glibmm/refptr.h>
 #include <gtkmm/builder.h>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 namespace patchage {

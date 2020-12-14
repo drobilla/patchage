@@ -16,42 +16,89 @@
 
 #include "Patchage.hpp"
 
+#include "AudioDriver.hpp"
 #include "Canvas.hpp"
+#include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
 #include "Configuration.hpp"
+#include "Driver.hpp"
 #include "Event.hpp"
 #include "Legend.hpp"
+#include "PortID.hpp"
 #include "UIFile.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
 #include "make_alsa_driver.hpp"
 #include "make_jack_driver.hpp"
-#include "patchage_config.h"
+#include "patchage_config.h" // IWYU pragma: keep
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Edge.hpp"
 #include "ganv/Module.hpp"
+#include "ganv/Node.hpp"
+#include "ganv/Port.hpp"
+#include "ganv/module.h"
+#include "ganv/types.h"
 PATCHAGE_RESTORE_WARNINGS
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
+#include <boost/optional/optional.hpp>
+#include <glib-object.h>
 #include <glib.h>
-#include <glib/gstdio.h>
-#include <gtk/gtkwindow.h>
-#include <gtkmm/button.h>
+#include <glibmm/fileutils.h>
+#include <glibmm/main.h>
+#include <glibmm/miscutils.h>
+#include <glibmm/propertyproxy.h>
+#include <glibmm/signalproxy.h>
+#include <glibmm/ustring.h>
+#include <gobject/gclosure.h>
+#include <gtk/gtk.h>
+#include <gtkmm/aboutdialog.h>
+#include <gtkmm/adjustment.h>
+#include <gtkmm/alignment.h>
+#include <gtkmm/box.h>
+#include <gtkmm/builder.h>
+#include <gtkmm/celleditable.h>
+#include <gtkmm/checkbutton.h>
+#include <gtkmm/combobox.h>
+#include <gtkmm/dialog.h>
+#include <gtkmm/enums.h>
+#include <gtkmm/filechooser.h>
 #include <gtkmm/filechooserdialog.h>
+#include <gtkmm/filefilter.h>
+#include <gtkmm/imagemenuitem.h>
+#include <gtkmm/label.h>
+#include <gtkmm/layout.h>
 #include <gtkmm/liststore.h>
+#include <gtkmm/menubar.h>
 #include <gtkmm/menuitem.h>
 #include <gtkmm/messagedialog.h>
+#include <gtkmm/object.h>
+#include <gtkmm/paned.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/stock.h>
+#include <gtkmm/textbuffer.h>
+#include <gtkmm/texttag.h>
+#include <gtkmm/textview.h>
+#include <gtkmm/toolbar.h>
+#include <gtkmm/toolbutton.h>
+#include <gtkmm/treeiter.h>
 #include <gtkmm/treemodel.h>
+#include <gtkmm/window.h>
+#include <sigc++/adaptors/bind.h>
+#include <sigc++/functors/mem_fun.h>
+#include <sigc++/signal.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <map>
+#include <utility>
 
 #ifdef PATCHAGE_GTK_OSX
 

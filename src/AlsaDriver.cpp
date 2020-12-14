@@ -20,7 +20,9 @@
 #include "ClientInfo.hpp"
 #include "ClientType.hpp"
 #include "Driver.hpp"
+#include "Event.hpp"
 #include "ILog.hpp"
+#include "PortID.hpp"
 #include "PortInfo.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
@@ -34,8 +36,14 @@ PATCHAGE_RESTORE_WARNINGS
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 
+#include <boost/optional/optional.hpp>
+
 #include <cassert>
+#include <cstdint>
+#include <functional>
+#include <iosfwd>
 #include <limits>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>

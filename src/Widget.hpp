@@ -17,7 +17,8 @@
 #ifndef PATCHAGE_WIDGET_HPP
 #define PATCHAGE_WIDGET_HPP
 
-#include <gtkmm/builder.h>
+#include <glibmm/refptr.h>
+#include <gtkmm/builder.h> // IWYU pragma: keep
 
 #include <string>
 

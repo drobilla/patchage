@@ -184,7 +184,7 @@ def configure(conf):
         conf.define('PATCHAGE_USE_LIGHT_THEME', 1)
 
     # Boost headers
-    conf.check_cxx(header_name='boost/optional.hpp')
+    conf.check_cxx(header_name='boost/optional/optional.hpp')
     conf.check_cxx(header_name='boost/variant.hpp')
 
     # Check for system provided fmt

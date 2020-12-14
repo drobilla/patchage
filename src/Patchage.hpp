@@ -17,47 +17,60 @@
 #ifndef PATCHAGE_PATCHAGE_HPP
 #define PATCHAGE_PATCHAGE_HPP
 
-#include <gtkmm/aboutdialog.h>
-#include <gtkmm/alignment.h>
-#include <gtkmm/builder.h>
-#include <gtkmm/button.h>
+#include <gdk/gdk.h>
+#include <glibmm/refptr.h>
 #include <gtkmm/checkmenuitem.h>
-#include <gtkmm/combobox.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/imagemenuitem.h>
-#include <gtkmm/label.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/menuitem.h>
-#include <gtkmm/paned.h>
-#include <gtkmm/scrolledwindow.h>
-#include <gtkmm/textview.h>
-#include <gtkmm/toolbar.h>
-#include <gtkmm/toolbutton.h>
-#include <gtkmm/viewport.h>
-#include <gtkmm/window.h>
+#include <gtkmm/treemodel.h>
+#include <gtkmm/treemodelcolumn.h>
+#include <gtkmm/widget.h>
 
 #include "ClientType.hpp"
+#include "Configuration.hpp"
 #include "Connector.hpp"
 #include "Event.hpp"
-#include "ILog.hpp"
-#include "Legend.hpp"
 #include "Metadata.hpp"
 #include "Options.hpp"
+#include "PortType.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
-#include "patchage_config.h"
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
 
+namespace Glib {
+class ustring;
+} // namespace Glib
+
+namespace Gtk {
+class AboutDialog;
+class Alignment;
+class Builder;
+class ComboBox;
+class ImageMenuItem;
+class Label;
+class Main;
+class MenuBar;
+class MenuItem;
+class Paned;
+class ScrolledWindow;
+class TextTag;
+class TextView;
+class ToolButton;
+class Toolbar;
+class VBox;
+class Window;
+} // namespace Gtk
+
 namespace patchage {
 
 class AudioDriver;
 class Canvas;
-class Configuration;
+class Driver;
+class ILog;
+class Legend;
 
 /// Main application class
 class Patchage

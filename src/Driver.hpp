@@ -24,6 +24,8 @@
 
 namespace patchage {
 
+struct PortID;
+
 /// Base class for drivers that handle system clients and ports
 class Driver
 {

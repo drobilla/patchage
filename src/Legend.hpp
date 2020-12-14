@@ -17,15 +17,21 @@
 #ifndef PATCHAGE_LEGEND_HPP
 #define PATCHAGE_LEGEND_HPP
 
-#include "Configuration.hpp"
+#include "PortType.hpp"
 
 #include <gtkmm/box.h>
-#include <gtkmm/colorbutton.h>
-#include <sigc++/sigc++.h>
+#include <sigc++/signal.h>
 
+#include <cstdint>
 #include <string>
 
+namespace Gtk {
+class ColorButton;
+} // namespace Gtk
+
 namespace patchage {
+
+class Configuration;
 
 class Legend : public Gtk::HBox
 {

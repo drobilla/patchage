@@ -18,11 +18,16 @@
 
 #include "Configuration.hpp"
 #include "PortType.hpp"
+#include "patchage_config.h"
 
+#include <gdkmm/color.h>
+#include <glibmm/signalproxy.h>
 #include <gtkmm/box.h>
 #include <gtkmm/colorbutton.h>
 #include <gtkmm/label.h>
-#include <sigc++/sigc++.h>
+#include <gtkmm/object.h>
+#include <sigc++/adaptors/bind.h>
+#include <sigc++/functors/mem_fun.h>
 
 #include <string>
 

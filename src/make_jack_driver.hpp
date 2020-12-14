@@ -17,13 +17,14 @@
 #ifndef PATCHAGE_MAKE_JACK_DRIVER_HPP
 #define PATCHAGE_MAKE_JACK_DRIVER_HPP
 
-#include "AudioDriver.hpp"
+#include "Driver.hpp"
 #include "patchage_config.h"
 
 #include <memory>
 
 namespace patchage {
 
+class AudioDriver;
 class ILog;
 
 #if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)

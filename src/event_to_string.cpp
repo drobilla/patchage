@@ -16,8 +16,14 @@
 
 #include "event_to_string.hpp"
 
+#include "ClientID.hpp"
+#include "ClientInfo.hpp"
 #include "ClientType.hpp"
 #include "Event.hpp"
+#include "PortID.hpp"
+#include "PortInfo.hpp"
+#include "PortType.hpp"
+#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
@@ -25,8 +31,10 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <cstdint>
-#include <iostream>
+#include <boost/optional/optional.hpp>
+#include <boost/variant/apply_visitor.hpp>
+
+#include <ostream> // IWYU pragma: keep
 #include <string>
 
 namespace patchage {
@@ -104,7 +112,7 @@ struct EventPrinter
 
 	std::string operator()(const PortCreationEvent& event)
 	{
-		auto result = fmt::format("Add{} {} {} port \"{}\" (\"{}\")",
+		auto result = fmt::format(R"(Add{} {} {} port "{}" ("{}"))",
 		                          event.info.is_terminal ? " terminal" : "",
 		                          (*this)(event.info.type),
 		                          (*this)(event.info.direction),
@@ -120,12 +128,12 @@ struct EventPrinter
 
 	std::string operator()(const PortDestructionEvent& event)
 	{
-		return fmt::format("Remove port \"{}\"", event.id);
+		return fmt::format(R"("Remove port "{}")", event.id);
 	}
 
 	std::string operator()(const ConnectionEvent& event)
 	{
-		return fmt::format("Connect \"{}\" to \"{}\"", event.tail, event.head);
+		return fmt::format(R"(Connect "{}" to "{}")", event.tail, event.head);
 	}
 
 	std::string operator()(const DisconnectionEvent& event)

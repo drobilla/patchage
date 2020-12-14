@@ -18,8 +18,10 @@
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
 #include "ClientType.hpp"
+#include "Driver.hpp"
 #include "Event.hpp"
 #include "ILog.hpp"
+#include "PortID.hpp"
 #include "PortInfo.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
@@ -37,12 +39,14 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
+#include <boost/optional/optional.hpp>
 #include <jack/jack.h>
-#include <jack/statistics.h>
+#include <jack/types.h>
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <set>
 #include <string>
