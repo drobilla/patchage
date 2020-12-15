@@ -62,7 +62,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gtkmm/alignment.h>
 #include <gtkmm/box.h>
 #include <gtkmm/builder.h>
-#include <gtkmm/celleditable.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/combobox.h>
 #include <gtkmm/dialog.h>

@@ -27,7 +27,6 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/optional/optional.hpp>
 #include <gdk/gdk.h>
-#include <gdkmm/event.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/menu_elems.h>
 #include <gtkmm/menushell.h>

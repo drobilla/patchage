@@ -1,4 +1,5 @@
 [
+  { "symbol":  [ "GdkEvent",           "private", "<gdk/gdk.h>",        "public" ] },
   { "symbol":  [ "fmt::format",        "private", "<fmt/core.h>",       "public" ] },
   { "symbol":  [ "std::exception",     "private", "<exception>",        "public" ] },
   { "symbol":  [ "std::ifstream",      "private", "<fstream>",          "public" ] },

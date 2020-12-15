@@ -26,7 +26,6 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 PATCHAGE_RESTORE_WARNINGS
 
 #include <gdk/gdk.h>
-#include <gdkmm/event.h>
 
 #include <string>
 
