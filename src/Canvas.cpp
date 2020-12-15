@@ -42,6 +42,8 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
+#include <gdk/gdkkeysyms.h>
+
 #include <cassert>
 #include <iosfwd>
 #include <set>
@@ -302,7 +304,7 @@ disconnect_edge(GanvEdge* edge, void* data)
 bool
 Canvas::on_event(GdkEvent* ev)
 {
-	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_Delete) {
+	if (ev->type == GDK_KEY_PRESS && ev->key.keyval == GDK_KEY_Delete) {
 		for_each_selected_edge(disconnect_edge, this);
 		clear_selection();
 		return true;
