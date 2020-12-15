@@ -42,7 +42,10 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
+#include <boost/optional/optional.hpp>
 #include <gdk/gdkkeysyms.h>
+#include <sigc++/functors/mem_fun.h>
+#include <sigc++/signal.h>
 
 #include <cassert>
 #include <iosfwd>
