@@ -76,7 +76,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 	std::string client_name;
 	if (id.type() == PortID::Type::alsa) {
 		const auto client_info = patchage.metadata().client(client_id);
-		if (!client_info.has_value()) {
+		if (!client_info) {
 			patchage.log().error(fmt::format(
 			    R"(Unable to add port "{}", client "{}" is unknown)",
 			    id,

@@ -119,7 +119,7 @@ struct EventPrinter
 		                          event.id,
 		                          event.info.label);
 
-		if (event.info.order.has_value()) {
+		if (event.info.order) {
 			result += fmt::format(" order: {}", *event.info.order);
 		}
 
