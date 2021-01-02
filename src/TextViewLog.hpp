@@ -39,29 +39,29 @@ class Widget;
 class TextViewLog : public ILog
 {
 public:
-	explicit TextViewLog(Widget<Gtk::TextView>& text_view);
+  explicit TextViewLog(Widget<Gtk::TextView>& text_view);
 
-	TextViewLog(const TextViewLog&) = delete;
-	TextViewLog& operator=(const TextViewLog&) = delete;
+  TextViewLog(const TextViewLog&) = delete;
+  TextViewLog& operator=(const TextViewLog&) = delete;
 
-	TextViewLog(TextViewLog&&) = delete;
-	TextViewLog& operator=(TextViewLog&&) = delete;
+  TextViewLog(TextViewLog&&) = delete;
+  TextViewLog& operator=(TextViewLog&&) = delete;
 
-	~TextViewLog() override = default;
+  ~TextViewLog() override = default;
 
-	void info(const std::string& msg) override;
-	void error(const std::string& msg) override;
-	void warning(const std::string& msg) override;
+  void info(const std::string& msg) override;
+  void error(const std::string& msg) override;
+  void warning(const std::string& msg) override;
 
-	int min_height() const;
+  int min_height() const;
 
-	const Widget<Gtk::TextView>& text_view() const { return _text_view; }
-	Widget<Gtk::TextView>&       text_view() { return _text_view; }
+  const Widget<Gtk::TextView>& text_view() const { return _text_view; }
+  Widget<Gtk::TextView>&       text_view() { return _text_view; }
 
 private:
-	Glib::RefPtr<Gtk::TextTag> _error_tag;
-	Glib::RefPtr<Gtk::TextTag> _warning_tag;
-	Widget<Gtk::TextView>&     _text_view;
+  Glib::RefPtr<Gtk::TextTag> _error_tag;
+  Glib::RefPtr<Gtk::TextTag> _warning_tag;
+  Widget<Gtk::TextView>&     _text_view;
 };
 
 } // namespace patchage

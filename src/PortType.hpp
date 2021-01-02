@@ -19,13 +19,12 @@
 
 namespace patchage {
 
-enum class PortType
-{
-	jack_audio,
-	jack_midi,
-	alsa_midi,
-	jack_osc,
-	jack_cv,
+enum class PortType {
+  jack_audio,
+  jack_midi,
+  alsa_midi,
+  jack_osc,
+  jack_cv,
 };
 
 } // namespace patchage

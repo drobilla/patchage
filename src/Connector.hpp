@@ -30,16 +30,16 @@ class ILog;
 class Connector
 {
 public:
-	explicit Connector(ILog& log);
+  explicit Connector(ILog& log);
 
-	void add_driver(PortID::Type type, Driver* driver);
+  void add_driver(PortID::Type type, Driver* driver);
 
-	void connect(const PortID& tail, const PortID& head);
-	void disconnect(const PortID& tail, const PortID& head);
+  void connect(const PortID& tail, const PortID& head);
+  void disconnect(const PortID& tail, const PortID& head);
 
 private:
-	ILog&                                     _log;
-	std::unordered_map<PortID::Type, Driver*> _drivers;
+  ILog&                                     _log;
+  std::unordered_map<PortID::Type, Driver*> _drivers;
 };
 
 } // namespace patchage

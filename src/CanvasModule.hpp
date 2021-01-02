@@ -43,45 +43,45 @@ class Patchage;
 class CanvasModule : public Ganv::Module
 {
 public:
-	CanvasModule(Patchage*          app,
-	             const std::string& name,
-	             SignalDirection    type,
-	             ClientID           id,
-	             double             x = 0.0,
-	             double             y = 0.0);
+  CanvasModule(Patchage*          app,
+               const std::string& name,
+               SignalDirection    type,
+               ClientID           id,
+               double             x = 0.0,
+               double             y = 0.0);
 
-	CanvasModule(const CanvasModule&) = delete;
-	CanvasModule& operator=(const CanvasModule&) = delete;
+  CanvasModule(const CanvasModule&) = delete;
+  CanvasModule& operator=(const CanvasModule&) = delete;
 
-	CanvasModule(CanvasModule&&) = delete;
-	CanvasModule& operator=(CanvasModule&&) = delete;
+  CanvasModule(CanvasModule&&) = delete;
+  CanvasModule& operator=(CanvasModule&&) = delete;
 
-	~CanvasModule() override;
+  ~CanvasModule() override;
 
-	bool show_menu(GdkEventButton* ev);
-	void update_menu();
+  bool show_menu(GdkEventButton* ev);
+  void update_menu();
 
-	void split();
-	void join();
-	void disconnect_all();
+  void split();
+  void join();
+  void disconnect_all();
 
-	CanvasPort* get_port(const PortID& id);
+  CanvasPort* get_port(const PortID& id);
 
-	void load_location();
-	void store_location(double x, double y);
+  void load_location();
+  void store_location(double x, double y);
 
-	SignalDirection    type() const { return _type; }
-	ClientID           id() const { return _id; }
-	const std::string& name() const { return _name; }
+  SignalDirection    type() const { return _type; }
+  ClientID           id() const { return _id; }
+  const std::string& name() const { return _name; }
 
 protected:
-	bool on_event(GdkEvent* ev) override;
+  bool on_event(GdkEvent* ev) override;
 
-	Patchage*       _app;
-	Gtk::Menu*      _menu;
-	std::string     _name;
-	SignalDirection _type;
-	ClientID        _id;
+  Patchage*       _app;
+  Gtk::Menu*      _menu;
+  std::string     _name;
+  SignalDirection _type;
+  ClientID        _id;
 };
 
 } // namespace patchage

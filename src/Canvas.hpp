@@ -47,41 +47,42 @@ class Connector;
 class Canvas : public Ganv::Canvas
 {
 public:
-	Canvas(Connector& connector, int width, int height);
+  Canvas(Connector& connector, int width, int height);
 
-	CanvasPort*
-	create_port(Patchage& patchage, const PortID& id, const PortInfo& info);
+  CanvasPort* create_port(Patchage&       patchage,
+                          const PortID&   id,
+                          const PortInfo& info);
 
-	CanvasModule* find_module(const ClientID& id, SignalDirection type);
-	CanvasPort*   find_port(const PortID& id);
+  CanvasModule* find_module(const ClientID& id, SignalDirection type);
+  CanvasPort*   find_port(const PortID& id);
 
-	void remove_module(const ClientID& id);
-	void remove_module(CanvasModule* module);
+  void remove_module(const ClientID& id);
+  void remove_module(CanvasModule* module);
 
-	void remove_ports(bool (*pred)(const CanvasPort*));
+  void remove_ports(bool (*pred)(const CanvasPort*));
 
-	void add_module(const ClientID& id, CanvasModule* module);
+  void add_module(const ClientID& id, CanvasModule* module);
 
-	bool make_connection(Ganv::Node* tail, Ganv::Node* head);
+  bool make_connection(Ganv::Node* tail, Ganv::Node* head);
 
-	void remove_port(const PortID& id);
+  void remove_port(const PortID& id);
 
-	void clear() override;
+  void clear() override;
 
 private:
-	using PortIndex   = std::map<const PortID, CanvasPort*>;
-	using ModuleIndex = std::multimap<const ClientID, CanvasModule*>;
+  using PortIndex   = std::map<const PortID, CanvasPort*>;
+  using ModuleIndex = std::multimap<const ClientID, CanvasModule*>;
 
-	friend void disconnect_edge(GanvEdge*, void*);
+  friend void disconnect_edge(GanvEdge*, void*);
 
-	bool on_event(GdkEvent* ev);
+  bool on_event(GdkEvent* ev);
 
-	void on_connect(Ganv::Node* port1, Ganv::Node* port2);
-	void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);
+  void on_connect(Ganv::Node* port1, Ganv::Node* port2);
+  void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);
 
-	Connector&  _connector;
-	PortIndex   _port_index;
-	ModuleIndex _module_index;
+  Connector&  _connector;
+  PortIndex   _port_index;
+  ModuleIndex _module_index;
 };
 
 } // namespace patchage

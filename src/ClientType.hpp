@@ -20,10 +20,9 @@
 namespace patchage {
 
 /// A type of client (program) with supported ports
-enum class ClientType
-{
-	jack,
-	alsa,
+enum class ClientType {
+  jack,
+  alsa,
 };
 
 } // namespace patchage

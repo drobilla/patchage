@@ -30,57 +30,57 @@ namespace patchage {
 boost::optional<ClientInfo>
 Metadata::client(const ClientID& id)
 {
-	const auto i = _client_data.find(id);
-	if (i == _client_data.end()) {
-		return {};
-	}
+  const auto i = _client_data.find(id);
+  if (i == _client_data.end()) {
+    return {};
+  }
 
-	return i->second;
+  return i->second;
 }
 
 boost::optional<PortInfo>
 Metadata::port(const PortID& id)
 {
-	const auto i = _port_data.find(id);
-	if (i == _port_data.end()) {
-		return {};
-	}
+  const auto i = _port_data.find(id);
+  if (i == _port_data.end()) {
+    return {};
+  }
 
-	return i->second;
+  return i->second;
 }
 
 void
 Metadata::set_client(const ClientID& id, const ClientInfo& info)
 {
-	const auto i = _client_data.find(id);
-	if (i == _client_data.end()) {
-		_client_data.emplace(id, info);
-	} else {
-		i->second = info;
-	}
+  const auto i = _client_data.find(id);
+  if (i == _client_data.end()) {
+    _client_data.emplace(id, info);
+  } else {
+    i->second = info;
+  }
 }
 
 void
 Metadata::set_port(const PortID& id, const PortInfo& info)
 {
-	const auto i = _port_data.find(id);
-	if (i == _port_data.end()) {
-		_port_data.emplace(id, info);
-	} else {
-		i->second = info;
-	}
+  const auto i = _port_data.find(id);
+  if (i == _port_data.end()) {
+    _port_data.emplace(id, info);
+  } else {
+    i->second = info;
+  }
 }
 
 void
 Metadata::erase_client(const ClientID& id)
 {
-	_client_data.erase(id);
+  _client_data.erase(id);
 }
 
 void
 Metadata::erase_port(const PortID& id)
 {
-	_port_data.erase(id);
+  _port_data.erase(id);
 }
 
 } // namespace patchage

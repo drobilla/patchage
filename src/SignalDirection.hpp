@@ -19,11 +19,10 @@
 
 namespace patchage {
 
-enum class SignalDirection
-{
-	input,
-	output,
-	duplex,
+enum class SignalDirection {
+  input,
+  output,
+  duplex,
 };
 
 } // namespace patchage

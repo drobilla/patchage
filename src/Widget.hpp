@@ -28,30 +28,30 @@ template<typename W>
 class Widget
 {
 public:
-	Widget(const Glib::RefPtr<Gtk::Builder>& xml, const std::string& name)
-	{
-		xml->get_widget(name, _me);
-	}
+  Widget(const Glib::RefPtr<Gtk::Builder>& xml, const std::string& name)
+  {
+    xml->get_widget(name, _me);
+  }
 
-	Widget(const Widget&) = delete;
-	Widget& operator=(const Widget&) = delete;
+  Widget(const Widget&) = delete;
+  Widget& operator=(const Widget&) = delete;
 
-	Widget(Widget&&) = delete;
-	Widget& operator=(Widget&&) = delete;
+  Widget(Widget&&) = delete;
+  Widget& operator=(Widget&&) = delete;
 
-	~Widget() = default;
+  ~Widget() = default;
 
-	void destroy() { delete _me; }
+  void destroy() { delete _me; }
 
-	W*       get() { return _me; }
-	const W* get() const { return _me; }
-	W*       operator->() { return _me; }
-	const W* operator->() const { return _me; }
-	W&       operator*() { return *_me; }
-	const W& operator*() const { return *_me; }
+  W*       get() { return _me; }
+  const W* get() const { return _me; }
+  W*       operator->() { return _me; }
+  const W* operator->() const { return _me; }
+  W&       operator*() { return *_me; }
+  const W& operator*() const { return *_me; }
 
 private:
-	W* _me;
+  W* _me;
 };
 
 } // namespace patchage

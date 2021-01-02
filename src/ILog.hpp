@@ -25,19 +25,19 @@ namespace patchage {
 class ILog
 {
 public:
-	ILog() = default;
+  ILog() = default;
 
-	ILog(const ILog&) = default;
-	ILog& operator=(const ILog&) = default;
+  ILog(const ILog&) = default;
+  ILog& operator=(const ILog&) = default;
 
-	ILog(ILog&&)  = default;
-	ILog& operator=(ILog&&) = default;
+  ILog(ILog&&)  = default;
+  ILog& operator=(ILog&&) = default;
 
-	virtual ~ILog() = default;
+  virtual ~ILog() = default;
 
-	virtual void info(const std::string& msg)    = 0;
-	virtual void warning(const std::string& msg) = 0;
-	virtual void error(const std::string& msg)   = 0;
+  virtual void info(const std::string& msg)    = 0;
+  virtual void warning(const std::string& msg) = 0;
+  virtual void error(const std::string& msg)   = 0;
 };
 
 } // namespace patchage

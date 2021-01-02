@@ -30,107 +30,102 @@
 
 namespace patchage {
 
-struct Coord
-{
-	Coord() = default;
+struct Coord {
+  Coord() = default;
 
-	Coord(double x_, double y_)
-	    : x(x_)
-	    , y(y_)
-	{}
+  Coord(double x_, double y_)
+    : x(x_)
+    , y(y_)
+  {}
 
-	double x{0.0};
-	double y{0.0};
+  double x{0.0};
+  double y{0.0};
 };
 
 class Configuration
 {
 public:
-	Configuration();
+  Configuration();
 
-	void load();
-	void save();
+  void load();
+  void save();
 
-	bool get_module_location(const std::string& name,
-	                         SignalDirection    type,
-	                         Coord&             loc) const;
+  bool get_module_location(const std::string& name,
+                           SignalDirection    type,
+                           Coord&             loc) const;
 
-	void set_module_location(const std::string& name,
-	                         SignalDirection    type,
-	                         Coord              loc);
+  void set_module_location(const std::string& name,
+                           SignalDirection    type,
+                           Coord              loc);
 
-	void set_module_split(const std::string& name, bool split);
-	bool get_module_split(const std::string& name, bool default_val) const;
+  void set_module_split(const std::string& name, bool split);
+  bool get_module_split(const std::string& name, bool default_val) const;
 
-	float get_zoom() const { return _zoom; }
-	void  set_zoom(float zoom) { _zoom = zoom; }
-	float get_font_size() const { return _font_size; }
-	void  set_font_size(float font_size) { _font_size = font_size; }
+  float get_zoom() const { return _zoom; }
+  void  set_zoom(float zoom) { _zoom = zoom; }
+  float get_font_size() const { return _font_size; }
+  void  set_font_size(float font_size) { _font_size = font_size; }
 
-	float get_show_toolbar() const { return _show_toolbar; }
-	void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
+  float get_show_toolbar() const { return _show_toolbar; }
+  void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
 
-	float get_sprung_layout() const { return _sprung_layout; }
-	void  set_sprung_layout(float sprung_layout)
-	{
-		_sprung_layout = sprung_layout;
-	}
+  float get_sprung_layout() const { return _sprung_layout; }
+  void  set_sprung_layout(float sprung_layout)
+  {
+    _sprung_layout = sprung_layout;
+  }
 
-	bool get_show_messages() const { return _show_messages; }
-	void set_show_messages(bool show_messages)
-	{
-		_show_messages = show_messages;
-	}
+  bool get_show_messages() const { return _show_messages; }
+  void set_show_messages(bool show_messages) { _show_messages = show_messages; }
 
-	bool get_sort_ports() const { return _sort_ports; }
-	void set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
+  bool get_sort_ports() const { return _sort_ports; }
+  void set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
 
-	int  get_messages_height() const { return _messages_height; }
-	void set_messages_height(int height) { _messages_height = height; }
+  int  get_messages_height() const { return _messages_height; }
+  void set_messages_height(int height) { _messages_height = height; }
 
-	uint32_t get_port_color(PortType type) const
-	{
-		return _port_colors[static_cast<unsigned>(type)];
-	}
+  uint32_t get_port_color(PortType type) const
+  {
+    return _port_colors[static_cast<unsigned>(type)];
+  }
 
-	void set_port_color(PortType type, uint32_t rgba)
-	{
-		_port_colors[static_cast<unsigned>(type)] = rgba;
-	}
+  void set_port_color(PortType type, uint32_t rgba)
+  {
+    _port_colors[static_cast<unsigned>(type)] = rgba;
+  }
 
-	Coord get_window_location() { return _window_location; }
-	void  set_window_location(Coord loc) { _window_location = loc; }
-	Coord get_window_size() { return _window_size; }
-	void  set_window_size(Coord size) { _window_size = size; }
+  Coord get_window_location() { return _window_location; }
+  void  set_window_location(Coord loc) { _window_location = loc; }
+  Coord get_window_size() { return _window_size; }
+  void  set_window_size(Coord size) { _window_size = size; }
 
 private:
-	struct ModuleSettings
-	{
-		explicit ModuleSettings(bool s = false)
-		    : split(s)
-		{}
+  struct ModuleSettings {
+    explicit ModuleSettings(bool s = false)
+      : split(s)
+    {}
 
-		boost::optional<Coord> input_location;
-		boost::optional<Coord> output_location;
-		boost::optional<Coord> inout_location;
-		bool                   split;
-	};
+    boost::optional<Coord> input_location;
+    boost::optional<Coord> output_location;
+    boost::optional<Coord> inout_location;
+    bool                   split;
+  };
 
-	std::map<std::string, ModuleSettings> _module_settings;
+  std::map<std::string, ModuleSettings> _module_settings;
 
-	uint32_t _default_port_colors[N_PORT_TYPES] = {};
-	uint32_t _port_colors[N_PORT_TYPES]         = {};
+  uint32_t _default_port_colors[N_PORT_TYPES] = {};
+  uint32_t _port_colors[N_PORT_TYPES]         = {};
 
-	Coord _window_location{0.0, 0.0};
-	Coord _window_size{960.0, 540.0};
+  Coord _window_location{0.0, 0.0};
+  Coord _window_size{960.0, 540.0};
 
-	float _zoom            = 1.0f;
-	float _font_size       = 12.0f;
-	int   _messages_height = 0;
-	bool  _show_toolbar    = true;
-	bool  _sprung_layout   = false;
-	bool  _show_messages   = false;
-	bool  _sort_ports      = true;
+  float _zoom            = 1.0f;
+  float _font_size       = 12.0f;
+  int   _messages_height = 0;
+  bool  _show_toolbar    = true;
+  bool  _sprung_layout   = false;
+  bool  _show_messages   = false;
+  bool  _sort_ports      = true;
 };
 
 } // namespace patchage

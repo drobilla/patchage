@@ -37,7 +37,7 @@ make_jack_driver(ILog& log, Driver::EventSink emit_event);
 inline std::unique_ptr<AudioDriver>
 make_jack_driver(ILog&, Driver::EventSink)
 {
-	return nullptr;
+  return nullptr;
 }
 
 #endif

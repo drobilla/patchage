@@ -27,48 +27,40 @@
 
 namespace patchage {
 
-struct DriverAttachmentEvent
-{
-	ClientType type;
+struct DriverAttachmentEvent {
+  ClientType type;
 };
 
-struct DriverDetachmentEvent
-{
-	ClientType type;
+struct DriverDetachmentEvent {
+  ClientType type;
 };
 
-struct ClientCreationEvent
-{
-	ClientID   id;
-	ClientInfo info;
+struct ClientCreationEvent {
+  ClientID   id;
+  ClientInfo info;
 };
 
-struct ClientDestructionEvent
-{
-	ClientID id;
+struct ClientDestructionEvent {
+  ClientID id;
 };
 
-struct PortCreationEvent
-{
-	PortID   id;
-	PortInfo info;
+struct PortCreationEvent {
+  PortID   id;
+  PortInfo info;
 };
 
-struct PortDestructionEvent
-{
-	PortID id;
+struct PortDestructionEvent {
+  PortID id;
 };
 
-struct ConnectionEvent
-{
-	PortID tail;
-	PortID head;
+struct ConnectionEvent {
+  PortID tail;
+  PortID head;
 };
 
-struct DisconnectionEvent
-{
-	PortID tail;
-	PortID head;
+struct DisconnectionEvent {
+  PortID tail;
+  PortID head;
 };
 
 /// An event from drivers that is processed by the GUI

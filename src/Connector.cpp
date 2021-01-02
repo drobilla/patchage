@@ -26,47 +26,47 @@
 namespace patchage {
 
 Connector::Connector(ILog& log)
-    : _log(log)
+  : _log(log)
 {}
 
 void
 Connector::add_driver(PortID::Type type, Driver* driver)
 {
-	_drivers.emplace(type, driver);
+  _drivers.emplace(type, driver);
 }
 
 void
 Connector::connect(const PortID& tail, const PortID& head)
 {
-	if (tail.type() != head.type()) {
-		_log.warning("Unable to connect incompatible port types");
-		return;
-	}
+  if (tail.type() != head.type()) {
+    _log.warning("Unable to connect incompatible port types");
+    return;
+  }
 
-	auto d = _drivers.find(tail.type());
-	if (d == _drivers.end()) {
-		_log.error("No driver for port type");
-		return;
-	}
+  auto d = _drivers.find(tail.type());
+  if (d == _drivers.end()) {
+    _log.error("No driver for port type");
+    return;
+  }
 
-	d->second->connect(tail, head);
+  d->second->connect(tail, head);
 }
 
 void
 Connector::disconnect(const PortID& tail, const PortID& head)
 {
-	if (tail.type() != head.type()) {
-		_log.error("Unable to disconnect incompatible port types");
-		return;
-	}
+  if (tail.type() != head.type()) {
+    _log.error("Unable to disconnect incompatible port types");
+    return;
+  }
 
-	auto d = _drivers.find(tail.type());
-	if (d == _drivers.end()) {
-		_log.error("No driver for port type");
-		return;
-	}
+  auto d = _drivers.find(tail.type());
+  if (d == _drivers.end()) {
+    _log.error("No driver for port type");
+    return;
+  }
 
-	d->second->disconnect(tail, head);
+  d->second->disconnect(tail, head);
 }
 
 } // namespace patchage

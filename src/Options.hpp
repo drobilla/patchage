@@ -19,10 +19,9 @@
 
 namespace patchage {
 
-struct Options
-{
-	bool alsa_driver_autoattach = true;
-	bool jack_driver_autoattach = true;
+struct Options {
+  bool alsa_driver_autoattach = true;
+  bool jack_driver_autoattach = true;
 };
 
 } // namespace patchage

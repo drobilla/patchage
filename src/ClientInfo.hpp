@@ -22,9 +22,8 @@
 namespace patchage {
 
 /// Extra information about a client (program) not expressed in its ID
-struct ClientInfo
-{
-	std::string label; ///< Human-friendly label
+struct ClientInfo {
+  std::string label; ///< Human-friendly label
 };
 
 } // namespace patchage

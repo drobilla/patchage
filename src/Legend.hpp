@@ -36,16 +36,16 @@ class Configuration;
 class Legend : public Gtk::HBox
 {
 public:
-	explicit Legend(const Configuration& configuration);
+  explicit Legend(const Configuration& configuration);
 
-	sigc::signal<void, PortType, std::string, uint32_t> signal_color_changed;
+  sigc::signal<void, PortType, std::string, uint32_t> signal_color_changed;
 
 private:
-	void add_button(PortType id, const std::string& label, uint32_t rgba);
+  void add_button(PortType id, const std::string& label, uint32_t rgba);
 
-	void on_color_set(PortType                id,
-	                  const std::string&      label,
-	                  const Gtk::ColorButton* but);
+  void on_color_set(PortType                id,
+                    const std::string&      label,
+                    const Gtk::ColorButton* but);
 };
 
 } // namespace patchage

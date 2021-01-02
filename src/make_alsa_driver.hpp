@@ -36,7 +36,7 @@ make_alsa_driver(ILog& log, Driver::EventSink emit_event);
 inline std::unique_ptr<Driver>
 make_alsa_driver(ILog&, Driver::EventSink)
 {
-	return nullptr;
+  return nullptr;
 }
 
 #endif

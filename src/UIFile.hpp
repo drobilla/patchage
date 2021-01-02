@@ -20,7 +20,7 @@
 #include "patchage_config.h"
 
 #ifdef PATCHAGE_BINLOC
-#	include "binary_location.h"
+#  include "binary_location.h"
 #endif
 
 #include <glibmm/refptr.h>
@@ -37,38 +37,38 @@ namespace patchage {
 class UIFile
 {
 public:
-	inline static bool is_readable(const std::string& filename)
-	{
-		std::ifstream fs(filename.c_str());
-		const bool    fail = fs.fail();
-		fs.close();
-		return !fail;
-	}
+  inline static bool is_readable(const std::string& filename)
+  {
+    std::ifstream fs(filename.c_str());
+    const bool    fail = fs.fail();
+    fs.close();
+    return !fail;
+  }
 
-	static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name)
-	{
-		std::string ui_filename;
+  static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name)
+  {
+    std::string ui_filename;
 #ifdef PATCHAGE_BINLOC
-		const std::string bundle = bundle_location();
-		if (!bundle.empty()) {
-			ui_filename = bundle + "/" + base_name + ".ui";
-			if (is_readable(ui_filename)) {
-				std::cout << "Loading UI file " << ui_filename << std::endl;
-				return Gtk::Builder::create_from_file(ui_filename);
-			}
-		}
+    const std::string bundle = bundle_location();
+    if (!bundle.empty()) {
+      ui_filename = bundle + "/" + base_name + ".ui";
+      if (is_readable(ui_filename)) {
+        std::cout << "Loading UI file " << ui_filename << std::endl;
+        return Gtk::Builder::create_from_file(ui_filename);
+      }
+    }
 #endif
-		ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".ui";
-		if (is_readable(ui_filename)) {
-			std::cout << "Loading UI file " << ui_filename << std::endl;
-			return Gtk::Builder::create_from_file(ui_filename);
-		}
+    ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".ui";
+    if (is_readable(ui_filename)) {
+      std::cout << "Loading UI file " << ui_filename << std::endl;
+      return Gtk::Builder::create_from_file(ui_filename);
+    }
 
-		std::stringstream ss;
-		ss << "Unable to find " << base_name << std::endl;
-		throw std::runtime_error(ss.str());
-		return Glib::RefPtr<Gtk::Builder>();
-	}
+    std::stringstream ss;
+    ss << "Unable to find " << base_name << std::endl;
+    throw std::runtime_error(ss.str());
+    return Glib::RefPtr<Gtk::Builder>();
+  }
 };
 
 } // namespace patchage

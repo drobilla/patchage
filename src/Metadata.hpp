@@ -32,23 +32,23 @@ namespace patchage {
 class Metadata
 {
 public:
-	Metadata() = default;
+  Metadata() = default;
 
-	boost::optional<ClientInfo> client(const ClientID& id);
-	boost::optional<PortInfo>   port(const PortID& id);
+  boost::optional<ClientInfo> client(const ClientID& id);
+  boost::optional<PortInfo>   port(const PortID& id);
 
-	void set_client(const ClientID& id, const ClientInfo& info);
-	void set_port(const PortID& id, const PortInfo& info);
+  void set_client(const ClientID& id, const ClientInfo& info);
+  void set_port(const PortID& id, const PortInfo& info);
 
-	void erase_client(const ClientID& id);
-	void erase_port(const PortID& id);
+  void erase_client(const ClientID& id);
+  void erase_port(const PortID& id);
 
 private:
-	using ClientData = std::map<ClientID, ClientInfo>;
-	using PortData   = std::map<PortID, PortInfo>;
+  using ClientData = std::map<ClientID, ClientInfo>;
+  using PortData   = std::map<PortID, PortInfo>;
 
-	ClientData _client_data;
-	PortData   _port_data;
+  ClientData _client_data;
+  PortData   _port_data;
 };
 
 } // namespace patchage
