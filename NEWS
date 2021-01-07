@@ -1,4 +1,4 @@
-patchage (1.0.3) unstable;
+patchage (1.0.4) stable;
 
   * Add NSMicrophoneUsageDescription for MacOS 10.15 Catalina
   * Add command line option to print version
@@ -9,7 +9,7 @@ patchage (1.0.3) unstable;
   * Remove Jack session support
   * Remove flaky DSP load meter
 
- -- David Robillard <d@drobilla.net>  Sun, 29 Nov 2020 17:41:44 +0000
+ -- David Robillard <d@drobilla.net>  Thu, 07 Jan 2021 21:59:02 +0000
 
 patchage (1.0.2) stable;
 
