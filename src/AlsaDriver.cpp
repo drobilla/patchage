@@ -232,13 +232,13 @@ AlsaDriver::refresh(const EventSink& sink)
         auto       info = port_info(pinfo);
 
         if (caps & SND_SEQ_PORT_CAP_READ) {
-          info.direction = SignalDirection::input;
-          sink({PortCreationEvent{addr_to_id(addr, true), info}});
+          info.direction = SignalDirection::output;
+          sink({PortCreationEvent{addr_to_id(addr, false), info}});
         }
 
         if (caps & SND_SEQ_PORT_CAP_WRITE) {
-          info.direction = SignalDirection::output;
-          sink({PortCreationEvent{addr_to_id(addr, false), info}});
+          info.direction = SignalDirection::input;
+          sink({PortCreationEvent{addr_to_id(addr, true), info}});
         }
       }
     }
@@ -252,24 +252,26 @@ AlsaDriver::refresh(const EventSink& sink)
     snd_seq_port_info_set_client(pinfo, client_id);
     snd_seq_port_info_set_port(pinfo, -1);
     while (snd_seq_query_next_port(_seq, pinfo) >= 0) {
-      const auto tail_addr = *snd_seq_port_info_get_addr(pinfo);
-      const auto tail_id   = addr_to_id(tail_addr, false);
-      if (ignore(tail_addr)) {
-        continue;
-      }
+      const auto port_addr = *snd_seq_port_info_get_addr(pinfo);
+      const auto caps      = snd_seq_port_info_get_capability(pinfo);
 
-      snd_seq_query_subscribe_t* sinfo = nullptr;
-      snd_seq_query_subscribe_alloca(&sinfo);
-      snd_seq_query_subscribe_set_root(sinfo, &tail_addr);
-      snd_seq_query_subscribe_set_index(sinfo, 0);
-      while (!snd_seq_query_port_subscribers(_seq, sinfo)) {
-        const auto head_addr = *snd_seq_query_subscribe_get_addr(sinfo);
-        const auto head_id   = addr_to_id(head_addr, true);
+      if (!ignore(port_addr) && (caps & SND_SEQ_PORT_CAP_READ)) {
+        const auto tail_id = addr_to_id(port_addr, false);
 
-        sink({ConnectionEvent{tail_id, head_id}});
+        snd_seq_query_subscribe_t* sinfo = nullptr;
+        snd_seq_query_subscribe_alloca(&sinfo);
+        snd_seq_query_subscribe_set_type(sinfo, SND_SEQ_QUERY_SUBS_READ);
+        snd_seq_query_subscribe_set_root(sinfo, &port_addr);
+        snd_seq_query_subscribe_set_index(sinfo, 0);
+        while (!snd_seq_query_port_subscribers(_seq, sinfo)) {
+          const auto head_addr = *snd_seq_query_subscribe_get_addr(sinfo);
+          const auto head_id   = addr_to_id(head_addr, true);
 
-        snd_seq_query_subscribe_set_index(
-          sinfo, snd_seq_query_subscribe_get_index(sinfo) + 1);
+          sink({ConnectionEvent{tail_id, head_id}});
+
+          snd_seq_query_subscribe_set_index(
+            sinfo, snd_seq_query_subscribe_get_index(sinfo) + 1);
+        }
       }
     }
   }
@@ -498,7 +500,7 @@ AlsaDriver::_refresh_main()
 
       if (!ignore(ev->data.addr)) {
         _emit_event(PortCreationEvent{
-          addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_READ)),
+          addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_WRITE)),
           port_info(pinfo),
         });
       }
