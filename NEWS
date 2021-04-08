@@ -1,8 +1,9 @@
 patchage (1.0.5) unstable;
 
+  * Fix crash on client disconnection
   * Show latency in toolbar with 2 decimal places
 
- -- David Robillard <d@drobilla.net>  Thu, 08 Apr 2021 18:30:02 +0000
+ -- David Robillard <d@drobilla.net>  Thu, 08 Apr 2021 18:35:43 +0000
 
 patchage (1.0.4) stable;
 

@@ -73,7 +73,7 @@ struct EventPrinter {
 
   std::string operator()(const ClientDestructionEvent& event)
   {
-    return fmt::format(R"(Add{} {} {} port "{}" ("{}"))", event.id);
+    return fmt::format(R"(Remove client "{}")", event.id);
   }
 
   std::string operator()(const PortType port_type)
