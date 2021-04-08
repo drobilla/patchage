@@ -455,10 +455,10 @@ Patchage::update_toolbar()
     const auto buffer_size = _jack_driver->buffer_size();
     const auto sample_rate = _jack_driver->sample_rate();
     if (sample_rate != 0) {
-      const auto latency_ms = lrintf(buffer_size * 1000 / float(sample_rate));
+      const auto latency_ms = buffer_size * 1000 / float(sample_rate);
 
       _latency_label->set_label(fmt::format(
-        " frames @ {} kHz ({} ms)", sample_rate / 1000, latency_ms));
+        " frames @ {} kHz ({:0.2f} ms)", sample_rate / 1000, latency_ms));
       _latency_label->set_visible(true);
       _buf_size_combo->set_active(
         static_cast<int>(log2f(_jack_driver->buffer_size()) - 5));
