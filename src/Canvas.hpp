@@ -57,7 +57,6 @@ public:
   CanvasPort*   find_port(const PortID& id);
 
   void remove_module(const ClientID& id);
-  void remove_module(CanvasModule* module);
 
   void remove_ports(bool (*pred)(const CanvasPort*));
 

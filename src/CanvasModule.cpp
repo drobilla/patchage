@@ -63,11 +63,6 @@ CanvasModule::CanvasModule(Patchage*          app,
   set_is_source(true);
 }
 
-CanvasModule::~CanvasModule()
-{
-  _app->canvas()->remove_module(this);
-}
-
 void
 CanvasModule::update_menu()
 {

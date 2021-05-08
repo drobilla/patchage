@@ -57,8 +57,6 @@ public:
   CanvasModule(CanvasModule&&) = delete;
   CanvasModule& operator=(CanvasModule&&) = delete;
 
-  ~CanvasModule() override;
-
   bool show_menu(GdkEventButton* ev);
   void update_menu();
 

@@ -149,11 +149,9 @@ void
 Canvas::remove_module(const ClientID& id)
 {
   auto i = _module_index.find(id);
-  while (i != _module_index.end()) {
-    CanvasModule* mod = i->second;
-    _module_index.erase(i);
-    i = _module_index.find(id);
-    delete mod;
+  while (i != _module_index.end() && i->first == id) {
+    delete i->second;
+    i = _module_index.erase(i);
   }
 }
 
@@ -184,8 +182,8 @@ struct RemovePortsData {
     : pred(p)
   {}
 
-  Predicate               pred;
-  std::set<CanvasModule*> empty;
+  Predicate          pred;
+  std::set<ClientID> empty_clients;
 };
 
 static void
@@ -216,7 +214,7 @@ remove_ports_matching(GanvNode* node, void* cdata)
   pmodule->for_each_port(delete_port_if_matches, data);
 
   if (pmodule->num_ports() == 0) {
-    data->empty.insert(pmodule);
+    data->empty_clients.insert(pmodule->id());
   }
 }
 
@@ -236,8 +234,8 @@ Canvas::remove_ports(bool (*pred)(const CanvasPort*))
     i = next;
   }
 
-  for (CanvasModule* m : data.empty) {
-    delete m;
+  for (ClientID id : data.empty_clients) {
+    remove_module(id);
   }
 }
 
@@ -317,20 +315,6 @@ Canvas::make_connection(Ganv::Node* tail, Ganv::Node* head)
 {
   new Ganv::Edge(*this, tail, head);
   return true;
-}
-
-void
-Canvas::remove_module(CanvasModule* module)
-{
-  // Remove module from cache
-  for (auto i = _module_index.find(module->id());
-       i != _module_index.end() && i->first == module->id();
-       ++i) {
-    if (i->second == module) {
-      _module_index.erase(i);
-      return;
-    }
-  }
 }
 
 void
