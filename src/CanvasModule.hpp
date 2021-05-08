@@ -27,6 +27,7 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <gdk/gdk.h>
 
+#include <memory>
 #include <string>
 
 namespace Gtk {
@@ -77,11 +78,11 @@ public:
 protected:
   bool on_event(GdkEvent* ev) override;
 
-  Patchage*       _app;
-  Gtk::Menu*      _menu;
-  std::string     _name;
-  SignalDirection _type;
-  ClientID        _id;
+  Patchage*                  _app;
+  std::unique_ptr<Gtk::Menu> _menu;
+  std::string                _name;
+  SignalDirection            _type;
+  ClientID                   _id;
 };
 
 } // namespace patchage

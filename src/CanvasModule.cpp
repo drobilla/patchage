@@ -51,7 +51,6 @@ CanvasModule::CanvasModule(Patchage*          app,
                            double             y)
   : Module(*app->canvas(), name, x, y)
   , _app(app)
-  , _menu(nullptr)
   , _name(name)
   , _type(type)
   , _id(std::move(id))
@@ -67,8 +66,6 @@ CanvasModule::CanvasModule(Patchage*          app,
 CanvasModule::~CanvasModule()
 {
   _app->canvas()->remove_module(this);
-  delete _menu;
-  _menu = nullptr;
 }
 
 void
@@ -100,7 +97,8 @@ CanvasModule::update_menu()
 bool
 CanvasModule::show_menu(GdkEventButton* ev)
 {
-  _menu                      = new Gtk::Menu();
+  _menu = std::unique_ptr<Gtk::Menu>{new Gtk::Menu()};
+
   Gtk::Menu::MenuList& items = _menu->items();
 
   if (_type == SignalDirection::duplex) {
