@@ -164,7 +164,7 @@ AlsaDriver::attach(bool /*launch_daemon*/)
     _log.error("[ALSA] Unable to attach");
     _seq = nullptr;
   } else {
-    _emit_event(DriverAttachmentEvent{ClientType::alsa});
+    _emit_event(event::DriverAttached{ClientType::alsa});
 
     snd_seq_set_client_name(_seq, "Patchage");
 
@@ -188,7 +188,7 @@ AlsaDriver::detach()
     pthread_join(_refresh_thread, nullptr);
     snd_seq_close(_seq);
     _seq = nullptr;
-    _emit_event(DriverDetachmentEvent{ClientType::alsa});
+    _emit_event(event::DriverDetached{ClientType::alsa});
   }
 }
 
@@ -214,8 +214,8 @@ AlsaDriver::refresh(const EventSink& sink)
     const auto client_id = snd_seq_client_info_get_client(cinfo);
 
     assert(client_id < std::numeric_limits<uint8_t>::max());
-    sink({ClientCreationEvent{ClientID::alsa(static_cast<uint8_t>(client_id)),
-                              client_info(cinfo)}});
+    sink({event::ClientCreated{ClientID::alsa(static_cast<uint8_t>(client_id)),
+                               client_info(cinfo)}});
   }
 
   // Emit all ports
@@ -233,12 +233,12 @@ AlsaDriver::refresh(const EventSink& sink)
 
         if (caps & SND_SEQ_PORT_CAP_READ) {
           info.direction = SignalDirection::output;
-          sink({PortCreationEvent{addr_to_id(addr, false), info}});
+          sink({event::PortCreated{addr_to_id(addr, false), info}});
         }
 
         if (caps & SND_SEQ_PORT_CAP_WRITE) {
           info.direction = SignalDirection::input;
-          sink({PortCreationEvent{addr_to_id(addr, true), info}});
+          sink({event::PortCreated{addr_to_id(addr, true), info}});
         }
       }
     }
@@ -267,7 +267,7 @@ AlsaDriver::refresh(const EventSink& sink)
           const auto head_addr = *snd_seq_query_subscribe_get_addr(sinfo);
           const auto head_id   = addr_to_id(head_addr, true);
 
-          sink({ConnectionEvent{tail_id, head_id}});
+          sink({event::PortsConnected{tail_id, head_id}});
 
           snd_seq_query_subscribe_set_index(
             sinfo, snd_seq_query_subscribe_get_index(sinfo) + 1);
@@ -477,14 +477,14 @@ AlsaDriver::_refresh_main()
     switch (ev->type) {
     case SND_SEQ_EVENT_CLIENT_START:
       snd_seq_get_any_client_info(_seq, ev->data.addr.client, cinfo);
-      _emit_event(ClientCreationEvent{
+      _emit_event(event::ClientCreated{
         ClientID::alsa(ev->data.addr.client),
         client_info(cinfo),
       });
       break;
 
     case SND_SEQ_EVENT_CLIENT_EXIT:
-      _emit_event(ClientDestructionEvent{
+      _emit_event(event::ClientDestroyed{
         ClientID::alsa(ev->data.addr.client),
       });
       break;
@@ -499,7 +499,7 @@ AlsaDriver::_refresh_main()
       caps = snd_seq_port_info_get_capability(pinfo);
 
       if (!ignore(ev->data.addr)) {
-        _emit_event(PortCreationEvent{
+        _emit_event(event::PortCreated{
           addr_to_id(ev->data.addr, (caps & SND_SEQ_PORT_CAP_WRITE)),
           port_info(pinfo),
         });
@@ -510,8 +510,8 @@ AlsaDriver::_refresh_main()
       if (!ignore(ev->data.addr, false)) {
         // Note: getting caps at this point does not work
         // Delete both inputs and outputs (to handle duplex ports)
-        _emit_event(PortDestructionEvent{addr_to_id(ev->data.addr, true)});
-        _emit_event(PortDestructionEvent{addr_to_id(ev->data.addr, false)});
+        _emit_event(event::PortDestroyed{addr_to_id(ev->data.addr, true)});
+        _emit_event(event::PortDestroyed{addr_to_id(ev->data.addr, false)});
       }
       break;
 
@@ -520,16 +520,17 @@ AlsaDriver::_refresh_main()
 
     case SND_SEQ_EVENT_PORT_SUBSCRIBED:
       if (!ignore(ev->data.connect.sender) && !ignore(ev->data.connect.dest)) {
-        _emit_event(ConnectionEvent{addr_to_id(ev->data.connect.sender, false),
-                                    addr_to_id(ev->data.connect.dest, true)});
+        _emit_event(
+          event::PortsConnected{addr_to_id(ev->data.connect.sender, false),
+                                addr_to_id(ev->data.connect.dest, true)});
       }
       break;
 
     case SND_SEQ_EVENT_PORT_UNSUBSCRIBED:
       if (!ignore(ev->data.connect.sender) && !ignore(ev->data.connect.dest)) {
         _emit_event(
-          DisconnectionEvent{addr_to_id(ev->data.connect.sender, false),
-                             addr_to_id(ev->data.connect.dest, true)});
+          event::PortsDisconnected{addr_to_id(ev->data.connect.sender, false),
+                                   addr_to_id(ev->data.connect.dest, true)});
       }
       break;
 

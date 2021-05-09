@@ -56,22 +56,22 @@ struct EventPrinter {
     PATCHAGE_UNREACHABLE();
   }
 
-  std::string operator()(const DriverAttachmentEvent& event)
+  std::string operator()(const event::DriverAttached& event)
   {
     return fmt::format("Attached to {}", (*this)(event.type));
   }
 
-  std::string operator()(const DriverDetachmentEvent& event)
+  std::string operator()(const event::DriverDetached& event)
   {
     return fmt::format("Detached from {}", (*this)(event.type));
   }
 
-  std::string operator()(const ClientCreationEvent& event)
+  std::string operator()(const event::ClientCreated& event)
   {
     return fmt::format(R"(Add client "{}" ("{}"))", event.id, event.info.label);
   }
 
-  std::string operator()(const ClientDestructionEvent& event)
+  std::string operator()(const event::ClientDestroyed& event)
   {
     return fmt::format(R"(Remove client "{}")", event.id);
   }
@@ -108,7 +108,7 @@ struct EventPrinter {
     PATCHAGE_UNREACHABLE();
   }
 
-  std::string operator()(const PortCreationEvent& event)
+  std::string operator()(const event::PortCreated& event)
   {
     auto result = fmt::format(R"(Add{} {} {} port "{}" ("{}"))",
                               event.info.is_terminal ? " terminal" : "",
@@ -124,17 +124,17 @@ struct EventPrinter {
     return result;
   }
 
-  std::string operator()(const PortDestructionEvent& event)
+  std::string operator()(const event::PortDestroyed& event)
   {
     return fmt::format(R"("Remove port "{}")", event.id);
   }
 
-  std::string operator()(const ConnectionEvent& event)
+  std::string operator()(const event::PortsConnected& event)
   {
     return fmt::format(R"(Connect "{}" to "{}")", event.tail, event.head);
   }
 
-  std::string operator()(const DisconnectionEvent& event)
+  std::string operator()(const event::PortsDisconnected& event)
   {
     return fmt::format(R"(Disconnect "{}" from "{}")", event.tail, event.head);
   }

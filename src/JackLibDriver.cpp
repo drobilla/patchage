@@ -153,7 +153,7 @@ JackLibDriver::attach(const bool launch_daemon)
   _is_activated = true;
   _buffer_size  = jack_get_buffer_size(_client);
 
-  _emit_event(DriverAttachmentEvent{ClientType::jack});
+  _emit_event(event::DriverAttached{ClientType::jack});
 }
 
 void
@@ -168,7 +168,7 @@ JackLibDriver::detach()
   }
 
   _is_activated = false;
-  _emit_event(DriverDetachmentEvent{ClientType::jack});
+  _emit_event(event::DriverDetached{ClientType::jack});
 }
 
 bool
@@ -275,15 +275,15 @@ JackLibDriver::refresh(const EventSink& sink)
 
   // Emit all clients
   for (const auto& client_name : client_names) {
-    sink({ClientCreationEvent{ClientID::jack(client_name),
-                              get_client_info(client_name.c_str())}});
+    sink({event::ClientCreated{ClientID::jack(client_name),
+                               get_client_info(client_name.c_str())}});
   }
 
   // Emit all ports
   for (auto i = 0u; ports[i]; ++i) {
     const jack_port_t* const port = jack_port_by_name(_client, ports[i]);
 
-    sink({PortCreationEvent{PortID::jack(ports[i]), get_port_info(port)}});
+    sink({event::PortCreated{PortID::jack(ports[i]), get_port_info(port)}});
   }
 
   // Get all connections (again to only create them once)
@@ -309,8 +309,8 @@ JackLibDriver::refresh(const EventSink& sink)
 
   // Emit all connections
   for (const auto& connection : connections) {
-    sink({ConnectionEvent{PortID::jack(connection.first),
-                          PortID::jack(connection.second)}});
+    sink({event::PortsConnected{PortID::jack(connection.first),
+                                PortID::jack(connection.second)}});
   }
 
   jack_free(ports);
@@ -414,9 +414,9 @@ JackLibDriver::on_client(const char* const name,
   auto* const me = static_cast<JackLibDriver*>(driver);
 
   if (registered) {
-    me->_emit_event(ClientCreationEvent{ClientID::jack(name), {name}});
+    me->_emit_event(event::ClientCreated{ClientID::jack(name), {name}});
   } else {
-    me->_emit_event(ClientDestructionEvent{ClientID::jack(name)});
+    me->_emit_event(event::ClientDestroyed{ClientID::jack(name)});
   }
 }
 
@@ -432,9 +432,9 @@ JackLibDriver::on_port(const jack_port_id_t port_id,
   const auto         id   = PortID::jack(name);
 
   if (registered) {
-    me->_emit_event(PortCreationEvent{id, me->get_port_info(port)});
+    me->_emit_event(event::PortCreated{id, me->get_port_info(port)});
   } else {
-    me->_emit_event(PortDestructionEvent{id});
+    me->_emit_event(event::PortDestroyed{id});
   }
 }
 
@@ -453,10 +453,10 @@ JackLibDriver::on_connection(const jack_port_id_t src,
 
   if (connect) {
     me->_emit_event(
-      ConnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
+      event::PortsConnected{PortID::jack(src_name), PortID::jack(dst_name)});
   } else {
     me->_emit_event(
-      DisconnectionEvent{PortID::jack(src_name), PortID::jack(dst_name)});
+      event::PortsDisconnected{PortID::jack(src_name), PortID::jack(dst_name)});
   }
 }
 
@@ -489,7 +489,7 @@ JackLibDriver::on_shutdown(void* const driver)
   me->_client       = nullptr;
   me->_is_activated = false;
 
-  me->_emit_event(DriverDetachmentEvent{ClientType::jack});
+  me->_emit_event(event::DriverDetached{ClientType::jack});
 }
 
 } // namespace

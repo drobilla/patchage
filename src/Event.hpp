@@ -26,52 +26,55 @@
 #include <boost/variant/variant.hpp>
 
 namespace patchage {
+namespace event {
 
-struct DriverAttachmentEvent {
-  ClientType type;
-};
-
-struct DriverDetachmentEvent {
-  ClientType type;
-};
-
-struct ClientCreationEvent {
+struct ClientCreated {
   ClientID   id;
   ClientInfo info;
 };
 
-struct ClientDestructionEvent {
+struct ClientDestroyed {
   ClientID id;
 };
 
-struct PortCreationEvent {
+struct DriverAttached {
+  ClientType type;
+};
+
+struct DriverDetached {
+  ClientType type;
+};
+
+struct PortCreated {
   PortID   id;
   PortInfo info;
 };
 
-struct PortDestructionEvent {
+struct PortDestroyed {
   PortID id;
 };
 
-struct ConnectionEvent {
+struct PortsConnected {
   PortID tail;
   PortID head;
 };
 
-struct DisconnectionEvent {
+struct PortsDisconnected {
   PortID tail;
   PortID head;
 };
+
+} // namespace event
 
 /// An event from drivers that is processed by the GUI
-using Event = boost::variant<DriverAttachmentEvent,
-                             DriverDetachmentEvent,
-                             ClientCreationEvent,
-                             ClientDestructionEvent,
-                             PortCreationEvent,
-                             PortDestructionEvent,
-                             ConnectionEvent,
-                             DisconnectionEvent>;
+using Event = boost::variant<event::ClientCreated,
+                             event::ClientDestroyed,
+                             event::DriverAttached,
+                             event::DriverDetached,
+                             event::PortCreated,
+                             event::PortDestroyed,
+                             event::PortsConnected,
+                             event::PortsDisconnected>;
 
 } // namespace patchage
 

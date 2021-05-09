@@ -48,29 +48,29 @@ public:
     : _patchage{patchage}
   {}
 
-  void operator()(const DriverAttachmentEvent& event)
+  void operator()(const event::DriverAttached& event)
   {
     _patchage.driver_attached(event.type);
   }
 
-  void operator()(const DriverDetachmentEvent& event)
+  void operator()(const event::DriverDetached& event)
   {
     _patchage.driver_detached(event.type);
   }
 
-  void operator()(const ClientCreationEvent& event)
+  void operator()(const event::ClientCreated& event)
   {
     // Don't create empty modules, they will be created when ports are added
     _patchage.metadata().set_client(event.id, event.info);
   }
 
-  void operator()(const ClientDestructionEvent& event)
+  void operator()(const event::ClientDestroyed& event)
   {
     _patchage.canvas()->remove_module(event.id);
     _patchage.metadata().erase_client(event.id);
   }
 
-  void operator()(const PortCreationEvent& event)
+  void operator()(const event::PortCreated& event)
   {
     _patchage.metadata().set_port(event.id, event.info);
 
@@ -83,13 +83,13 @@ public:
     }
   }
 
-  void operator()(const PortDestructionEvent& event)
+  void operator()(const event::PortDestroyed& event)
   {
     _patchage.canvas()->remove_port(event.id);
     _patchage.metadata().erase_port(event.id);
   }
 
-  void operator()(const ConnectionEvent& event)
+  void operator()(const event::PortsConnected& event)
   {
     CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
     CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
@@ -105,7 +105,7 @@ public:
     }
   }
 
-  void operator()(const DisconnectionEvent& event)
+  void operator()(const event::PortsDisconnected& event)
   {
     CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
     CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
