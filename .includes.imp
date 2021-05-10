@@ -1,14 +1,15 @@
 [
-  { "symbol":  [ "GdkEvent",           "private", "<gdk/gdk.h>",        "public" ] },
-  { "symbol":  [ "fmt::format",        "private", "<fmt/core.h>",       "public" ] },
-  { "symbol":  [ "std::exception",     "private", "<exception>",        "public" ] },
-  { "symbol":  [ "std::ifstream",      "private", "<fstream>",          "public" ] },
-  { "symbol":  [ "std::ofstream",      "private", "<fstream>",          "public" ] },
-  { "symbol":  [ "std::ostream",       "private", "<ostream>",          "public" ] },
-  { "symbol":  [ "std::ostream",       "private", "<iosfwd>",           "public" ] },
-  { "symbol":  [ "std::stringstream",  "private", "<sstream>",          "public" ] },
-  { "include": [ "<alsa/error.h>",     "public",  "<alsa/asoundlib.h>", "public", ] },
-  { "include": [ "<alsa/seq.h>",       "public",  "<alsa/asoundlib.h>", "public", ] },
-  { "include": [ "<alsa/seq_event.h>", "public",  "<alsa/asoundlib.h>", "public", ] },
-  { "include": [ "<alsa/seqmid.h>",    "public",  "<alsa/asoundlib.h>", "public", ] }
+  { "symbol":  [ "GdkEvent",              "private", "<gdk/gdk.h>",        "public" ] },
+  { "symbol":  [ "fmt::format",           "private", "<fmt/core.h>",       "public" ] },
+  { "symbol":  [ "std::exception",        "private", "<exception>",        "public" ] },
+  { "symbol":  [ "std::ifstream",         "private", "<fstream>",          "public" ] },
+  { "symbol":  [ "std::ofstream",         "private", "<fstream>",          "public" ] },
+  { "symbol":  [ "std::ostream",          "private", "<ostream>",          "public" ] },
+  { "symbol":  [ "std::ostream",          "private", "<iosfwd>",           "public" ] },
+  { "symbol":  [ "std::stringstream",     "private", "<sstream>",          "public" ] },
+  { "include": [ "<alsa/error.h>",        "public",  "<alsa/asoundlib.h>", "public", ] },
+  { "include": [ "<alsa/seq.h>",          "public",  "<alsa/asoundlib.h>", "public", ] },
+  { "include": [ "<alsa/seq_event.h>",    "public",  "<alsa/asoundlib.h>", "public", ] },
+  { "include": [ "<alsa/seqmid.h>",       "public",  "<alsa/asoundlib.h>", "public", ] },
+  { "include": [ "<bits/stdint-uintn.h>", "public",  "<stdint.h>",         "public", ] }
 ]
