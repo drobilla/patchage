@@ -19,7 +19,6 @@
 #include "Canvas.hpp"
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
-#include "ClientID.hpp"
 #include "Configuration.hpp"
 #include "Driver.hpp"
 #include "ILog.hpp"

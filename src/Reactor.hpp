@@ -18,7 +18,6 @@
 #define PATCHAGE_REACTOR_HPP
 
 #include "Action.hpp"
-#include "ClientID.hpp"
 #include "PortID.hpp"
 #include "SignalDirection.hpp"
 
@@ -31,6 +30,7 @@ class CanvasPort;
 class Driver;
 class ILog;
 class Patchage;
+class ClientID;
 
 /// Reacts to actions from the user
 class Reactor

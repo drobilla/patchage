@@ -39,9 +39,7 @@ namespace patchage {
 
 struct PortID;
 
-class Configuration;
 class Canvas;
-
 class CanvasPort;
 
 class CanvasModule : public Ganv::Module

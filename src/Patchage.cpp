@@ -22,6 +22,7 @@
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
 #include "Configuration.hpp"
+#include "Coord.hpp"
 #include "Driver.hpp"
 #include "Event.hpp"
 #include "Legend.hpp"

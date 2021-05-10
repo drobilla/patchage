@@ -21,6 +21,7 @@
 #include "CanvasPort.hpp"
 #include "ClientInfo.hpp"
 #include "Configuration.hpp"
+#include "Coord.hpp"
 #include "ILog.hpp"
 #include "Metadata.hpp"
 #include "Patchage.hpp"

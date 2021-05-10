@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_CONFIGURATION_HPP
 #define PATCHAGE_CONFIGURATION_HPP
 
+#include "Coord.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
 
@@ -29,18 +30,6 @@
 #define N_PORT_TYPES 5
 
 namespace patchage {
-
-struct Coord {
-  Coord() = default;
-
-  Coord(double x_, double y_)
-    : x(x_)
-    , y(y_)
-  {}
-
-  double x{0.0};
-  double y{0.0};
-};
 
 class Configuration
 {
