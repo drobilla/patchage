@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -66,7 +66,7 @@ struct PortsDisconnected {
 
 } // namespace event
 
-/// An event from drivers that is processed by the GUI
+/// An event from drivers that represents a change to the system
 using Event = boost::variant<event::ClientCreated,
                              event::ClientDestroyed,
                              event::DriverAttached,

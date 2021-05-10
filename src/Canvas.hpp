@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_CANVAS_HPP
 #define PATCHAGE_CANVAS_HPP
 
+#include "ActionSink.hpp"
 #include "ClientID.hpp"
 #include "PortID.hpp"
 #include "SignalDirection.hpp"
@@ -39,15 +40,14 @@ namespace patchage {
 
 struct PortInfo;
 
-class Patchage;
 class CanvasModule;
 class CanvasPort;
-class Connector;
+class Patchage;
 
 class Canvas : public Ganv::Canvas
 {
 public:
-  Canvas(Connector& connector, int width, int height);
+  Canvas(ActionSink& action_sink, int width, int height);
 
   CanvasPort* create_port(Patchage&       patchage,
                           const PortID&   id,
@@ -79,7 +79,7 @@ private:
   void on_connect(Ganv::Node* port1, Ganv::Node* port2);
   void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);
 
-  Connector&  _connector;
+  ActionSink& _action_sink;
   PortIndex   _port_index;
   ModuleIndex _module_index;
 };

@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 #include "Patchage.hpp"
 
+#include "Action.hpp"
 #include "AudioDriver.hpp"
 #include "Canvas.hpp"
 #include "CanvasModule.hpp"
@@ -158,18 +159,6 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
   return 0;
 }
 
-void
-load_module_location(GanvNode* node, void*)
-{
-  if (GANV_IS_MODULE(node)) {
-    Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-    auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-    if (pmod) {
-      pmod->load_location();
-    }
-  }
-}
-
 } // namespace
 
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
@@ -214,12 +203,14 @@ Patchage::Patchage(Options options)
   , INIT_WIDGET(_status_text)
   , _legend(nullptr)
   , _log(_status_text)
-  , _connector(_log)
+  , _reactor(*this)
+  , _action_sink([this](const Action& action) { _reactor(action); })
   , _options{options}
   , _pane_initialized(false)
   , _attach(true)
 {
-  _canvas = std::unique_ptr<Canvas>{new Canvas(_connector, 1600 * 2, 1200 * 2)};
+  _canvas =
+    std::unique_ptr<Canvas>{new Canvas(_action_sink, 1600 * 2, 1200 * 2)};
 
   Glib::set_application_name("Patchage");
   _about_win->property_program_name()   = "Patchage";
@@ -331,7 +322,7 @@ Patchage::Patchage(Options options)
     _log, [this](const Event& event) { on_driver_event(event); });
 
   if (_jack_driver) {
-    _connector.add_driver(PortID::Type::jack, _jack_driver.get());
+    _reactor.add_driver(PortID::Type::jack, _jack_driver.get());
 
     _menu_jack_connect->signal_activate().connect(sigc::bind(
       sigc::mem_fun(_jack_driver.get(), &AudioDriver::attach), true));
@@ -347,7 +338,7 @@ Patchage::Patchage(Options options)
     _log, [this](const Event& event) { on_driver_event(event); });
 
   if (_alsa_driver) {
-    _connector.add_driver(PortID::Type::alsa, _alsa_driver.get());
+    _reactor.add_driver(PortID::Type::alsa, _alsa_driver.get());
 
     _menu_alsa_connect->signal_activate().connect(
       sigc::bind(sigc::mem_fun(_alsa_driver.get(), &Driver::attach), false));
@@ -358,8 +349,6 @@ Patchage::Patchage(Options options)
     _menu_alsa_connect->set_sensitive(false);
     _menu_alsa_disconnect->set_sensitive(false);
   }
-
-  _canvas->for_each_node(load_module_location, nullptr);
 
   _menu_view_toolbar->set_active(_conf.get_show_toolbar());
   _menu_view_sprung_layout->set_active(_conf.get_sprung_layout());

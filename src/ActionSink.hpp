@@ -14,34 +14,18 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PATCHAGE_CONNECTOR_HPP
-#define PATCHAGE_CONNECTOR_HPP
+#ifndef PATCHAGE_ACTION_SINK_HPP
+#define PATCHAGE_ACTION_SINK_HPP
 
-#include "PortID.hpp"
+#include "Action.hpp"
 
-#include <unordered_map>
+#include <functional>
 
 namespace patchage {
 
-class Driver;
-class ILog;
-
-/// Controller that makes and breaks connections on the system
-class Connector
-{
-public:
-  explicit Connector(ILog& log);
-
-  void add_driver(PortID::Type type, Driver* driver);
-
-  void connect(const PortID& tail, const PortID& head);
-  void disconnect(const PortID& tail, const PortID& head);
-
-private:
-  ILog&                                     _log;
-  std::unordered_map<PortID::Type, Driver*> _drivers;
-};
+/// Sink function for user actions
+using ActionSink = std::function<void(Action)>;
 
 } // namespace patchage
 
-#endif // PATCHAGE_CONNECTOR_HPP
+#endif // PATCHAGE_ACTION_SINK_HPP

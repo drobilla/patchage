@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2010-2020 David Robillard <d@drobilla.net>
+ * Copyright 2010-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -16,10 +16,9 @@
 
 #include "CanvasModule.hpp"
 
+#include "Action.hpp"
 #include "Canvas.hpp"
 #include "CanvasPort.hpp"
-#include "Configuration.hpp"
-#include "Patchage.hpp"
 #include "PortID.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
@@ -37,30 +36,27 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/signal.h>
 
 #include <cassert>
-#include <cstdlib>
+#include <functional>
 #include <memory>
 #include <utility>
 
 namespace patchage {
 
-CanvasModule::CanvasModule(Patchage*          app,
+CanvasModule::CanvasModule(Canvas&            canvas,
+                           ActionSink&        action_sink,
                            const std::string& name,
                            SignalDirection    type,
                            ClientID           id,
                            double             x,
                            double             y)
-  : Module(*app->canvas(), name, x, y)
-  , _app(app)
+  : Module(canvas, name, x, y)
+  , _action_sink(action_sink)
   , _name(name)
   , _type(type)
   , _id(std::move(id))
 {
   signal_event().connect(sigc::mem_fun(this, &CanvasModule::on_event));
-
-  signal_moved().connect(sigc::mem_fun(this, &CanvasModule::store_location));
-
-  // Set as source by default, turned off if input ports added
-  set_is_source(true);
+  signal_moved().connect(sigc::mem_fun(this, &CanvasModule::on_moved));
 }
 
 void
@@ -98,15 +94,15 @@ CanvasModule::show_menu(GdkEventButton* ev)
 
   if (_type == SignalDirection::duplex) {
     items.push_back(Gtk::Menu_Helpers::MenuElem(
-      "_Split", sigc::mem_fun(this, &CanvasModule::split)));
+      "_Split", sigc::mem_fun(this, &CanvasModule::on_split)));
     update_menu();
   } else {
     items.push_back(Gtk::Menu_Helpers::MenuElem(
-      "_Join", sigc::mem_fun(this, &CanvasModule::join)));
+      "_Join", sigc::mem_fun(this, &CanvasModule::on_join)));
   }
 
   items.push_back(Gtk::Menu_Helpers::MenuElem(
-    "_Disconnect All", sigc::mem_fun(this, &CanvasModule::disconnect_all)));
+    "_Disconnect", sigc::mem_fun(this, &CanvasModule::on_disconnect)));
 
   _menu->popup(ev->button, ev->time);
   return true;
@@ -122,50 +118,29 @@ CanvasModule::on_event(GdkEvent* ev)
 }
 
 void
-CanvasModule::load_location()
+CanvasModule::on_moved(double x, double y)
 {
-  Coord loc;
-
-  if (_app->conf().get_module_location(_name, _type, loc)) {
-    move_to(loc.x, loc.y);
-  } else {
-    const double x = 20 + rand() % 640;
-    const double y = 20 + rand() % 480;
-
-    // Move, then store generated location so it is stable
-    move_to(x, y);
-    store_location(x, y);
-  }
+  _action_sink(action::MoveModule{_id, _type, x, y});
 }
 
 void
-CanvasModule::store_location(double x, double y)
-{
-  _app->conf().set_module_location(_name, _type, {x, y});
-}
-
-void
-CanvasModule::split()
+CanvasModule::on_split()
 {
   assert(_type == SignalDirection::duplex);
-  _app->conf().set_module_split(_name, true);
-  _app->refresh();
+  _action_sink(action::SplitModule{_id});
 }
 
 void
-CanvasModule::join()
+CanvasModule::on_join()
 {
   assert(_type != SignalDirection::duplex);
-  _app->conf().set_module_split(_name, false);
-  _app->refresh();
+  _action_sink(action::UnsplitModule{_id});
 }
 
 void
-CanvasModule::disconnect_all()
+CanvasModule::on_disconnect()
 {
-  for (Ganv::Port* p : *this) {
-    p->disconnect();
-  }
+  _action_sink(action::DisconnectClient{_id, _type});
 }
 
 CanvasPort*

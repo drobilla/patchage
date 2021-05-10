@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -24,13 +24,14 @@
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/widget.h>
 
+#include "ActionSink.hpp"
 #include "ClientType.hpp"
 #include "Configuration.hpp"
-#include "Connector.hpp"
 #include "Event.hpp"
 #include "Metadata.hpp"
 #include "Options.hpp"
 #include "PortType.hpp"
+#include "Reactor.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
 
@@ -206,8 +207,9 @@ protected:
   Widget<Gtk::TextView>       _status_text;
   Legend*                     _legend;
   TextViewLog                 _log;
-  Connector                   _connector;
   Metadata                    _metadata;
+  Reactor                     _reactor;
+  ActionSink                  _action_sink;
 
   Glib::RefPtr<Gtk::TextTag> _error_tag;
   Glib::RefPtr<Gtk::TextTag> _warning_tag;

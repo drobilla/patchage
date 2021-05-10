@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_CANVASMODULE_HPP
 #define PATCHAGE_CANVASMODULE_HPP
 
+#include "ActionSink.hpp"
 #include "ClientID.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
@@ -38,18 +39,21 @@ namespace patchage {
 
 struct PortID;
 
+class Configuration;
+class Canvas;
+
 class CanvasPort;
-class Patchage;
 
 class CanvasModule : public Ganv::Module
 {
 public:
-  CanvasModule(Patchage*          app,
+  CanvasModule(Canvas&            canvas,
+               ActionSink&        action_sink,
                const std::string& name,
                SignalDirection    type,
                ClientID           id,
-               double             x = 0.0,
-               double             y = 0.0);
+               double             x,
+               double             y);
 
   CanvasModule(const CanvasModule&) = delete;
   CanvasModule& operator=(const CanvasModule&) = delete;
@@ -57,17 +61,12 @@ public:
   CanvasModule(CanvasModule&&) = delete;
   CanvasModule& operator=(CanvasModule&&) = delete;
 
+  ~CanvasModule() override = default;
+
   bool show_menu(GdkEventButton* ev);
   void update_menu();
 
-  void split();
-  void join();
-  void disconnect_all();
-
   CanvasPort* get_port(const PortID& id);
-
-  void load_location();
-  void store_location(double x, double y);
 
   SignalDirection    type() const { return _type; }
   ClientID           id() const { return _id; }
@@ -75,8 +74,12 @@ public:
 
 protected:
   bool on_event(GdkEvent* ev) override;
+  void on_moved(double x, double y);
+  void on_split();
+  void on_join();
+  void on_disconnect();
 
-  Patchage*                  _app;
+  ActionSink&                _action_sink;
   std::unique_ptr<Gtk::Menu> _menu;
   std::string                _name;
   SignalDirection            _type;

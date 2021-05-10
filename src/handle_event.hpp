@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -23,7 +23,7 @@ namespace patchage {
 
 class Patchage;
 
-/// Handle an event in the GUI
+/// Handle an event from the system by updating the GUI as necessary
 void
 handle_event(Patchage& patchage, const Event& event);
 

@@ -1,5 +1,5 @@
 /* This file is part of Patchage.
- * Copyright 2007-2020 David Robillard <d@drobilla.net>
+ * Copyright 2007-2021 David Robillard <d@drobilla.net>
  *
  * Patchage is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -16,11 +16,11 @@
 
 #include "Canvas.hpp"
 
+#include "Action.hpp"
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
 #include "ClientInfo.hpp"
 #include "Configuration.hpp"
-#include "Connector.hpp"
 #include "ILog.hpp"
 #include "Metadata.hpp"
 #include "Patchage.hpp"
@@ -48,6 +48,8 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/signal.h>
 
 #include <cassert>
+#include <cstdlib>
+#include <functional>
 #include <iosfwd>
 #include <set>
 #include <string>
@@ -55,9 +57,9 @@ PATCHAGE_RESTORE_WARNINGS
 
 namespace patchage {
 
-Canvas::Canvas(Connector& connector, int width, int height)
+Canvas::Canvas(ActionSink& action_sink, int width, int height)
   : Ganv::Canvas(width, height)
-  , _connector(connector)
+  , _action_sink(action_sink)
 {
   signal_event.connect(sigc::mem_fun(this, &Canvas::on_event));
   signal_connect.connect(sigc::mem_fun(this, &Canvas::on_connect));
@@ -97,9 +99,19 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
   // Find or create parent module
   CanvasModule* parent = find_module(client_id, module_type);
   if (!parent) {
-    parent = new CanvasModule(&patchage, client_name, module_type, client_id);
+    // Determine initial position
+    Coord loc;
+    if (!patchage.conf().get_module_location(client_name, module_type, loc)) {
+      // No position saved, come up with a pseudo-random one
+      loc.x = 20 + rand() % 640;
+      loc.y = 20 + rand() % 480;
 
-    parent->load_location();
+      patchage.conf().set_module_location(client_name, module_type, loc);
+    }
+
+    parent = new CanvasModule(
+      *this, _action_sink, client_name, module_type, client_id, loc.x, loc.y);
+
     add_module(client_id, parent);
   }
 
@@ -234,7 +246,7 @@ Canvas::remove_ports(bool (*pred)(const CanvasPort*))
     i = next;
   }
 
-  for (ClientID id : data.empty_clients) {
+  for (const ClientID& id : data.empty_clients) {
     remove_module(id);
   }
 }
@@ -247,9 +259,9 @@ Canvas::on_connect(Ganv::Node* port1, Ganv::Node* port2)
 
   if (p1 && p2) {
     if (p1->is_output() && p2->is_input()) {
-      _connector.connect(p1->id(), p2->id());
+      _action_sink(action::ConnectPorts{p1->id(), p2->id()});
     } else if (p2->is_output() && p1->is_input()) {
-      _connector.connect(p2->id(), p1->id());
+      _action_sink(action::ConnectPorts{p2->id(), p1->id()});
     }
   }
 }
@@ -262,9 +274,9 @@ Canvas::on_disconnect(Ganv::Node* port1, Ganv::Node* port2)
 
   if (p1 && p2) {
     if (p1->is_output() && p2->is_input()) {
-      _connector.disconnect(p1->id(), p2->id());
+      _action_sink(action::DisconnectPorts{p1->id(), p2->id()});
     } else if (p2->is_output() && p1->is_input()) {
-      _connector.disconnect(p2->id(), p1->id());
+      _action_sink(action::DisconnectPorts{p2->id(), p1->id()});
     }
   }
 }
