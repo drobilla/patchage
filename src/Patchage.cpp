@@ -346,10 +346,6 @@ Patchage::Patchage(Options options)
 
   _canvas->widget().grab_focus();
 
-  // Idle callback, check if we need to refresh
-  Glib::signal_timeout().connect(sigc::mem_fun(this, &Patchage::idle_callback),
-                                 100);
-
 #ifdef PATCHAGE_GTK_OSX
   // Set up Mac menu bar
   GtkosxApplication* osxapp = static_cast<GtkosxApplication*>(
@@ -368,6 +364,10 @@ Patchage::Patchage(Options options)
     osxapp, "NSApplicationWillTerminate", G_CALLBACK(terminate_cb), this);
   gtkosx_application_ready(osxapp);
 #endif
+
+  // Set up an idle callback to process events and update the GUI if necessary
+  Glib::signal_timeout().connect(sigc::mem_fun(this, &Patchage::idle_callback),
+                                 100);
 }
 
 Patchage::~Patchage()
