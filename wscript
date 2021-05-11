@@ -240,6 +240,7 @@ def build(bld):
             src/Canvas.cpp
             src/CanvasModule.cpp
             src/Configuration.cpp
+            src/Drivers.cpp
             src/Legend.cpp
             src/Metadata.cpp
             src/Patchage.cpp

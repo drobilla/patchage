@@ -18,19 +18,18 @@
 #define PATCHAGE_REACTOR_HPP
 
 #include "Action.hpp"
-#include "PortID.hpp"
 #include "SignalDirection.hpp"
-
-#include <unordered_map>
 
 namespace patchage {
 
+struct PortID;
+
 class CanvasModule;
 class CanvasPort;
-class Driver;
+class ClientID;
+class Drivers;
 class ILog;
 class Patchage;
-class ClientID;
 
 /// Reacts to actions from the user
 class Reactor
@@ -48,8 +47,6 @@ public:
 
   ~Reactor() = default;
 
-  void add_driver(PortID::Type type, Driver* driver);
-
   void operator()(const action::ConnectPorts& action);
   void operator()(const action::DisconnectClient& action);
   void operator()(const action::DisconnectPort& action);
@@ -64,9 +61,9 @@ private:
   CanvasModule* find_module(const ClientID& client, SignalDirection type);
   CanvasPort*   find_port(const PortID& port);
 
-  Patchage&                                 _patchage;
-  ILog&                                     _log;
-  std::unordered_map<PortID::Type, Driver*> _drivers;
+  Patchage& _patchage;
+  ILog&     _log;
+  Drivers&  _drivers;
 };
 
 } // namespace patchage

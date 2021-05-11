@@ -27,6 +27,7 @@
 #include "ActionSink.hpp"
 #include "ClientType.hpp"
 #include "Configuration.hpp"
+#include "Drivers.hpp"
 #include "Event.hpp"
 #include "Metadata.hpp"
 #include "Options.hpp"
@@ -66,9 +67,7 @@ class Window;
 
 namespace patchage {
 
-class AudioDriver;
 class Canvas;
-class Driver;
 class ILog;
 class Legend;
 
@@ -102,6 +101,7 @@ public:
 
   bool sort_ports() const { return _menu_view_sort_ports->get_active(); }
 
+  Drivers&             drivers() { return _drivers; }
   Gtk::Window*         window() { return _main_win.get(); }
   ILog&                log() { return _log; }
   Metadata&            metadata() { return _metadata; }
@@ -155,15 +155,11 @@ protected:
 
   Glib::RefPtr<Gtk::Builder> _xml;
 
-  std::mutex        _events_mutex;
-  std::queue<Event> _driver_events;
-
-  std::unique_ptr<Driver> _alsa_driver;
-
+  std::mutex              _events_mutex;
+  std::queue<Event>       _driver_events;
   std::unique_ptr<Canvas> _canvas;
 
-  std::unique_ptr<AudioDriver> _jack_driver;
-  Configuration                _conf;
+  Configuration _conf;
 
   BufferSizeColumns _buf_size_columns;
 
@@ -205,6 +201,7 @@ protected:
   Legend*                     _legend;
   TextViewLog                 _log;
   Metadata                    _metadata;
+  Drivers                     _drivers;
   Reactor                     _reactor;
   ActionSink                  _action_sink;
 

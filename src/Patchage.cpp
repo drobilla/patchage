@@ -26,12 +26,9 @@
 #include "Driver.hpp"
 #include "Event.hpp"
 #include "Legend.hpp"
-#include "PortID.hpp"
 #include "UIFile.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
-#include "make_alsa_driver.hpp"
-#include "make_jack_driver.hpp"
 #include "patchage_config.h" // IWYU pragma: keep
 #include "warnings.hpp"
 
@@ -204,6 +201,7 @@ Patchage::Patchage(Options options)
   , _legend(nullptr)
   , _log(_status_text)
   , _reactor(*this)
+  , _drivers(_log, [this](const Event& event) { on_driver_event(event); })
   , _action_sink([this](const Action& action) { _reactor(action); })
   , _options{options}
   , _pane_initialized(false)
@@ -317,34 +315,23 @@ Patchage::Patchage(Options options)
   }
 #endif
 
-  // Make Jack driver if possible
-  _jack_driver = make_jack_driver(
-    _log, [this](const Event& event) { on_driver_event(event); });
-
-  if (_jack_driver) {
-    _reactor.add_driver(PortID::Type::jack, _jack_driver.get());
-
+  // Enable JACK menu items if driver is present
+  if (_drivers.jack()) {
     _menu_jack_connect->signal_activate().connect(sigc::bind(
-      sigc::mem_fun(_jack_driver.get(), &AudioDriver::attach), true));
+      sigc::mem_fun(_drivers.jack().get(), &AudioDriver::attach), true));
     _menu_jack_disconnect->signal_activate().connect(
-      sigc::mem_fun(_jack_driver.get(), &AudioDriver::detach));
+      sigc::mem_fun(_drivers.jack().get(), &AudioDriver::detach));
   } else {
     _menu_jack_connect->set_sensitive(false);
     _menu_jack_disconnect->set_sensitive(false);
   }
 
-  // Make ALSA driver if possible
-  _alsa_driver = make_alsa_driver(
-    _log, [this](const Event& event) { on_driver_event(event); });
-
-  if (_alsa_driver) {
-    _reactor.add_driver(PortID::Type::alsa, _alsa_driver.get());
-
+  // Enable ALSA menu items if driver is present
+  if (_drivers.alsa()) {
     _menu_alsa_connect->signal_activate().connect(
-      sigc::bind(sigc::mem_fun(_alsa_driver.get(), &Driver::attach), false));
+      sigc::bind(sigc::mem_fun(_drivers.alsa().get(), &Driver::attach), false));
     _menu_alsa_disconnect->signal_activate().connect(
-      sigc::mem_fun(_alsa_driver.get(), &Driver::detach));
-
+      sigc::mem_fun(_drivers.alsa().get(), &Driver::detach));
   } else {
     _menu_alsa_connect->set_sensitive(false);
     _menu_alsa_disconnect->set_sensitive(false);
@@ -385,8 +372,6 @@ Patchage::Patchage(Options options)
 
 Patchage::~Patchage()
 {
-  _jack_driver.reset();
-  _alsa_driver.reset();
   _about_win.destroy();
   _xml.reset();
 }
@@ -394,12 +379,12 @@ Patchage::~Patchage()
 void
 Patchage::attach()
 {
-  if (_jack_driver && _options.jack_driver_autoattach) {
-    _jack_driver->attach(true);
+  if (_drivers.jack() && _options.jack_driver_autoattach) {
+    _drivers.jack()->attach(true);
   }
 
-  if (_alsa_driver && _options.alsa_driver_autoattach) {
-    _alsa_driver->attach(false);
+  if (_drivers.alsa() && _options.alsa_driver_autoattach) {
+    _drivers.alsa()->attach(false);
   }
 
   process_events();
@@ -440,9 +425,9 @@ Patchage::update_toolbar()
 
   updating = true;
 
-  if (_jack_driver && _jack_driver->is_attached()) {
-    const auto buffer_size = _jack_driver->buffer_size();
-    const auto sample_rate = _jack_driver->sample_rate();
+  if (_drivers.jack() && _drivers.jack()->is_attached()) {
+    const auto buffer_size = _drivers.jack()->buffer_size();
+    const auto sample_rate = _drivers.jack()->sample_rate();
     if (sample_rate != 0) {
       const auto latency_ms = buffer_size * 1000 / float(sample_rate);
 
@@ -450,7 +435,7 @@ Patchage::update_toolbar()
         " frames @ {} kHz ({:0.2f} ms)", sample_rate / 1000, latency_ms));
       _latency_label->set_visible(true);
       _buf_size_combo->set_active(
-        static_cast<int>(log2f(_jack_driver->buffer_size()) - 5));
+        static_cast<int>(log2f(_drivers.jack()->buffer_size()) - 5));
       updating = false;
       return;
     }
@@ -463,8 +448,8 @@ Patchage::update_toolbar()
 bool
 Patchage::update_load()
 {
-  if (_jack_driver && _jack_driver->is_attached()) {
-    const auto xruns = _jack_driver->xruns();
+  if (_drivers.jack() && _drivers.jack()->is_attached()) {
+    const auto xruns = _drivers.jack()->xruns();
     if (xruns > 0u) {
       _dropouts_label->set_text(fmt::format(" Dropouts: {}", xruns));
       _dropouts_label->show();
@@ -490,12 +475,12 @@ Patchage::refresh()
   if (_canvas) {
     _canvas->clear();
 
-    if (_jack_driver) {
-      _jack_driver->refresh(sink);
+    if (_drivers.jack()) {
+      _drivers.jack()->refresh(sink);
     }
 
-    if (_alsa_driver) {
-      _alsa_driver->refresh(sink);
+    if (_drivers.alsa()) {
+      _drivers.alsa()->refresh(sink);
     }
   }
 }
@@ -508,8 +493,8 @@ Patchage::driver_attached(const ClientType type)
     _menu_jack_connect->set_sensitive(false);
     _menu_jack_disconnect->set_sensitive(true);
 
-    if (_jack_driver) {
-      _jack_driver->refresh(
+    if (_drivers.jack()) {
+      _drivers.jack()->refresh(
         [this](const Event& event) { handle_event(*this, event); });
     }
 
@@ -518,8 +503,8 @@ Patchage::driver_attached(const ClientType type)
     _menu_alsa_connect->set_sensitive(false);
     _menu_alsa_disconnect->set_sensitive(true);
 
-    if (_alsa_driver) {
-      _alsa_driver->refresh(
+    if (_drivers.alsa()) {
+      _drivers.alsa()->refresh(
         [this](const Event& event) { handle_event(*this, event); });
     }
 
@@ -577,8 +562,8 @@ Patchage::clear_load()
   _dropouts_label->set_text(" Dropouts: 0");
   _dropouts_label->hide();
   _clear_load_but->hide();
-  if (_jack_driver) {
-    _jack_driver->reset_xruns();
+  if (_drivers.jack()) {
+    _drivers.jack()->reset_xruns();
   }
 }
 
@@ -792,12 +777,12 @@ Patchage::quit()
 void
 Patchage::on_quit()
 {
-  if (_alsa_driver) {
-    _alsa_driver->detach();
+  if (_drivers.alsa()) {
+    _drivers.alsa()->detach();
   }
 
-  if (_jack_driver) {
-    _jack_driver->detach();
+  if (_drivers.jack()) {
+    _drivers.jack()->detach();
   }
 
   _main_win->hide();
@@ -895,14 +880,14 @@ Patchage::on_scroll(GdkEventScroll*)
 void
 Patchage::buffer_size_changed()
 {
-  if (_jack_driver) {
+  if (_drivers.jack()) {
     const int selected = _buf_size_combo->get_active_row_number();
 
     if (selected == -1) {
       update_toolbar();
     } else {
       const uint32_t buffer_size = 1u << (selected + 5);
-      _jack_driver->set_buffer_size(buffer_size);
+      _drivers.jack()->set_buffer_size(buffer_size);
       update_toolbar();
     }
   }

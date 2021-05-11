@@ -21,6 +21,7 @@
 #include "CanvasPort.hpp"
 #include "Configuration.hpp"
 #include "Driver.hpp"
+#include "Drivers.hpp"
 #include "ILog.hpp"
 #include "Patchage.hpp"
 #include "PortID.hpp"
@@ -35,37 +36,27 @@ PATCHAGE_RESTORE_WARNINGS
 #include <boost/variant/apply_visitor.hpp>
 
 #include <memory>
-#include <unordered_map>
-#include <utility>
 
 namespace patchage {
 
 Reactor::Reactor(Patchage& patchage)
   : _patchage{patchage}
   , _log{patchage.log()}
+  , _drivers{patchage.drivers()}
 {}
-
-void
-Reactor::add_driver(PortID::Type type, Driver* driver)
-{
-  _drivers.emplace(type, driver);
-}
 
 void
 Reactor::operator()(const action::ConnectPorts& action)
 {
-  if (action.tail.type() != action.head.type()) {
+  if (action.tail.type() == action.head.type()) {
+    if (auto* d = _drivers.driver(action.tail.type())) {
+      d->connect(action.tail, action.head);
+    } else {
+      _log.error(fmt::format("No driver for port type {}", action.tail.type()));
+    }
+  } else {
     _log.warning("Unable to connect incompatible port types");
-    return;
   }
-
-  auto d = _drivers.find(action.tail.type());
-  if (d == _drivers.end()) {
-    _log.error(fmt::format("No driver for port type {}", action.tail.type()));
-    return;
-  }
-
-  d->second->connect(action.tail, action.head);
 }
 
 void
@@ -89,18 +80,15 @@ Reactor::operator()(const action::DisconnectPort& action)
 void
 Reactor::operator()(const action::DisconnectPorts& action)
 {
-  if (action.tail.type() != action.head.type()) {
+  if (action.tail.type() == action.head.type()) {
+    if (auto* d = _drivers.driver(action.tail.type())) {
+      d->disconnect(action.tail, action.head);
+    } else {
+      _log.error(fmt::format("No driver for port type {}", action.tail.type()));
+    }
+  } else {
     _log.error("Unable to disconnect incompatible port types");
-    return;
   }
-
-  auto d = _drivers.find(action.tail.type());
-  if (d == _drivers.end()) {
-    _log.error("No driver for port type");
-    return;
-  }
-
-  d->second->disconnect(action.tail, action.head);
 }
 
 void
