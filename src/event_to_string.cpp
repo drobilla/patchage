@@ -56,6 +56,8 @@ struct EventPrinter {
     PATCHAGE_UNREACHABLE();
   }
 
+  std::string operator()(const event::Cleared&) { return "Cleared"; }
+
   std::string operator()(const event::DriverAttached& event)
   {
     return fmt::format("Attached to {}", (*this)(event.type));

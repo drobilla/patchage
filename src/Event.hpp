@@ -28,6 +28,8 @@
 namespace patchage {
 namespace event {
 
+struct Cleared {};
+
 struct ClientCreated {
   ClientID   id;
   ClientInfo info;
@@ -67,7 +69,8 @@ struct PortsDisconnected {
 } // namespace event
 
 /// An event from drivers that represents a change to the system
-using Event = boost::variant<event::ClientCreated,
+using Event = boost::variant<event::Cleared,
+                             event::ClientCreated,
                              event::ClientDestroyed,
                              event::DriverAttached,
                              event::DriverDetached,

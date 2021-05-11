@@ -41,6 +41,8 @@ Drivers::Drivers(ILog& log, Driver::EventSink emit_event)
 void
 Drivers::refresh()
 {
+  _emit_event(event::Cleared{});
+
   if (_alsa_driver) {
     _alsa_driver->refresh(_emit_event);
   }

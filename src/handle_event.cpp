@@ -48,6 +48,8 @@ public:
     : _patchage{patchage}
   {}
 
+  void operator()(const event::Cleared&) { _patchage.canvas()->clear(); }
+
   void operator()(const event::DriverAttached& event)
   {
     _patchage.driver_attached(event.type);

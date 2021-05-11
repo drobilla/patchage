@@ -473,7 +473,7 @@ Patchage::refresh()
   };
 
   if (_canvas) {
-    _canvas->clear();
+    sink(event::Cleared{});
 
     if (_drivers.jack()) {
       _drivers.jack()->refresh(sink);
