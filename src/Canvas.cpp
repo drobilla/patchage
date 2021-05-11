@@ -24,9 +24,9 @@
 #include "Coord.hpp"
 #include "ILog.hpp"
 #include "Metadata.hpp"
-#include "Patchage.hpp"
 #include "PortInfo.hpp"
 #include "PortNames.hpp"
+#include "Setting.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
 
@@ -58,8 +58,9 @@ PATCHAGE_RESTORE_WARNINGS
 
 namespace patchage {
 
-Canvas::Canvas(ActionSink& action_sink, int width, int height)
+Canvas::Canvas(ILog& log, ActionSink& action_sink, int width, int height)
   : Ganv::Canvas(width, height)
+  , _log(log)
   , _action_sink(action_sink)
 {
   signal_event.connect(sigc::mem_fun(this, &Canvas::on_event));
@@ -68,7 +69,10 @@ Canvas::Canvas(ActionSink& action_sink, int width, int height)
 }
 
 CanvasPort*
-Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
+Canvas::create_port(Configuration&  conf,
+                    const Metadata& metadata,
+                    const PortID&   id,
+                    const PortInfo& info)
 {
   const auto client_id = id.client();
 
@@ -78,9 +82,9 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
   // Figure out the client name, for ALSA we need the metadata cache
   std::string client_name;
   if (id.type() == PortID::Type::alsa) {
-    const auto client_info = patchage.metadata().client(client_id);
+    const auto client_info = metadata.client(client_id);
     if (!client_info) {
-      patchage.log().error(fmt::format(
+      _log.error(fmt::format(
         R"(Unable to add port "{}", client "{}" is unknown)", id, client_id));
 
       return nullptr;
@@ -93,7 +97,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 
   // Determine the module type to place the port on in case of splitting
   SignalDirection module_type = SignalDirection::duplex;
-  if (patchage.conf().get_module_split(client_name, info.is_terminal)) {
+  if (conf.get_module_split(client_name, info.is_terminal)) {
     module_type = info.direction;
   }
 
@@ -102,12 +106,12 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
   if (!parent) {
     // Determine initial position
     Coord loc;
-    if (!patchage.conf().get_module_location(client_name, module_type, loc)) {
+    if (!conf.get_module_location(client_name, module_type, loc)) {
       // No position saved, come up with a pseudo-random one
       loc.x = 20 + rand() % 640;
       loc.y = 20 + rand() % 480;
 
-      patchage.conf().set_module_location(client_name, module_type, loc);
+      conf.set_module_location(client_name, module_type, loc);
     }
 
     parent = new CanvasModule(
@@ -118,7 +122,7 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
 
   if (parent->get_port(id)) {
     // TODO: Update existing port?
-    patchage.log().error(fmt::format(
+    _log.error(fmt::format(
       R"(Module "{}" already has port "{}")", client_name, port_name));
     return nullptr;
   }
@@ -129,8 +133,8 @@ Canvas::create_port(Patchage& patchage, const PortID& id, const PortInfo& info)
                                     port_name,
                                     info.label,
                                     info.direction == SignalDirection::input,
-                                    patchage.conf().get_port_color(info.type),
-                                    patchage.show_human_names(),
+                                    conf.get_port_color(info.type),
+                                    conf.get<setting::HumanNames>(),
                                     info.order);
 
   _port_index.insert(std::make_pair(id, port));
@@ -154,7 +158,7 @@ Canvas::find_module(const ClientID& id, const SignalDirection type)
     }
   }
 
-  // Return InputOutput module for Input or Output (or nullptr if not found)
+  // Return duplex module for input or output (or nullptr if not found)
   return io_module;
 }
 

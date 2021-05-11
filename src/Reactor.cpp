@@ -23,8 +23,8 @@
 #include "Driver.hpp"
 #include "Drivers.hpp"
 #include "ILog.hpp"
-#include "Patchage.hpp"
 #include "PortID.hpp"
+#include "Setting.hpp"
 #include "warnings.hpp"
 
 #include "ganv/Port.hpp"
@@ -35,14 +35,16 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/variant/apply_visitor.hpp>
 
-#include <memory>
-
 namespace patchage {
 
-Reactor::Reactor(Patchage& patchage)
-  : _patchage{patchage}
-  , _log{patchage.log()}
-  , _drivers{patchage.drivers()}
+Reactor::Reactor(Configuration& conf,
+                 Drivers&       drivers,
+                 Canvas&        canvas,
+                 ILog&          log)
+  : _conf{conf}
+  , _drivers{drivers}
+  , _canvas{canvas}
+  , _log{log}
 {}
 
 void
@@ -57,6 +59,12 @@ Reactor::operator()(const action::ConnectPorts& action)
   } else {
     _log.warning("Unable to connect incompatible port types");
   }
+}
+
+void
+Reactor::operator()(const action::DecreaseFontSize&)
+{
+  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() - 1.0);
 }
 
 void
@@ -92,31 +100,67 @@ Reactor::operator()(const action::DisconnectPorts& action)
 }
 
 void
+Reactor::operator()(const action::IncreaseFontSize&)
+{
+  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() + 1.0);
+}
+
+void
 Reactor::operator()(const action::MoveModule& action)
 {
-  if (CanvasModule* mod = find_module(action.client, action.direction)) {
-    _patchage.conf().set_module_location(
-      mod->name(), action.direction, {action.x, action.y});
-  }
+  _conf.set_module_location(
+    module_name(action.client), action.direction, {action.x, action.y});
+}
+
+void
+Reactor::operator()(const action::Refresh&)
+{
+  _drivers.refresh();
+}
+
+void
+Reactor::operator()(const action::ResetFontSize&)
+{
+  _conf.set<setting::FontSize>(_canvas.get_default_font_size());
 }
 
 void
 Reactor::operator()(const action::SplitModule& action)
 {
-  if (CanvasModule* mod = find_module(action.client, SignalDirection::duplex)) {
-    _patchage.conf().set_module_split(mod->name(), true);
-    _patchage.refresh();
-  }
+  _conf.set_module_split(module_name(action.client), true);
+  _drivers.refresh();
 }
 
 void
 Reactor::operator()(const action::UnsplitModule& action)
 {
-  CanvasModule* mod = find_module(action.client, SignalDirection::input);
-  if (mod || (mod = find_module(action.client, SignalDirection::output))) {
-    _patchage.conf().set_module_split(mod->name(), false);
-    _patchage.refresh();
-  }
+  _conf.set_module_split(module_name(action.client), false);
+  _drivers.refresh();
+}
+
+void
+Reactor::operator()(const action::ZoomFull&)
+{
+  _canvas.zoom_full();
+  _conf.set<setting::Zoom>(_canvas.get_zoom());
+}
+
+void
+Reactor::operator()(const action::ZoomIn&)
+{
+  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 1.25);
+}
+
+void
+Reactor::operator()(const action::ZoomNormal&)
+{
+  _conf.set<setting::Zoom>(1.0);
+}
+
+void
+Reactor::operator()(const action::ZoomOut&)
+{
+  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 0.75);
 }
 
 void
@@ -125,16 +169,32 @@ Reactor::operator()(const Action& action)
   boost::apply_visitor(*this, action);
 }
 
+std::string
+Reactor::module_name(const ClientID& client)
+{
+  // Note that split modules always have the same name
+
+  if (CanvasModule* mod = find_module(client, SignalDirection::input)) {
+    return mod->name();
+  }
+
+  if (CanvasModule* mod = find_module(client, SignalDirection::output)) {
+    return mod->name();
+  }
+
+  return std::string{};
+}
+
 CanvasModule*
 Reactor::find_module(const ClientID& client, const SignalDirection type)
 {
-  return _patchage.canvas()->find_module(client, type);
+  return _canvas.find_module(client, type);
 }
 
 CanvasPort*
 Reactor::find_port(const PortID& port)
 {
-  return _patchage.canvas()->find_port(port);
+  return _canvas.find_port(port);
 }
 
 } // namespace patchage

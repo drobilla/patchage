@@ -21,11 +21,18 @@
 
 namespace patchage {
 
-class Patchage;
+class Configuration;
+class Metadata;
+class Canvas;
+class ILog;
 
 /// Handle an event from the system by updating the GUI as necessary
 void
-handle_event(Patchage& patchage, const Event& event);
+handle_event(Configuration& conf,
+             Metadata&      metadata,
+             Canvas&        canvas,
+             ILog&          log,
+             const Event&   event);
 
 } // namespace patchage
 

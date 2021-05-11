@@ -18,11 +18,13 @@
 
 #include "Canvas.hpp"
 #include "CanvasPort.hpp"
+#include "ClientType.hpp"
+#include "Configuration.hpp"
 #include "Event.hpp"
 #include "ILog.hpp"
 #include "Metadata.hpp"
-#include "Patchage.hpp"
 #include "PortID.hpp"
+#include "Setting.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS
@@ -33,7 +35,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <boost/variant/apply_visitor.hpp>
 
 #include <iosfwd>
-#include <memory>
 
 namespace patchage {
 
@@ -44,95 +45,122 @@ class EventHandler
 public:
   using result_type = void; ///< For boost::apply_visitor
 
-  explicit EventHandler(Patchage& patchage)
-    : _patchage{patchage}
+  explicit EventHandler(Configuration& conf,
+                        Metadata&      metadata,
+                        Canvas&        canvas,
+                        ILog&          log)
+    : _conf{conf}
+    , _metadata{metadata}
+    , _canvas{canvas}
+    , _log{log}
   {}
 
-  void operator()(const event::Cleared&) { _patchage.canvas()->clear(); }
+  void operator()(const event::Cleared&) { _canvas.clear(); }
 
   void operator()(const event::DriverAttached& event)
   {
-    _patchage.driver_attached(event.type);
+    switch (event.type) {
+    case ClientType::alsa:
+      _conf.set<setting::AlsaAttached>(true);
+      break;
+    case ClientType::jack:
+      _conf.set<setting::JackAttached>(true);
+      break;
+    }
   }
 
   void operator()(const event::DriverDetached& event)
   {
-    _patchage.driver_detached(event.type);
+    switch (event.type) {
+    case ClientType::alsa:
+      _conf.set<setting::AlsaAttached>(false);
+      break;
+    case ClientType::jack:
+      _conf.set<setting::JackAttached>(false);
+      break;
+    }
   }
 
   void operator()(const event::ClientCreated& event)
   {
     // Don't create empty modules, they will be created when ports are added
-    _patchage.metadata().set_client(event.id, event.info);
+    _metadata.set_client(event.id, event.info);
   }
 
   void operator()(const event::ClientDestroyed& event)
   {
-    _patchage.canvas()->remove_module(event.id);
-    _patchage.metadata().erase_client(event.id);
+    _canvas.remove_module(event.id);
+    _metadata.erase_client(event.id);
   }
 
   void operator()(const event::PortCreated& event)
   {
-    _patchage.metadata().set_port(event.id, event.info);
+    _metadata.set_port(event.id, event.info);
 
     auto* const port =
-      _patchage.canvas()->create_port(_patchage, event.id, event.info);
+      _canvas.create_port(_conf, _metadata, event.id, event.info);
 
     if (!port) {
-      _patchage.log().error(
+      _log.error(
         fmt::format("Unable to create view for port \"{}\"", event.id));
     }
   }
 
   void operator()(const event::PortDestroyed& event)
   {
-    _patchage.canvas()->remove_port(event.id);
-    _patchage.metadata().erase_port(event.id);
+    _canvas.remove_port(event.id);
+    _metadata.erase_port(event.id);
   }
 
   void operator()(const event::PortsConnected& event)
   {
-    CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
-    CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
+    CanvasPort* port_1 = _canvas.find_port(event.tail);
+    CanvasPort* port_2 = _canvas.find_port(event.head);
 
     if (!port_1) {
-      _patchage.log().error(
+      _log.error(
         fmt::format("Unable to find port \"{}\" to connect", event.tail));
     } else if (!port_2) {
-      _patchage.log().error(
+      _log.error(
         fmt::format("Unable to find port \"{}\" to connect", event.head));
     } else {
-      _patchage.canvas()->make_connection(port_1, port_2);
+      _canvas.make_connection(port_1, port_2);
     }
   }
 
   void operator()(const event::PortsDisconnected& event)
   {
-    CanvasPort* port_1 = _patchage.canvas()->find_port(event.tail);
-    CanvasPort* port_2 = _patchage.canvas()->find_port(event.head);
+    CanvasPort* port_1 = _canvas.find_port(event.tail);
+    CanvasPort* port_2 = _canvas.find_port(event.head);
 
     if (!port_1) {
-      _patchage.log().error(
+      _log.error(
         fmt::format("Unable to find port \"{}\" to disconnect", event.tail));
     } else if (!port_2) {
-      _patchage.log().error(
+      _log.error(
         fmt::format("Unable to find port \"{}\" to disconnect", event.head));
     } else {
-      _patchage.canvas()->remove_edge_between(port_1, port_2);
+      _canvas.remove_edge_between(port_1, port_2);
     }
   }
 
 private:
-  Patchage& _patchage;
+  Configuration& _conf;
+  Metadata&      _metadata;
+  Canvas&        _canvas;
+  ILog&          _log;
 };
 
 } // namespace
 
 void
-handle_event(Patchage& patchage, const Event& event)
+handle_event(Configuration& conf,
+             Metadata&      metadata,
+             Canvas&        canvas,
+             ILog&          log,
+             const Event&   event)
 {
-  EventHandler handler{patchage};
+  EventHandler handler{conf, metadata, canvas, log};
   boost::apply_visitor(handler, event);
 }
 

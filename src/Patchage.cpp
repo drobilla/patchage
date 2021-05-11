@@ -47,6 +47,8 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/optional/optional.hpp>
+#include <boost/variant/apply_visitor.hpp>
+#include <boost/variant/variant.hpp>
 #include <glib-object.h>
 #include <glib.h>
 #include <glibmm/fileutils.h>
@@ -96,6 +98,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <functional>
 #include <map>
 #include <utility>
 
@@ -164,6 +167,7 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 
 Patchage::Patchage(Options options)
   : _xml(UIFile::open("patchage"))
+  , _conf([this](const Setting& setting) { on_conf_change(setting); })
   , INIT_WIDGET(_about_win)
   , INIT_WIDGET(_main_scrolledwin)
   , INIT_WIDGET(_main_win)
@@ -201,16 +205,13 @@ Patchage::Patchage(Options options)
   , INIT_WIDGET(_status_text)
   , _legend(nullptr)
   , _log(_status_text)
-  , _reactor(*this)
   , _drivers(_log, [this](const Event& event) { on_driver_event(event); })
+  , _canvas(new Canvas{_log, _action_sink, 1600 * 2, 1200 * 2})
+  , _reactor(_conf, _drivers, *_canvas, _log)
   , _action_sink([this](const Action& action) { _reactor(action); })
   , _options{options}
-  , _pane_initialized(false)
   , _attach(true)
 {
-  _canvas =
-    std::unique_ptr<Canvas>{new Canvas(_action_sink, 1600 * 2, 1200 * 2)};
-
   Glib::set_application_name("Patchage");
   _about_win->property_program_name()   = "Patchage";
   _about_win->property_logo_icon_name() = "patchage";
@@ -245,8 +246,8 @@ Patchage::Patchage(Options options)
     sigc::mem_fun(this, &Patchage::on_quit));
   _menu_export_image->signal_activate().connect(
     sigc::mem_fun(this, &Patchage::on_export_image));
-  _menu_view_refresh->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::refresh));
+  _menu_view_refresh->signal_activate().connect(sigc::bind(
+    sigc::mem_fun(this, &Patchage::on_menu_action), Action{action::Refresh{}}));
   _menu_view_human_names->signal_activate().connect(
     sigc::mem_fun(this, &Patchage::on_view_human_names));
   _menu_view_sort_ports->signal_activate().connect(
@@ -261,20 +262,26 @@ Patchage::Patchage(Options options)
     sigc::mem_fun(this, &Patchage::on_view_toolbar));
   _menu_help_about->signal_activate().connect(
     sigc::mem_fun(this, &Patchage::on_help_about));
-  _menu_zoom_in->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_zoom_in));
-  _menu_zoom_out->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_zoom_out));
+
+  _menu_zoom_in->signal_activate().connect(sigc::bind(
+    sigc::mem_fun(this, &Patchage::on_menu_action), Action{action::ZoomIn{}}));
+  _menu_zoom_out->signal_activate().connect(sigc::bind(
+    sigc::mem_fun(this, &Patchage::on_menu_action), Action{action::ZoomOut{}}));
   _menu_zoom_normal->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_zoom_normal));
+    sigc::bind(sigc::mem_fun(this, &Patchage::on_menu_action),
+               Action{action::ZoomNormal{}}));
   _menu_zoom_full->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_zoom_full));
+    sigc::bind(sigc::mem_fun(this, &Patchage::on_menu_action),
+               Action{action::ZoomFull{}}));
   _menu_increase_font_size->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_increase_font_size));
+    sigc::bind(sigc::mem_fun(this, &Patchage::on_menu_action),
+               Action{action::IncreaseFontSize{}}));
   _menu_decrease_font_size->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_decrease_font_size));
+    sigc::bind(sigc::mem_fun(this, &Patchage::on_menu_action),
+               Action{action::DecreaseFontSize{}}));
   _menu_normal_font_size->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_normal_font_size));
+    sigc::bind(sigc::mem_fun(this, &Patchage::on_menu_action),
+               Action{action::ResetFontSize{}}));
 
   if (_canvas->supports_sprung_layout()) {
     _menu_view_sprung_layout->set_active(true);
@@ -283,22 +290,15 @@ Patchage::Patchage(Options options)
     _menu_view_sprung_layout->set_sensitive(false);
   }
 
+  // Present window so that display attributes like font size are available
   _canvas->widget().show();
   _main_win->present();
 
+  // Set the default font size based on the current GUI environment
   _conf.set<setting::FontSize>(_canvas->get_default_font_size());
+
+  // Load configuration file (but do not apply it yet, see below)
   _conf.load();
-  _canvas->set_zoom(_conf.get<setting::Zoom>());
-  _canvas->set_font_size(_conf.get<setting::FontSize>());
-  if (_conf.get<setting::SortedPorts>()) {
-    _canvas->set_port_order(port_order, nullptr);
-  }
-
-  _main_win->resize(static_cast<int>(_conf.get<setting::WindowSize>().x),
-                    static_cast<int>(_conf.get<setting::WindowSize>().y));
-
-  _main_win->move(static_cast<int>(_conf.get<setting::WindowLocation>().x),
-                  static_cast<int>(_conf.get<setting::WindowLocation>().y));
 
   _legend = new Legend(_conf);
   _legend->signal_color_changed.connect(
@@ -307,6 +307,7 @@ Patchage::Patchage(Options options)
   _legend->show_all();
 
   _about_win->set_transient_for(*_main_win);
+
 #ifdef __APPLE__
   try {
     _about_win->set_logo(Gdk::Pixbuf::create_from_file(
@@ -338,10 +339,6 @@ Patchage::Patchage(Options options)
     _menu_alsa_disconnect->set_sensitive(false);
   }
 
-  _menu_view_toolbar->set_active(_conf.get<setting::ToolbarVisible>());
-  _menu_view_sprung_layout->set_active(_conf.get<setting::SprungLayout>());
-  _menu_view_sort_ports->set_active(_conf.get<setting::SortedPorts>());
-
   g_signal_connect(
     _main_win->gobj(), "configure-event", G_CALLBACK(configure_cb), this);
 
@@ -366,6 +363,9 @@ Patchage::Patchage(Options options)
   gtkosx_application_ready(osxapp);
 #endif
 
+  // Apply all configuration settings to ensure the GUI is synced
+  _conf.each([this](const Setting& setting) { on_conf_change(setting); });
+
   // Set up an idle callback to process events and update the GUI if necessary
   Glib::signal_timeout().connect(sigc::mem_fun(this, &Patchage::idle_callback),
                                  100);
@@ -389,7 +389,6 @@ Patchage::attach()
   }
 
   process_events();
-  refresh();
   update_toolbar();
 }
 
@@ -466,83 +465,6 @@ Patchage::update_load()
 }
 
 void
-Patchage::refresh()
-{
-  auto sink = [this](const Event& event) {
-    _log.info("Refresh: " + event_to_string(event));
-    handle_event(*this, event);
-  };
-
-  if (_canvas) {
-    sink(event::Cleared{});
-
-    if (_drivers.jack()) {
-      _drivers.jack()->refresh(sink);
-    }
-
-    if (_drivers.alsa()) {
-      _drivers.alsa()->refresh(sink);
-    }
-  }
-}
-
-void
-Patchage::driver_attached(const ClientType type)
-{
-  switch (type) {
-  case ClientType::jack:
-    _menu_jack_connect->set_sensitive(false);
-    _menu_jack_disconnect->set_sensitive(true);
-
-    if (_drivers.jack()) {
-      _drivers.jack()->refresh(
-        [this](const Event& event) { handle_event(*this, event); });
-    }
-
-    break;
-  case ClientType::alsa:
-    _menu_alsa_connect->set_sensitive(false);
-    _menu_alsa_disconnect->set_sensitive(true);
-
-    if (_drivers.alsa()) {
-      _drivers.alsa()->refresh(
-        [this](const Event& event) { handle_event(*this, event); });
-    }
-
-    break;
-  }
-}
-
-void
-Patchage::driver_detached(const ClientType type)
-{
-  switch (type) {
-  case ClientType::jack:
-    _menu_jack_connect->set_sensitive(true);
-    _menu_jack_disconnect->set_sensitive(false);
-
-    _canvas->remove_ports([](const CanvasPort* port) {
-      return (port->type() == PortType::jack_audio ||
-              port->type() == PortType::jack_midi ||
-              port->type() == PortType::jack_osc ||
-              port->type() == PortType::jack_cv);
-    });
-
-    break;
-
-  case ClientType::alsa:
-    _menu_alsa_connect->set_sensitive(true);
-    _menu_alsa_disconnect->set_sensitive(false);
-
-    _canvas->remove_ports([](const CanvasPort* port) {
-      return port->type() == PortType::alsa_midi;
-    });
-
-    break;
-  }
-}
-
-void
 Patchage::store_window_location()
 {
   int loc_x = 0;
@@ -569,47 +491,58 @@ Patchage::clear_load()
 }
 
 void
-Patchage::on_driver_event(const Event& event)
+Patchage::operator()(const setting::AlsaAttached& setting)
 {
-  std::lock_guard<std::mutex> lock{_events_mutex};
+  if (setting.value) {
+    _menu_alsa_connect->set_sensitive(false);
+    _menu_alsa_disconnect->set_sensitive(true);
 
-  _driver_events.emplace(event);
-}
+    if (_drivers.alsa()) {
+      _drivers.alsa()->refresh([this](const Event& event) {
+        handle_event(_conf, _metadata, *_canvas, _log, event);
+      });
+    }
+  } else {
+    _menu_alsa_connect->set_sensitive(true);
+    _menu_alsa_disconnect->set_sensitive(false);
 
-void
-Patchage::process_events()
-{
-  std::lock_guard<std::mutex> lock{_events_mutex};
-
-  while (!_driver_events.empty()) {
-    _log.info(event_to_string(_driver_events.front()));
-    handle_event(*this, _driver_events.front());
-    _driver_events.pop();
+    _canvas->remove_ports([](const CanvasPort* port) {
+      return port->type() == PortType::alsa_midi;
+    });
   }
 }
 
 void
-Patchage::on_arrange()
+Patchage::operator()(const setting::JackAttached& setting)
 {
-  if (_canvas) {
-    _canvas->arrange();
+  if (setting.value) {
+    _menu_jack_connect->set_sensitive(false);
+    _menu_jack_disconnect->set_sensitive(true);
+
+    if (_drivers.jack()) {
+      _drivers.jack()->refresh([this](const Event& event) {
+        handle_event(_conf, _metadata, *_canvas, _log, event);
+      });
+    }
+  } else {
+    _menu_jack_connect->set_sensitive(true);
+    _menu_jack_disconnect->set_sensitive(false);
+
+    _canvas->remove_ports([](const CanvasPort* port) {
+      return (port->type() == PortType::jack_audio ||
+              port->type() == PortType::jack_midi ||
+              port->type() == PortType::jack_osc ||
+              port->type() == PortType::jack_cv);
+    });
   }
 }
 
 void
-Patchage::on_sprung_layout_toggled()
+Patchage::operator()(const setting::FontSize& setting)
 {
-  const bool sprung = _menu_view_sprung_layout->get_active();
-
-  _canvas->set_sprung_layout(sprung);
-  _conf.set<setting::SprungLayout>(sprung);
-}
-
-void
-Patchage::on_help_about()
-{
-  _about_win->run();
-  _about_win->hide();
+  if (_canvas->get_font_size() != setting.value) {
+    _canvas->set_font_size(setting.value);
+  }
 }
 
 static void
@@ -631,72 +564,37 @@ update_labels(GanvNode* node, void* data)
 }
 
 void
-Patchage::on_view_human_names()
+Patchage::operator()(const setting::HumanNames& setting)
 {
-  bool human_names = show_human_names();
+  bool human_names = setting.value;
+
+  _menu_view_human_names->set_active(human_names);
   _canvas->for_each_node(update_labels, &human_names);
 }
 
 void
-Patchage::on_view_sort_ports()
+Patchage::operator()(const setting::MessagesHeight& setting)
 {
-  const bool sort_ports = this->sort_ports();
-  _canvas->set_port_order(sort_ports ? port_order : nullptr, nullptr);
-  _conf.set<setting::SortedPorts>(sort_ports);
-  refresh();
+  if (_log_scrolledwindow->is_visible()) {
+    const int min_height  = _log.min_height();
+    const int max_pos     = _main_paned->get_allocation().get_height();
+    const int conf_height = setting.value;
+
+    _main_paned->set_position(max_pos - std::max(conf_height, min_height));
+  }
 }
 
 void
-Patchage::on_zoom_in()
+Patchage::operator()(const setting::MessagesVisible& setting)
 {
-  const float zoom = _canvas->get_zoom() * 1.25;
-  _canvas->set_zoom(zoom);
-  _conf.set<setting::Zoom>(zoom);
-}
+  if (setting.value) {
+    _log_scrolledwindow->show();
+    _status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(), 0);
+  } else {
+    _log_scrolledwindow->hide();
+  }
 
-void
-Patchage::on_zoom_out()
-{
-  const float zoom = _canvas->get_zoom() * 0.75;
-  _canvas->set_zoom(zoom);
-  _conf.set<setting::Zoom>(zoom);
-}
-
-void
-Patchage::on_zoom_normal()
-{
-  _canvas->set_zoom(1.0);
-  _conf.set<setting::Zoom>(1.0);
-}
-
-void
-Patchage::on_zoom_full()
-{
-  _canvas->zoom_full();
-  _conf.set<setting::Zoom>(_canvas->get_zoom());
-}
-
-void
-Patchage::on_increase_font_size()
-{
-  const float points = _canvas->get_font_size() + 1.0;
-  _canvas->set_font_size(points);
-  _conf.set<setting::FontSize>(points);
-}
-
-void
-Patchage::on_decrease_font_size()
-{
-  const float points = _canvas->get_font_size() - 1.0;
-  _canvas->set_font_size(points);
-  _conf.set<setting::FontSize>(points);
-}
-
-void
-Patchage::on_normal_font_size()
-{
-  _canvas->set_font_size(_canvas->get_default_font_size());
-  _conf.set<setting::FontSize>(_canvas->get_default_font_size());
+  _menu_view_messages->set_active(setting.value);
 }
 
 static inline guint
@@ -748,17 +646,154 @@ update_edge_color(GanvEdge* edge, void* data)
 }
 
 void
+Patchage::operator()(const setting::PortColor&)
+{
+  _canvas->for_each_node(update_port_colors, this);
+  _canvas->for_each_edge(update_edge_color, this);
+}
+
+void
+Patchage::operator()(const setting::SortedPorts& setting)
+{
+  _menu_view_sort_ports->set_active(setting.value);
+  if (setting.value) {
+    _canvas->set_port_order(port_order, nullptr);
+  } else {
+    _canvas->set_port_order(nullptr, nullptr);
+  }
+}
+
+void
+Patchage::operator()(const setting::SprungLayout& setting)
+{
+  _canvas->set_sprung_layout(setting.value);
+  _menu_view_sprung_layout->set_active(setting.value);
+}
+
+void
+Patchage::operator()(const setting::ToolbarVisible& setting)
+{
+  if (setting.value) {
+    _toolbar->show();
+    _menu_view_toolbar->set_active(true);
+  } else {
+    _toolbar->hide();
+    _menu_view_toolbar->set_active(false);
+  }
+}
+
+void
+Patchage::operator()(const setting::WindowLocation& setting)
+{
+  const int new_x = static_cast<int>(setting.value.x);
+  const int new_y = static_cast<int>(setting.value.y);
+
+  int current_x = 0;
+  int current_y = 0;
+  _main_win->get_position(current_x, current_y);
+
+  if (new_x != current_x || new_y != current_y) {
+    _main_win->move(new_x, new_y);
+  }
+}
+
+void
+Patchage::operator()(const setting::WindowSize& setting)
+{
+  const int new_w = static_cast<int>(setting.value.x);
+  const int new_h = static_cast<int>(setting.value.y);
+
+  int current_w = 0;
+  int current_h = 0;
+  _main_win->get_size(current_w, current_h);
+
+  if (new_w != current_w || new_h != current_h) {
+    _main_win->resize(new_w, new_h);
+  }
+}
+
+void
+Patchage::operator()(const setting::Zoom& setting)
+{
+  if (_canvas->get_zoom() != setting.value) {
+    _canvas->set_zoom(setting.value);
+  }
+}
+
+void
+Patchage::on_driver_event(const Event& event)
+{
+  std::lock_guard<std::mutex> lock{_events_mutex};
+
+  _driver_events.emplace(event);
+}
+
+void
+Patchage::process_events()
+{
+  std::lock_guard<std::mutex> lock{_events_mutex};
+
+  while (!_driver_events.empty()) {
+    const Event& event = _driver_events.front();
+
+    _log.info(event_to_string(event));
+    handle_event(_conf, _metadata, *_canvas, _log, event);
+
+    _driver_events.pop();
+  }
+}
+
+void
+Patchage::on_conf_change(const Setting& setting)
+{
+  boost::apply_visitor(*this, setting);
+}
+
+void
+Patchage::on_arrange()
+{
+  if (_canvas) {
+    _canvas->arrange();
+  }
+}
+
+void
+Patchage::on_sprung_layout_toggled()
+{
+  _conf.set<setting::SprungLayout>(_menu_view_sprung_layout->get_active());
+}
+
+void
+Patchage::on_help_about()
+{
+  _about_win->run();
+  _about_win->hide();
+}
+
+void
+Patchage::on_view_human_names()
+{
+  _conf.set<setting::HumanNames>(_menu_view_human_names->get_active());
+}
+
+void
+Patchage::on_view_sort_ports()
+{
+  _conf.set<setting::SortedPorts>(_menu_view_sort_ports->get_active());
+  _reactor(action::Refresh{});
+}
+
+void
 Patchage::on_legend_color_change(PortType id, const std::string&, uint32_t rgba)
 {
   _conf.set_port_color(id, rgba);
-  _canvas->for_each_node(update_port_colors, this);
-  _canvas->for_each_edge(update_edge_color, this);
 }
 
 void
 Patchage::on_messages_resized(Gtk::Allocation&)
 {
   const int max_pos = _main_paned->get_allocation().get_height();
+
   _conf.set<setting::MessagesHeight>(max_pos - _main_paned->get_position());
 }
 
@@ -840,35 +875,12 @@ Patchage::on_export_image()
 void
 Patchage::on_view_messages()
 {
-  if (_menu_view_messages->get_active()) {
-    Glib::RefPtr<Gtk::TextBuffer> buffer = _status_text->get_buffer();
-    if (!_pane_initialized) {
-      const int min_height  = _log.min_height();
-      const int max_pos     = _main_paned->get_allocation().get_height();
-      const int conf_height = _conf.get<setting::MessagesHeight>();
-      _main_paned->set_position(max_pos - std::max(conf_height, min_height));
-
-      _pane_initialized = true;
-    }
-
-    _log_scrolledwindow->show();
-    _status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(), 0);
-    _conf.set<setting::MessagesVisible>(true);
-  } else {
-    _log_scrolledwindow->hide();
-    _conf.set<setting::MessagesVisible>(false);
-  }
+  _conf.set<setting::MessagesVisible>(_menu_view_messages->get_active());
 }
 
 void
 Patchage::on_view_toolbar()
 {
-  if (_menu_view_toolbar->get_active()) {
-    _toolbar->show();
-  } else {
-    _toolbar->hide();
-  }
-
   _conf.set<setting::ToolbarVisible>(_menu_view_toolbar->get_active());
 }
 
@@ -876,6 +888,12 @@ bool
 Patchage::on_scroll(GdkEventScroll*)
 {
   return false;
+}
+
+void
+Patchage::on_menu_action(const Action& action)
+{
+  _reactor(action);
 }
 
 void

@@ -34,8 +34,8 @@ class Metadata
 public:
   Metadata() = default;
 
-  boost::optional<ClientInfo> client(const ClientID& id);
-  boost::optional<PortInfo>   port(const PortID& id);
+  boost::optional<ClientInfo> client(const ClientID& id) const;
+  boost::optional<PortInfo>   port(const PortID& id) const;
 
   void set_client(const ClientID& id, const ClientInfo& info);
   void set_port(const PortID& id, const PortInfo& info);

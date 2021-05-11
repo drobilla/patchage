@@ -25,6 +25,7 @@
 #include <boost/optional/optional.hpp>
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <string>
 #include <tuple>
@@ -36,7 +37,7 @@ namespace patchage {
 class Configuration
 {
 public:
-  explicit Configuration();
+  explicit Configuration(std::function<void(const Setting&)> on_change);
 
   void load();
   void save();
@@ -60,6 +61,7 @@ public:
   void set_port_color(PortType type, uint32_t rgba)
   {
     _port_colors[static_cast<unsigned>(type)] = rgba;
+    _on_change(setting::PortColor{type, rgba});
   }
 
   // Set a global configuration setting
@@ -70,6 +72,7 @@ public:
 
     if (setting.value != value) {
       setting.value = std::move(value);
+      _on_change(setting);
     }
   }
 
@@ -131,6 +134,8 @@ private:
                               setting::Zoom>;
 
   Settings _settings;
+
+  std::function<void(const Setting&)> _on_change;
 };
 
 } // namespace patchage

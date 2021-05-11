@@ -24,8 +24,8 @@
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/widget.h>
 
+#include "Action.hpp"
 #include "ActionSink.hpp"
-#include "ClientType.hpp"
 #include "Configuration.hpp"
 #include "Drivers.hpp"
 #include "Event.hpp"
@@ -33,6 +33,7 @@
 #include "Options.hpp"
 #include "PortType.hpp"
 #include "Reactor.hpp"
+#include "Setting.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
 
@@ -76,7 +77,6 @@ class Patchage
 {
 public:
   explicit Patchage(Options options);
-
   ~Patchage();
 
   Patchage(const Patchage&) = delete;
@@ -85,23 +85,27 @@ public:
   Patchage(Patchage&&) = delete;
   Patchage& operator=(Patchage&&) = delete;
 
-  const std::unique_ptr<Canvas>& canvas() const { return _canvas; }
+  void operator()(const setting::AlsaAttached& setting);
+  void operator()(const setting::FontSize& setting);
+  void operator()(const setting::HumanNames& setting);
+  void operator()(const setting::JackAttached& setting);
+  void operator()(const setting::MessagesHeight& setting);
+  void operator()(const setting::MessagesVisible& setting);
+  void operator()(const setting::PortColor& setting);
+  void operator()(const setting::SortedPorts& setting);
+  void operator()(const setting::SprungLayout& setting);
+  void operator()(const setting::ToolbarVisible& setting);
+  void operator()(const setting::WindowLocation& setting);
+  void operator()(const setting::WindowSize& setting);
+  void operator()(const setting::Zoom& setting);
 
   void attach();
-  void refresh();
   void save();
   void quit();
 
-  void driver_attached(ClientType type);
-  void driver_detached(ClientType type);
-
   void store_window_location();
 
-  bool show_human_names() const { return _menu_view_human_names->get_active(); }
-
-  bool sort_ports() const { return _menu_view_sort_ports->get_active(); }
-
-  Drivers&             drivers() { return _drivers; }
+  Canvas&              canvas() const { return *_canvas; }
   Gtk::Window*         window() { return _main_win.get(); }
   ILog&                log() { return _log; }
   Metadata&            metadata() { return _metadata; }
@@ -120,6 +124,8 @@ protected:
   void on_driver_event(const Event& event);
   void process_events();
 
+  void on_conf_change(const Setting& setting);
+
   void on_arrange();
   void on_sprung_layout_toggled();
   void on_help_about();
@@ -130,13 +136,6 @@ protected:
   void on_store_positions();
   void on_view_human_names();
   void on_view_sort_ports();
-  void on_zoom_in();
-  void on_zoom_out();
-  void on_zoom_normal();
-  void on_zoom_full();
-  void on_increase_font_size();
-  void on_decrease_font_size();
-  void on_normal_font_size();
 
   void on_legend_color_change(PortType           id,
                               const std::string& label,
@@ -145,6 +144,8 @@ protected:
   void on_messages_resized(Gtk::Allocation& alloc);
 
   bool on_scroll(GdkEventScroll* ev);
+
+  void on_menu_action(const Action& action);
 
   bool idle_callback();
   void clear_load();
@@ -155,11 +156,10 @@ protected:
 
   Glib::RefPtr<Gtk::Builder> _xml;
 
+  std::unique_ptr<Canvas> _canvas;
   std::mutex              _events_mutex;
   std::queue<Event>       _driver_events;
-  std::unique_ptr<Canvas> _canvas;
-
-  Configuration _conf;
+  Configuration           _conf;
 
   BufferSizeColumns _buf_size_columns;
 
@@ -209,7 +209,6 @@ protected:
   Glib::RefPtr<Gtk::TextTag> _warning_tag;
 
   Options _options;
-  bool    _pane_initialized;
   bool    _attach;
 };
 

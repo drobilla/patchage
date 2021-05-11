@@ -28,7 +28,7 @@
 namespace patchage {
 
 boost::optional<ClientInfo>
-Metadata::client(const ClientID& id)
+Metadata::client(const ClientID& id) const
 {
   const auto i = _client_data.find(id);
   if (i == _client_data.end()) {
@@ -39,7 +39,7 @@ Metadata::client(const ClientID& id)
 }
 
 boost::optional<PortInfo>
-Metadata::port(const PortID& id)
+Metadata::port(const PortID& id) const
 {
   const auto i = _port_data.find(id);
   if (i == _port_data.end()) {

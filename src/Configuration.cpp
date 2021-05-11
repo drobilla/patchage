@@ -27,6 +27,7 @@
 #include <ios>
 #include <iostream>
 #include <limits>
+#include <utility>
 #include <vector>
 
 namespace patchage {
@@ -37,7 +38,8 @@ static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
                                                           "JACK_OSC",
                                                           "JACK_CV"};
 
-Configuration::Configuration()
+Configuration::Configuration(std::function<void(const Setting&)> on_change)
+  : _on_change(std::move(on_change))
 {
   std::get<setting::WindowLocation>(_settings).value = Coord{0.0, 0.0};
   std::get<setting::WindowSize>(_settings).value     = Coord{960.0, 540.0};

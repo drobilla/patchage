@@ -42,14 +42,17 @@ struct PortInfo;
 
 class CanvasModule;
 class CanvasPort;
-class Patchage;
+class ILog;
+class Metadata;
+class Configuration;
 
 class Canvas : public Ganv::Canvas
 {
 public:
-  Canvas(ActionSink& action_sink, int width, int height);
+  Canvas(ILog& log, ActionSink& action_sink, int width, int height);
 
-  CanvasPort* create_port(Patchage&       patchage,
+  CanvasPort* create_port(Configuration&  conf,
+                          const Metadata& metadata,
                           const PortID&   id,
                           const PortInfo& info);
 
@@ -79,6 +82,7 @@ private:
   void on_connect(Ganv::Node* port1, Ganv::Node* port2);
   void on_disconnect(Ganv::Node* port1, Ganv::Node* port2);
 
+  ILog&       _log;
   ActionSink& _action_sink;
   PortIndex   _port_index;
   ModuleIndex _module_index;
