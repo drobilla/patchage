@@ -52,7 +52,6 @@ class Builder;
 class ComboBox;
 class ImageMenuItem;
 class Label;
-class Main;
 class MenuBar;
 class MenuItem;
 class Paned;
@@ -165,8 +164,6 @@ protected:
 
   std::unique_ptr<AudioDriver> _jack_driver;
   Configuration                _conf;
-
-  Gtk::Main* _gtk_main;
 
   BufferSizeColumns _buf_size_columns;
 

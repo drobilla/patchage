@@ -166,7 +166,6 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
 
 Patchage::Patchage(Options options)
   : _xml(UIFile::open("patchage"))
-  , _gtk_main(nullptr)
   , INIT_WIDGET(_about_win)
   , INIT_WIDGET(_main_scrolledwin)
   , INIT_WIDGET(_main_win)
