@@ -17,6 +17,7 @@
 #include "Configuration.hpp"
 
 #include "PortType.hpp"
+#include "Setting.hpp"
 #include "SignalDirection.hpp"
 #include "patchage_config.h"
 
@@ -38,6 +39,9 @@ static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
 
 Configuration::Configuration()
 {
+  std::get<setting::WindowLocation>(_settings).value = Coord{0.0, 0.0};
+  std::get<setting::WindowSize>(_settings).value     = Coord{960.0, 540.0};
+
 #ifdef PATCHAGE_USE_LIGHT_THEME
   _port_colors[static_cast<unsigned>(PortType::jack_audio)] =
     _default_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
@@ -108,6 +112,10 @@ Configuration::set_module_location(const std::string& name,
                                    SignalDirection    type,
                                    Coord              loc)
 {
+  if (name.empty()) {
+    return;
+  }
+
   auto i = _module_settings.find(name);
   if (i == _module_settings.end()) {
     i = _module_settings
@@ -149,7 +157,9 @@ Configuration::get_module_split(const std::string& name, bool default_val) const
 void
 Configuration::set_module_split(const std::string& name, bool split)
 {
-  _module_settings[name].split = split;
+  if (!name.empty()) {
+    _module_settings[name].split = split;
+  }
 }
 
 /** Return a vector of filenames in descending order by preference. */
@@ -211,23 +221,27 @@ Configuration::load()
     }
 
     if (key == "window_location") {
-      file >> _window_location.x >> _window_location.y;
+      auto& setting = std::get<setting::WindowLocation>(_settings);
+      file >> setting.value.x >> setting.value.y;
     } else if (key == "window_size") {
-      file >> _window_size.x >> _window_size.y;
+      auto& setting = std::get<setting::WindowSize>(_settings);
+      file >> setting.value.x >> setting.value.y;
     } else if (key == "zoom_level") {
-      file >> _zoom;
+      file >> std::get<setting::Zoom>(_settings).value;
     } else if (key == "font_size") {
-      file >> _font_size;
+      file >> std::get<setting::FontSize>(_settings).value;
     } else if (key == "show_toolbar") {
-      file >> _show_toolbar;
+      file >> std::get<setting::ToolbarVisible>(_settings).value;
     } else if (key == "sprung_layout") {
-      file >> _sprung_layout;
+      file >> std::get<setting::SprungLayout>(_settings).value;
     } else if (key == "show_messages") {
-      file >> _show_messages;
+      file >> std::get<setting::MessagesVisible>(_settings).value;
     } else if (key == "sort_ports") {
-      file >> _sort_ports;
+      file >> std::get<setting::SortedPorts>(_settings).value;
     } else if (key == "messages_height") {
-      file >> _messages_height;
+      file >> std::get<setting::MessagesHeight>(_settings).value;
+    } else if (key == "human_names") {
+      file >> std::get<setting::HumanNames>(_settings).value;
     } else if (key == "port_color") {
       std::string type_name;
       uint32_t    rgba = 0u;
@@ -319,17 +333,20 @@ Configuration::save()
     return;
   }
 
-  file << "window_location " << _window_location.x << " " << _window_location.y
-       << std::endl;
-  file << "window_size " << _window_size.x << " " << _window_size.y
-       << std::endl;
-  file << "zoom_level " << _zoom << std::endl;
-  file << "font_size " << _font_size << std::endl;
-  file << "show_toolbar " << _show_toolbar << std::endl;
-  file << "sprung_layout " << _sprung_layout << std::endl;
-  file << "show_messages " << _show_messages << std::endl;
-  file << "sort_ports " << _sort_ports << std::endl;
-  file << "messages_height " << _messages_height << std::endl;
+  file << "window_location " << get<setting::WindowLocation>().x << " "
+       << get<setting::WindowLocation>().y << std::endl;
+
+  file << "window_size " << get<setting::WindowSize>().x << " "
+       << get<setting::WindowSize>().y << std::endl;
+
+  file << "zoom_level " << get<setting::Zoom>() << std::endl;
+  file << "font_size " << get<setting::FontSize>() << std::endl;
+  file << "show_toolbar " << get<setting::ToolbarVisible>() << std::endl;
+  file << "sprung_layout " << get<setting::SprungLayout>() << std::endl;
+  file << "show_messages " << get<setting::MessagesVisible>() << std::endl;
+  file << "sort_ports " << get<setting::SortedPorts>() << std::endl;
+  file << "messages_height " << get<setting::MessagesHeight>() << std::endl;
+  file << "human_names " << get<setting::HumanNames>() << std::endl;
 
   file << std::hex << std::uppercase;
   for (int i = 0; i < N_PORT_TYPES; ++i) {

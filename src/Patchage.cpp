@@ -26,6 +26,7 @@
 #include "Driver.hpp"
 #include "Event.hpp"
 #include "Legend.hpp"
+#include "Setting.hpp"
 #include "UIFile.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
@@ -285,19 +286,19 @@ Patchage::Patchage(Options options)
   _canvas->widget().show();
   _main_win->present();
 
-  _conf.set_font_size(_canvas->get_default_font_size());
+  _conf.set<setting::FontSize>(_canvas->get_default_font_size());
   _conf.load();
-  _canvas->set_zoom(_conf.get_zoom());
-  _canvas->set_font_size(_conf.get_font_size());
-  if (_conf.get_sort_ports()) {
+  _canvas->set_zoom(_conf.get<setting::Zoom>());
+  _canvas->set_font_size(_conf.get<setting::FontSize>());
+  if (_conf.get<setting::SortedPorts>()) {
     _canvas->set_port_order(port_order, nullptr);
   }
 
-  _main_win->resize(static_cast<int>(_conf.get_window_size().x),
-                    static_cast<int>(_conf.get_window_size().y));
+  _main_win->resize(static_cast<int>(_conf.get<setting::WindowSize>().x),
+                    static_cast<int>(_conf.get<setting::WindowSize>().y));
 
-  _main_win->move(static_cast<int>(_conf.get_window_location().x),
-                  static_cast<int>(_conf.get_window_location().y));
+  _main_win->move(static_cast<int>(_conf.get<setting::WindowLocation>().x),
+                  static_cast<int>(_conf.get<setting::WindowLocation>().y));
 
   _legend = new Legend(_conf);
   _legend->signal_color_changed.connect(
@@ -337,9 +338,9 @@ Patchage::Patchage(Options options)
     _menu_alsa_disconnect->set_sensitive(false);
   }
 
-  _menu_view_toolbar->set_active(_conf.get_show_toolbar());
-  _menu_view_sprung_layout->set_active(_conf.get_sprung_layout());
-  _menu_view_sort_ports->set_active(_conf.get_sort_ports());
+  _menu_view_toolbar->set_active(_conf.get<setting::ToolbarVisible>());
+  _menu_view_sprung_layout->set_active(_conf.get<setting::SprungLayout>());
+  _menu_view_sort_ports->set_active(_conf.get<setting::SortedPorts>());
 
   g_signal_connect(
     _main_win->gobj(), "configure-event", G_CALLBACK(configure_cb), this);
@@ -398,7 +399,7 @@ Patchage::idle_callback()
   // Initial run, attach
   if (_attach) {
     attach();
-    _menu_view_messages->set_active(_conf.get_show_messages());
+    _menu_view_messages->set_active(_conf.get<setting::MessagesVisible>());
     _attach = false;
   }
 
@@ -552,8 +553,8 @@ Patchage::store_window_location()
   int size_y = 0;
   _main_win->get_size(size_x, size_y);
 
-  _conf.set_window_location({double(loc_x), double(loc_y)});
-  _conf.set_window_size({double(size_x), double(size_y)});
+  _conf.set<setting::WindowLocation>({double(loc_x), double(loc_y)});
+  _conf.set<setting::WindowSize>({double(size_x), double(size_y)});
 }
 
 void
@@ -601,7 +602,7 @@ Patchage::on_sprung_layout_toggled()
   const bool sprung = _menu_view_sprung_layout->get_active();
 
   _canvas->set_sprung_layout(sprung);
-  _conf.set_sprung_layout(sprung);
+  _conf.set<setting::SprungLayout>(sprung);
 }
 
 void
@@ -641,7 +642,7 @@ Patchage::on_view_sort_ports()
 {
   const bool sort_ports = this->sort_ports();
   _canvas->set_port_order(sort_ports ? port_order : nullptr, nullptr);
-  _conf.set_sort_ports(sort_ports);
+  _conf.set<setting::SortedPorts>(sort_ports);
   refresh();
 }
 
@@ -650,7 +651,7 @@ Patchage::on_zoom_in()
 {
   const float zoom = _canvas->get_zoom() * 1.25;
   _canvas->set_zoom(zoom);
-  _conf.set_zoom(zoom);
+  _conf.set<setting::Zoom>(zoom);
 }
 
 void
@@ -658,21 +659,21 @@ Patchage::on_zoom_out()
 {
   const float zoom = _canvas->get_zoom() * 0.75;
   _canvas->set_zoom(zoom);
-  _conf.set_zoom(zoom);
+  _conf.set<setting::Zoom>(zoom);
 }
 
 void
 Patchage::on_zoom_normal()
 {
   _canvas->set_zoom(1.0);
-  _conf.set_zoom(1.0);
+  _conf.set<setting::Zoom>(1.0);
 }
 
 void
 Patchage::on_zoom_full()
 {
   _canvas->zoom_full();
-  _conf.set_zoom(_canvas->get_zoom());
+  _conf.set<setting::Zoom>(_canvas->get_zoom());
 }
 
 void
@@ -680,7 +681,7 @@ Patchage::on_increase_font_size()
 {
   const float points = _canvas->get_font_size() + 1.0;
   _canvas->set_font_size(points);
-  _conf.set_font_size(points);
+  _conf.set<setting::FontSize>(points);
 }
 
 void
@@ -688,14 +689,14 @@ Patchage::on_decrease_font_size()
 {
   const float points = _canvas->get_font_size() - 1.0;
   _canvas->set_font_size(points);
-  _conf.set_font_size(points);
+  _conf.set<setting::FontSize>(points);
 }
 
 void
 Patchage::on_normal_font_size()
 {
   _canvas->set_font_size(_canvas->get_default_font_size());
-  _conf.set_font_size(_canvas->get_default_font_size());
+  _conf.set<setting::FontSize>(_canvas->get_default_font_size());
 }
 
 static inline guint
@@ -758,13 +759,13 @@ void
 Patchage::on_messages_resized(Gtk::Allocation&)
 {
   const int max_pos = _main_paned->get_allocation().get_height();
-  _conf.set_messages_height(max_pos - _main_paned->get_position());
+  _conf.set<setting::MessagesHeight>(max_pos - _main_paned->get_position());
 }
 
 void
 Patchage::save()
 {
-  _conf.set_zoom(_canvas->get_zoom()); // Can be changed by ganv
+  _conf.set<setting::Zoom>(_canvas->get_zoom()); // Can be changed by ganv
   _conf.save();
 }
 
@@ -844,7 +845,7 @@ Patchage::on_view_messages()
     if (!_pane_initialized) {
       const int min_height  = _log.min_height();
       const int max_pos     = _main_paned->get_allocation().get_height();
-      const int conf_height = _conf.get_messages_height();
+      const int conf_height = _conf.get<setting::MessagesHeight>();
       _main_paned->set_position(max_pos - std::max(conf_height, min_height));
 
       _pane_initialized = true;
@@ -852,10 +853,10 @@ Patchage::on_view_messages()
 
     _log_scrolledwindow->show();
     _status_text->scroll_to_mark(_status_text->get_buffer()->get_insert(), 0);
-    _conf.set_show_messages(true);
+    _conf.set<setting::MessagesVisible>(true);
   } else {
     _log_scrolledwindow->hide();
-    _conf.set_show_messages(false);
+    _conf.set<setting::MessagesVisible>(false);
   }
 }
 
@@ -868,7 +869,7 @@ Patchage::on_view_toolbar()
     _toolbar->hide();
   }
 
-  _conf.set_show_toolbar(_menu_view_toolbar->get_active());
+  _conf.set<setting::ToolbarVisible>(_menu_view_toolbar->get_active());
 }
 
 bool

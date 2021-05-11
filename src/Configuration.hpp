@@ -19,6 +19,7 @@
 
 #include "Coord.hpp"
 #include "PortType.hpp"
+#include "Setting.hpp"
 #include "SignalDirection.hpp"
 
 #include <boost/optional/optional.hpp>
@@ -26,6 +27,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <tuple>
 
 #define N_PORT_TYPES 5
 
@@ -34,7 +36,7 @@ namespace patchage {
 class Configuration
 {
 public:
-  Configuration();
+  explicit Configuration();
 
   void load();
   void save();
@@ -50,29 +52,6 @@ public:
   void set_module_split(const std::string& name, bool split);
   bool get_module_split(const std::string& name, bool default_val) const;
 
-  float get_zoom() const { return _zoom; }
-  void  set_zoom(float zoom) { _zoom = zoom; }
-  float get_font_size() const { return _font_size; }
-  void  set_font_size(float font_size) { _font_size = font_size; }
-
-  float get_show_toolbar() const { return _show_toolbar; }
-  void  set_show_toolbar(float show_toolbar) { _show_toolbar = show_toolbar; }
-
-  float get_sprung_layout() const { return _sprung_layout; }
-  void  set_sprung_layout(float sprung_layout)
-  {
-    _sprung_layout = sprung_layout;
-  }
-
-  bool get_show_messages() const { return _show_messages; }
-  void set_show_messages(bool show_messages) { _show_messages = show_messages; }
-
-  bool get_sort_ports() const { return _sort_ports; }
-  void set_sort_ports(bool sort_ports) { _sort_ports = sort_ports; }
-
-  int  get_messages_height() const { return _messages_height; }
-  void set_messages_height(int height) { _messages_height = height; }
-
   uint32_t get_port_color(PortType type) const
   {
     return _port_colors[static_cast<unsigned>(type)];
@@ -83,10 +62,43 @@ public:
     _port_colors[static_cast<unsigned>(type)] = rgba;
   }
 
-  Coord get_window_location() { return _window_location; }
-  void  set_window_location(Coord loc) { _window_location = loc; }
-  Coord get_window_size() { return _window_size; }
-  void  set_window_size(Coord size) { _window_size = size; }
+  // Set a global configuration setting
+  template<class S>
+  void set(typename S::Value value)
+  {
+    S& setting = std::get<S>(_settings);
+
+    if (setting.value != value) {
+      setting.value = std::move(value);
+    }
+  }
+
+  // Get a global configuration setting
+  template<class S>
+  typename S::Value get() const
+  {
+    return std::get<S>(_settings).value;
+  }
+
+  /// Call `visitor` once with each configuration setting
+  template<class Visitor>
+  void each(Visitor visitor)
+  {
+    visitor(std::get<setting::FontSize>(_settings));
+    visitor(std::get<setting::HumanNames>(_settings));
+    visitor(std::get<setting::MessagesHeight>(_settings));
+    visitor(std::get<setting::MessagesVisible>(_settings));
+    visitor(std::get<setting::SortedPorts>(_settings));
+    visitor(std::get<setting::SprungLayout>(_settings));
+    visitor(std::get<setting::ToolbarVisible>(_settings));
+    visitor(std::get<setting::WindowLocation>(_settings));
+    visitor(std::get<setting::WindowSize>(_settings));
+    visitor(std::get<setting::Zoom>(_settings));
+
+    for (auto i = 0u; i < N_PORT_TYPES; ++i) {
+      visitor(setting::PortColor{static_cast<PortType>(i), _port_colors[i]});
+    }
+  }
 
 private:
   struct ModuleSettings {
@@ -105,16 +117,20 @@ private:
   uint32_t _default_port_colors[N_PORT_TYPES] = {};
   uint32_t _port_colors[N_PORT_TYPES]         = {};
 
-  Coord _window_location{0.0, 0.0};
-  Coord _window_size{960.0, 540.0};
+  using Settings = std::tuple<setting::AlsaAttached,
+                              setting::FontSize,
+                              setting::HumanNames,
+                              setting::JackAttached,
+                              setting::MessagesHeight,
+                              setting::MessagesVisible,
+                              setting::SortedPorts,
+                              setting::SprungLayout,
+                              setting::ToolbarVisible,
+                              setting::WindowLocation,
+                              setting::WindowSize,
+                              setting::Zoom>;
 
-  float _zoom            = 1.0f;
-  float _font_size       = 12.0f;
-  int   _messages_height = 0;
-  bool  _show_toolbar    = true;
-  bool  _sprung_layout   = false;
-  bool  _show_messages   = false;
-  bool  _sort_ports      = true;
+  Settings _settings;
 };
 
 } // namespace patchage

@@ -24,6 +24,18 @@ struct Coord {
   double y{0.0};
 };
 
+inline bool
+operator==(const Coord& lhs, const Coord& rhs)
+{
+  return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+inline bool
+operator!=(const Coord& lhs, const Coord& rhs)
+{
+  return !(lhs == rhs);
+}
+
 } // namespace patchage
 
 #endif // PATCHAGE_COORD_HPP

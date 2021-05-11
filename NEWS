@@ -2,10 +2,11 @@ patchage (1.0.5) unstable;
 
   * Fix ALSA sequencer port subscriptions
   * Fix crash on client disconnection
+  * Save "human names" setting in configuration
   * Show latency in toolbar with 2 decimal places
   * Switch to C++14
 
- -- David Robillard <d@drobilla.net>  Tue, 11 May 2021 17:27:16 +0000
+ -- David Robillard <d@drobilla.net>  Tue, 11 May 2021 17:37:26 +0000
 
 patchage (1.0.4) stable;
 
