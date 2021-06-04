@@ -156,13 +156,6 @@ protected:
 
   Glib::RefPtr<Gtk::Builder> _xml;
 
-  std::unique_ptr<Canvas> _canvas;
-  std::mutex              _events_mutex;
-  std::queue<Event>       _driver_events;
-  Configuration           _conf;
-
-  BufferSizeColumns _buf_size_columns;
-
   Widget<Gtk::AboutDialog>    _about_win;
   Widget<Gtk::ScrolledWindow> _main_scrolledwin;
   Widget<Gtk::Window>         _main_win;
@@ -198,12 +191,18 @@ protected:
   Widget<Gtk::Paned>          _main_paned;
   Widget<Gtk::ScrolledWindow> _log_scrolledwindow;
   Widget<Gtk::TextView>       _status_text;
-  Legend*                     _legend;
-  TextViewLog                 _log;
-  Metadata                    _metadata;
-  Drivers                     _drivers;
-  Reactor                     _reactor;
-  ActionSink                  _action_sink;
+
+  Configuration           _conf;
+  TextViewLog             _log;
+  std::unique_ptr<Canvas> _canvas;
+  std::mutex              _events_mutex;
+  std::queue<Event>       _driver_events;
+  BufferSizeColumns       _buf_size_columns;
+  Legend*                 _legend;
+  Metadata                _metadata;
+  Drivers                 _drivers;
+  Reactor                 _reactor;
+  ActionSink              _action_sink;
 
   Glib::RefPtr<Gtk::TextTag> _error_tag;
   Glib::RefPtr<Gtk::TextTag> _warning_tag;

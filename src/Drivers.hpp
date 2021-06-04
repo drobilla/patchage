@@ -55,9 +55,9 @@ public:
 
 protected:
   ILog&                        _log;
+  Driver::EventSink            _emit_event;
   std::unique_ptr<Driver>      _alsa_driver;
   std::unique_ptr<AudioDriver> _jack_driver;
-  Driver::EventSink            _emit_event;
 };
 
 } // namespace patchage
