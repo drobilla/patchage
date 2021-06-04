@@ -24,12 +24,12 @@
 
 namespace patchage {
 
+struct ClientID;
 struct PortID;
 
 class Canvas;
 class CanvasModule;
 class CanvasPort;
-class ClientID;
 class Configuration;
 class Drivers;
 class ILog;
