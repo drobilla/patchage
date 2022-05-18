@@ -19,6 +19,7 @@
 #include "Canvas.hpp"
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
+#include "ClientType.hpp"
 #include "Configuration.hpp"
 #include "Driver.hpp"
 #include "Drivers.hpp"
@@ -31,11 +32,27 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/variant/apply_visitor.hpp>
 
+#include <ostream>
+
 namespace patchage {
+
+inline std::ostream&
+operator<<(std::ostream& os, const ClientType type)
+{
+  switch (type) {
+  case ClientType::jack:
+    return os << "JACK";
+  case ClientType::alsa:
+    return os << "ALSA";
+  }
+
+  return os;
+}
 
 Reactor::Reactor(Configuration& conf,
                  Drivers&       drivers,
@@ -54,10 +71,10 @@ Reactor::operator()(const action::ConnectPorts& action)
     if (auto* d = _drivers.driver(action.tail.type())) {
       d->connect(action.tail, action.head);
     } else {
-      _log.error(fmt::format("No driver for port type {}", action.tail.type()));
+      _log.error(fmt::format("No driver for {}", action.tail.type()));
     }
   } else {
-    _log.warning("Unable to connect incompatible port types");
+    _log.warning("Unable to connect incompatible port");
   }
 }
 
@@ -92,10 +109,10 @@ Reactor::operator()(const action::DisconnectPorts& action)
     if (auto* d = _drivers.driver(action.tail.type())) {
       d->disconnect(action.tail, action.head);
     } else {
-      _log.error(fmt::format("No driver for port type {}", action.tail.type()));
+      _log.error(fmt::format("No driver for {}", action.tail.type()));
     }
   } else {
-    _log.error("Unable to disconnect incompatible port types");
+    _log.error("Unable to disconnect incompatible ports");
   }
 }
 
