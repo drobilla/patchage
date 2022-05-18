@@ -333,7 +333,6 @@ AlsaDriver::connect(const PortID& tail_id, const PortID& head_id)
   }
 
   const snd_seq_addr_t tail_addr = {tail_id.alsa_client(), tail_id.alsa_port()};
-
   const snd_seq_addr_t head_addr = {head_id.alsa_client(), head_id.alsa_port()};
 
   if (tail_addr.client == head_addr.client &&
@@ -383,7 +382,6 @@ AlsaDriver::disconnect(const PortID& tail_id, const PortID& head_id)
   }
 
   const snd_seq_addr_t tail_addr = {tail_id.alsa_client(), tail_id.alsa_port()};
-
   const snd_seq_addr_t head_addr = {head_id.alsa_client(), head_id.alsa_port()};
 
   snd_seq_port_subscribe_t* subs = nullptr;

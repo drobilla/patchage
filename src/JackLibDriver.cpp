@@ -332,7 +332,6 @@ JackLibDriver::connect(const PortID& tail_id, const PortID& head_id)
   if (result) {
     _log.error(
       fmt::format("[JACK] Failed to connect {} => {}", tail_name, head_name));
-
     return false;
   }
 
