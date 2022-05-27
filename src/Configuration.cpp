@@ -265,10 +265,10 @@ Configuration::load()
         std::cerr << "error: color for unknown port type `" << type_name << "'"
                   << std::endl;
       }
-    } else if (key == "module_position" || key[0] == '\"') {
+    } else if (key == "module_position") {
       Coord       loc;
       std::string name;
-      file.ignore(1, '\"');
+      file.ignore(std::numeric_limits<std::streamsize>::max(), '\"');
       std::getline(file, name, '\"');
 
       SignalDirection type = SignalDirection::input;
