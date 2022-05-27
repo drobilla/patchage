@@ -41,8 +41,10 @@ static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
 Configuration::Configuration(std::function<void(const Setting&)> on_change)
   : _on_change(std::move(on_change))
 {
+  std::get<setting::FontSize>(_settings).value       = 12.0f;
   std::get<setting::WindowLocation>(_settings).value = Coord{0.0, 0.0};
   std::get<setting::WindowSize>(_settings).value     = Coord{960.0, 540.0};
+  std::get<setting::Zoom>(_settings).value           = 1.0f;
 
 #ifdef PATCHAGE_USE_LIGHT_THEME
   _port_colors[static_cast<unsigned>(PortType::jack_audio)] =
