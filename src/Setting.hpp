@@ -17,13 +17,12 @@
 #ifndef PATCHAGE_SETTING_HPP
 #define PATCHAGE_SETTING_HPP
 
-#include "ClientID.hpp"
 #include "Coord.hpp"
-#include "PortID.hpp"
 #include "PortType.hpp"
-#include "SignalDirection.hpp"
 
 #include <boost/variant/variant.hpp>
+
+#include <cstdint>
 
 namespace patchage {
 namespace setting {

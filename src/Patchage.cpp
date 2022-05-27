@@ -65,6 +65,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gtkmm/box.h>
 #include <gtkmm/builder.h>
 #include <gtkmm/checkbutton.h>
+#include <gtkmm/checkmenuitem.h>
 #include <gtkmm/combobox.h>
 #include <gtkmm/dialog.h>
 #include <gtkmm/enums.h>

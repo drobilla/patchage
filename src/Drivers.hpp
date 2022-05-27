@@ -17,6 +17,7 @@
 #ifndef PATCHAGE_DRIVERS_HPP
 #define PATCHAGE_DRIVERS_HPP
 
+#include "AudioDriver.hpp"
 #include "ClientType.hpp"
 #include "Driver.hpp"
 
@@ -24,7 +25,6 @@
 
 namespace patchage {
 
-class AudioDriver;
 class ILog;
 
 /// Manager for all drivers

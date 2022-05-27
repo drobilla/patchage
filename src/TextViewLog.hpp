@@ -17,17 +17,15 @@
 #ifndef PATCHAGE_TEXTVIEWLOG_HPP
 #define PATCHAGE_TEXTVIEWLOG_HPP
 
-// IWYU pragma: no_include <gtkmm/texttag.h>
-
 #include "ILog.hpp"
 
 #include <glibmm/refptr.h>
+#include <gtkmm/texttag.h>
 
 #include <string>
 
 namespace Gtk {
 class TextView;
-class TextTag; // IWYU pragma: keep
 } // namespace Gtk
 
 namespace patchage {

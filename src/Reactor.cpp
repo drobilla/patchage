@@ -28,6 +28,7 @@
 #include "Setting.hpp"
 #include "warnings.hpp"
 
+#include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
 
 PATCHAGE_DISABLE_FMT_WARNINGS

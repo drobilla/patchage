@@ -19,7 +19,6 @@
 
 #include <gdk/gdk.h>
 #include <glibmm/refptr.h>
-#include <gtkmm/checkmenuitem.h>
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treemodelcolumn.h>
 #include <gtkmm/widget.h>
@@ -51,6 +50,7 @@ namespace Gtk {
 class AboutDialog;
 class Alignment;
 class Builder;
+class CheckMenuItem;
 class ComboBox;
 class ImageMenuItem;
 class Label;

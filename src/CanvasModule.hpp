@@ -27,13 +27,10 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 PATCHAGE_RESTORE_WARNINGS
 
 #include <gdk/gdk.h>
+#include <gtkmm/menu.h>
 
 #include <memory>
 #include <string>
-
-namespace Gtk {
-class Menu;
-} // namespace Gtk
 
 namespace patchage {
 
