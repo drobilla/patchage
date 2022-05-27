@@ -540,7 +540,7 @@ Patchage::operator()(const setting::JackAttached& setting)
 void
 Patchage::operator()(const setting::FontSize& setting)
 {
-  if (_canvas->get_font_size() != setting.value) {
+  if (static_cast<float>(_canvas->get_font_size()) != setting.value) {
     _canvas->set_font_size(setting.value);
   }
 }
@@ -715,7 +715,7 @@ Patchage::operator()(const setting::WindowSize& setting)
 void
 Patchage::operator()(const setting::Zoom& setting)
 {
-  if (_canvas->get_zoom() != setting.value) {
+  if (static_cast<float>(_canvas->get_zoom()) != setting.value) {
     _canvas->set_zoom(setting.value);
   }
 }

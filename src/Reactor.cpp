@@ -81,7 +81,7 @@ Reactor::operator()(const action::ConnectPorts& action)
 void
 Reactor::operator()(const action::DecreaseFontSize&)
 {
-  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() - 1.0);
+  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() - 1.0f);
 }
 
 void
@@ -119,7 +119,7 @@ Reactor::operator()(const action::DisconnectPorts& action)
 void
 Reactor::operator()(const action::IncreaseFontSize&)
 {
-  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() + 1.0);
+  _conf.set<setting::FontSize>(_conf.get<setting::FontSize>() + 1.0f);
 }
 
 void
@@ -165,7 +165,7 @@ Reactor::operator()(const action::ZoomFull&)
 void
 Reactor::operator()(const action::ZoomIn&)
 {
-  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 1.25);
+  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 1.25f);
 }
 
 void
@@ -177,7 +177,7 @@ Reactor::operator()(const action::ZoomNormal&)
 void
 Reactor::operator()(const action::ZoomOut&)
 {
-  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 0.75);
+  _conf.set<setting::Zoom>(_conf.get<setting::Zoom>() * 0.75f);
 }
 
 void
