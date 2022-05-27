@@ -66,6 +66,7 @@ def configure(conf):
                 '-Wno-implicit-float-conversion',
                 '-Wno-padded',
                 '-Wno-pedantic',
+                '-Wno-reserved-identifier',
                 '-Wno-shorten-64-to-32',
                 '-Wno-sign-conversion',
             ],
