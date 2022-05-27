@@ -89,7 +89,9 @@ Reactor::operator()(const action::DisconnectClient& action)
 {
   if (CanvasModule* mod = find_module(action.client, action.direction)) {
     for (Ganv::Port* p : *mod) {
-      p->disconnect();
+      if (p) {
+        p->disconnect();
+      }
     }
   }
 }

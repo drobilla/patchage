@@ -639,9 +639,11 @@ update_edge_color(GanvEdge* edge, void* data)
   auto*       patchage = static_cast<Patchage*>(data);
   Ganv::Edge* edgemm   = Glib::wrap(edge);
 
-  auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
-  if (tail) {
-    edgemm->set_color(patchage->conf().get_port_color(tail->type()));
+  if (edgemm) {
+    auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
+    if (tail) {
+      edgemm->set_color(patchage->conf().get_port_color(tail->type()));
+    }
   }
 }
 

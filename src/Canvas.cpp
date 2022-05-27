@@ -312,7 +312,10 @@ disconnect_edge(GanvEdge* edge, void* data)
 {
   auto*       canvas = static_cast<Canvas*>(data);
   Ganv::Edge* edgemm = Glib::wrap(edge);
-  canvas->on_disconnect(edgemm->get_tail(), edgemm->get_head());
+
+  if (canvas && edgemm) {
+    canvas->on_disconnect(edgemm->get_tail(), edgemm->get_head());
+  }
 }
 
 bool
