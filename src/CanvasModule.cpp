@@ -70,18 +70,24 @@ CanvasModule::update_menu()
     bool has_in  = false;
     bool has_out = false;
     for (const auto* p : *this) {
-      if (p->is_input()) {
-        has_in = true;
-      } else {
-        has_out = true;
-      }
+      if (p) {
+        if (p->is_input()) {
+          has_in = true;
+        } else {
+          has_out = true;
+        }
 
-      if (has_in && has_out) {
-        _menu->items()[0].show(); // Show "Split" menu item
-        return;
+        if (has_in && has_out) {
+          break;
+        }
       }
     }
-    _menu->items()[0].hide(); // Hide "Split" menu item
+
+    if (has_in && has_out) {
+      _menu->items()[0].show(); // Show "Split" menu item
+    } else {
+      _menu->items()[0].hide(); // Hide "Split" menu item
+    }
   }
 }
 
