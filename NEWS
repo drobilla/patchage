@@ -1,7 +1,9 @@
-patchage (1.0.5) unstable;
+patchage (1.0.6) stable;
 
   * Fix ALSA sequencer port subscriptions
   * Fix crash on client disconnection
+  * Fix various minor bugs
+  * Rework code architecture to be more decoupled and data-driven
   * Save "human names" setting in configuration
   * Show latency in toolbar with 2 decimal places
   * Switch to C++14
