@@ -73,10 +73,15 @@ def configure(conf):
                 '-Wno-alloca',
                 '-Wno-conversion',
                 '-Wno-float-equal',
+                '-Wno-inline',
                 '-Wno-padded',
                 '-Wno-pedantic',
                 '-Wno-stack-protector',
+                '-Wno-suggest-attribute=const',
                 '-Wno-suggest-attribute=noreturn',
+                '-Wno-suggest-attribute=pure',
+                '-Wno-suggest-final-methods',
+                '-Wno-suggest-final-types',
             ],
         })
 
