@@ -2,12 +2,12 @@ patchage (1.0.6) stable;
 
   * Fix ALSA sequencer port subscriptions
   * Fix crash on client disconnection
+  * Fix initial display with no configuration file
   * Fix various minor bugs
   * Rework code architecture to be more decoupled and data-driven
   * Save "human names" setting in configuration
   * Show latency in toolbar with 2 decimal places
   * Switch to C++14
-  * Fix initial display with no configuration file
 
  -- David Robillard <d@drobilla.net>  Fri, 27 May 2022 03:08:31 +0000
 
