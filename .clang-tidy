@@ -50,4 +50,4 @@ Checks: >
   -readability-implicit-bool-conversion,
 FormatStyle: file
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'src/.*'
+HeaderFilterRegex: '.*'
