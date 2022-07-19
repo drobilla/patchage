@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright 2011-2017 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: CC0-1.0 OR GPL-3.0-or-later
+
 if [ "$#" != 3 ]; then
 	echo "USAGE: $0 LIB_PREFIX BUNDLE EXE";
 	exit 1;

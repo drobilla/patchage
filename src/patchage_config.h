@@ -1,5 +1,5 @@
 // Copyright 2021-2022 David Robillard <d@drobilla.net>
-// SPDX-License-Identifier: ISC
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
   Configuration header that defines reasonable defaults at compile time.
