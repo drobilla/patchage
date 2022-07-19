@@ -59,7 +59,7 @@ private:
   uint8_t     _alsa_id{};   ///< Client ID for Type::alsa
 };
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const ClientID& id)
 {
   switch (id.type()) {
@@ -73,7 +73,7 @@ operator<<(std::ostream& os, const ClientID& id)
   return os;
 }
 
-static inline bool
+inline bool
 operator==(const ClientID& lhs, const ClientID& rhs)
 {
   if (lhs.type() != rhs.type()) {
@@ -91,7 +91,7 @@ operator==(const ClientID& lhs, const ClientID& rhs)
   return false;
 }
 
-static inline bool
+inline bool
 operator<(const ClientID& lhs, const ClientID& rhs)
 {
   if (lhs.type() != rhs.type()) {

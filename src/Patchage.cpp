@@ -618,7 +618,7 @@ Patchage::operator()(const setting::MessagesVisible& setting)
   _menu_view_messages->set_active(setting.value);
 }
 
-static inline guint
+inline guint
 highlight_color(guint c, guint delta)
 {
   const guint max_char = 255;

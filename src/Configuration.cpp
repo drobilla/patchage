@@ -296,7 +296,7 @@ Configuration::load()
   file.close();
 }
 
-static inline void
+inline void
 write_module_position(std::ofstream&     os,
                       const std::string& name,
                       const char*        type,

@@ -101,7 +101,7 @@ private:
   bool        _alsa_is_input{}; ///< Input flag for Type::alsa
 };
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const PortID& id)
 {
   switch (id.type()) {
@@ -116,7 +116,7 @@ operator<<(std::ostream& os, const PortID& id)
   return os;
 }
 
-static inline bool
+inline bool
 operator==(const PortID& lhs, const PortID& rhs)
 {
   if (lhs.type() != rhs.type()) {
@@ -137,7 +137,7 @@ operator==(const PortID& lhs, const PortID& rhs)
   return false;
 }
 
-static inline bool
+inline bool
 operator<(const PortID& lhs, const PortID& rhs)
 {
   if (lhs.type() != rhs.type()) {
