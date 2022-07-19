@@ -3,6 +3,7 @@
 
 #include "Configuration.hpp"
 
+#include "Coord.hpp"
 #include "PortType.hpp"
 #include "Setting.hpp"
 #include "SignalDirection.hpp"
@@ -11,9 +12,9 @@
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
-#include <ios>
 #include <iostream>
 #include <limits>
+#include <type_traits>
 #include <utility>
 #include <vector>
 

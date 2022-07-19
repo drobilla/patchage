@@ -15,7 +15,7 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <fmt/ostream.h> // IWYU pragma: keep
 PATCHAGE_RESTORE_WARNINGS
 
 #include <dbus/dbus-glib-lowlevel.h>
@@ -51,10 +51,10 @@ class JackDriver : public AudioDriver
 public:
   explicit JackDriver(ILog& log, EventSink emit_event);
 
-  JackDriver(const JackDriver&) = delete;
+  JackDriver(const JackDriver&)            = delete;
   JackDriver& operator=(const JackDriver&) = delete;
 
-  JackDriver(JackDriver&&) = delete;
+  JackDriver(JackDriver&&)            = delete;
   JackDriver& operator=(JackDriver&&) = delete;
 
   ~JackDriver() override;

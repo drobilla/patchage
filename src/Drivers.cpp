@@ -4,6 +4,7 @@
 #include "Drivers.hpp"
 
 #include "AudioDriver.hpp"
+#include "ClientType.hpp"
 #include "Driver.hpp"
 #include "Event.hpp"
 #include "make_alsa_driver.hpp"

@@ -4,13 +4,16 @@
 #include "CanvasModule.hpp"
 
 #include "Action.hpp"
+#include "ActionSink.hpp"
 #include "Canvas.hpp"
 #include "CanvasPort.hpp"
+#include "ClientID.hpp"
 #include "PortID.hpp"
 #include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
+#include "ganv/Module.hpp"
 #include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 

@@ -3,6 +3,7 @@
 
 #include "Reactor.hpp"
 
+#include "Action.hpp"
 #include "Canvas.hpp"
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
@@ -13,6 +14,7 @@
 #include "ILog.hpp"
 #include "PortID.hpp"
 #include "Setting.hpp"
+#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 #include "ganv/Module.hpp"
@@ -20,7 +22,7 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <fmt/ostream.h> // IWYU pragma: keep
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/variant/apply_visitor.hpp>

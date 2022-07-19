@@ -4,13 +4,16 @@
 #include "Canvas.hpp"
 
 #include "Action.hpp"
+#include "ActionSink.hpp"
 #include "CanvasModule.hpp"
 #include "CanvasPort.hpp"
+#include "ClientID.hpp"
 #include "ClientInfo.hpp"
 #include "Configuration.hpp"
 #include "Coord.hpp"
 #include "ILog.hpp"
 #include "Metadata.hpp"
+#include "PortID.hpp"
 #include "PortInfo.hpp"
 #include "PortNames.hpp"
 #include "Setting.hpp"
@@ -18,16 +21,18 @@
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
+#include "ganv/Canvas.hpp"
 #include "ganv/Edge.hpp"
 #include "ganv/Module.hpp"
 #include "ganv/Node.hpp"
 #include "ganv/Port.hpp"
 #include "ganv/module.h"
+#include "ganv/types.h"
 PATCHAGE_RESTORE_WARNINGS
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <fmt/ostream.h> // IWYU pragma: keep
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/optional/optional.hpp>
@@ -38,7 +43,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cassert>
 #include <cstdlib>
 #include <functional>
-#include <iosfwd>
 #include <set>
 #include <string>
 #include <utility>
