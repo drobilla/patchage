@@ -82,7 +82,7 @@ public:
 
   // Get a global configuration setting
   template<class S>
-  const decltype(S::value) get() const
+  decltype(S::value) get() const
   {
     return std::get<S>(_settings).value;
   }
