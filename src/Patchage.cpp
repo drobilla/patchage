@@ -417,7 +417,8 @@ Patchage::update_toolbar()
     const auto buffer_size = _drivers.jack()->buffer_size();
     const auto sample_rate = _drivers.jack()->sample_rate();
     if (sample_rate != 0) {
-      const auto latency_ms = buffer_size * 1000 / float(sample_rate);
+      const auto latency_ms =
+        buffer_size * 1000 / static_cast<float>(sample_rate);
 
       _latency_label->set_label(fmt::format(
         " frames @ {} kHz ({:0.2f} ms)", sample_rate / 1000, latency_ms));
@@ -463,8 +464,11 @@ Patchage::store_window_location()
   int size_y = 0;
   _main_win->get_size(size_x, size_y);
 
-  _conf.set<setting::WindowLocation>({double(loc_x), double(loc_y)});
-  _conf.set<setting::WindowSize>({double(size_x), double(size_y)});
+  _conf.set<setting::WindowLocation>(
+    {static_cast<double>(loc_x), static_cast<double>(loc_y)});
+
+  _conf.set<setting::WindowSize>(
+    {static_cast<double>(size_x), static_cast<double>(size_y)});
 }
 
 void
