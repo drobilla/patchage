@@ -54,7 +54,7 @@ public:
 
   // Set a global configuration setting
   template<class S>
-  void set(typename S::Value value)
+  void set(decltype(S::value) value)
   {
     S& setting = std::get<S>(_settings);
 
@@ -66,7 +66,7 @@ public:
 
   // Get a global configuration setting
   template<class S>
-  typename S::Value get() const
+  const decltype(S::value) get() const
   {
     return std::get<S>(_settings).value;
   }

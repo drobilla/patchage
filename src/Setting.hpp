@@ -16,9 +16,7 @@ namespace setting {
 
 template<class T>
 struct Setting {
-  using Value = T;
-
-  Value value{};
+  T value{};
 };
 
 struct PortColor {
