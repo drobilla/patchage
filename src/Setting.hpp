@@ -14,28 +14,58 @@
 namespace patchage {
 namespace setting {
 
-template<class T>
-struct Setting {
-  T value{};
+struct AlsaAttached {
+  bool value{};
+};
+
+struct FontSize {
+  float value{};
+};
+
+struct HumanNames {
+  bool value{};
+};
+
+struct JackAttached {
+  bool value{};
+};
+
+struct MessagesHeight {
+  int value{};
+};
+
+struct MessagesVisible {
+  bool value{};
 };
 
 struct PortColor {
   PortType type{};
-  uint32_t value{};
+  uint32_t color{};
 };
 
-struct AlsaAttached : Setting<bool> {};
-struct FontSize : Setting<float> {};
-struct HumanNames : Setting<bool> {};
-struct JackAttached : Setting<bool> {};
-struct MessagesHeight : Setting<int> {};
-struct MessagesVisible : Setting<bool> {};
-struct SortedPorts : Setting<bool> {};
-struct SprungLayout : Setting<bool> {};
-struct ToolbarVisible : Setting<bool> {};
-struct WindowLocation : Setting<Coord> {};
-struct WindowSize : Setting<Coord> {};
-struct Zoom : Setting<float> {};
+struct SortedPorts {
+  bool value{};
+};
+
+struct SprungLayout {
+  bool value{};
+};
+
+struct ToolbarVisible {
+  bool value{};
+};
+
+struct WindowLocation {
+  Coord value{};
+};
+
+struct WindowSize {
+  Coord value{};
+};
+
+struct Zoom {
+  float value{};
+};
 
 } // namespace setting
 
