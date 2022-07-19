@@ -42,7 +42,6 @@ Checks: >
   -llvm-header-guard,
   -llvmlibc-*,
   -misc-no-recursion,
-  -modernize-use-default-member-init,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,

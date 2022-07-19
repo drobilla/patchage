@@ -68,8 +68,8 @@ private:
   void         _refresh_main();
 
   ILog&      _log;
-  snd_seq_t* _seq;
-  pthread_t  _refresh_thread;
+  snd_seq_t* _seq{nullptr};
+  pthread_t  _refresh_thread{};
 
   struct SeqAddrComparator {
     bool operator()(const snd_seq_addr_t& a, const snd_seq_addr_t& b) const
@@ -133,8 +133,6 @@ port_info(const snd_seq_port_info_t* const pinfo)
 AlsaDriver::AlsaDriver(ILog& log, EventSink emit_event)
   : Driver{std::move(emit_event)}
   , _log(log)
-  , _seq(nullptr)
-  , _refresh_thread{}
 {}
 
 AlsaDriver::~AlsaDriver()

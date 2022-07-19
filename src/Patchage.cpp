@@ -207,12 +207,10 @@ Patchage::Patchage(Options options)
   , _conf([this](const Setting& setting) { on_conf_change(setting); })
   , _log(_status_text)
   , _canvas(new Canvas{_log, _action_sink, 1600 * 2, 1200 * 2})
-  , _legend(nullptr)
   , _drivers(_log, [this](const Event& event) { on_driver_event(event); })
   , _reactor(_conf, _drivers, *_canvas, _log)
   , _action_sink([this](const Action& action) { _reactor(action); })
   , _options{options}
-  , _attach(true)
 {
   Glib::set_application_name("Patchage");
   _about_win->property_program_name()   = "Patchage";

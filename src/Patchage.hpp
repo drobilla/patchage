@@ -180,7 +180,7 @@ protected:
   std::mutex              _events_mutex;
   std::queue<Event>       _driver_events;
   BufferSizeColumns       _buf_size_columns;
-  Legend*                 _legend;
+  Legend*                 _legend{nullptr};
   Metadata                _metadata;
   Drivers                 _drivers;
   Reactor                 _reactor;
@@ -190,7 +190,7 @@ protected:
   Glib::RefPtr<Gtk::TextTag> _warning_tag;
 
   Options _options;
-  bool    _attach;
+  bool    _attach{true};
 };
 
 } // namespace patchage
