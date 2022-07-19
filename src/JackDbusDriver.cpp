@@ -15,6 +15,7 @@
  * along with Patchage.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "AudioDriver.hpp"
 #include "ClientType.hpp"
 #include "Driver.hpp"
 #include "Event.hpp"
@@ -160,18 +161,18 @@ JackDriver::update_attached()
 
   if (!_server_responding) {
     if (was_attached) {
-      _emit_event(DriverDetachmentEvent{ClientType::jack});
+      _emit_event(event::DriverDetached{ClientType::jack});
     }
     return;
   }
 
   if (_server_started && !was_attached) {
-    _emit_event(DriverAttachmentEvent{ClientType::jack});
+    _emit_event(event::DriverAttached{ClientType::jack});
     return;
   }
 
   if (!_server_started && was_attached) {
-    _emit_event(DriverDetachmentEvent{ClientType::jack});
+    _emit_event(event::DriverDetached{ClientType::jack});
     return;
   }
 }
@@ -194,7 +195,7 @@ JackDriver::on_jack_disappeared()
   _server_responding = false;
 
   if (_server_started) {
-    _emit_event(DriverDetachmentEvent{ClientType::jack});
+    _emit_event(event::DriverDetached{ClientType::jack});
   }
 
   _server_started = false;
@@ -279,12 +280,12 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
     if (!me->_server_started) {
       me->_server_started = true;
-      me->_emit_event(DriverAttachmentEvent{ClientType::jack});
+      me->_emit_event(event::DriverAttached{ClientType::jack});
     }
 
     me->_emit_event(
-      PortCreationEvent{PortID::jack(client_name, port_name),
-                        me->port_info(port_name, port_type, port_flags)});
+      event::PortCreated{PortID::jack(client_name, port_name),
+                         me->port_info(port_name, port_type, port_flags)});
 
     return DBUS_HANDLER_RESULT_HANDLED;
   }
@@ -313,10 +314,10 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
     if (!me->_server_started) {
       me->_server_started = true;
-      me->_emit_event(DriverAttachmentEvent{ClientType::jack});
+      me->_emit_event(event::DriverAttached{ClientType::jack});
     }
 
-    me->_emit_event(PortDestructionEvent{PortID::jack(client_name, port_name)});
+    me->_emit_event(event::PortDestroyed{PortID::jack(client_name, port_name)});
 
     return DBUS_HANDLER_RESULT_HANDLED;
   }
@@ -355,11 +356,12 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
     if (!me->_server_started) {
       me->_server_started = true;
-      me->_emit_event(DriverAttachmentEvent{ClientType::jack});
+      me->_emit_event(event::DriverAttached{ClientType::jack});
     }
 
-    me->_emit_event(ConnectionEvent{PortID::jack(client_name, port_name),
-                                    PortID::jack(client2_name, port2_name)});
+    me->_emit_event(
+      event::PortsConnected{PortID::jack(client_name, port_name),
+                            PortID::jack(client2_name, port2_name)});
 
     return DBUS_HANDLER_RESULT_HANDLED;
   }
@@ -398,11 +400,12 @@ JackDriver::dbus_message_hook(DBusConnection* /*connection*/,
 
     if (!me->_server_started) {
       me->_server_started = true;
-      me->_emit_event(DriverAttachmentEvent{ClientType::jack});
+      me->_emit_event(event::DriverAttached{ClientType::jack});
     }
 
-    me->_emit_event(DisconnectionEvent{PortID::jack(client_name, port_name),
-                                       PortID::jack(client2_name, port2_name)});
+    me->_emit_event(
+      event::PortsDisconnected{PortID::jack(client_name, port_name),
+                               PortID::jack(client2_name, port2_name)});
 
     return DBUS_HANDLER_RESULT_HANDLED;
   }
@@ -518,7 +521,7 @@ JackDriver::stop_server()
   }
 
   dbus_message_unref(reply_ptr);
-  _emit_event(DriverDetachmentEvent{ClientType::jack});
+  _emit_event(event::DriverDetached{ClientType::jack});
 }
 
 void
@@ -648,7 +651,7 @@ JackDriver::refresh(const EventSink& sink)
     dbus_message_iter_next(&client_struct_iter);
 
     // TODO: Pretty name?
-    sink({ClientCreationEvent{ClientID::jack(client_name), {client_name}}});
+    sink({event::ClientCreated{ClientID::jack(client_name), {client_name}}});
 
     for (dbus_message_iter_recurse(&client_struct_iter, &ports_array_iter);
          dbus_message_iter_get_arg_type(&ports_array_iter) != DBUS_TYPE_INVALID;
@@ -667,8 +670,8 @@ JackDriver::refresh(const EventSink& sink)
       dbus_message_iter_get_basic(&port_struct_iter, &port_type);
       dbus_message_iter_next(&port_struct_iter);
 
-      sink({PortCreationEvent{PortID::jack(client_name, port_name),
-                              port_info(port_name, port_type, port_flags)}});
+      sink({event::PortCreated{PortID::jack(client_name, port_name),
+                               port_info(port_name, port_type, port_flags)}});
     }
 
     dbus_message_iter_next(&client_struct_iter);
@@ -710,8 +713,8 @@ JackDriver::refresh(const EventSink& sink)
     dbus_message_iter_get_basic(&connection_struct_iter, &connection_id);
     dbus_message_iter_next(&connection_struct_iter);
 
-    sink({ConnectionEvent{PortID::jack(client_name, port_name),
-                          PortID::jack(client2_name, port2_name)}});
+    sink({event::PortsConnected{PortID::jack(client_name, port_name),
+                                PortID::jack(client2_name, port2_name)}});
   }
 }
 
