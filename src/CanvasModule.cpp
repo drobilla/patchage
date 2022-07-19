@@ -84,7 +84,7 @@ CanvasModule::update_menu()
 bool
 CanvasModule::show_menu(GdkEventButton* ev)
 {
-  _menu = std::unique_ptr<Gtk::Menu>{new Gtk::Menu()};
+  _menu = std::make_unique<Gtk::Menu>();
 
   Gtk::Menu::MenuList& items = _menu->items();
 

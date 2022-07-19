@@ -1,8 +1,9 @@
 patchage (1.0.7) unstable;
 
+  * Switch to C++17 and modernize code
   * Switch to meson build system
 
- -- David Robillard <d@drobilla.net>  Tue, 19 Jul 2022 17:37:21 +0000
+ -- David Robillard <d@drobilla.net>  Tue, 19 Jul 2022 17:38:10 +0000
 
 patchage (1.0.6) stable;
 
