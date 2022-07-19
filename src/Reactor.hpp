@@ -40,6 +40,7 @@ public:
 
   ~Reactor() = default;
 
+  void operator()(const action::ChangeSetting& action);
   void operator()(const action::ConnectPorts& action);
   void operator()(const action::DecreaseFontSize& action);
   void operator()(const action::DisconnectClient& action);

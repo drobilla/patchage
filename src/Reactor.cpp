@@ -31,6 +31,25 @@ PATCHAGE_RESTORE_WARNINGS
 
 namespace patchage {
 
+class SettingVisitor
+{
+public:
+  using result_type = void; ///< For boost::apply_visitor
+
+  explicit SettingVisitor(Configuration& conf)
+    : _conf{conf}
+  {}
+
+  template<class S>
+  void operator()(const S& setting) const
+  {
+    _conf.set_setting(setting);
+  }
+
+private:
+  Configuration& _conf;
+};
+
 inline std::ostream&
 operator<<(std::ostream& os, const ClientType type)
 {
@@ -53,6 +72,13 @@ Reactor::Reactor(Configuration& conf,
   , _canvas{canvas}
   , _log{log}
 {}
+
+void
+Reactor::operator()(const action::ChangeSetting& action)
+{
+  SettingVisitor visitor{_conf};
+  boost::apply_visitor(visitor, action.setting);
+}
 
 void
 Reactor::operator()(const action::ConnectPorts& action)

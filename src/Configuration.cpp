@@ -34,7 +34,7 @@ Configuration::Configuration(std::function<void(const Setting&)> on_change)
   std::get<setting::WindowSize>(_settings).value     = Coord{960.0, 540.0};
   std::get<setting::Zoom>(_settings).value           = 1.0f;
 
-#ifdef PATCHAGE_USE_LIGHT_THEME
+#if PATCHAGE_USE_LIGHT_THEME
   _port_colors[static_cast<unsigned>(PortType::jack_audio)] =
     _default_port_colors[static_cast<unsigned>(PortType::jack_audio)] =
       0xA4BC8CFF;

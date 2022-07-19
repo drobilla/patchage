@@ -86,6 +86,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gtkmm/window.h>
 #include <sigc++/adaptors/bind.h>
 #include <sigc++/functors/mem_fun.h>
+#include <sigc++/functors/ptr_fun.h>
 #include <sigc++/signal.h>
 
 #include <algorithm>
@@ -153,6 +154,13 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
     return pa->name().compare(pb->name());
   }
   return 0;
+}
+
+template<class S>
+void
+on_setting_toggled(Reactor* const reactor, const Gtk::CheckMenuItem* const item)
+{
+  (*reactor)(action::ChangeSetting{{S{item->get_active()}}});
 }
 
 } // namespace
@@ -242,18 +250,35 @@ Patchage::Patchage(Options options)
     sigc::mem_fun(this, &Patchage::on_export_image));
   _menu_view_refresh->signal_activate().connect(sigc::bind(
     sigc::mem_fun(this, &Patchage::on_menu_action), Action{action::Refresh{}}));
+
   _menu_view_human_names->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_view_human_names));
+    sigc::bind(sigc::ptr_fun(&on_setting_toggled<setting::HumanNames>),
+               &_reactor,
+               _menu_view_human_names.get()));
+
   _menu_view_sort_ports->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_view_sort_ports));
+    sigc::bind(sigc::ptr_fun(&on_setting_toggled<setting::SortedPorts>),
+               &_reactor,
+               _menu_view_sort_ports.get()));
+
   _menu_view_arrange->signal_activate().connect(
     sigc::mem_fun(this, &Patchage::on_arrange));
+
   _menu_view_sprung_layout->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_sprung_layout_toggled));
+    sigc::bind(sigc::ptr_fun(&on_setting_toggled<setting::SprungLayout>),
+               &_reactor,
+               _menu_view_sprung_layout.get()));
+
   _menu_view_messages->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_view_messages));
+    sigc::bind(sigc::ptr_fun(&on_setting_toggled<setting::MessagesVisible>),
+               &_reactor,
+               _menu_view_messages.get()));
+
   _menu_view_toolbar->signal_activate().connect(
-    sigc::mem_fun(this, &Patchage::on_view_toolbar));
+    sigc::bind(sigc::ptr_fun(&on_setting_toggled<setting::ToolbarVisible>),
+               &_reactor,
+               _menu_view_toolbar.get()));
+
   _menu_help_about->signal_activate().connect(
     sigc::mem_fun(this, &Patchage::on_help_about));
 
@@ -758,12 +783,6 @@ Patchage::on_arrange()
 }
 
 void
-Patchage::on_sprung_layout_toggled()
-{
-  _conf.set<setting::SprungLayout>(_menu_view_sprung_layout->get_active());
-}
-
-void
 Patchage::on_help_about()
 {
   _about_win->run();
@@ -771,22 +790,9 @@ Patchage::on_help_about()
 }
 
 void
-Patchage::on_view_human_names()
-{
-  _conf.set<setting::HumanNames>(_menu_view_human_names->get_active());
-}
-
-void
-Patchage::on_view_sort_ports()
-{
-  _conf.set<setting::SortedPorts>(_menu_view_sort_ports->get_active());
-  _reactor(action::Refresh{});
-}
-
-void
 Patchage::on_legend_color_change(PortType id, const std::string&, uint32_t rgba)
 {
-  _conf.set_port_color(id, rgba);
+  _reactor(action::ChangeSetting{{setting::PortColor{id, rgba}}});
 }
 
 void
@@ -870,18 +876,6 @@ Patchage::on_export_image()
     }
     _canvas->export_image(filename.c_str(), bg_but->get_active());
   }
-}
-
-void
-Patchage::on_view_messages()
-{
-  _conf.set<setting::MessagesVisible>(_menu_view_messages->get_active());
-}
-
-void
-Patchage::on_view_toolbar()
-{
-  _conf.set<setting::ToolbarVisible>(_menu_view_toolbar->get_active());
 }
 
 bool

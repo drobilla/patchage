@@ -114,15 +114,10 @@ protected:
   void on_conf_change(const Setting& setting);
 
   void on_arrange();
-  void on_sprung_layout_toggled();
   void on_help_about();
   void on_quit();
   void on_export_image();
-  void on_view_messages();
-  void on_view_toolbar();
   void on_store_positions();
-  void on_view_human_names();
-  void on_view_sort_ports();
 
   void on_legend_color_change(PortType           id,
                               const std::string& label,
