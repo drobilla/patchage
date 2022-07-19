@@ -18,7 +18,6 @@
 #define PATCHAGE_MAKE_ALSA_DRIVER_HPP
 
 #include "Driver.hpp"
-#include "patchage_config.h"
 
 #include <memory>
 
@@ -26,20 +25,8 @@ namespace patchage {
 
 class ILog;
 
-#if defined(HAVE_ALSA)
-
 std::unique_ptr<Driver>
 make_alsa_driver(ILog& log, Driver::EventSink emit_event);
-
-#else
-
-inline std::unique_ptr<Driver>
-make_alsa_driver(ILog&, Driver::EventSink)
-{
-  return nullptr;
-}
-
-#endif
 
 } // namespace patchage
 

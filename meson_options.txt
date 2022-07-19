@@ -1,0 +1,20 @@
+option('alsa', type: 'feature', value: 'auto', yield: true,
+       description: 'Build ALSA sequencer support')
+
+option('checks', type: 'boolean', value: true, yield: true,
+       description: 'Check for features with the build system')
+
+option('jack', type: 'feature', value: 'auto', yield: true,
+       description: 'Build JACK audio and MIDI support')
+
+option('jack_dbus', type: 'feature', value: 'auto', yield: true,
+       description: 'Use JACK via D-Bus')
+
+option('strict', type: 'boolean', value: false, yield: true,
+       description: 'Enable ultra-strict warnings')
+
+option('tests', type: 'feature', value: 'auto', yield: true,
+       description: 'Build tests')
+
+option('title', type: 'string', value: 'Patchage',
+       description: 'Project title')

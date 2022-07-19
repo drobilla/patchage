@@ -39,7 +39,7 @@ Legend::Legend(const Configuration& configuration)
              "Audio",
              configuration.get_port_color(PortType::jack_audio));
 
-#ifdef HAVE_JACK_METADATA
+#if USE_JACK_METADATA
   add_button(
     PortType::jack_cv, "CV", configuration.get_port_color(PortType::jack_cv));
   add_button(PortType::jack_osc,

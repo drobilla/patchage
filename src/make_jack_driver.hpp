@@ -18,7 +18,6 @@
 #define PATCHAGE_MAKE_JACK_DRIVER_HPP
 
 #include "Driver.hpp"
-#include "patchage_config.h"
 
 #include <memory>
 
@@ -27,20 +26,8 @@ namespace patchage {
 class AudioDriver;
 class ILog;
 
-#if defined(PATCHAGE_LIBJACK) || defined(HAVE_JACK_DBUS)
-
 std::unique_ptr<AudioDriver>
 make_jack_driver(ILog& log, Driver::EventSink emit_event);
-
-#else
-
-inline std::unique_ptr<AudioDriver>
-make_jack_driver(ILog&, Driver::EventSink)
-{
-  return nullptr;
-}
-
-#endif
 
 } // namespace patchage
 

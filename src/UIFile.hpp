@@ -47,25 +47,28 @@ public:
 
   static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name)
   {
-    std::string ui_filename;
+    std::cout << "Base name: " << base_name << std::endl;
+    std::string ui_filename = base_name + ".ui";
+
 #ifdef PATCHAGE_BINLOC
     const std::string bundle = bundle_location();
     if (!bundle.empty()) {
-      ui_filename = bundle + "/" + base_name + ".ui";
-      if (is_readable(ui_filename)) {
-        std::cout << "Loading UI file " << ui_filename << std::endl;
-        return Gtk::Builder::create_from_file(ui_filename);
+      const std::string bundle_ui_filename = bundle + "/" + ui_filename;
+      if (is_readable(bundle_ui_filename)) {
+        std::cout << "Loading UI file " << bundle_ui_filename << std::endl;
+        return Gtk::Builder::create_from_file(bundle_ui_filename);
       }
     }
 #endif
-    ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + base_name + ".ui";
+
+    ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + ui_filename;
     if (is_readable(ui_filename)) {
       std::cout << "Loading UI file " << ui_filename << std::endl;
       return Gtk::Builder::create_from_file(ui_filename);
     }
 
     std::stringstream ss;
-    ss << "Unable to find " << base_name << std::endl;
+    ss << "Unable to find " << ui_filename << std::endl;
     throw std::runtime_error(ss.str());
     return {};
   }

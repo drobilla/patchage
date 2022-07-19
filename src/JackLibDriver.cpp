@@ -31,7 +31,7 @@
 #include "patchage_config.h"
 #include "warnings.hpp"
 
-#ifdef HAVE_JACK_METADATA
+#if USE_JACK_METADATA
 #  include <jack/metadata.h>
 #endif
 
@@ -182,7 +182,7 @@ get_property(const jack_uuid_t subject, const char* const key)
 {
   std::string result;
 
-#ifdef HAVE_JACK_METADATA
+#if USE_JACK_METADATA
   char* value    = nullptr;
   char* datatype = nullptr;
   if (!jack_get_property(subject, key, &value, &datatype)) {
@@ -213,7 +213,7 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
   auto              label = PortNames{name}.port();
 
   // Get pretty name to use as a label, if present
-#ifdef HAVE_JACK_METADATA
+#if USE_JACK_METADATA
   const auto pretty_name = get_property(uuid, JACK_METADATA_PRETTY_NAME);
   if (!pretty_name.empty()) {
     label = pretty_name;

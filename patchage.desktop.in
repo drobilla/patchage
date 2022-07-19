@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=@APP_HUMAN_NAME@
+Name=Patchage
 Comment=Connect audio and MIDI applications together and manage audio sessions
 Comment[fr]=Connecter des applications audio et MIDI entre elles, et gérer les sessions audio
-Exec=@BINDIR@/@APP_INSTALL_NAME@
+Exec=@BINDIR@/patchage
 Terminal=false
-Icon=@APP_INSTALL_NAME@
+Icon=patchage
 Type=Application
 Categories=AudioVideo;Audio;
 Keywords=music;midi;alsa;jack;

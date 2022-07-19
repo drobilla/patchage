@@ -1,0 +1,16 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: CC0-1.0 OR GPL-3.0-or-later
+
+project('fmt', ['cpp'],
+        version: '7.1.3',
+        license: 'ISC',
+        meson_version: '>= 0.56.0',
+        default_options: [
+          'b_ndebug=if-release',
+          'buildtype=release',
+          'cpp_std=c++17',
+        ])
+
+include_dirs = include_directories('include')
+
+fmt_dep = declare_dependency(include_directories: include_dirs)
