@@ -1,9 +1,9 @@
-patchage (1.0.7) unstable; urgency=medium
+patchage (1.0.8) stable; urgency=medium
 
   * Switch to C++17 and modernize code
   * Switch to meson build system
 
- -- David Robillard <d@drobilla.net>  Tue, 19 Jul 2022 17:38:10 +0000
+ -- David Robillard <d@drobilla.net>  Sat, 13 Aug 2022 22:15:26 +0000
 
 patchage (1.0.6) stable; urgency=medium
 
