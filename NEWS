@@ -1,11 +1,11 @@
-patchage (1.0.7) unstable;
+patchage (1.0.7) unstable; urgency=medium
 
   * Switch to C++17 and modernize code
   * Switch to meson build system
 
  -- David Robillard <d@drobilla.net>  Tue, 19 Jul 2022 17:38:10 +0000
 
-patchage (1.0.6) stable;
+patchage (1.0.6) stable; urgency=medium
 
   * Fix ALSA sequencer port subscriptions
   * Fix crash on client disconnection
@@ -18,7 +18,7 @@ patchage (1.0.6) stable;
 
  -- David Robillard <d@drobilla.net>  Fri, 27 May 2022 03:08:31 +0000
 
-patchage (1.0.4) stable;
+patchage (1.0.4) stable; urgency=medium
 
   * Add NSMicrophoneUsageDescription for MacOS 10.15 Catalina
   * Add command line option to print version
@@ -31,7 +31,7 @@ patchage (1.0.4) stable;
 
  -- David Robillard <d@drobilla.net>  Thu, 07 Jan 2021 21:59:02 +0000
 
-patchage (1.0.2) stable;
+patchage (1.0.2) stable; urgency=medium
 
   * Add support for exporting canvas as PDF
   * Bring back Jack buffer size selector
@@ -47,7 +47,7 @@ patchage (1.0.2) stable;
 
  -- David Robillard <d@drobilla.net>  Thu, 09 Apr 2020 12:29:59 +0000
 
-patchage (1.0.0) stable;
+patchage (1.0.0) stable; urgency=medium
 
   * Allow removing connections by selecting their handle and pressing delete
   * Fix font configuration on OSX
@@ -63,7 +63,7 @@ patchage (1.0.0) stable;
 
  -- David Robillard <d@drobilla.net>  Mon, 28 Apr 2014 03:46:10 +0000
 
-patchage (0.5.0) stable;
+patchage (0.5.0) stable; urgency=medium
 
   * Add -J (--no-jack) command line option
   * Add missing COPYING file to distribution
@@ -82,7 +82,7 @@ patchage (0.5.0) stable;
 
  -- David Robillard <d@drobilla.net>  Tue, 11 Jan 2011 22:42:07 +0000
 
-patchage (0.4.5) stable;
+patchage (0.4.5) stable; urgency=medium
 
   * Bump FlowCanvas dependency to 0.6.0
   * Fix compilation without Jack
@@ -92,13 +92,13 @@ patchage (0.4.5) stable;
 
  -- David Robillard <d@drobilla.net>  Sat, 04 Sep 2010 00:24:36 +0000
 
-patchage (0.4.4) stable;
+patchage (0.4.4) stable; urgency=medium
 
   * Fix incorrect icon install paths
 
  -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 15:17:37 +0000
 
-patchage (0.4.3) stable;
+patchage (0.4.3) stable; urgency=medium
 
   * Better ALSA support
   * Center on startup
@@ -108,14 +108,14 @@ patchage (0.4.3) stable;
 
  -- David Robillard <d@drobilla.net>  Wed, 09 Dec 2009 02:13:37 +0000
 
-patchage (0.4.2) stable;
+patchage (0.4.2) stable; urgency=medium
 
   * LASH support via D-BUS from ladi-patchage branch
   * Remove old LASH support via liblash
 
  -- David Robillard <d@drobilla.net>  Tue, 09 Sep 2008 19:41:04 +0000
 
-patchage (0.4.1) stable;
+patchage (0.4.1) stable; urgency=medium
 
   * Initial release
 
