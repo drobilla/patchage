@@ -15,13 +15,11 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
-#include <fmt/ostream.h> // IWYU pragma: keep
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/optional/optional.hpp>
 #include <boost/variant/apply_visitor.hpp>
 
-#include <ostream> // IWYU pragma: keep
 #include <string>
 
 namespace patchage {
@@ -65,44 +63,12 @@ struct EventPrinter {
     return fmt::format(R"(Remove client "{}")", event.id);
   }
 
-  std::string operator()(const PortType port_type)
-  {
-    switch (port_type) {
-    case PortType::jack_audio:
-      return "JACK audio";
-    case PortType::jack_midi:
-      return "JACK MIDI";
-    case PortType::alsa_midi:
-      return "ALSA MIDI";
-    case PortType::jack_osc:
-      return "JACK OSC";
-    case PortType::jack_cv:
-      return "JACK CV";
-    }
-
-    PATCHAGE_UNREACHABLE();
-  }
-
-  std::string operator()(const SignalDirection direction)
-  {
-    switch (direction) {
-    case SignalDirection::input:
-      return "input";
-    case SignalDirection::output:
-      return "output";
-    case SignalDirection::duplex:
-      return "duplex";
-    }
-
-    PATCHAGE_UNREACHABLE();
-  }
-
   std::string operator()(const event::PortCreated& event)
   {
     auto result = fmt::format(R"(Add{} {} {} port "{}" ("{}"))",
                               event.info.is_terminal ? " terminal" : "",
-                              (*this)(event.info.type),
-                              (*this)(event.info.direction),
+                              event.info.type,
+                              event.info.direction,
                               event.id,
                               event.info.label);
 

@@ -5,6 +5,12 @@
 #define PATCHAGE_CLIENTID_HPP
 
 #include "ClientType.hpp"
+#include "warnings.hpp"
+
+PATCHAGE_DISABLE_FMT_WARNINGS
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+PATCHAGE_RESTORE_WARNINGS
 
 #include <cassert>
 #include <cstdint>
@@ -110,5 +116,8 @@ operator<(const ClientID& lhs, const ClientID& rhs)
 }
 
 } // namespace patchage
+
+template<>
+struct fmt::formatter<patchage::ClientID> : fmt::ostream_formatter {};
 
 #endif // PATCHAGE_CLIENTID_HPP

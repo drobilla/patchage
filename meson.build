@@ -84,7 +84,7 @@ fmt_dep = dependency(
   'fmt',
   fallback: ['fmt', 'fmt_dep'],
   include_type: 'system',
-  version: '>= 7.1.3',
+  version: ['>= 9.0.0', '<= 10.0.0'],
 )
 
 gthread_dep = dependency(

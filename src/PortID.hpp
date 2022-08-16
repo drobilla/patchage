@@ -172,4 +172,7 @@ struct hash<patchage::PortID::Type> {
 
 } // namespace std
 
+template<>
+struct fmt::formatter<patchage::PortID> : fmt::ostream_formatter {};
+
 #endif // PATCHAGE_PORTID_HPP

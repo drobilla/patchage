@@ -16,7 +16,6 @@
 
 PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
-#include <fmt/ostream.h> // IWYU pragma: keep
 PATCHAGE_RESTORE_WARNINGS
 
 #include <boost/variant/apply_visitor.hpp>

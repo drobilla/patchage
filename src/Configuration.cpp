@@ -18,6 +18,8 @@
 #include <utility>
 #include <vector>
 
+// IWYU pragma: no_include <algorithm>
+
 namespace patchage {
 
 static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",

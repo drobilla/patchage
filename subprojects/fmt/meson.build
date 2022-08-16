@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: CC0-1.0 OR GPL-3.0-or-later
 
 project('fmt', ['cpp'],
-        version: '7.1.3',
-        license: 'ISC',
+        version: '9.0.0',
+        license: 'MIT',
         meson_version: '>= 0.56.0',
         default_options: [
           'b_ndebug=if-release',
