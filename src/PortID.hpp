@@ -23,10 +23,10 @@ namespace patchage {
 struct PortID {
   using Type = ClientType;
 
-  PortID(const PortID& copy) = default;
+  PortID(const PortID& copy)            = default;
   PortID& operator=(const PortID& copy) = default;
 
-  PortID(PortID&& id) = default;
+  PortID(PortID&& id)            = default;
   PortID& operator=(PortID&& id) = default;
 
   ~PortID() = default;

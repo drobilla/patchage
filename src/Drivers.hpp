@@ -20,10 +20,10 @@ class Drivers
 public:
   Drivers(ILog& log, Driver::EventSink emit_event);
 
-  Drivers(const Drivers&) = delete;
+  Drivers(const Drivers&)            = delete;
   Drivers& operator=(const Drivers&) = delete;
 
-  Drivers(Drivers&&) = delete;
+  Drivers(Drivers&&)            = delete;
   Drivers& operator=(Drivers&&) = delete;
 
   ~Drivers() = default;

@@ -20,10 +20,10 @@ public:
     xml->get_widget(name, _me);
   }
 
-  Widget(const Widget&) = delete;
+  Widget(const Widget&)            = delete;
   Widget& operator=(const Widget&) = delete;
 
-  Widget(Widget&&) = delete;
+  Widget(Widget&&)            = delete;
   Widget& operator=(Widget&&) = delete;
 
   ~Widget() = default;

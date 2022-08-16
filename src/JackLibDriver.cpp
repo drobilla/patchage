@@ -49,10 +49,10 @@ class JackLibDriver : public AudioDriver
 public:
   explicit JackLibDriver(ILog& log, EventSink emit_event);
 
-  JackLibDriver(const JackLibDriver&) = delete;
+  JackLibDriver(const JackLibDriver&)            = delete;
   JackLibDriver& operator=(const JackLibDriver&) = delete;
 
-  JackLibDriver(JackLibDriver&&) = delete;
+  JackLibDriver(JackLibDriver&&)            = delete;
   JackLibDriver& operator=(JackLibDriver&&) = delete;
 
   ~JackLibDriver() override;

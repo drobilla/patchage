@@ -66,10 +66,10 @@ public:
   explicit Patchage(Options options);
   ~Patchage();
 
-  Patchage(const Patchage&) = delete;
+  Patchage(const Patchage&)            = delete;
   Patchage& operator=(const Patchage&) = delete;
 
-  Patchage(Patchage&&) = delete;
+  Patchage(Patchage&&)            = delete;
   Patchage& operator=(Patchage&&) = delete;
 
   void operator()(const setting::AlsaAttached& setting);

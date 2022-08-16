@@ -37,10 +37,10 @@ public:
                double             x,
                double             y);
 
-  CanvasModule(const CanvasModule&) = delete;
+  CanvasModule(const CanvasModule&)            = delete;
   CanvasModule& operator=(const CanvasModule&) = delete;
 
-  CanvasModule(CanvasModule&&) = delete;
+  CanvasModule(CanvasModule&&)            = delete;
   CanvasModule& operator=(CanvasModule&&) = delete;
 
   ~CanvasModule() override = default;

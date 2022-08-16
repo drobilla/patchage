@@ -23,10 +23,10 @@ public:
     : _emit_event{std::move(emit_event)}
   {}
 
-  Driver(const Driver&) = delete;
+  Driver(const Driver&)            = delete;
   Driver& operator=(const Driver&) = delete;
 
-  Driver(Driver&&) = delete;
+  Driver(Driver&&)            = delete;
   Driver& operator=(Driver&&) = delete;
 
   virtual ~Driver() = default;

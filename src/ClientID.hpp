@@ -18,10 +18,10 @@ namespace patchage {
 struct ClientID {
   using Type = ClientType;
 
-  ClientID(const ClientID& copy) = default;
+  ClientID(const ClientID& copy)            = default;
   ClientID& operator=(const ClientID& copy) = default;
 
-  ClientID(ClientID&& id) = default;
+  ClientID(ClientID&& id)            = default;
   ClientID& operator=(ClientID&& id) = default;
 
   ~ClientID() = default;

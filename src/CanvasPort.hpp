@@ -57,10 +57,10 @@ public:
     signal_event().connect(sigc::mem_fun(this, &CanvasPort::on_event));
   }
 
-  CanvasPort(const CanvasPort&) = delete;
+  CanvasPort(const CanvasPort&)            = delete;
   CanvasPort& operator=(const CanvasPort&) = delete;
 
-  CanvasPort(CanvasPort&&) = delete;
+  CanvasPort(CanvasPort&&)            = delete;
   CanvasPort& operator=(CanvasPort&&) = delete;
 
   ~CanvasPort() override = default;

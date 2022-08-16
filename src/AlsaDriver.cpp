@@ -43,10 +43,10 @@ class AlsaDriver : public Driver
 public:
   explicit AlsaDriver(ILog& log, EventSink emit_event);
 
-  AlsaDriver(const AlsaDriver&) = delete;
+  AlsaDriver(const AlsaDriver&)            = delete;
   AlsaDriver& operator=(const AlsaDriver&) = delete;
 
-  AlsaDriver(AlsaDriver&&) = delete;
+  AlsaDriver(AlsaDriver&&)            = delete;
   AlsaDriver& operator=(AlsaDriver&&) = delete;
 
   ~AlsaDriver() override;

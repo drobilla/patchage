@@ -26,10 +26,10 @@ class TextViewLog : public ILog
 public:
   explicit TextViewLog(Widget<Gtk::TextView>& text_view);
 
-  TextViewLog(const TextViewLog&) = delete;
+  TextViewLog(const TextViewLog&)            = delete;
   TextViewLog& operator=(const TextViewLog&) = delete;
 
-  TextViewLog(TextViewLog&&) = delete;
+  TextViewLog(TextViewLog&&)            = delete;
   TextViewLog& operator=(TextViewLog&&) = delete;
 
   ~TextViewLog() override = default;

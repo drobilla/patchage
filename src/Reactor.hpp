@@ -32,10 +32,10 @@ public:
                    Canvas&        canvas,
                    ILog&          log);
 
-  Reactor(const Reactor&) = delete;
+  Reactor(const Reactor&)            = delete;
   Reactor& operator=(const Reactor&) = delete;
 
-  Reactor(Reactor&&) = delete;
+  Reactor(Reactor&&)            = delete;
   Reactor& operator=(Reactor&&) = delete;
 
   ~Reactor() = default;

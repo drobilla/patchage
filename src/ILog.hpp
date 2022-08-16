@@ -14,10 +14,10 @@ class ILog
 public:
   ILog() = default;
 
-  ILog(const ILog&) = default;
+  ILog(const ILog&)            = default;
   ILog& operator=(const ILog&) = default;
 
-  ILog(ILog&&)  = default;
+  ILog(ILog&&)            = default;
   ILog& operator=(ILog&&) = default;
 
   virtual ~ILog() = default;
