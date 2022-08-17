@@ -282,9 +282,6 @@
 
 // Enable minimal optimizations for more compact code in debug mode.
 FMT_GCC_PRAGMA("GCC push_options")
-#if !defined(__OPTIMIZE__) && !defined(__NVCOMPILER)
-FMT_GCC_PRAGMA("GCC optimize(\"Og\")")
-#endif
 
 FMT_BEGIN_NAMESPACE
 FMT_MODULE_EXPORT_BEGIN
