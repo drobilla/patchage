@@ -85,4 +85,12 @@
 #  define PATCHAGE_USE_LIGHT_THEME 0
 #endif
 
+#ifndef PATCHAGE_BUNDLED
+#  ifdef __APPLE__
+#    define PATCHAGE_BUNDLED 1
+#  else
+#    define PATCHAGE_BUNDLED 0
+#  endif
+#endif
+
 #endif // PATCHAGE_CONFIG_H

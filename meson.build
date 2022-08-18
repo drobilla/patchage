@@ -59,7 +59,7 @@ int main(void) { return !!&jack_set_property; }'''
   if cpp.compiles(dladdr_code, args: platform_defines, name: 'dladdr')
     platform_defines += [
       '-DHAVE_DLADDR=1',
-      '-DPATCHAGE_BINLOC=1',
+      '-DPATCHAGE_BUNDLED=1',
     ]
   else
     platform_defines += ['-DHAVE_DLADDR=0']

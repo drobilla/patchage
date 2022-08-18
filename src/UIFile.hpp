@@ -6,7 +6,7 @@
 
 #include "patchage_config.h"
 
-#ifdef PATCHAGE_BINLOC
+#if PATCHAGE_BUNDLED
 #  include "binary_location.h"
 #endif
 
@@ -37,7 +37,7 @@ public:
     std::cout << "Base name: " << base_name << std::endl;
     std::string ui_filename = base_name + ".ui";
 
-#ifdef PATCHAGE_BINLOC
+#if PATCHAGE_BUNDLED
     const std::string bundle = bundle_location();
     if (!bundle.empty()) {
       const std::string bundle_ui_filename = bundle + "/" + ui_filename;
