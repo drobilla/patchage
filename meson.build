@@ -237,15 +237,17 @@ install_man(files('doc/patchage.1'))
 #########
 
 if not get_option('tests').disabled() and not meson.is_subproject()
-  # Check release metadata
-  autoship = find_program('autoship', required: false)
-  if autoship.found()
-    test(
-      'autoship',
-      autoship,
-      args: ['test', patchage_src_root],
-      suite: 'data',
-    )
+  if get_option('strict')
+    # Check release metadata
+    autoship = find_program('autoship', required: false)
+    if autoship.found()
+      test(
+        'autoship',
+        autoship,
+        args: ['test', patchage_src_root],
+        suite: 'data',
+      )
+    endif
   endif
 
   # Check licensing metadata
