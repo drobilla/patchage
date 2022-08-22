@@ -25,8 +25,6 @@ class ILog;
 class Reactor
 {
 public:
-  using result_type = void; ///< For boost::apply_visitor
-
   explicit Reactor(Configuration& conf,
                    Drivers&       drivers,
                    Canvas&        canvas,

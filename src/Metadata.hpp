@@ -9,9 +9,8 @@
 #include "PortID.hpp"
 #include "PortInfo.hpp"
 
-#include <boost/optional/optional.hpp>
-
 #include <map>
+#include <optional>
 
 namespace patchage {
 
@@ -21,8 +20,8 @@ class Metadata
 public:
   Metadata() = default;
 
-  boost::optional<ClientInfo> client(const ClientID& id) const;
-  boost::optional<PortInfo>   port(const PortID& id) const;
+  std::optional<ClientInfo> client(const ClientID& id) const;
+  std::optional<PortInfo>   port(const PortID& id) const;
 
   void set_client(const ClientID& id, const ClientInfo& info);
   void set_port(const PortID& id, const PortInfo& info);

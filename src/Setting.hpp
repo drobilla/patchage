@@ -7,9 +7,8 @@
 #include "Coord.hpp"
 #include "PortType.hpp"
 
-#include <boost/variant/variant.hpp>
-
 #include <cstdint>
+#include <variant>
 
 namespace patchage {
 namespace setting {
@@ -70,19 +69,19 @@ struct Zoom {
 } // namespace setting
 
 /// A configuration setting
-using Setting = boost::variant<setting::AlsaAttached,
-                               setting::FontSize,
-                               setting::HumanNames,
-                               setting::JackAttached,
-                               setting::MessagesHeight,
-                               setting::MessagesVisible,
-                               setting::PortColor,
-                               setting::SortedPorts,
-                               setting::SprungLayout,
-                               setting::ToolbarVisible,
-                               setting::WindowLocation,
-                               setting::WindowSize,
-                               setting::Zoom>;
+using Setting = std::variant<setting::AlsaAttached,
+                             setting::FontSize,
+                             setting::HumanNames,
+                             setting::JackAttached,
+                             setting::MessagesHeight,
+                             setting::MessagesVisible,
+                             setting::PortColor,
+                             setting::SortedPorts,
+                             setting::SprungLayout,
+                             setting::ToolbarVisible,
+                             setting::WindowLocation,
+                             setting::WindowSize,
+                             setting::Zoom>;
 
 } // namespace patchage
 

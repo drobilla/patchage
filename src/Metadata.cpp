@@ -8,13 +8,12 @@
 #include "PortID.hpp"
 #include "PortInfo.hpp"
 
-#include <boost/optional/optional.hpp>
-
+#include <optional>
 #include <utility>
 
 namespace patchage {
 
-boost::optional<ClientInfo>
+std::optional<ClientInfo>
 Metadata::client(const ClientID& id) const
 {
   const auto i = _client_data.find(id);
@@ -25,7 +24,7 @@ Metadata::client(const ClientID& id) const
   return i->second;
 }
 
-boost::optional<PortInfo>
+std::optional<PortInfo>
 Metadata::port(const PortID& id) const
 {
   const auto i = _port_data.find(id);

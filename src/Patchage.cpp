@@ -39,9 +39,6 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/optional/optional.hpp>
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/variant.hpp>
 #include <glib-object.h>
 #include <glib.h>
 #include <glibmm/fileutils.h>
@@ -95,7 +92,9 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cstdlib>
 #include <functional>
 #include <map>
+#include <optional>
 #include <utility>
+#include <variant>
 
 #ifdef PATCHAGE_GTK_OSX
 
@@ -769,7 +768,7 @@ Patchage::process_events()
 void
 Patchage::on_conf_change(const Setting& setting)
 {
-  boost::apply_visitor(*this, setting);
+  std::visit(*this, setting);
 }
 
 void

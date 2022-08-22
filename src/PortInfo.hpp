@@ -7,18 +7,18 @@
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
 
-#include <boost/optional/optional.hpp>
+#include <optional>
 #include <string>
 
 namespace patchage {
 
 /// Extra information about a port not expressed in its ID
 struct PortInfo {
-  std::string          label;       ///< Human-friendly label
-  PortType             type;        ///< Detailed port type
-  SignalDirection      direction;   ///< Signal direction
-  boost::optional<int> order;       ///< Order key on client
-  bool                 is_terminal; ///< True if this is a system port
+  std::string        label;       ///< Human-friendly label
+  PortType           type;        ///< Detailed port type
+  SignalDirection    direction;   ///< Signal direction
+  std::optional<int> order;       ///< Order key on client
+  bool               is_terminal; ///< True if this is a system port
 };
 
 } // namespace patchage

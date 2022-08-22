@@ -9,11 +9,10 @@
 #include "Setting.hpp"
 #include "SignalDirection.hpp"
 
-#include <boost/optional/optional.hpp>
-
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -113,10 +112,10 @@ private:
       : split(s)
     {}
 
-    boost::optional<Coord> input_location;
-    boost::optional<Coord> output_location;
-    boost::optional<Coord> inout_location;
-    bool                   split;
+    std::optional<Coord> input_location;
+    std::optional<Coord> output_location;
+    std::optional<Coord> inout_location;
+    bool                 split;
   };
 
   std::map<std::string, ModuleSettings> _module_settings;

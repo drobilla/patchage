@@ -1,8 +1,9 @@
 patchage (1.0.9) unstable; urgency=medium
 
+  * Replace boost with standard C++17 facilities
   * Upgrade to fmt 9.0.0
 
- -- David Robillard <d@drobilla.net>  Tue, 16 Aug 2022 20:36:01 +0000
+ -- David Robillard <d@drobilla.net>  Mon, 22 Aug 2022 17:07:17 +0000
 
 patchage (1.0.8) stable; urgency=medium
 

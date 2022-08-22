@@ -24,15 +24,13 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/variant/apply_visitor.hpp>
+#include <variant>
 
 namespace patchage {
 
 class SettingVisitor
 {
 public:
-  using result_type = void; ///< For boost::apply_visitor
-
   explicit SettingVisitor(Configuration& conf)
     : _conf{conf}
   {}
@@ -61,7 +59,7 @@ void
 Reactor::operator()(const action::ChangeSetting& action)
 {
   SettingVisitor visitor{_conf};
-  boost::apply_visitor(visitor, action.setting);
+  std::visit(visitor, action.setting);
 }
 
 void
@@ -185,7 +183,7 @@ Reactor::operator()(const action::ZoomOut&)
 void
 Reactor::operator()(const Action& action)
 {
-  boost::apply_visitor(*this, action);
+  std::visit(*this, action);
 }
 
 std::string

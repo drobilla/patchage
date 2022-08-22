@@ -1,8 +1,6 @@
 {
   "version": "1.0.0",
   "mapping_files": [
-    ".includes.imp",
-    "boost-1.64-all-private.imp",
-    "boost-1.64-all.imp"
+    ".includes.imp"
   ]
 }

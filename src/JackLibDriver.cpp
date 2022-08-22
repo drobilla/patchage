@@ -26,7 +26,6 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/optional/optional.hpp>
 #include <jack/jack.h>
 #include <jack/types.h>
 
@@ -35,6 +34,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -230,8 +230,8 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
                                : SignalDirection::output);
 
   // Get port order from metadata if possible
-  boost::optional<int> order;
-  const std::string    order_str = get_property(uuid, JACKEY_ORDER);
+  std::optional<int> order;
+  const std::string  order_str = get_property(uuid, JACKEY_ORDER);
   if (!order_str.empty()) {
     order = std::stoi(order_str);
   }

@@ -22,13 +22,12 @@ PATCHAGE_RESTORE_WARNINGS
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 
-#include <boost/optional/optional.hpp>
-
 #include <cassert>
 #include <cstdint>
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>

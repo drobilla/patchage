@@ -12,7 +12,6 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/optional/optional.hpp>
 #include <gdk/gdk.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/menu_elems.h>
@@ -22,6 +21,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/signal.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,15 +35,15 @@ namespace patchage {
 class CanvasPort : public Ganv::Port
 {
 public:
-  CanvasPort(Ganv::Module&        module,
-             PortType             type,
-             PortID               id,
-             const std::string&   name,
-             const std::string&   human_name,
-             bool                 is_input,
-             uint32_t             color,
-             bool                 show_human_name,
-             boost::optional<int> order = boost::optional<int>())
+  CanvasPort(Ganv::Module&      module,
+             PortType           type,
+             PortID             id,
+             const std::string& name,
+             const std::string& human_name,
+             bool               is_input,
+             uint32_t           color,
+             bool               show_human_name,
+             std::optional<int> order = std::optional<int>())
     : Port(module,
            (show_human_name && !human_name.empty()) ? human_name : name,
            is_input,
@@ -88,18 +88,18 @@ public:
     return true;
   }
 
-  PortType                    type() const { return _type; }
-  PortID                      id() const { return _id; }
-  const std::string&          name() const { return _name; }
-  const std::string&          human_name() const { return _human_name; }
-  const boost::optional<int>& order() const { return _order; }
+  PortType                  type() const { return _type; }
+  PortID                    id() const { return _id; }
+  const std::string&        name() const { return _name; }
+  const std::string&        human_name() const { return _human_name; }
+  const std::optional<int>& order() const { return _order; }
 
 private:
-  PortType             _type;
-  PortID               _id;
-  std::string          _name;
-  std::string          _human_name;
-  boost::optional<int> _order;
+  PortType           _type;
+  PortID             _id;
+  std::string        _name;
+  std::string        _human_name;
+  std::optional<int> _order;
 };
 
 } // namespace patchage

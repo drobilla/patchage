@@ -34,7 +34,6 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/optional/optional.hpp>
 #include <gdk/gdkkeysyms.h>
 #include <sigc++/functors/mem_fun.h>
 #include <sigc++/signal.h>
@@ -42,6 +41,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <cassert>
 #include <cstdlib>
 #include <functional>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>

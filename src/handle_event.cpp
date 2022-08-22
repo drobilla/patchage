@@ -18,7 +18,7 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/variant/apply_visitor.hpp>
+#include <variant>
 
 namespace patchage {
 
@@ -27,8 +27,6 @@ namespace {
 class EventHandler
 {
 public:
-  using result_type = void; ///< For boost::apply_visitor
-
   explicit EventHandler(Configuration& conf,
                         Metadata&      metadata,
                         Canvas&        canvas,
@@ -145,7 +143,7 @@ handle_event(Configuration& conf,
              const Event&   event)
 {
   EventHandler handler{conf, metadata, canvas, log};
-  boost::apply_visitor(handler, event);
+  std::visit(handler, event);
 }
 
 } // namespace patchage

@@ -10,7 +10,7 @@
 #include "PortID.hpp"
 #include "PortInfo.hpp"
 
-#include <boost/variant/variant.hpp>
+#include <variant>
 
 namespace patchage {
 namespace event {
@@ -56,15 +56,15 @@ struct PortsDisconnected {
 } // namespace event
 
 /// An event from drivers that represents a change to the system
-using Event = boost::variant<event::Cleared,
-                             event::ClientCreated,
-                             event::ClientDestroyed,
-                             event::DriverAttached,
-                             event::DriverDetached,
-                             event::PortCreated,
-                             event::PortDestroyed,
-                             event::PortsConnected,
-                             event::PortsDisconnected>;
+using Event = std::variant<event::Cleared,
+                           event::ClientCreated,
+                           event::ClientDestroyed,
+                           event::DriverAttached,
+                           event::DriverDetached,
+                           event::PortCreated,
+                           event::PortDestroyed,
+                           event::PortsConnected,
+                           event::PortsDisconnected>;
 
 } // namespace patchage
 

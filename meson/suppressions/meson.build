@@ -34,12 +34,6 @@ if is_variable('cpp')
         cpp_suppressions += [
           '-Wno-documentation', # JACK
           '-Wno-documentation-deprecated-sync', # JACK
-          '-Wno-documentation-unknown-command', # boost
-          '-Wno-global-constructors', # boost
-          '-Wno-old-style-cast', # boost
-          '-Wno-redundant-parens', # boost
-          '-Wno-reserved-id-macro', # boost
-          '-Wno-zero-as-null-pointer-constant', # boost
         ]
       endif
 

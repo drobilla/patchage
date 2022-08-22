@@ -17,18 +17,15 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 #include <fmt/core.h>
 PATCHAGE_RESTORE_WARNINGS
 
-#include <boost/optional/optional.hpp>
-#include <boost/variant/apply_visitor.hpp>
-
+#include <optional>
 #include <string>
+#include <variant>
 
 namespace patchage {
 
 namespace {
 
 struct EventPrinter {
-  using result_type = std::string; ///< For boost::apply_visitor
-
   std::string operator()(const ClientType type)
   {
     switch (type) {
@@ -101,7 +98,7 @@ std::string
 event_to_string(const Event& event)
 {
   EventPrinter printer;
-  return boost::apply_visitor(printer, event);
+  return std::visit(printer, event);
 }
 
 std::ostream&
