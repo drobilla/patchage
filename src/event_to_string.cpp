@@ -62,9 +62,9 @@ struct EventPrinter {
 
   std::string operator()(const event::PortCreated& event)
   {
-    auto result = fmt::format(R"(Add{} {} {} port "{}" ("{}"))",
-                              event.info.is_terminal ? " terminal" : "",
+    auto result = fmt::format(R"(Add {}{} {} "{}" ("{}"))",
                               event.info.type,
+                              event.info.is_terminal ? " terminal" : "",
                               event.info.direction,
                               event.id,
                               event.info.label);
@@ -78,7 +78,7 @@ struct EventPrinter {
 
   std::string operator()(const event::PortDestroyed& event)
   {
-    return fmt::format(R"("Remove port "{}")", event.id);
+    return fmt::format(R"(Remove port "{}")", event.id);
   }
 
   std::string operator()(const event::PortsConnected& event)
