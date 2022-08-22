@@ -25,8 +25,8 @@ directory with the given name:
 Some environment variables are read during `setup` and stored with the
 configuration:
 
-  * `CC`: Path to C compiler.
-  * `CFLAGS`: C compiler options.
+  * `CXX`: Path to C++ compiler.
+  * `CXXFLAGS`: C++ compiler options.
   * `LDFLAGS`: Linker options.
 
 However, it is better to use meson options for configuration.  All options can
@@ -37,7 +37,7 @@ be inspected with the `configure` command from within the build directory:
 
 Options can be set by passing C-style "define" options to `configure`:
 
-    meson configure -Dc_args="-march=native" -Dprefix="/opt/mypackage/"
+    meson configure -Dcpp_args="-march=native" -Dprefix="/opt/mypackage/"
 
 Note that some options, such as `strict` and `werror` are for
 developer/maintainer use only.  Please don't file issues about anything that
