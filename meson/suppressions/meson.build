@@ -34,6 +34,8 @@ if is_variable('cpp')
         cpp_suppressions += [
           '-Wno-documentation', # JACK
           '-Wno-documentation-deprecated-sync', # JACK
+          '-Wno-documentation-unknown-command', # JACK
+          '-Wno-reserved-id-macro', # JACK
         ]
       endif
 
