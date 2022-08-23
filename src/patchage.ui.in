@@ -64,7 +64,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_jack_connect">
-                        <property name="label">Connect to _Jack</property>
+                        <property name="label">Connect to _JACK</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -75,7 +75,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_jack_disconnect">
-                        <property name="label">Disconnect from Jack</property>
+                        <property name="label">Disconnect from JACK</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
@@ -92,7 +92,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_alsa_connect">
-                        <property name="label">Connect to _Alsa</property>
+                        <property name="label">Connect to _ALSA</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -338,7 +338,7 @@
                   <object class="GtkAlignment" id="alignment2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Jack buffer size and sample rate.</property>
+                    <property name="tooltip_text" translatable="yes">JACK buffer size and sample rate.</property>
                     <property name="yscale">0</property>
                     <child>
                       <object class="GtkHBox" id="hbox4">
@@ -349,8 +349,8 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
-                            <property name="tooltip_markup">Jack buffer length in frames</property>
-                            <property name="tooltip_text" translatable="yes">Jack buffer length in frames.</property>
+                            <property name="tooltip_markup">JACK buffer length in frames</property>
+                            <property name="tooltip_text" translatable="yes">JACK buffer length in frames.</property>
                             <property name="border_width">1</property>
                           </object>
                           <packing>
