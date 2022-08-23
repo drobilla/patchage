@@ -34,7 +34,6 @@ public:
 
   static Glib::RefPtr<Gtk::Builder> open(const std::string& base_name)
   {
-    std::cout << "Base name: " << base_name << std::endl;
     std::string ui_filename = base_name + ".ui";
 
 #if PATCHAGE_BUNDLED
