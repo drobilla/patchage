@@ -5,7 +5,7 @@
   <object class="GtkWindow" id="main_win">
     <property name="can_focus">False</property>
     <property name="border_width">1</property>
-    <property name="title" translatable="yes">Patchage</property>
+    <property name="title" translatable="no">Patchage</property>
     <child>
       <object class="GtkVBox" id="main_vbox">
         <property name="visible">True</property>
@@ -64,7 +64,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_jack_connect">
-                        <property name="label">Connect to _JACK</property>
+                        <property name="label" translatable="yes">Connect to _JACK</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -75,7 +75,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_jack_disconnect">
-                        <property name="label">Disconnect from JACK</property>
+                        <property name="label" translatable="yes">Disconnect from JACK</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
@@ -92,7 +92,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_alsa_connect">
-                        <property name="label">Connect to _ALSA</property>
+                        <property name="label" translatable="yes">Connect to _ALSA</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -103,7 +103,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_alsa_disconnect">
-                        <property name="label">Disconnect from ALSA</property>
+                        <property name="label" translatable="yes">Disconnect from ALSA</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">False</property>
@@ -269,7 +269,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_view_arrange">
-                        <property name="label">_Arrange</property>
+                        <property name="label" translatable="yes">_Arrange</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -504,7 +504,7 @@
 © 2008 Nedko Arnaudov</property>
     <property name="comments" translatable="yes">A JACK and ALSA front-end.</property>
     <property name="website">http://drobilla.net/software/patchage</property>
-    <property name="license" translatable="yes">                    GNU GENERAL PUBLIC LICENSE
+    <property name="license" translatable="no">                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
