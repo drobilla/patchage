@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Patchage
-Comment=Connect audio and MIDI applications together and manage audio sessions
-Comment[fr]=Connecter des applications audio et MIDI entre elles, et gérer les sessions audio
+Comment=Connect audio and MIDI applications together
+Comment[fr]=Connecter des applications audio et MIDI entre elles
 Exec=@BINDIR@/patchage
 Terminal=false
 Icon=patchage
