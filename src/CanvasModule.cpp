@@ -90,15 +90,15 @@ CanvasModule::show_menu(GdkEventButton* ev)
 
   if (_type == SignalDirection::duplex) {
     items.push_back(Gtk::Menu_Helpers::MenuElem(
-      "_Split", sigc::mem_fun(this, &CanvasModule::on_split)));
+      _("_Split"), sigc::mem_fun(this, &CanvasModule::on_split)));
     update_menu();
   } else {
     items.push_back(Gtk::Menu_Helpers::MenuElem(
-      "_Join", sigc::mem_fun(this, &CanvasModule::on_join)));
+      _("_Join"), sigc::mem_fun(this, &CanvasModule::on_join)));
   }
 
   items.push_back(Gtk::Menu_Helpers::MenuElem(
-    "_Disconnect", sigc::mem_fun(this, &CanvasModule::on_disconnect)));
+    _("_Disconnect"), sigc::mem_fun(this, &CanvasModule::on_disconnect)));
 
   _menu->popup(ev->button, ev->time);
   return true;

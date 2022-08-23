@@ -37,10 +37,12 @@ add_project_arguments(['-DFMT_HEADER_ONLY'], language: ['cpp'])
 ##########################
 
 patchage_datadir = get_option('prefix') / get_option('datadir') / 'patchage'
+patchage_localedir = get_option('prefix') / get_option('localedir')
 
 platform_defines = [
   '-DPATCHAGE_VERSION="@0@"'.format(meson.project_version()),
   '-DPATCHAGE_DATA_DIR="@0@"'.format(patchage_datadir),
+  '-DPATCHAGE_LOCALE_DIR="@0@"'.format(patchage_localedir),
 ]
 
 if host_machine.system() in ['gnu', 'linux']
@@ -53,6 +55,9 @@ if get_option('checks')
   dladdr_code = '''#include <dlfcn.h>
 int main(void) { Dl_info info; return dladdr(&info, &info); }'''
 
+  gettext_code = '''#include <libintl.h>
+int main(void) { return !!gettext("hello"); }'''
+
   jack_metadata_code = '''#include <jack/metadata.h>
 int main(void) { return !!&jack_set_property; }'''
 
@@ -64,6 +69,11 @@ int main(void) { return !!&jack_set_property; }'''
   else
     platform_defines += ['-DHAVE_DLADDR=0']
   endif
+
+  platform_defines += '-DHAVE_GETTEXT=@0@'.format(
+    cpp.compiles(gettext_code,
+                 args: platform_defines,
+                 name: 'gettext').to_int())
 
   platform_defines += '-DHAVE_JACK_METADATA=@0@'.format(
     cpp.compiles(jack_metadata_code,
@@ -159,6 +169,12 @@ dbus_glib_dep = dependency(
 if jack_dep.found() and dbus_dep.found() and dbus_glib_dep.found()
   message('Both libjack and D-Bus available, defaulting to libjack')
 endif
+
+#######################
+# Translations (i18n) #
+#######################
+
+subdir('po')
 
 ###########
 # Program #

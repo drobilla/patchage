@@ -21,6 +21,10 @@
 #include <glibmm/ustring.h>
 #include <gtkmm/main.h>
 
+#if USE_GETTEXT
+#  include <libintl.h>
+#endif
+
 #include <cstring>
 #include <exception>
 #include <iostream>
@@ -92,6 +96,13 @@ main(int argc, char** argv)
 {
 #ifdef __APPLE__
   set_bundle_environment();
+#endif
+
+#if USE_GETTEXT
+  setlocale(LC_ALL, "");
+  bindtextdomain("patchage", PATCHAGE_LOCALE_DIR);
+  bind_textdomain_codeset("patchage", "UTF-8");
+  textdomain("patchage");
 #endif
 
   try {

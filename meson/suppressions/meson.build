@@ -18,6 +18,7 @@ if is_variable('cpp')
     if cpp.get_id() == 'clang'
       cpp_suppressions += [
         '-Wno-alloca',
+        '-Wno-c++20-compat',
         '-Wno-cast-qual',
         '-Wno-double-promotion',
         '-Wno-float-conversion',

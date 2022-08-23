@@ -5,6 +5,7 @@
 
 #include "Configuration.hpp"
 #include "PortType.hpp"
+#include "i18n.hpp"
 #include "patchage_config.h"
 
 #include <gdkmm/color.h>
@@ -23,7 +24,7 @@ namespace patchage {
 Legend::Legend(const Configuration& configuration)
 {
   add_button(PortType::jack_audio,
-             "Audio",
+             _("Audio"),
              configuration.get_port_color(PortType::jack_audio));
 
 #if USE_JACK_METADATA

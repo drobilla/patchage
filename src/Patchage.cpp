@@ -23,6 +23,7 @@
 #include "Widget.hpp"
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
+#include "i18n.hpp"
 #include "patchage_config.h" // IWYU pragma: keep
 #include "warnings.hpp"
 
@@ -445,11 +446,14 @@ Patchage::update_toolbar()
     const auto buffer_size = _drivers.jack()->buffer_size();
     const auto sample_rate = _drivers.jack()->sample_rate();
     if (sample_rate != 0) {
-      const auto latency_ms =
-        buffer_size * 1000 / static_cast<float>(sample_rate);
+      const auto sample_rate_khz = sample_rate / 1000.0;
+      const auto latency_ms      = buffer_size / sample_rate_khz;
 
-      _latency_label->set_label(fmt::format(
-        " frames @ {} kHz ({:0.2f} ms)", sample_rate / 1000, latency_ms));
+      _latency_label->set_label(" " +
+                                fmt::format(_("frames at {} kHz ({:0.2f} ms)"),
+                                            sample_rate_khz,
+                                            latency_ms));
+
       _latency_label->set_visible(true);
       _buf_size_combo->set_active(
         static_cast<int>(log2f(_drivers.jack()->buffer_size()) - 5));
@@ -467,12 +471,13 @@ Patchage::update_load()
 {
   if (_drivers.jack() && _drivers.jack()->is_attached()) {
     const auto xruns = _drivers.jack()->xruns();
+
+    _dropouts_label->set_text(" " + fmt::format(_("Dropouts: {}"), xruns));
+
     if (xruns > 0u) {
-      _dropouts_label->set_text(fmt::format(" Dropouts: {}", xruns));
       _dropouts_label->show();
       _clear_load_but->show();
     } else {
-      _dropouts_label->set_text(" Dropouts: 0");
       _dropouts_label->hide();
       _clear_load_but->hide();
     }
@@ -502,7 +507,7 @@ Patchage::store_window_location()
 void
 Patchage::clear_load()
 {
-  _dropouts_label->set_text(" Dropouts: 0");
+  _dropouts_label->set_text(" " + fmt::format(_("Dropouts: {}"), 0U));
   _dropouts_label->hide();
   _clear_load_but->hide();
   if (_drivers.jack()) {
@@ -830,7 +835,9 @@ Patchage::on_quit()
 void
 Patchage::on_export_image()
 {
-  Gtk::FileChooserDialog dialog("Export Image", Gtk::FILE_CHOOSER_ACTION_SAVE);
+  Gtk::FileChooserDialog dialog(_("Export Image"),
+                                Gtk::FILE_CHOOSER_ACTION_SAVE);
+
   dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
   dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
   dialog.set_default_response(Gtk::RESPONSE_OK);
@@ -850,7 +857,7 @@ Patchage::on_export_image()
     dialog.add_filter(filt);
   }
 
-  auto* bg_but = new Gtk::CheckButton("Draw _Background", true);
+  auto* bg_but = new Gtk::CheckButton(_("Draw _Background"), true);
   auto* extra  = new Gtk::Alignment(1.0, 0.5, 0.0, 0.0);
   bg_but->set_active(true);
   extra->add(*Gtk::manage(bg_but));
@@ -860,12 +867,12 @@ Patchage::on_export_image()
   if (dialog.run() == Gtk::RESPONSE_OK) {
     const std::string filename = dialog.get_filename();
     if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
-      Gtk::MessageDialog confirm(std::string("File exists!  Overwrite ") +
-                                   filename + "?",
-                                 true,
-                                 Gtk::MESSAGE_WARNING,
-                                 Gtk::BUTTONS_YES_NO,
-                                 true);
+      Gtk::MessageDialog confirm(
+        fmt::format(_("File exists!  Overwrite {}?"), filename),
+        true,
+        Gtk::MESSAGE_WARNING,
+        Gtk::BUTTONS_YES_NO,
+        true);
       confirm.set_transient_for(dialog);
       if (confirm.run() != Gtk::RESPONSE_YES) {
         return;

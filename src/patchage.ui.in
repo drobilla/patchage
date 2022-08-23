@@ -362,7 +362,7 @@
                         <child>
                           <object class="GtkLabel" id="latency_label">
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">frames @ ? kHz (? ms)</property>
+                            <property name="label" translatable="yes">frames at ? kHz (? ms)</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -388,7 +388,7 @@
                   <object class="GtkLabel" id="dropouts_label">
                     <property name="can_focus">False</property>
                     <property name="visible">False</property>
-                    <property name="label" translatable="yes"> Dropouts: 0</property>
+                    <property name="label" translatable="yes">Dropouts: {}</property>
                   </object>
                 </child>
               </object>
@@ -502,7 +502,7 @@
     <property name="version">@PATCHAGE_VERSION@</property>
     <property name="copyright" translatable="no">© 2005-2022 David Robillard
 © 2008 Nedko Arnaudov</property>
-    <property name="comments" translatable="yes">A JACK and ALSA front-end.</property>
+    <property name="comments" translatable="yes">A modular patchbay for JACK and ALSA applications.</property>
     <property name="website">http://drobilla.net/software/patchage</property>
     <property name="license" translatable="no">                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007

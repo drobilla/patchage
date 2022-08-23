@@ -46,6 +46,19 @@
 #    endif
 #  endif
 
+// GNU gettext()
+#  ifndef HAVE_GETTEXT
+#    ifdef __has_include
+#      if __has_include(<libintl.h>)
+#        define HAVE_GETTEXT 1
+#      else
+#        define HAVE_GETTEXT 0
+#      endif
+#    else
+#      define HAVE_GETTEXT 0
+#    endif
+#  endif
+
 // JACK metadata API
 #  ifndef HAVE_JACK_METADATA
 #    ifdef __has_include
@@ -73,6 +86,12 @@
 #  define USE_DLADDR 1
 #else
 #  define USE_DLADDR 0
+#endif
+
+#if HAVE_GETTEXT
+#  define USE_GETTEXT 1
+#else
+#  define USE_GETTEXT 0
 #endif
 
 #if HAVE_JACK_METADATA

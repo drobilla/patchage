@@ -6,6 +6,7 @@
 
 #include "PortID.hpp"
 #include "PortType.hpp"
+#include "i18n.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
@@ -82,7 +83,7 @@ public:
 
     Gtk::Menu* menu = Gtk::manage(new Gtk::Menu());
     menu->items().push_back(Gtk::Menu_Helpers::MenuElem(
-      "Disconnect", sigc::mem_fun(this, &Port::disconnect)));
+      _("Disconnect"), sigc::mem_fun(this, &Port::disconnect)));
 
     menu->popup(ev->button.button, ev->button.time);
     return true;
