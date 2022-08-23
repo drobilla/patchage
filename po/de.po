@@ -1,0 +1,153 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: patchage 1.0.9\n"
+"Report-Msgid-Bugs-To: https://gitlab.com/drobilla/patchage/issues/new\n"
+"POT-Creation-Date: 2022-08-23 00:52-0400\n"
+"PO-Revision-Date: 2022-08-22 23:24-0000\n"
+"Last-Translator: David Robillard <d@drobilla.net>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/CanvasModule.cpp:93
+msgid "_Split"
+msgstr "_Aufteilen"
+
+#: src/CanvasModule.cpp:97
+msgid "_Join"
+msgstr "_Vereinen"
+
+#: src/CanvasModule.cpp:101
+msgid "_Disconnect"
+msgstr "_Trennen"
+
+#: src/CanvasPort.hpp:86
+msgid "Disconnect"
+msgstr "Trennen"
+
+#: src/Legend.cpp:27
+msgid "Audio"
+msgstr "Audio"
+
+#: src/Patchage.cpp:453
+msgid "frames at {} kHz ({:0.2f} ms)"
+msgstr "Frames bei {} kHz ({:0.2f} ms)"
+
+#: src/Patchage.cpp:475 src/Patchage.cpp:510 src/patchage.ui.in:391
+msgid "Dropouts: {}"
+msgstr "Aussetzer: {}"
+
+#: src/Patchage.cpp:838
+msgid "Export Image"
+msgstr "Bild exportieren"
+
+#: src/Patchage.cpp:860
+msgid "Draw _Background"
+msgstr "_Hintergrund zeichnen"
+
+#: src/Patchage.cpp:871
+msgid "File exists!  Overwrite {}?"
+msgstr "Datei {} existiert!  Überschreiben?"
+
+#: src/patchage.ui.in:21
+msgid "_File"
+msgstr "_Datei"
+
+#: src/patchage.ui.in:30
+msgid "_Export Image…"
+msgstr "Bild _exportieren…"
+
+#: src/patchage.ui.in:60
+msgid "_System"
+msgstr "_System"
+
+#: src/patchage.ui.in:67
+msgid "Connect to _JACK"
+msgstr "Verbinde zu _JACK"
+
+#: src/patchage.ui.in:78
+msgid "Disconnect from JACK"
+msgstr "Trenne von JACK"
+
+#: src/patchage.ui.in:95
+msgid "Connect to _ALSA"
+msgstr "Verbinde zu _ALSA"
+
+#: src/patchage.ui.in:106
+msgid "Disconnect from ALSA"
+msgstr "Trenne von ALSA"
+
+#: src/patchage.ui.in:123
+msgid "_View"
+msgstr "_Auswahl"
+
+#: src/patchage.ui.in:132
+msgid "_Messages"
+msgstr "_Nachrichten"
+
+#: src/patchage.ui.in:141
+msgid "Tool_bar"
+msgstr "Werkzeug_leiste"
+
+#: src/patchage.ui.in:157
+msgid "_Human Names"
+msgstr "_Freundliche Namen"
+
+#: src/patchage.ui.in:167
+msgid "_Sort Ports by Name"
+msgstr "Ports nach Namen _sortieren"
+
+#: src/patchage.ui.in:230
+msgid "_Increase Font Size"
+msgstr "Vergrößern"
+
+#: src/patchage.ui.in:239
+msgid "_Decrease Font Size"
+msgstr "Verkleinern"
+
+#: src/patchage.ui.in:248
+msgid "_Normal Font Size"
+msgstr "Normale Schriftgröße"
+
+#: src/patchage.ui.in:272
+msgid "_Arrange"
+msgstr "An_ordnen"
+
+#: src/patchage.ui.in:285
+msgid "Sprung Layou_t"
+msgstr "Gefederte Anordnung"
+
+#: src/patchage.ui.in:298
+msgid "_Help"
+msgstr "_Hilfe"
+
+#: src/patchage.ui.in:341
+msgid "JACK buffer size and sample rate."
+msgstr "JACK Buffergröße und Samplerate"
+
+#: src/patchage.ui.in:353
+msgid "JACK buffer length in frames."
+msgstr "JACK Buffergröße in Frames"
+
+#: src/patchage.ui.in:365
+msgid "frames at ? kHz (? ms)"
+msgstr "Frames bei ? kHz (? ms)"
+
+#: src/patchage.ui.in:405
+msgid "Clear dropout indicator."
+msgstr "Aussetzerindikator zurücksetzen."
+
+#: src/patchage.ui.in:505
+msgid "A modular patchbay for JACK and ALSA applications."
+msgstr "Eine modulare Patchbay für JACK- und ALSA-Anwendungen."
+
+#. TRANSLATORS: Replace this string with your names, one name per line.
+#: src/patchage.ui.in:1183
+msgid "translator-credits"
+msgstr "David Robillard"

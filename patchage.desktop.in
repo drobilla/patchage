@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Patchage
 Comment=Connect audio and MIDI applications together
+Comment[de]=Audio und MIDI Anwendungen verdrahten
 Comment[fr]=Connecter des applications audio et MIDI entre elles
 Exec=@BINDIR@/patchage
 Terminal=false
