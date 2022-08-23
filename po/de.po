@@ -85,7 +85,7 @@ msgstr "Trenne von ALSA"
 
 #: src/patchage.ui.in:123
 msgid "_View"
-msgstr "_Auswahl"
+msgstr "_Ansicht"
 
 #: src/patchage.ui.in:132
 msgid "_Messages"
