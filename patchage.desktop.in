@@ -3,6 +3,7 @@ Name=Patchage
 Comment=Connect audio and MIDI applications together
 Comment[de]=Audio und MIDI Anwendungen verdrahten
 Comment[fr]=Connecter des applications audio et MIDI entre elles
+Comment[ko]=오디오 및 MIDI 응용프로그램 함께 연결하기
 Exec=@BINDIR@/patchage
 Terminal=false
 Icon=patchage
