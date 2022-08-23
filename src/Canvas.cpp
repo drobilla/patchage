@@ -1,4 +1,4 @@
-// Copyright 2007-2021 David Robillard <d@drobilla.net>
+// Copyright 2007-2022 David Robillard <d@drobilla.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "Canvas.hpp"
@@ -75,7 +75,7 @@ Canvas::create_port(Configuration&  conf,
     const auto client_info = metadata.client(client_id);
     if (!client_info) {
       _log.error(fmt::format(
-        R"(Unable to add port "{}", client "{}" is unknown)", id, client_id));
+        u8"(Unable to add port “{}”, client “{}” is unknown)", id, client_id));
 
       return nullptr;
     }
@@ -113,7 +113,7 @@ Canvas::create_port(Configuration&  conf,
   if (parent->get_port(id)) {
     // TODO: Update existing port?
     _log.error(fmt::format(
-      R"(Module "{}" already has port "{}")", client_name, port_name));
+      u8"(Module “{}” already has port “{}”)", client_name, port_name));
     return nullptr;
   }
 
