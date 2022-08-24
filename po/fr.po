@@ -1,0 +1,154 @@
+# Copyright (C) 2022 Olivier Humbert <trebmuh@tuxfamily.org>
+# This file is distributed under the same license as the patchage package.
+# Olivier Humbert <trebmuh@tuxfamily.org>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: patchage 1.0.9\n"
+"Report-Msgid-Bugs-To: https://gitlab.com/drobilla/patchage/issues/new\n"
+"POT-Creation-Date: 2022-08-23 00:52-0400\n"
+"PO-Revision-Date: 2022-08-24 19:35+0900\n"
+"Last-Translator: Olivier Humbert (trebmuh/olinuxx) <trebmuh@tuxfamily.org>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: src/CanvasModule.cpp:93
+msgid "_Split"
+msgstr "_Séparer"
+
+#: src/CanvasModule.cpp:97
+msgid "_Join"
+msgstr "_Joindre"
+
+#: src/CanvasModule.cpp:101
+msgid "_Disconnect"
+msgstr "_Déconnecter"
+
+#: src/CanvasPort.hpp:86
+msgid "Disconnect"
+msgstr "Déconnecter"
+
+#: src/Legend.cpp:27
+msgid "Audio"
+msgstr "Audio"
+
+#: src/Patchage.cpp:453
+msgid "frames at {} kHz ({:0.2f} ms)"
+msgstr "trames à {} kHz ({:0.2f} ms)"
+
+#: src/Patchage.cpp:475 src/Patchage.cpp:510 src/patchage.ui.in:391
+msgid "Dropouts: {}"
+msgstr "Décrochage : {}"
+
+#: src/Patchage.cpp:838
+msgid "Export Image"
+msgstr "Exporter une image"
+
+#: src/Patchage.cpp:860
+msgid "Draw _Background"
+msgstr "_Dessiner l'arrière-plan"
+
+#: src/Patchage.cpp:871
+msgid "File exists!  Overwrite {}?"
+msgstr "Le fichier existe ! Écraser {}?"
+
+#: src/patchage.ui.in:21
+msgid "_File"
+msgstr "_Fichier"
+
+#: src/patchage.ui.in:30
+msgid "_Export Image…"
+msgstr "_Exporter une image…"
+
+#: src/patchage.ui.in:60
+msgid "_System"
+msgstr "_Système"
+
+#: src/patchage.ui.in:67
+msgid "Connect to _JACK"
+msgstr "Connecter à _JACK"
+
+#: src/patchage.ui.in:78
+msgid "Disconnect from JACK"
+msgstr "Déconnecter de JACK"
+
+#: src/patchage.ui.in:95
+msgid "Connect to _ALSA"
+msgstr "Connecter à _ALSA"
+
+#: src/patchage.ui.in:106
+msgid "Disconnect from ALSA"
+msgstr "Déconnecter d'ALSA"
+
+#: src/patchage.ui.in:123
+msgid "_View"
+msgstr "_Affichage"
+
+#: src/patchage.ui.in:132
+msgid "_Messages"
+msgstr "_Messages"
+
+#: src/patchage.ui.in:141
+msgid "Tool_bar"
+msgstr "_Bar d'outils"
+
+#: src/patchage.ui.in:157
+msgid "_Human Names"
+msgstr "Noms _humains"
+
+#: src/patchage.ui.in:167
+msgid "_Sort Ports by Name"
+msgstr "Trier les port_s par nom"
+
+#: src/patchage.ui.in:230
+msgid "_Increase Font Size"
+msgstr "Augmenter la ta_ille de la police"
+
+#: src/patchage.ui.in:239
+msgid "_Decrease Font Size"
+msgstr "_Diminuer la taille de la police"
+
+#: src/patchage.ui.in:248
+msgid "_Normal Font Size"
+msgstr "Taille de police _normale"
+
+#: src/patchage.ui.in:272
+msgid "_Arrange"
+msgstr "_Arranger"
+
+#: src/patchage.ui.in:285
+msgid "Sprung Layou_t"
+msgstr "Rafraîchir la disposi_tion"
+
+#: src/patchage.ui.in:298
+msgid "_Help"
+msgstr "Aid_e"
+
+#: src/patchage.ui.in:341
+msgid "JACK buffer size and sample rate."
+msgstr "Taille du tampon et du taux d'échantillonnage de JACK."
+
+#: src/patchage.ui.in:353
+msgid "JACK buffer length in frames."
+msgstr "Taille du tampon JACK en trames."
+
+#: src/patchage.ui.in:365
+msgid "frames at ? kHz (? ms)"
+msgstr "trames à ? kHz (? ms)"
+
+#: src/patchage.ui.in:405
+msgid "Clear dropout indicator."
+msgstr "Nettoyer l'indicateur de désynchronisation."
+
+#: src/patchage.ui.in:505
+msgid "A modular patchbay for JACK and ALSA applications."
+msgstr "Une baie de brassage modulaire pour les applications JACK et ALSA."
+
+#. TRANSLATORS: Replace this string with your names, one name per line.
+#: src/patchage.ui.in:1183
+msgid "translator-credits"
+msgstr "Olivier Humbert (trebmuh/olinuxx) <trebmuh@tuxfamily.org>"
