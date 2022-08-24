@@ -1,7 +1,6 @@
 # Copyright 2022 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: patchage 1.0.9\n"
