@@ -1,5 +1,6 @@
-# Copyright 2022 David Robillard <d@drobilla.net>
-# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2022 David Robillard <d@drobilla.net>
+# This file is distributed under the same license as the patchage package.
+# David Robillard <d@drobilla.net>, 2022.
 #
 msgid ""
 msgstr ""
