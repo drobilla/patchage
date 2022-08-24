@@ -121,7 +121,7 @@ msgstr "An_ordnen"
 
 #: src/patchage.ui.in:285
 msgid "Sprung Layou_t"
-msgstr "Gefederte Anordnung"
+msgstr "Elastisches Layout"
 
 #: src/patchage.ui.in:298
 msgid "_Help"
