@@ -5,11 +5,11 @@ Source: https://gitlab.com/drobilla/patchage
 
 Files: .clant.json .includes.imp INSTALL.md NEWS meson_options.txt
 Copyright: 2020-2021 David Robillard <d@drobilla.net>
-License: CC0-1.0 OR GPL-3.0-or-later
+License: 0BSD OR GPL-3.0-or-later
 
 Files: AUTHORS README.md patchage.desktop.in
 Copyright: 2006-2014 David Robillard <d@drobilla.net>
-License: CC0-1.0 OR GPL-3.0-or-later
+License: 0BSD OR GPL-3.0-or-later
 
 Files: src/patchage.gladep src/patchage.ui.in
 Copyright: 2006-2014 David Robillard <d@drobilla.net>
@@ -17,7 +17,7 @@ License: GPL-3.0-or-later
 
 Files: osx/Info.plist.in osx/gtkrc osx/loaders.cache osx/pango.modules osx/pangorc
 Copyright: 2011-2017 David Robillard <d@drobilla.net>
-License: CC0-1.0 OR GPL-3.0-or-later
+License: 0BSD OR GPL-3.0-or-later
 
 Files: osx/Patchage.icns
 Copyright: 2011 David Robillard <d@drobilla.net>
