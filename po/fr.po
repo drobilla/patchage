@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: patchage 1.0.9\n"
+"Project-Id-Version: patchage 1.0.10\n"
 "Report-Msgid-Bugs-To: https://gitlab.com/drobilla/patchage/issues/new\n"
 "POT-Creation-Date: 2022-08-23 00:52-0400\n"
 "PO-Revision-Date: 2022-08-24 19:35+0900\n"

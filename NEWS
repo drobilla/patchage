@@ -1,4 +1,4 @@
-patchage (1.0.9) unstable; urgency=medium
+patchage (1.0.10) stable; urgency=medium
 
   * Add German translation
   * Add Korean translation from Junghee Lee
@@ -6,7 +6,7 @@ patchage (1.0.9) unstable; urgency=medium
   * Replace boost with standard C++17 facilities
   * Upgrade to fmt 9.0.0
 
- -- David Robillard <d@drobilla.net>  Wed, 24 Aug 2022 01:37:03 +0000
+ -- David Robillard <d@drobilla.net>  Sat, 10 Sep 2022 00:59:46 +0000
 
 patchage (1.0.8) stable; urgency=medium
 

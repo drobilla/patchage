@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
 project('patchage', ['c', 'cpp'],
-        version: '1.0.9',
+        version: '1.0.10',
         license: 'GPLv3+',
         meson_version: '>= 0.56.0',
         default_options: [
