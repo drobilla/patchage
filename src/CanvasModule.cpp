@@ -10,6 +10,7 @@
 #include "ClientID.hpp"
 #include "PortID.hpp"
 #include "SignalDirection.hpp"
+#include "i18n.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS

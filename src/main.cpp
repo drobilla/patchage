@@ -23,6 +23,7 @@
 
 #if USE_GETTEXT
 #  include <libintl.h>
+#  include <locale.h>
 #endif
 
 #include <cstring>
