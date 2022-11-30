@@ -1,32 +1,46 @@
-.TH PATCHAGE 1 "29 Nov 2020"
-
-.SH NAME
-.B patchage \- Graphically connect JACK and ALSA Audio and MIDI ports
-
-.SH SYNOPSIS
-patchage [\fIOPTION\fR]...
-
-.SH DESCRIPTION
-Patchage provides a graphical interface to connect JACK and ALSA inputs and outputs.
-Each application is represented on a canvas as a \*(lqmodule\*(rq, with inputs on the left and outputs on the right.
+.\" # Copyright 2010-2022 David Robillard <d@drobilla.net>
+.\" # SPDX-License-Identifier: ISC
+.Dd Nov 30, 2022
+.Dt PATCHAGE 1
+.Os Patchage 1.0.10
+.Sh NAME
+.Nm patchage
+.Nd graphically connect JACK/ALSA audio/MIDI applications
+.Sh SYNOPSIS
+.Nm patchage
+.Op Fl AJVh
+.Op Fl Fl help
+.Op Fl Fl no-alsa
+.Op Fl Fl no-jack
+.Op Fl Fl version
+.Sh DESCRIPTION
+.Nm
+provides a graphical interface to connect JACK and ALSA inputs and outputs.
+Each application is represented on a canvas as a
+.Dq module ,
+with inputs on the left and outputs on the right.
 Modules can be arranged manually or automatically to have a clear display of the current setup.
-
-.SH OPTIONS
-.TP
-\fB\-A\fR, \fB\-\-no\-alsa\fR
+.Pp
+The options are as follows:
+.Pp
+.Bl -tag -compact -width 3n
+.It Fl A , Fl Fl no-alsa
 Do not automatically attach to ALSA.
-
-.TP
-\fB\-h\fR, \fB\-\-help\fR
-Print the command line options and exit.
-
-.TP
-\fB\-J\fR, \fB\-\-no\-jack\fR
+.Pp
+.It Fl J , Fl Fl no-jack
 Do not automatically attach to JACK.
-
-.TP
-\fB\-V\fR, \fB\-\-version\fR
-Print version information and exit.
-
-.SH AUTHOR
-Patchage was written by David Robillard <d@drobilla.net>
+.Pp
+.It Fl V , Fl Fl version
+Display version information and exit.
+.Pp
+.It Fl h , Fl Fl help
+Print the command line options.
+.El
+.Sh EXIT STATUS
+.Nm
+exits with a status of 0, or non-zero if an error occurred.
+.Sh AUTHORS
+.Nm
+was written by
+.An David Robillard
+.Mt d@drobilla.net .
