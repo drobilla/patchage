@@ -27,7 +27,7 @@
 #define PATCHAGE_CONFIG_H
 
 // Define version unconditionally so a warning will catch a mismatch
-#define PATCHAGE_VERSION "1.0.10"
+#define PATCHAGE_VERSION "1.0.11"
 
 #if !defined(PATCHAGE_NO_DEFAULT_CONFIG)
 

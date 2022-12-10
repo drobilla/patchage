@@ -1,3 +1,9 @@
+patchage (1.0.11) stable; urgency=medium
+
+  * Convert man page to mdoc
+
+ -- David Robillard <d@drobilla.net>  Sat, 10 Dec 2022 13:52:36 +0000
+
 patchage (1.0.10) stable; urgency=medium
 
   * Add German translation
