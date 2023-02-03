@@ -45,7 +45,7 @@ TextViewLog::TextViewLog(Widget<Gtk::TextView>& text_view)
 void
 TextViewLog::info(const std::string& msg)
 {
-  Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
+  const Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
   buffer->insert(buffer->end(), std::string("\n") + msg);
   _text_view->scroll_to_mark(buffer->get_insert(), 0);
 }
@@ -53,7 +53,7 @@ TextViewLog::info(const std::string& msg)
 void
 TextViewLog::warning(const std::string& msg)
 {
-  Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
+  const Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
   buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _warning_tag);
   _text_view->scroll_to_mark(buffer->get_insert(), 0);
 }
@@ -61,7 +61,7 @@ TextViewLog::warning(const std::string& msg)
 void
 TextViewLog::error(const std::string& msg)
 {
-  Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
+  const Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
   buffer->insert_with_tag(buffer->end(), std::string("\n") + msg, _error_tag);
   _text_view->scroll_to_mark(buffer->get_insert(), 0);
 }
@@ -69,7 +69,7 @@ TextViewLog::error(const std::string& msg)
 int
 TextViewLog::min_height() const
 {
-  Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
+  const Glib::RefPtr<Gtk::TextBuffer> buffer = _text_view->get_buffer();
 
   int y           = 0;
   int line_height = 0;

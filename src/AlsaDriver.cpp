@@ -339,7 +339,7 @@ AlsaDriver::connect(const PortID& tail_id, const PortID& head_id)
     result = false;
   }
 
-  int ret = snd_seq_subscribe_port(_seq, subs);
+  const int ret = snd_seq_subscribe_port(_seq, subs);
   if (ret < 0) {
     _log.error(
       fmt::format("[ALSA] Subscription failed ({})", snd_strerror(ret)));
@@ -380,7 +380,7 @@ AlsaDriver::disconnect(const PortID& tail_id, const PortID& head_id)
     return false;
   }
 
-  int ret = snd_seq_unsubscribe_port(_seq, subs);
+  const int ret = snd_seq_unsubscribe_port(_seq, subs);
   if (ret < 0) {
     _log.error(fmt::format("[ALSA] Failed to disconnect {} => {} ({})",
                            tail_id,

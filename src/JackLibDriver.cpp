@@ -146,7 +146,7 @@ JackLibDriver::attach(const bool launch_daemon)
 void
 JackLibDriver::detach()
 {
-  std::lock_guard<std::mutex> lock{_shutdown_mutex};
+  const std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
   if (_client) {
     jack_deactivate(_client);
@@ -242,7 +242,7 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
 void
 JackLibDriver::refresh(const EventSink& sink)
 {
-  std::lock_guard<std::mutex> lock{_shutdown_mutex};
+  const std::lock_guard<std::mutex> lock{_shutdown_mutex};
 
   if (!_client) {
     return;
@@ -470,7 +470,7 @@ JackLibDriver::on_shutdown(void* const driver)
      So, since JACK is a hot mess and it's impossible to gracefully handle
      this situation, just leak the client. */
 
-  std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
+  const std::lock_guard<std::mutex> lock{me->_shutdown_mutex};
 
   me->_client       = nullptr;
   me->_is_activated = false;

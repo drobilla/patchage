@@ -58,7 +58,7 @@ Reactor::Reactor(Configuration& conf,
 void
 Reactor::operator()(const action::ChangeSetting& action)
 {
-  SettingVisitor visitor{_conf};
+  const SettingVisitor visitor{_conf};
   std::visit(visitor, action.setting);
 }
 

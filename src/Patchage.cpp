@@ -139,8 +139,10 @@ port_order(const GanvPort* a, const GanvPort* b, void*)
   const auto* pa = dynamic_cast<const CanvasPort*>(Glib::wrap(a));
   const auto* pb = dynamic_cast<const CanvasPort*>(Glib::wrap(b));
   if (pa && pb) {
-    if (pa->order() && pb->order()) {
-      return *pa->order() - *pb->order();
+    const auto oa = pa->order();
+    const auto ob = pb->order();
+    if (oa && ob) {
+      return *oa - *ob;
     }
 
     if (pa->order()) {
@@ -218,11 +220,11 @@ Patchage::Patchage(Options options)
   gtk_window_set_default_icon_name("patchage");
 
   // Create list model for buffer size selector
-  Glib::RefPtr<Gtk::ListStore> buf_size_store =
+  const Glib::RefPtr<Gtk::ListStore> buf_size_store =
     Gtk::ListStore::create(_buf_size_columns);
   for (size_t i = 32; i <= 4096; i *= 2) {
-    Gtk::TreeModel::Row row      = *(buf_size_store->append());
-    row[_buf_size_columns.label] = std::to_string(i);
+    const Gtk::TreeModel::Row row = *(buf_size_store->append());
+    row[_buf_size_columns.label]  = std::to_string(i);
   }
 
   _buf_size_combo->set_model(buf_size_store);
@@ -750,7 +752,7 @@ Patchage::operator()(const setting::Zoom& setting)
 void
 Patchage::on_driver_event(const Event& event)
 {
-  std::lock_guard<std::mutex> lock{_events_mutex};
+  const std::lock_guard<std::mutex> lock{_events_mutex};
 
   _driver_events.emplace(event);
 }
@@ -758,7 +760,7 @@ Patchage::on_driver_event(const Event& event)
 void
 Patchage::process_events()
 {
-  std::lock_guard<std::mutex> lock{_events_mutex};
+  const std::lock_guard<std::mutex> lock{_events_mutex};
 
   while (!_driver_events.empty()) {
     const Event& event = _driver_events.front();

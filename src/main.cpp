@@ -23,7 +23,8 @@
 
 #if USE_GETTEXT
 #  include <libintl.h>
-#  include <locale.h>
+
+#  include <clocale>
 #endif
 
 #include <cstring>
@@ -100,7 +101,10 @@ main(int argc, char** argv)
 #endif
 
 #if USE_GETTEXT
-  setlocale(LC_ALL, "");
+  if (!setlocale(LC_ALL, "")) {
+    std::cerr << "patchage: failed to set locale\n";
+  }
+
   bindtextdomain("patchage", PATCHAGE_LOCALE_DIR);
   bind_textdomain_codeset("patchage", "UTF-8");
   textdomain("patchage");
@@ -109,7 +113,7 @@ main(int argc, char** argv)
   try {
     Glib::thread_init();
 
-    Gtk::Main app(argc, argv);
+    const Gtk::Main app(argc, argv);
     ++argv;
     --argc;
 

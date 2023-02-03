@@ -14,6 +14,7 @@ Checks: >
   -*-vararg,
   -abseil-string-find-str-contains,
   -altera-*,
+  -bugprone-assignment-in-if-condition,
   -bugprone-easily-swappable-parameters,
   -cert-dcl21-cpp,
   -cert-dcl50-cpp,
