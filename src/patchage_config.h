@@ -1,26 +1,35 @@
-// Copyright 2021-2022 David Robillard <d@drobilla.net>
+// Copyright 2021-2023 David Robillard <d@drobilla.net>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
-  Configuration header that defines reasonable defaults at compile time.
+  Configuration header that defines reasonable defaults at compile-time.
 
-  This allows compile-time configuration from the command line, while still
-  allowing the source to be built "as-is" without any configuration.  The idea
-  is to support an advanced build system with configuration checks, while still
-  allowing the code to be simply "thrown at a compiler" with features
-  determined from the compiler or system headers.  Everything can be
-  overridden, so it should never be necessary to edit this file to build
-  successfully.
+  This allows configuration from the command-line (usually by the build system)
+  while still allowing the code to compile "as-is" with reasonable default
+  features on supported platforms.
 
-  To ensure that all configure checks are performed, the build system can
-  define PATCHAGE_NO_DEFAULT_CONFIG to disable defaults.  In this case, it must
-  define all HAVE_FEATURE symbols below to 1 or 0 to enable or disable
-  features.  Any missing definitions will generate a compiler warning.
+  This system is designed so that, ideally, no command-line or build-system
+  configuration is needed, but automatic feature detection can be disabled or
+  overridden for maximum control.  It should never be necessary to edit the
+  source code to achieve a given configuration.
 
-  To ensure that this header is always included properly, all code that uses
-  configuration variables includes this header and checks their value with #if
-  (not #ifdef).  Variables like USE_FEATURE are internal and should never be
-  defined on the command line.
+  Usage:
+
+  - By default, features are enabled if they can be detected or assumed to be
+    available from the build environment, unless `PATCHAGE_NO_DEFAULT_CONFIG`
+    is defined, which disables everything by default.
+
+  - If a symbol like `HAVE_SOMETHING` is defined to non-zero, then the
+    "something" feature is assumed to be available.
+
+  Code rules:
+
+  - To check for a feature, this header must be included, and the symbol
+    `USE_SOMETHING` used as a boolean in an `#if` expression.
+
+  - None of the other configuration symbols described here may be used
+    directly.  In particular, this header should be the only place in the
+    source code that touches `HAVE` symbols.
 */
 
 #ifndef PATCHAGE_CONFIG_H
@@ -36,13 +45,9 @@
 #    ifdef __has_include
 #      if __has_include(<dlfcn.h>)
 #        define HAVE_DLADDR 1
-#      else
-#        define HAVE_DLADDR 0
 #      endif
 #    elif defined(__unix__) || defined(__APPLE__)
 #      define HAVE_DLADDR 1
-#    else
-#      define HAVE_DLADDR 0
 #    endif
 #  endif
 
@@ -51,11 +56,7 @@
 #    ifdef __has_include
 #      if __has_include(<libintl.h>)
 #        define HAVE_GETTEXT 1
-#      else
-#        define HAVE_GETTEXT 0
 #      endif
-#    else
-#      define HAVE_GETTEXT 0
 #    endif
 #  endif
 
@@ -64,11 +65,7 @@
 #    ifdef __has_include
 #      if __has_include(<jack/metadata.h>)
 #        define HAVE_JACK_METADATA 1
-#      else
-#        define HAVE_JACK_METADATA 0
 #      endif
-#    else
-#      define HAVE_JACK_METADATA 0
 #    endif
 #  endif
 
@@ -82,25 +79,25 @@
   if the build system defines them all.
 */
 
-#if HAVE_DLADDR
+#if defined(HAVE_DLADDR) && HAVE_DLADDR
 #  define USE_DLADDR 1
 #else
 #  define USE_DLADDR 0
 #endif
 
-#if HAVE_GETTEXT
+#if defined(HAVE_GETTEXT) && HAVE_GETTEXT
 #  define USE_GETTEXT 1
 #else
 #  define USE_GETTEXT 0
 #endif
 
-#if HAVE_JACK_METADATA
+#if defined(HAVE_JACK_METADATA) && HAVE_JACK_METADATA
 #  define USE_JACK_METADATA 1
 #else
 #  define USE_JACK_METADATA 0
 #endif
 
-#ifndef PATCHAGE_USE_LIGHT_THEME
+#if !defined(PATCHAGE_USE_LIGHT_THEME)
 #  define PATCHAGE_USE_LIGHT_THEME 0
 #endif
 
