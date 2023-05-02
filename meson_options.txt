@@ -4,14 +4,17 @@
 option('alsa', type: 'feature', value: 'auto', yield: true,
        description: 'Build ALSA sequencer support')
 
-option('checks', type: 'boolean', value: true, yield: true,
-       description: 'Check for features with the build system')
+option('checks', type: 'feature', value: 'enabled', yield: true,
+       description: 'Check for platform-specific features')
 
 option('jack', type: 'feature', value: 'auto', yield: true,
        description: 'Build JACK audio and MIDI support')
 
 option('jack_dbus', type: 'feature', value: 'auto', yield: true,
        description: 'Use JACK via D-Bus')
+
+option('lint', type: 'boolean', value: false, yield: true,
+       description: 'Run code quality checks')
 
 option('strict', type: 'boolean', value: false, yield: true,
        description: 'Enable ultra-strict warnings')

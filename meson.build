@@ -1,4 +1,4 @@
-# Copyright 2020-2022 David Robillard <d@drobilla.net>
+# Copyright 2020-2023 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
 project('patchage', ['c', 'cpp'],
@@ -22,11 +22,6 @@ version_suffix = '@0@-@1@'.format(meson.project_name(), major_version)
 # Required tools
 cpp = meson.get_compiler('cpp')
 
-# Set global warning flags
-if get_option('strict') and not meson.is_subproject()
-  subdir('meson/warnings')
-endif
-
 # Set global warning suppressions
 subdir('meson/suppressions')
 add_project_arguments(cpp_suppressions, language: ['cpp'])
@@ -49,7 +44,11 @@ if host_machine.system() in ['gnu', 'linux']
   platform_defines += ['-D_GNU_SOURCE']
 endif
 
-if get_option('checks')
+if get_option('checks').disabled()
+  # Generic build without platform-specific features
+  platform_defines += ['-DPATCHAGE_NO_DEFAULT_CONFIG']
+elif get_option('checks').enabled()
+  # Only use the features detected by the build system
   platform_defines += ['-DPATCHAGE_NO_DEFAULT_CONFIG']
 
   dladdr_code = '''#include <dlfcn.h>
@@ -252,8 +251,8 @@ install_man(files('doc/patchage.1'))
 # Tests #
 #########
 
-if not get_option('tests').disabled() and not meson.is_subproject()
-  if get_option('strict')
+if get_option('lint')
+  if not meson.is_subproject()
     # Check release metadata
     autoship = find_program('autoship', required: false)
     if autoship.found()

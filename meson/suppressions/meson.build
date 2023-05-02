@@ -1,4 +1,4 @@
-# Copyright 2020-2022 David Robillard <d@drobilla.net>
+# Copyright 2020-2023 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
 # Project-specific warning suppressions.
@@ -14,11 +14,13 @@
 if is_variable('cpp')
   cpp_suppressions = []
 
-  if get_option('strict')
+  if get_option('warning_level') == 'everything'
     if cpp.get_id() == 'clang'
       cpp_suppressions += [
         '-Wno-alloca',
         '-Wno-c++20-compat',
+        '-Wno-c++98-compat',
+        '-Wno-c++98-compat-pedantic',
         '-Wno-cast-qual',
         '-Wno-double-promotion',
         '-Wno-float-conversion',
