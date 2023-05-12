@@ -16,13 +16,13 @@
 #include <string>
 #include <tuple>
 
-#define N_PORT_TYPES 5
-
 namespace patchage {
 
 class Configuration
 {
 public:
+  static constexpr unsigned n_port_types = 5U;
+
   explicit Configuration(std::function<void(const Setting&)> on_change);
 
   void load();
@@ -101,7 +101,7 @@ public:
     visitor(std::get<setting::WindowSize>(_settings));
     visitor(std::get<setting::Zoom>(_settings));
 
-    for (auto i = 0u; i < N_PORT_TYPES; ++i) {
+    for (auto i = 0u; i < n_port_types; ++i) {
       visitor(setting::PortColor{static_cast<PortType>(i), _port_colors[i]});
     }
   }
@@ -120,8 +120,8 @@ private:
 
   std::map<std::string, ModuleSettings> _module_settings;
 
-  uint32_t _default_port_colors[N_PORT_TYPES] = {};
-  uint32_t _port_colors[N_PORT_TYPES]         = {};
+  uint32_t _default_port_colors[n_port_types] = {};
+  uint32_t _port_colors[n_port_types]         = {};
 
   using Settings = std::tuple<setting::AlsaAttached,
                               setting::FontSize,

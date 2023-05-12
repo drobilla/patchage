@@ -22,11 +22,8 @@
 
 namespace patchage {
 
-static const char* const port_type_names[N_PORT_TYPES] = {"JACK_AUDIO",
-                                                          "JACK_MIDI",
-                                                          "ALSA_MIDI",
-                                                          "JACK_OSC",
-                                                          "JACK_CV"};
+static const char* const port_type_names[Configuration::n_port_types] =
+  {"JACK_AUDIO", "JACK_MIDI", "ALSA_MIDI", "JACK_OSC", "JACK_CV"};
 
 Configuration::Configuration(std::function<void(const Setting&)> on_change)
   : _on_change(std::move(on_change))
@@ -246,7 +243,7 @@ Configuration::load()
       file >> std::dec >> std::nouppercase;
 
       bool found = false;
-      for (int i = 0; i < N_PORT_TYPES; ++i) {
+      for (unsigned i = 0U; i < n_port_types; ++i) {
         if (type_name == port_type_names[i]) {
           _port_colors[i] = rgba;
           found           = true;
@@ -343,7 +340,7 @@ Configuration::save()
   file << "human_names " << get<setting::HumanNames>() << std::endl;
 
   file << std::hex << std::uppercase;
-  for (int i = 0; i < N_PORT_TYPES; ++i) {
+  for (unsigned i = 0U; i < n_port_types; ++i) {
     if (_port_colors[i] != _default_port_colors[i]) {
       file << "port_color " << port_type_names[i] << " " << _port_colors[i]
            << std::endl;
