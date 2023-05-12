@@ -7,9 +7,6 @@
 #include <libintl.h>
 
 /// Mark a string literal as translatable
-#define _(msgid) gettext(msgid)
-
-/// Mark a string literal as non-translatable
-// #define N_(msgid) (msgid)
+#define T(msgid) gettext(msgid)
 
 #endif // PATCHAGE_I18N_HPP

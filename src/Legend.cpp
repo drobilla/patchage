@@ -24,7 +24,7 @@ namespace patchage {
 Legend::Legend(const Configuration& configuration)
 {
   add_button(PortType::jack_audio,
-             _("Audio"),
+             T("Audio"),
              configuration.get_port_color(PortType::jack_audio));
 
 #if USE_JACK_METADATA

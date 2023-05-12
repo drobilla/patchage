@@ -452,7 +452,7 @@ Patchage::update_toolbar()
       const auto latency_ms      = buffer_size / sample_rate_khz;
 
       _latency_label->set_label(" " +
-                                fmt::format(_("frames at {} kHz ({:0.2f} ms)"),
+                                fmt::format(T("frames at {} kHz ({:0.2f} ms)"),
                                             sample_rate_khz,
                                             latency_ms));
 
@@ -474,7 +474,7 @@ Patchage::update_load()
   if (_drivers.jack() && _drivers.jack()->is_attached()) {
     const auto xruns = _drivers.jack()->xruns();
 
-    _dropouts_label->set_text(" " + fmt::format(_("Dropouts: {}"), xruns));
+    _dropouts_label->set_text(" " + fmt::format(T("Dropouts: {}"), xruns));
 
     if (xruns > 0u) {
       _dropouts_label->show();
@@ -509,7 +509,7 @@ Patchage::store_window_location()
 void
 Patchage::clear_load()
 {
-  _dropouts_label->set_text(" " + fmt::format(_("Dropouts: {}"), 0U));
+  _dropouts_label->set_text(" " + fmt::format(T("Dropouts: {}"), 0U));
   _dropouts_label->hide();
   _clear_load_but->hide();
   if (_drivers.jack()) {
@@ -837,7 +837,7 @@ Patchage::on_quit()
 void
 Patchage::on_export_image()
 {
-  Gtk::FileChooserDialog dialog(_("Export Image"),
+  Gtk::FileChooserDialog dialog(T("Export Image"),
                                 Gtk::FILE_CHOOSER_ACTION_SAVE);
 
   dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -859,7 +859,7 @@ Patchage::on_export_image()
     dialog.add_filter(filt);
   }
 
-  auto* bg_but = new Gtk::CheckButton(_("Draw _Background"), true);
+  auto* bg_but = new Gtk::CheckButton(T("Draw _Background"), true);
   auto* extra  = new Gtk::Alignment(1.0, 0.5, 0.0, 0.0);
   bg_but->set_active(true);
   extra->add(*Gtk::manage(bg_but));
@@ -870,7 +870,7 @@ Patchage::on_export_image()
     const std::string filename = dialog.get_filename();
     if (Glib::file_test(filename, Glib::FILE_TEST_EXISTS)) {
       Gtk::MessageDialog confirm(
-        fmt::format(_("File exists!  Overwrite {}?"), filename),
+        fmt::format(T("File exists!  Overwrite {}?"), filename),
         true,
         Gtk::MESSAGE_WARNING,
         Gtk::BUTTONS_YES_NO,
