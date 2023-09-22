@@ -165,6 +165,74 @@ on_setting_toggled(Reactor* const reactor, const Gtk::CheckMenuItem* const item)
   (*reactor)(action::ChangeSetting{{S{item->get_active()}}});
 }
 
+void
+update_labels(GanvNode* node, void* data)
+{
+  const bool human_names = *static_cast<const bool*>(data);
+  if (GANV_IS_MODULE(node)) {
+    Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+    auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
+    if (pmod) {
+      for (Ganv::Port* gport : *gmod) {
+        auto* pport = dynamic_cast<CanvasPort*>(gport);
+        if (pport) {
+          pport->show_human_name(human_names);
+        }
+      }
+    }
+  }
+}
+
+inline guint
+highlight_color(guint c, guint delta)
+{
+  const guint max_char = 255;
+  const guint r        = MIN((c >> 24) + delta, max_char);
+  const guint g        = MIN(((c >> 16) & 0xFF) + delta, max_char);
+  const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
+  const guint a        = c & 0xFF;
+
+  return ((r << 24u) | (g << 16u) | (b << 8u) | a);
+}
+
+void
+update_port_colors(GanvNode* node, void* data)
+{
+  auto* patchage = static_cast<Patchage*>(data);
+  if (!GANV_IS_MODULE(node)) {
+    return;
+  }
+
+  Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
+  auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
+  if (!pmod) {
+    return;
+  }
+
+  for (Ganv::Port* p : *pmod) {
+    auto* port = dynamic_cast<CanvasPort*>(p);
+    if (port) {
+      const uint32_t rgba = patchage->conf().get_port_color(port->type());
+      port->set_fill_color(rgba);
+      port->set_border_color(highlight_color(rgba, 0x20));
+    }
+  }
+}
+
+void
+update_edge_color(GanvEdge* edge, void* data)
+{
+  auto*       patchage = static_cast<Patchage*>(data);
+  Ganv::Edge* edgemm   = Glib::wrap(edge);
+
+  if (edgemm) {
+    auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
+    if (tail) {
+      edgemm->set_color(patchage->conf().get_port_color(tail->type()));
+    }
+  }
+}
+
 } // namespace
 
 #define INIT_WIDGET(x) x(_xml, (#x) + 1)
@@ -572,24 +640,6 @@ Patchage::operator()(const setting::FontSize& setting)
   }
 }
 
-static void
-update_labels(GanvNode* node, void* data)
-{
-  const bool human_names = *static_cast<const bool*>(data);
-  if (GANV_IS_MODULE(node)) {
-    Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-    auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-    if (pmod) {
-      for (Ganv::Port* gport : *gmod) {
-        auto* pport = dynamic_cast<CanvasPort*>(gport);
-        if (pport) {
-          pport->show_human_name(human_names);
-        }
-      }
-    }
-  }
-}
-
 void
 Patchage::operator()(const setting::HumanNames& setting)
 {
@@ -622,56 +672,6 @@ Patchage::operator()(const setting::MessagesVisible& setting)
   }
 
   _menu_view_messages->set_active(setting.value);
-}
-
-inline guint
-highlight_color(guint c, guint delta)
-{
-  const guint max_char = 255;
-  const guint r        = MIN((c >> 24) + delta, max_char);
-  const guint g        = MIN(((c >> 16) & 0xFF) + delta, max_char);
-  const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
-  const guint a        = c & 0xFF;
-
-  return ((r << 24u) | (g << 16u) | (b << 8u) | a);
-}
-
-static void
-update_port_colors(GanvNode* node, void* data)
-{
-  auto* patchage = static_cast<Patchage*>(data);
-  if (!GANV_IS_MODULE(node)) {
-    return;
-  }
-
-  Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-  auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-  if (!pmod) {
-    return;
-  }
-
-  for (Ganv::Port* p : *pmod) {
-    auto* port = dynamic_cast<CanvasPort*>(p);
-    if (port) {
-      const uint32_t rgba = patchage->conf().get_port_color(port->type());
-      port->set_fill_color(rgba);
-      port->set_border_color(highlight_color(rgba, 0x20));
-    }
-  }
-}
-
-static void
-update_edge_color(GanvEdge* edge, void* data)
-{
-  auto*       patchage = static_cast<Patchage*>(data);
-  Ganv::Edge* edgemm   = Glib::wrap(edge);
-
-  if (edgemm) {
-    auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
-    if (tail) {
-      edgemm->set_color(patchage->conf().get_port_color(tail->type()));
-    }
-  }
 }
 
 void

@@ -48,6 +48,52 @@ PATCHAGE_RESTORE_WARNINGS
 #include <utility>
 
 namespace patchage {
+namespace {
+
+struct RemovePortsData {
+  using Predicate = bool (*)(const CanvasPort*);
+
+  explicit RemovePortsData(Predicate p)
+    : pred(p)
+  {}
+
+  Predicate          pred;
+  std::set<ClientID> empty_clients;
+};
+
+void
+delete_port_if_matches(GanvPort* port, void* cdata)
+{
+  auto* data  = static_cast<RemovePortsData*>(cdata);
+  auto* pport = dynamic_cast<CanvasPort*>(Glib::wrap(port));
+  if (pport && data->pred(pport)) {
+    delete pport;
+  }
+}
+
+void
+remove_ports_matching(GanvNode* node, void* cdata)
+{
+  if (!GANV_IS_MODULE(node)) {
+    return;
+  }
+
+  Ganv::Module* cmodule = Glib::wrap(GANV_MODULE(node));
+  auto*         pmodule = dynamic_cast<CanvasModule*>(cmodule);
+  if (!pmodule) {
+    return;
+  }
+
+  auto* data = static_cast<RemovePortsData*>(cdata);
+
+  pmodule->for_each_port(delete_port_if_matches, data);
+
+  if (pmodule->num_ports() == 0) {
+    data->empty_clients.insert(pmodule->id());
+  }
+}
+
+} // namespace
 
 Canvas::Canvas(ILog& log, ActionSink& action_sink, int width, int height)
   : Ganv::Canvas(width, height)
@@ -181,49 +227,6 @@ Canvas::remove_port(const PortID& id)
   CanvasPort* const port = find_port(id);
   _port_index.erase(id);
   delete port;
-}
-
-struct RemovePortsData {
-  using Predicate = bool (*)(const CanvasPort*);
-
-  explicit RemovePortsData(Predicate p)
-    : pred(p)
-  {}
-
-  Predicate          pred;
-  std::set<ClientID> empty_clients;
-};
-
-static void
-delete_port_if_matches(GanvPort* port, void* cdata)
-{
-  auto* data  = static_cast<RemovePortsData*>(cdata);
-  auto* pport = dynamic_cast<CanvasPort*>(Glib::wrap(port));
-  if (pport && data->pred(pport)) {
-    delete pport;
-  }
-}
-
-static void
-remove_ports_matching(GanvNode* node, void* cdata)
-{
-  if (!GANV_IS_MODULE(node)) {
-    return;
-  }
-
-  Ganv::Module* cmodule = Glib::wrap(GANV_MODULE(node));
-  auto*         pmodule = dynamic_cast<CanvasModule*>(cmodule);
-  if (!pmodule) {
-    return;
-  }
-
-  auto* data = static_cast<RemovePortsData*>(cdata);
-
-  pmodule->for_each_port(delete_port_if_matches, data);
-
-  if (pmodule->num_ports() == 0) {
-    data->empty_clients.insert(pmodule->id());
-  }
 }
 
 void

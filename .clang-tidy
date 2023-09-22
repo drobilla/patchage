@@ -44,7 +44,6 @@ Checks: >
   -llvm-header-guard,
   -llvmlibc-*,
   -misc-no-recursion,
-  -misc-use-anonymous-namespace,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,

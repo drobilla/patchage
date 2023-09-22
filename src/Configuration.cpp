@@ -20,6 +20,37 @@
 // IWYU pragma: no_include <algorithm>
 
 namespace patchage {
+namespace {
+
+/// Return a vector of filenames in descending order by preference
+std::vector<std::string>
+get_filenames()
+{
+  std::vector<std::string> filenames;
+  const std::string        prefix;
+
+  const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
+  const char* home            = getenv("HOME");
+
+  // XDG spec
+  if (xdg_config_home) {
+    filenames.push_back(std::string(xdg_config_home) + "/patchagerc");
+  } else if (home) {
+    filenames.push_back(std::string(home) + "/.config/patchagerc");
+  }
+
+  // Old location
+  if (home) {
+    filenames.push_back(std::string(home) + "/.patchagerc");
+  }
+
+  // Current directory (bundle or last-ditch effort)
+  filenames.emplace_back("patchagerc");
+
+  return filenames;
+}
+
+} // namespace
 
 static const char* const port_type_names[Configuration::n_port_types] =
   {"JACK_AUDIO", "JACK_MIDI", "ALSA_MIDI", "JACK_OSC", "JACK_CV"};
@@ -150,34 +181,6 @@ Configuration::set_module_split(const std::string& name, bool split)
   if (!name.empty()) {
     _module_settings[name].split = split;
   }
-}
-
-/** Return a vector of filenames in descending order by preference. */
-static std::vector<std::string>
-get_filenames()
-{
-  std::vector<std::string> filenames;
-  const std::string        prefix;
-
-  const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
-  const char* home            = getenv("HOME");
-
-  // XDG spec
-  if (xdg_config_home) {
-    filenames.push_back(std::string(xdg_config_home) + "/patchagerc");
-  } else if (home) {
-    filenames.push_back(std::string(home) + "/.config/patchagerc");
-  }
-
-  // Old location
-  if (home) {
-    filenames.push_back(std::string(home) + "/.patchagerc");
-  }
-
-  // Current directory (bundle or last-ditch effort)
-  filenames.emplace_back("patchagerc");
-
-  return filenames;
 }
 
 void
