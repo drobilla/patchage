@@ -1,4 +1,4 @@
-# Copyright 2020-2022 David Robillard <d@drobilla.net>
+# Copyright 2020-2023 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
 Checks: >
@@ -22,6 +22,7 @@ Checks: >
   -cert-msc50-cpp,
   -clang-analyzer-optin.cplusplus.VirtualCall,
   -concurrency-mt-unsafe,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-macro-usage,
   -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
@@ -43,6 +44,7 @@ Checks: >
   -llvm-header-guard,
   -llvmlibc-*,
   -misc-no-recursion,
+  -misc-use-anonymous-namespace,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -readability-convert-member-functions-to-static,
