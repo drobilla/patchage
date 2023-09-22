@@ -7,7 +7,6 @@
 #include "ActionSink.hpp"
 #include "ClientID.hpp"
 #include "PortID.hpp"
-#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
@@ -24,6 +23,8 @@ class Node;
 } // namespace Ganv
 
 namespace patchage {
+
+enum class SignalDirection;
 
 struct PortInfo;
 

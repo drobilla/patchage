@@ -18,7 +18,6 @@ PATCHAGE_DISABLE_GANV_WARNINGS
 #include "ganv/Port.hpp"
 PATCHAGE_RESTORE_WARNINGS
 
-#include <glibmm/helperlist.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/menu_elems.h>
 #include <gtkmm/menuitem.h>

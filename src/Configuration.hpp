@@ -5,9 +5,7 @@
 #define PATCHAGE_CONFIGURATION_HPP
 
 #include "Coord.hpp"
-#include "PortType.hpp"
 #include "Setting.hpp"
-#include "SignalDirection.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -17,6 +15,9 @@
 #include <tuple>
 
 namespace patchage {
+
+enum class SignalDirection;
+enum class PortType;
 
 class Configuration
 {

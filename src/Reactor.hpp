@@ -5,11 +5,12 @@
 #define PATCHAGE_REACTOR_HPP
 
 #include "Action.hpp"
-#include "SignalDirection.hpp"
 
 #include <string>
 
 namespace patchage {
+
+enum class SignalDirection;
 
 struct ClientID;
 struct PortID;

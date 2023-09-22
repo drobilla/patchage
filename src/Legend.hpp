@@ -4,8 +4,6 @@
 #ifndef PATCHAGE_LEGEND_HPP
 #define PATCHAGE_LEGEND_HPP
 
-#include "PortType.hpp"
-
 #include <gtkmm/box.h>
 #include <sigc++/signal.h>
 
@@ -17,6 +15,8 @@ class ColorButton;
 } // namespace Gtk
 
 namespace patchage {
+
+enum class PortType;
 
 class Configuration;
 

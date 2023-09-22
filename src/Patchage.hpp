@@ -17,7 +17,6 @@
 #include "Event.hpp"
 #include "Metadata.hpp"
 #include "Options.hpp"
-#include "PortType.hpp"
 #include "Reactor.hpp"
 #include "Setting.hpp"
 #include "TextViewLog.hpp"
@@ -54,6 +53,8 @@ class Window;
 } // namespace Gtk
 
 namespace patchage {
+
+enum class PortType;
 
 class Canvas;
 class ILog;

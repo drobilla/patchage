@@ -9,6 +9,7 @@
 #include "CanvasPort.hpp"
 #include "ClientID.hpp"
 #include "ClientInfo.hpp"
+#include "ClientType.hpp"
 #include "Configuration.hpp"
 #include "Coord.hpp"
 #include "ILog.hpp"

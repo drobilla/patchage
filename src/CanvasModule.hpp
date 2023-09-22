@@ -6,7 +6,6 @@
 
 #include "ActionSink.hpp"
 #include "ClientID.hpp"
-#include "SignalDirection.hpp"
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
@@ -20,6 +19,8 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 
 namespace patchage {
+
+enum class SignalDirection;
 
 struct PortID;
 
