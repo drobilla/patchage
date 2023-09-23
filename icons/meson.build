@@ -20,15 +20,21 @@ png_icon_sizes = [
 
 icons_dir = get_option('prefix') / get_option('datadir') / 'icons' / 'hicolor'
 
-install_data('scalable/patchage.svg',
-             install_dir: icons_dir / 'scalable' / 'apps')
+install_data(
+  'scalable/patchage.svg',
+  install_dir: icons_dir / 'scalable' / 'apps',
+)
 
 foreach size : svg_icon_sizes
-  install_data(files(size / 'patchage.svg'),
-               install_dir: icons_dir / size / 'apps')
+  install_data(
+    files(size / 'patchage.svg'),
+    install_dir: icons_dir / size / 'apps',
+  )
 endforeach
 
 foreach size : png_icon_sizes
-  install_data(files(size / 'patchage.png'),
-               install_dir: icons_dir / size / 'apps')
+  install_data(
+    files(size / 'patchage.png'),
+    install_dir: icons_dir / size / 'apps',
+  )
 endforeach

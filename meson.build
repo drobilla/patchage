@@ -1,15 +1,18 @@
 # Copyright 2020-2023 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
-project('patchage', ['c', 'cpp'],
-        version: '1.0.11',
-        license: 'GPLv3+',
-        meson_version: '>= 0.56.0',
-        default_options: [
-          'b_ndebug=if-release',
-          'buildtype=release',
-          'cpp_std=c++17',
-        ])
+project(
+  'patchage',
+  ['c', 'cpp'],
+  default_options: [
+    'b_ndebug=if-release',
+    'buildtype=release',
+    'cpp_std=c++17',
+  ],
+  license: 'GPLv3+',
+  meson_version: '>= 0.56.0',
+  version: '1.0.11',
+)
 
 patchage_src_root = meson.current_source_dir()
 major_version = meson.project_version().split('.')[0]
@@ -70,14 +73,16 @@ int main(void) { return !!&jack_set_property; }'''
   endif
 
   platform_defines += '-DHAVE_GETTEXT=@0@'.format(
-    cpp.compiles(gettext_code,
-                 args: platform_defines,
-                 name: 'gettext').to_int())
+    cpp.compiles(gettext_code, args: platform_defines, name: 'gettext').to_int(),
+  )
 
   platform_defines += '-DHAVE_JACK_METADATA=@0@'.format(
-    cpp.compiles(jack_metadata_code,
-                 args: platform_defines,
-                 name: 'jack_metadata').to_int())
+    cpp.compiles(
+      jack_metadata_code,
+      args: platform_defines,
+      name: 'jack_metadata',
+    ).to_int(),
+  )
 
 endif
 
