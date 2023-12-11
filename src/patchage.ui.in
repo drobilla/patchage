@@ -284,6 +284,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Sprung Layou_t</property>
                         <property name="use_underline">True</property>
+                        <property name="active">False</property>
                         <accelerator key="t" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
