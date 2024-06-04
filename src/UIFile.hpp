@@ -41,7 +41,7 @@ public:
     if (!bundle.empty()) {
       const std::string bundle_ui_filename = bundle + "/" + ui_filename;
       if (is_readable(bundle_ui_filename)) {
-        std::cout << "Loading UI file " << bundle_ui_filename << std::endl;
+        std::cout << "Loading UI file " << bundle_ui_filename << "\n";
         return Gtk::Builder::create_from_file(bundle_ui_filename);
       }
     }
@@ -49,12 +49,12 @@ public:
 
     ui_filename = std::string(PATCHAGE_DATA_DIR) + "/" + ui_filename;
     if (is_readable(ui_filename)) {
-      std::cout << "Loading UI file " << ui_filename << std::endl;
+      std::cout << "Loading UI file " << ui_filename << "\n";
       return Gtk::Builder::create_from_file(ui_filename);
     }
 
     std::stringstream ss;
-    ss << "Unable to find " << ui_filename << std::endl;
+    ss << "Unable to find " << ui_filename << "\n";
     throw std::runtime_error(ss.str());
     return {};
   }

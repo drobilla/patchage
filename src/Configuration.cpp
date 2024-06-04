@@ -192,13 +192,13 @@ Configuration::load()
   for (const auto& filename : filenames) {
     file.open(filename.c_str(), std::ios::in);
     if (file.good()) {
-      std::cout << "Loading configuration from " << filename << std::endl;
+      std::cout << "Loading configuration from " << filename << "\n";
       break;
     }
   }
 
   if (!file.good()) {
-    std::cout << "No configuration file present" << std::endl;
+    std::cout << "No configuration file present\n";
     return;
   }
 
@@ -253,8 +253,7 @@ Configuration::load()
         }
       }
       if (!found) {
-        std::cerr << "error: color for unknown port type `" << type_name << "'"
-                  << std::endl;
+        std::cerr << "error: color for unknown port type `" << type_name << "'\n";
       }
     } else if (key == "module_position") {
       Coord       loc;
@@ -273,7 +272,7 @@ Configuration::load()
         type = SignalDirection::duplex;
       } else {
         std::cerr << "error: bad position type `" << type_str
-                  << "' for module `" << name << "'" << std::endl;
+                  << "' for module `" << name << "'\n";
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         continue;
       }
@@ -283,8 +282,7 @@ Configuration::load()
 
       set_module_location(name, type, loc);
     } else {
-      std::cerr << "warning: unknown configuration key `" << key << "'"
-                << std::endl;
+      std::cerr << "warning: unknown configuration key `" << key << "'\n";
       file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
@@ -304,7 +302,7 @@ write_module_position(std::ofstream&     os,
                       const Coord&       loc)
 {
   os << "module_position \"" << name << "\""
-     << " " << type << " " << loc.x << " " << loc.y << std::endl;
+     << " " << type << " " << loc.x << " " << loc.y << "\n";
 }
 
 void
@@ -316,36 +314,36 @@ Configuration::save()
   for (const std::string& filename : filenames) {
     file.open(filename.c_str(), std::ios::out);
     if (file.good()) {
-      std::cout << "Writing configuration to " << filename << std::endl;
+      std::cout << "Writing configuration to " << filename << "\n";
       break;
     }
   }
 
   if (!file.good()) {
-    std::cout << "Unable to open configuration file to write" << std::endl;
+    std::cout << "Unable to open configuration file to write\n";
     return;
   }
 
   file << "window_location " << get<setting::WindowLocation>().x << " "
-       << get<setting::WindowLocation>().y << std::endl;
+       << get<setting::WindowLocation>().y << "\n";
 
   file << "window_size " << get<setting::WindowSize>().x << " "
-       << get<setting::WindowSize>().y << std::endl;
+       << get<setting::WindowSize>().y << "\n";
 
-  file << "zoom_level " << get<setting::Zoom>() << std::endl;
-  file << "font_size " << get<setting::FontSize>() << std::endl;
-  file << "show_toolbar " << get<setting::ToolbarVisible>() << std::endl;
-  file << "sprung_layout " << get<setting::SprungLayout>() << std::endl;
-  file << "show_messages " << get<setting::MessagesVisible>() << std::endl;
-  file << "sort_ports " << get<setting::SortedPorts>() << std::endl;
-  file << "messages_height " << get<setting::MessagesHeight>() << std::endl;
-  file << "human_names " << get<setting::HumanNames>() << std::endl;
+  file << "zoom_level " << get<setting::Zoom>() << "\n";
+  file << "font_size " << get<setting::FontSize>() << "\n";
+  file << "show_toolbar " << get<setting::ToolbarVisible>() << "\n";
+  file << "sprung_layout " << get<setting::SprungLayout>() << "\n";
+  file << "show_messages " << get<setting::MessagesVisible>() << "\n";
+  file << "sort_ports " << get<setting::SortedPorts>() << "\n";
+  file << "messages_height " << get<setting::MessagesHeight>() << "\n";
+  file << "human_names " << get<setting::HumanNames>() << "\n";
 
   file << std::hex << std::uppercase;
   for (unsigned i = 0U; i < n_port_types; ++i) {
     if (_port_colors[i] != _default_port_colors[i]) {
       file << "port_color " << port_type_names[i] << " " << _port_colors[i]
-           << std::endl;
+           << "\n";
     }
   }
   file << std::dec << std::nouppercase;

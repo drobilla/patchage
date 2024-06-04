@@ -148,10 +148,10 @@ main(int argc, char** argv)
     patchage.save();
 
   } catch (std::exception& e) {
-    std::cerr << "patchage: error: " << e.what() << std::endl;
+    std::cerr << "patchage: error: " << e.what() << "\n";
     return 1;
   } catch (Glib::Exception& e) {
-    std::cerr << "patchage: error: " << e.what() << std::endl;
+    std::cerr << "patchage: error: " << e.what() << "\n";
     return 1;
   }
 
