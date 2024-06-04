@@ -18,6 +18,7 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 PATCHAGE_RESTORE_WARNINGS
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <variant>
 
