@@ -29,6 +29,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <functional>
 #include <memory>
 #include <utility>
+#include <variant>
 
 namespace patchage {
 

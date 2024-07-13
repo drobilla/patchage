@@ -39,6 +39,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 
 namespace patchage {
 namespace {

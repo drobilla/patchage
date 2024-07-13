@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <variant>
 
 namespace patchage {
 

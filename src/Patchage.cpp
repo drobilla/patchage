@@ -85,6 +85,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/adaptors/bind.h>
 #include <sigc++/functors/mem_fun.h>
 #include <sigc++/functors/ptr_fun.h>
+#include <sigc++/functors/slot.h>
 #include <sigc++/signal.h>
 
 #include <algorithm>

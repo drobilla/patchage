@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <utility>
+#include <variant>
 
 namespace patchage {
 

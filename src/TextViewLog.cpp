@@ -8,6 +8,7 @@
 #include <gdkmm/color.h>
 #include <glibmm/propertyproxy.h>
 #include <glibmm/refptr.h>
+#include <glibmm/ustring.h>
 #include <gtkmm/enums.h>
 #include <gtkmm/textbuffer.h>
 #include <gtkmm/texttag.h>
