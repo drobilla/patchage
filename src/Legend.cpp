@@ -9,7 +9,6 @@
 #include "patchage_config.h"
 
 #include <gdkmm/color.h>
-#include <glibmm/signalproxy.h>
 #include <glibmm/ustring.h>
 #include <gtkmm/box.h>
 #include <gtkmm/colorbutton.h>

@@ -46,7 +46,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <glibmm/main.h>
 #include <glibmm/miscutils.h>
 #include <glibmm/propertyproxy.h>
-#include <glibmm/signalproxy.h>
 #include <glibmm/ustring.h>
 #include <gobject/gclosure.h>
 #include <gtk/gtk.h>
