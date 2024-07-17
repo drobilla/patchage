@@ -383,7 +383,8 @@ Patchage::Patchage(Options options)
   _main_win->present();
 
   // Set the default font size based on the current GUI environment
-  _conf.set<setting::FontSize>(_canvas->get_default_font_size());
+  _conf.set<setting::FontSize>(
+    static_cast<float>(_canvas->get_default_font_size()));
 
   // Load configuration file (but do not apply it yet, see below)
   _conf.load();
@@ -526,8 +527,8 @@ Patchage::update_toolbar()
                                             latency_ms));
 
       _latency_label->set_visible(true);
-      _buf_size_combo->set_active(
-        static_cast<int>(log2f(_drivers.jack()->buffer_size()) - 5));
+      _buf_size_combo->set_active(static_cast<int>(
+        log2f(static_cast<float>(_drivers.jack()->buffer_size())) - 5));
       updating = false;
       return;
     }
@@ -811,7 +812,8 @@ Patchage::on_messages_resized(Gtk::Allocation&)
 void
 Patchage::save()
 {
-  _conf.set<setting::Zoom>(_canvas->get_zoom()); // Can be changed by ganv
+  // Zoom can be changed by ganv
+  _conf.set<setting::Zoom>(static_cast<float>(_canvas->get_zoom()));
   _conf.save();
 }
 

@@ -137,7 +137,8 @@ Reactor::operator()(const action::Refresh&)
 void
 Reactor::operator()(const action::ResetFontSize&)
 {
-  _conf.set<setting::FontSize>(_canvas.get_default_font_size());
+  _conf.set<setting::FontSize>(
+    static_cast<float>(_canvas.get_default_font_size()));
 }
 
 void
@@ -158,7 +159,7 @@ void
 Reactor::operator()(const action::ZoomFull&)
 {
   _canvas.zoom_full();
-  _conf.set<setting::Zoom>(_canvas.get_zoom());
+  _conf.set<setting::Zoom>(static_cast<float>(_canvas.get_zoom()));
 }
 
 void

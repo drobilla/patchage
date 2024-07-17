@@ -6,7 +6,6 @@ Checks: >
   -*-c-arrays,
   -*-magic-numbers,
   -*-named-parameter,
-  -*-narrowing-conversions,
   -*-no-malloc,
   -*-non-private-member-variables-in-classes,
   -*-unused-macros,

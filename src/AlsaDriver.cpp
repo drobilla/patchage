@@ -93,7 +93,7 @@ addr_to_id(const snd_seq_addr_t& addr, const bool is_input)
 SignalDirection
 port_direction(const snd_seq_port_info_t* const pinfo)
 {
-  const int caps = snd_seq_port_info_get_capability(pinfo);
+  const unsigned caps = snd_seq_port_info_get_capability(pinfo);
 
   if ((caps & SND_SEQ_PORT_CAP_READ) && (caps & SND_SEQ_PORT_CAP_WRITE)) {
     return SignalDirection::duplex;
@@ -119,7 +119,7 @@ client_info(snd_seq_client_info_t* const cinfo)
 PortInfo
 port_info(const snd_seq_port_info_t* const pinfo)
 {
-  const int type = snd_seq_port_info_get_type(pinfo);
+  const unsigned type = snd_seq_port_info_get_type(pinfo);
 
   return {snd_seq_port_info_get_name(pinfo),
           PortType::alsa_midi,
@@ -281,8 +281,8 @@ AlsaDriver::ignore(const snd_seq_addr_t& addr, bool add)
   snd_seq_port_info_set_port(pinfo, addr.port);
   snd_seq_get_any_port_info(_seq, addr.client, addr.port, pinfo);
 
-  const int type = snd_seq_port_info_get_type(pinfo);
-  const int caps = snd_seq_port_info_get_capability(pinfo);
+  const unsigned type = snd_seq_port_info_get_type(pinfo);
+  const unsigned caps = snd_seq_port_info_get_capability(pinfo);
 
   if (caps & SND_SEQ_PORT_CAP_NO_EXPORT) {
     _ignored.insert(addr);
@@ -442,7 +442,7 @@ AlsaDriver::_refresh_main()
     return;
   }
 
-  int caps = 0;
+  unsigned caps = 0U;
 
   snd_seq_client_info_t* cinfo = nullptr;
   snd_seq_client_info_alloca(&cinfo);
