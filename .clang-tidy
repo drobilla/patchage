@@ -17,7 +17,6 @@ Checks: >
   -bugprone-assignment-in-if-condition,
   -bugprone-easily-swappable-parameters,
   -bugprone-multi-level-implicit-pointer-conversion,
-  -bugprone-unused-local-non-trivial-variable,
   -cert-dcl21-cpp,
   -cert-dcl50-cpp,
   -cert-msc30-c,

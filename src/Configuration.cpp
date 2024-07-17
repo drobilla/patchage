@@ -27,7 +27,6 @@ std::vector<std::string>
 get_filenames()
 {
   std::vector<std::string> filenames;
-  const std::string        prefix;
 
   const char* xdg_config_home = getenv("XDG_CONFIG_HOME");
   const char* home            = getenv("HOME");
