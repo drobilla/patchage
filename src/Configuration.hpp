@@ -103,7 +103,7 @@ public:
     visitor(std::get<setting::WindowSize>(_settings));
     visitor(std::get<setting::Zoom>(_settings));
 
-    for (auto i = 0u; i < n_port_types; ++i) {
+    for (auto i = 0U; i < n_port_types; ++i) {
       visitor(setting::PortColor{static_cast<PortType>(i), _port_colors[i]});
     }
   }

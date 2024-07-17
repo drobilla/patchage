@@ -10,7 +10,6 @@ Checks: >
   -*-no-malloc,
   -*-non-private-member-variables-in-classes,
   -*-unused-macros,
-  -*-uppercase-literal-suffix,
   -*-vararg,
   -abseil-string-find-str-contains,
   -altera-*,
@@ -53,6 +52,11 @@ Checks: >
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-implicit-bool-conversion,
+CheckOptions:
+  - key:   hicpp-uppercase-literal-suffix.NewSuffixes
+    value: 'L;U;UL;ULL'
+  - key:   readability-uppercase-literal-suffix.NewSuffixes
+    value: 'L;U;UL;ULL'
 FormatStyle: file
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'

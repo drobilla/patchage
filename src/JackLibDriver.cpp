@@ -94,8 +94,8 @@ private:
   std::mutex _shutdown_mutex;
 
   jack_client_t* _client       = nullptr;
-  jack_nframes_t _buffer_size  = 0u;
-  uint32_t       _xruns        = 0u;
+  jack_nframes_t _buffer_size  = 0U;
+  uint32_t       _xruns        = 0U;
   bool           _is_activated = false;
 };
 
@@ -257,7 +257,7 @@ JackLibDriver::refresh(const EventSink& sink)
 
   // Get all client names (to only send a creation event once for each)
   std::unordered_set<std::string> client_names;
-  for (auto i = 0u; ports[i]; ++i) {
+  for (auto i = 0U; ports[i]; ++i) {
     client_names.insert(PortID::jack(ports[i]).client().jack_name());
   }
 
@@ -268,7 +268,7 @@ JackLibDriver::refresh(const EventSink& sink)
   }
 
   // Emit all ports
-  for (auto i = 0u; ports[i]; ++i) {
+  for (auto i = 0U; ports[i]; ++i) {
     const jack_port_t* const port = jack_port_by_name(_client, ports[i]);
 
     sink({event::PortCreated{PortID::jack(ports[i]), get_port_info(port)}});
@@ -276,17 +276,17 @@ JackLibDriver::refresh(const EventSink& sink)
 
   // Get all connections (again to only create them once)
   std::set<std::pair<std::string, std::string>> connections;
-  for (auto i = 0u; ports[i]; ++i) {
+  for (auto i = 0U; ports[i]; ++i) {
     const jack_port_t* const port = jack_port_by_name(_client, ports[i]);
     const char** const peers = jack_port_get_all_connections(_client, port);
 
     if (peers) {
       if (jack_port_flags(port) & JackPortIsInput) {
-        for (auto j = 0u; peers[j]; ++j) {
+        for (auto j = 0U; peers[j]; ++j) {
           connections.emplace(peers[j], ports[i]);
         }
       } else {
-        for (auto j = 0u; peers[j]; ++j) {
+        for (auto j = 0U; peers[j]; ++j) {
           connections.emplace(ports[i], peers[j]);
         }
       }

@@ -236,7 +236,7 @@ Configuration::load()
       file >> std::get<setting::HumanNames>(_settings).value;
     } else if (key == "port_color") {
       std::string type_name;
-      uint32_t    rgba = 0u;
+      uint32_t    rgba = 0U;
       file >> type_name;
       file.ignore(1, '#');
       file >> std::hex >> std::uppercase;

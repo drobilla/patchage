@@ -193,7 +193,7 @@ highlight_color(guint c, guint delta)
   const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
   const guint a        = c & 0xFF;
 
-  return ((r << 24u) | (g << 16u) | (b << 8u) | a);
+  return ((r << 24U) | (g << 16U) | (b << 8U) | a);
 }
 
 void
@@ -545,7 +545,7 @@ Patchage::update_load()
 
     _dropouts_label->set_text(" " + fmt::format(T("Dropouts: {}"), xruns));
 
-    if (xruns > 0u) {
+    if (xruns > 0U) {
       _dropouts_label->show();
       _clear_load_but->show();
     } else {
@@ -903,10 +903,10 @@ Patchage::buffer_size_changed()
   if (_drivers.jack()) {
     const int selected = _buf_size_combo->get_active_row_number();
 
-    if (selected == -1) {
+    if (selected < 0) {
       update_toolbar();
     } else {
-      const uint32_t buffer_size = 1u << (selected + 5);
+      const uint32_t buffer_size = 1U << (static_cast<unsigned>(selected) + 5U);
       _drivers.jack()->set_buffer_size(buffer_size);
       update_toolbar();
     }
