@@ -142,8 +142,8 @@ JackDriver::~JackDriver()
 void
 JackDriver::update_attached()
 {
-  bool was_attached = _server_started;
-  _server_started   = is_started();
+  const bool was_attached = _server_started;
+  _server_started         = is_started();
 
   if (!_server_responding) {
     if (was_attached) {
