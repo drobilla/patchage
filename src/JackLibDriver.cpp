@@ -237,7 +237,11 @@ JackLibDriver::get_port_info(const jack_port_t* const port)
     order = std::stoi(order_str);
   }
 
-  return {label, type, direction, order, bool(flags & JackPortIsTerminal)};
+  return {label,
+          type,
+          direction,
+          order,
+          static_cast<bool>(flags & JackPortIsTerminal)};
 }
 
 void

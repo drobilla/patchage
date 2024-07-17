@@ -937,7 +937,7 @@ JackDriver::port_info(const std::string&  port_name,
           patchage_port_type(port_type),
           direction,
           {},
-          bool(port_flags & port_flag_terminal)};
+          static_cast<bool>(port_flags & port_flag_terminal)};
 }
 
 void

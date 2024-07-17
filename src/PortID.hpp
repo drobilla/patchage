@@ -108,8 +108,9 @@ operator<<(std::ostream& os, const PortID& id)
   case PortID::Type::jack:
     return os << "jack:" << id.jack_name();
   case PortID::Type::alsa:
-    return os << "alsa:" << int(id.alsa_client()) << ":" << int(id.alsa_port())
-              << ":" << (id.alsa_is_input() ? "in" : "out");
+    return os << "alsa:" << static_cast<int>(id.alsa_client()) << ":"
+              << static_cast<int>(id.alsa_port()) << ":"
+              << (id.alsa_is_input() ? "in" : "out");
   }
 
   assert(false);

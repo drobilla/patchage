@@ -72,7 +72,7 @@ operator<<(std::ostream& os, const ClientID& id)
   case ClientID::Type::jack:
     return os << "jack:" << id.jack_name();
   case ClientID::Type::alsa:
-    return os << "alsa:" << int(id.alsa_id());
+    return os << "alsa:" << static_cast<int>(id.alsa_id());
   }
 
   assert(false);
