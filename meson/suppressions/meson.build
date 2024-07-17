@@ -31,6 +31,7 @@ if is_variable('cpp')
         '-Wno-pedantic',
         '-Wno-shorten-64-to-32',
         '-Wno-sign-conversion',
+        '-Wno-switch-default',
         '-Wno-unsafe-buffer-usage',
         '-Wno-weak-vtables',
       ]
