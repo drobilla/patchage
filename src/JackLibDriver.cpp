@@ -74,8 +74,8 @@ public:
   uint32_t sample_rate() override;
 
 private:
-  ClientInfo get_client_info(const char* name);
-  PortInfo   get_port_info(const jack_port_t* port);
+  static ClientInfo get_client_info(const char* name);
+  PortInfo          get_port_info(const jack_port_t* port);
 
   static void on_client(const char* name, int registered, void* driver);
 

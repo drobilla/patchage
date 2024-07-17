@@ -46,7 +46,6 @@ Checks: >
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -performance-enum-size,
-  -readability-convert-member-functions-to-static,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-implicit-bool-conversion,

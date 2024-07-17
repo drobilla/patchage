@@ -126,7 +126,7 @@ protected:
 
   void on_messages_resized(Gtk::Allocation& alloc);
 
-  bool on_scroll(GdkEventScroll* ev);
+  static bool on_scroll(GdkEventScroll* ev);
 
   void on_menu_action(const Action& action);
 

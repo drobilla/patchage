@@ -305,7 +305,7 @@ Patchage::Patchage(Options options)
   _main_scrolledwin->property_vadjustment().get_value()->set_step_increment(10);
 
   _main_scrolledwin->signal_scroll_event().connect(
-    sigc::mem_fun(this, &Patchage::on_scroll));
+    sigc::ptr_fun(&Patchage::on_scroll));
   _clear_load_but->signal_clicked().connect(
     sigc::mem_fun(this, &Patchage::clear_load));
   _buf_size_combo->signal_changed().connect(
