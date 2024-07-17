@@ -187,11 +187,11 @@ update_labels(GanvNode* node, void* data)
 inline guint
 highlight_color(guint c, guint delta)
 {
-  const guint max_char = 255;
-  const guint r        = MIN((c >> 24) + delta, max_char);
-  const guint g        = MIN(((c >> 16) & 0xFF) + delta, max_char);
-  const guint b        = MIN(((c >> 8) & 0xFF) + delta, max_char);
-  const guint a        = c & 0xFF;
+  const guint max_char = 255U;
+  const guint r        = MIN((c >> 24U) + delta, max_char);
+  const guint g        = MIN(((c >> 16U) & 0xFFU) + delta, max_char);
+  const guint b        = MIN(((c >> 8U) & 0xFFU) + delta, max_char);
+  const guint a        = c & 0xFFU;
 
   return ((r << 24U) | (g << 16U) | (b << 8U) | a);
 }

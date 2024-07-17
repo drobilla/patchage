@@ -39,7 +39,6 @@ Checks: >
   -google-readability-todo,
   -google-runtime-references,
   -hicpp-no-array-decay,
-  -hicpp-signed-bitwise,
   -llvm-header-guard,
   -llvmlibc-*,
   -misc-include-cleaner,

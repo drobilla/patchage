@@ -196,7 +196,7 @@ PortInfo
 JackLibDriver::get_port_info(const jack_port_t* const port)
 {
   const auto        uuid  = jack_port_uuid(port);
-  const auto        flags = jack_port_flags(port);
+  const auto        flags = static_cast<unsigned>(jack_port_flags(port));
   const std::string name  = jack_port_name(port);
   auto              label = PortNames{name}.port();
 
@@ -281,7 +281,8 @@ JackLibDriver::refresh(const EventSink& sink)
     const char** const peers = jack_port_get_all_connections(_client, port);
 
     if (peers) {
-      if (jack_port_flags(port) & JackPortIsInput) {
+      const auto flags = static_cast<unsigned>(jack_port_flags(port));
+      if (flags & JackPortIsInput) {
         for (auto j = 0U; peers[j]; ++j) {
           connections.emplace(peers[j], ports[i]);
         }

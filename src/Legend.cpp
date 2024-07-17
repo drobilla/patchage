@@ -51,9 +51,9 @@ void
 Legend::add_button(const PortType id, const std::string& label, uint32_t rgba)
 {
   Gdk::Color col;
-  col.set_rgb(((rgba >> 24) & 0xFF) * 0x100,
-              ((rgba >> 16) & 0xFF) * 0x100,
-              ((rgba >> 8) & 0xFF) * 0x100);
+  col.set_rgb(((rgba >> 24U) & 0xFFU) * 0x100U,
+              ((rgba >> 16U) & 0xFFU) * 0x100U,
+              ((rgba >> 8U) & 0xFFU) * 0x100U);
 
   auto* box = new Gtk::HBox();
   auto* but = new Gtk::ColorButton(col);
@@ -74,8 +74,8 @@ Legend::on_color_set(const PortType          id,
 {
   const Gdk::Color col = but->get_color();
   const uint32_t   rgba =
-    (((col.get_red() / 0x100) << 24) | ((col.get_green() / 0x100) << 16) |
-     ((col.get_blue() / 0x100) << 8) | 0xFF);
+    (((col.get_red() / 0x100U) << 24U) | ((col.get_green() / 0x100U) << 16U) |
+     ((col.get_blue() / 0x100U) << 8U) | 0xFFU);
 
   signal_color_changed.emit(id, label, rgba);
 }
