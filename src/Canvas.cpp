@@ -40,7 +40,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/signal.h>
 
 #include <cassert>
-#include <cstdlib>
 #include <functional>
 #include <optional>
 #include <set>
@@ -100,6 +99,7 @@ Canvas::Canvas(ILog& log, ActionSink& action_sink, int width, int height)
   : Ganv::Canvas(width, height)
   , _log(log)
   , _action_sink(action_sink)
+  , _rng(width + height)
 {
   signal_event.connect(sigc::mem_fun(this, &Canvas::on_event));
   signal_connect.connect(sigc::mem_fun(this, &Canvas::on_connect));
@@ -146,8 +146,8 @@ Canvas::create_port(Configuration&  conf,
     Coord loc;
     if (!conf.get_module_location(client_name, module_type, loc)) {
       // No position saved, come up with a pseudo-random one
-      loc.x = 20 + rand() % 640;
-      loc.y = 20 + rand() % 480;
+      loc.x = static_cast<double>(20 + _rng() % 640);
+      loc.y = static_cast<double>(20 + _rng() % 480);
 
       conf.set_module_location(client_name, module_type, loc);
     }

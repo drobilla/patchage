@@ -17,6 +17,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gdk/gdk.h>
 
 #include <map>
+#include <random>
 
 namespace Ganv {
 class Node;
@@ -74,6 +75,8 @@ private:
   ActionSink& _action_sink;
   PortIndex   _port_index;
   ModuleIndex _module_index;
+
+  std::minstd_rand _rng;
 };
 
 } // namespace patchage
