@@ -3,10 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "AudioDriver.hpp"
+#include "ClientID.hpp"
 #include "ClientType.hpp"
 #include "Driver.hpp"
 #include "Event.hpp"
 #include "ILog.hpp"
+#include "PortID.hpp"
+#include "PortInfo.hpp"
 #include "PortNames.hpp"
 #include "PortType.hpp"
 #include "SignalDirection.hpp"
@@ -18,15 +21,21 @@ PATCHAGE_DISABLE_FMT_WARNINGS
 PATCHAGE_RESTORE_WARNINGS
 
 #include <dbus/dbus-glib-lowlevel.h>
-#include <dbus/dbus-glib.h>
+#include <dbus/dbus-protocol.h>
+#include <dbus/dbus-shared.h>
 #include <dbus/dbus.h>
-#include <glib.h>
 
 #include <cassert>
+#include <cstdarg>
 #include <cstdint>
 #include <cstring>
-#include <set>
+#include <functional>
+#include <memory>
+#include <optional>
+#include <stdexcept>
 #include <string>
+#include <utility>
+#include <variant>
 
 #define JACKDBUS_SERVICE "org.jackaudio.service"
 #define JACKDBUS_OBJECT "/org/jackaudio/Controller"
