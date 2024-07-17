@@ -60,9 +60,9 @@ private:
     assert(_type == Type::alsa);
   }
 
-  Type        _type;        ///< Determines which field is active
-  std::string _jack_name{}; ///< Client name for Type::jack
-  uint8_t     _alsa_id{};   ///< Client ID for Type::alsa
+  Type        _type;      ///< Determines which field is active
+  std::string _jack_name; ///< Client name for Type::jack
+  uint8_t     _alsa_id{}; ///< Client ID for Type::alsa
 };
 
 inline std::ostream&

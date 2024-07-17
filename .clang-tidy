@@ -54,7 +54,6 @@ Checks: >
   -readability-identifier-length,
   -readability-implicit-bool-conversion,
   -readability-redundant-inline-specifier,
-  -readability-redundant-member-init,
 FormatStyle: file
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
