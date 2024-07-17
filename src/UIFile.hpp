@@ -24,7 +24,7 @@ namespace patchage {
 class UIFile
 {
 public:
-  inline static bool is_readable(const std::string& filename)
+  static bool is_readable(const std::string& filename)
   {
     std::ifstream fs(filename.c_str());
     const bool    fail = fs.fail();

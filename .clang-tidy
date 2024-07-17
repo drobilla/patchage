@@ -53,7 +53,6 @@ Checks: >
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-implicit-bool-conversion,
-  -readability-redundant-inline-specifier,
 FormatStyle: file
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
