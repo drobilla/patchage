@@ -42,16 +42,18 @@ PATCHAGE_RESTORE_WARNINGS
 #define JACKDBUS_IFACE_CONTROL "org.jackaudio.JackControl"
 #define JACKDBUS_IFACE_PATCHBAY "org.jackaudio.JackPatchbay"
 
-#define JACKDBUS_CALL_DEFAULT_TIMEOUT 1000 // in milliseconds
-
-#define JACKDBUS_PORT_FLAG_INPUT 0x00000001
-#define JACKDBUS_PORT_FLAG_TERMINAL 0x00000010
-
-#define JACKDBUS_PORT_TYPE_AUDIO 0
-#define JACKDBUS_PORT_TYPE_MIDI 1
-
 namespace patchage {
 namespace {
+
+constexpr auto default_timeout = 1000; // in milliseconds
+
+constexpr auto port_flag_input    = 0x00000001U;
+constexpr auto port_flag_terminal = 0x00000010U;
+
+enum JackDBusPortType {
+  AUDIO = 0,
+  MIDI  = 1,
+};
 
 /// Driver for JACK audio and midi ports that uses D-Bus
 class JackDriver : public AudioDriver
@@ -117,22 +119,18 @@ private:
 
   ILog&           _log;
   DBusError       _dbus_error;
-  DBusConnection* _dbus_connection;
+  DBusConnection* _dbus_connection{};
 
-  mutable bool _server_responding;
-  bool         _server_started;
+  mutable bool _server_responding{};
+  bool         _server_started{};
 
-  dbus_uint64_t _graph_version;
+  dbus_uint64_t _graph_version{};
 };
 
 JackDriver::JackDriver(ILog& log, EventSink emit_event)
   : AudioDriver{std::move(emit_event)}
   , _log(log)
   , _dbus_error()
-  , _dbus_connection(nullptr)
-  , _server_responding(false)
-  , _server_started(false)
-  , _graph_version(0)
 {
   dbus_error_init(&_dbus_error);
 }
@@ -434,7 +432,7 @@ JackDriver::call(bool          response_expected,
 
   // send message and get a handle for a reply
   reply_ptr = dbus_connection_send_with_reply_and_block(
-    _dbus_connection, request_ptr, JACKDBUS_CALL_DEFAULT_TIMEOUT, &_dbus_error);
+    _dbus_connection, request_ptr, default_timeout, &_dbus_error);
 
   dbus_message_unref(request_ptr);
 
@@ -913,9 +911,9 @@ PortType
 JackDriver::patchage_port_type(const dbus_uint32_t dbus_port_type) const
 {
   switch (dbus_port_type) {
-  case JACKDBUS_PORT_TYPE_AUDIO:
+  case JackDBusPortType::AUDIO:
     return PortType::jack_audio;
-  case JACKDBUS_PORT_TYPE_MIDI:
+  case JackDBusPortType::MIDI:
     return PortType::jack_midi;
   default:
     break;
@@ -931,15 +929,15 @@ JackDriver::port_info(const std::string&  port_name,
                       const dbus_uint32_t port_flags) const
 {
   const SignalDirection direction =
-    ((port_flags & JACKDBUS_PORT_FLAG_INPUT) ? SignalDirection::input
-                                             : SignalDirection::output);
+    ((port_flags & port_flag_input) ? SignalDirection::input
+                                    : SignalDirection::output);
 
   // TODO: Metadata?
   return {port_name,
           patchage_port_type(port_type),
           direction,
           {},
-          bool(port_flags & JACKDBUS_PORT_FLAG_TERMINAL)};
+          bool(port_flags & port_flag_terminal)};
 }
 
 void
