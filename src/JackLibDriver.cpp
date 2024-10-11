@@ -104,10 +104,7 @@ JackLibDriver::JackLibDriver(ILog& log, EventSink emit_event)
   , _log{log}
 {}
 
-JackLibDriver::~JackLibDriver()
-{
-  detach();
-}
+JackLibDriver::~JackLibDriver() = default;
 
 void
 JackLibDriver::attach(const bool launch_daemon)

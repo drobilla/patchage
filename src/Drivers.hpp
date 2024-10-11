@@ -4,13 +4,13 @@
 #ifndef PATCHAGE_DRIVERS_HPP
 #define PATCHAGE_DRIVERS_HPP
 
-#include "AudioDriver.hpp"
 #include "Driver.hpp"
 
 #include <memory>
 
 namespace patchage {
 
+class AudioDriver;
 class ILog;
 enum class ClientType;
 
@@ -26,7 +26,7 @@ public:
   Drivers(Drivers&&)            = delete;
   Drivers& operator=(Drivers&&) = delete;
 
-  ~Drivers() = default;
+  ~Drivers();
 
   /// Refresh all drivers and emit results to the event sink
   void refresh();

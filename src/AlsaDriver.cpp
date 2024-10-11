@@ -133,10 +133,7 @@ AlsaDriver::AlsaDriver(ILog& log, EventSink emit_event)
   , _log(log)
 {}
 
-AlsaDriver::~AlsaDriver()
-{
-  detach();
-}
+AlsaDriver::~AlsaDriver() = default;
 
 void
 AlsaDriver::attach(bool /*launch_daemon*/)

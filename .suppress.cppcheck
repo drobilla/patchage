@@ -3,4 +3,3 @@ constVariablePointer
 missingReturn
 normalCheckLevelMaxBranches
 shadowFunction
-virtualCallInConstructor

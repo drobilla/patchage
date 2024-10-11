@@ -27,6 +27,17 @@ Drivers::Drivers(ILog& log, Driver::EventSink emit_event)
   })}
 {}
 
+Drivers::~Drivers()
+{
+  if (_alsa_driver) {
+    _alsa_driver->detach();
+  }
+
+  if (_jack_driver) {
+    _jack_driver->detach();
+  }
+}
+
 void
 Drivers::refresh()
 {
