@@ -15,6 +15,7 @@ project(
 )
 
 patchage_src_root = meson.current_source_dir()
+patchage_build_root = meson.current_build_dir()
 major_version = meson.project_version().split('.')[0]
 version_suffix = '@0@-@1@'.format(meson.project_name(), major_version)
 
@@ -265,6 +266,26 @@ if get_option('lint')
         autoship,
         args: ['test', patchage_src_root],
         suite: 'data',
+      )
+    endif
+
+    # Check code with cppcheck
+    cppcheck = find_program('cppcheck', required: false)
+    if cppcheck.found()
+      compdb_path = join_paths(patchage_build_root, 'compile_commands.json')
+      suppress_path = join_paths(patchage_src_root, '.suppress.cppcheck')
+      test(
+        'cppcheck',
+        cppcheck,
+        args: [
+          '--enable=warning,style,performance,portability',
+          '--error-exitcode=1',
+          '--project=' + compdb_path,
+          '--suppressions-list=' + suppress_path,
+          '-q',
+        ],
+        suite: 'code',
+        timeout: 60,
       )
     endif
   endif

@@ -7,6 +7,11 @@ Files: .clant.json .includes.imp INSTALL.md NEWS
 Copyright: 2020-2021 David Robillard <d@drobilla.net>
 License: 0BSD OR GPL-3.0-or-later
 
+Files: .suppress.cppcheck
+Copyright: 2024 David Robillard <d@drobilla.net>
+Comment: Contributed to the Commons as a tool configuration
+License: 0BSD OR GPL-3.0-or-later
+
 Files: AUTHORS README.md patchage.desktop.in
 Copyright: 2006-2014 David Robillard <d@drobilla.net>
 License: 0BSD OR GPL-3.0-or-later

@@ -1,0 +1,9 @@
+constParameterCallback
+constVariablePointer
+constVariableReference
+duplicateBreak
+missingReturn
+normalCheckLevelMaxBranches
+returnByReference
+shadowFunction
+virtualCallInConstructor
