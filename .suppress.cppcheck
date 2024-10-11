@@ -1,6 +1,5 @@
 constParameterCallback
 constVariablePointer
-constVariableReference
 duplicateBreak
 missingReturn
 normalCheckLevelMaxBranches

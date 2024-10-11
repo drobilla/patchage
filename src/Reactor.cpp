@@ -191,11 +191,11 @@ Reactor::module_name(const ClientID& client)
 {
   // Note that split modules always have the same name
 
-  if (CanvasModule* mod = find_module(client, SignalDirection::input)) {
+  if (const CanvasModule* mod = find_module(client, SignalDirection::input)) {
     return mod->name();
   }
 
-  if (CanvasModule* mod = find_module(client, SignalDirection::output)) {
+  if (const CanvasModule* mod = find_module(client, SignalDirection::output)) {
     return mod->name();
   }
 

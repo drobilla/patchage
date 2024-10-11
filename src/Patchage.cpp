@@ -171,8 +171,7 @@ update_labels(GanvNode* node, void* data)
   const bool human_names = *static_cast<const bool*>(data);
   if (GANV_IS_MODULE(node)) {
     Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-    auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-    if (pmod) {
+    if (dynamic_cast<const CanvasModule*>(gmod)) {
       for (Ganv::Port* gport : *gmod) {
         auto* pport = dynamic_cast<CanvasPort*>(gport);
         if (pport) {
@@ -204,12 +203,11 @@ update_port_colors(GanvNode* node, void* data)
   }
 
   Ganv::Module* gmod = Glib::wrap(GANV_MODULE(node));
-  auto*         pmod = dynamic_cast<CanvasModule*>(gmod);
-  if (!pmod) {
+  if (!dynamic_cast<CanvasModule*>(gmod)) {
     return;
   }
 
-  for (Ganv::Port* p : *pmod) {
+  for (Ganv::Port* p : *gmod) {
     auto* port = dynamic_cast<CanvasPort*>(p);
     if (port) {
       const uint32_t rgba = patchage->conf().get_port_color(port->type());
@@ -226,7 +224,7 @@ update_edge_color(GanvEdge* edge, void* data)
   Ganv::Edge* edgemm   = Glib::wrap(edge);
 
   if (edgemm) {
-    auto* tail = dynamic_cast<CanvasPort*>((edgemm)->get_tail());
+    const auto* tail = dynamic_cast<const CanvasPort*>((edgemm)->get_tail());
     if (tail) {
       edgemm->set_color(patchage->conf().get_port_color(tail->type()));
     }

@@ -74,8 +74,7 @@ public:
   // Set a global port color setting
   void set_setting(setting::PortColor new_setting)
   {
-    auto& color = _port_colors[static_cast<unsigned>(new_setting.type)];
-
+    const auto& color = _port_colors[static_cast<unsigned>(new_setting.type)];
     if (color != new_setting.color) {
       set_port_color(new_setting.type, new_setting.color);
     }

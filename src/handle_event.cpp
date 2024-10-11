@@ -79,7 +79,7 @@ public:
   {
     _metadata.set_port(event.id, event.info);
 
-    auto* const port =
+    const auto* const port =
       _canvas.create_port(_conf, _metadata, event.id, event.info);
 
     if (!port) {
