@@ -56,7 +56,6 @@ public:
     std::stringstream ss;
     ss << "Unable to find " << ui_filename << "\n";
     throw std::runtime_error(ss.str());
-    return {};
   }
 };
 

@@ -1,6 +1,5 @@
 constParameterCallback
 constVariablePointer
-duplicateBreak
 missingReturn
 normalCheckLevelMaxBranches
 shadowFunction
