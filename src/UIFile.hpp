@@ -13,9 +13,7 @@
 #include <glibmm/refptr.h>
 #include <gtkmm/builder.h>
 
-#include <fstream>
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -53,9 +51,7 @@ public:
       return Gtk::Builder::create_from_file(ui_filename);
     }
 
-    std::stringstream ss;
-    ss << "Unable to find " << ui_filename << "\n";
-    throw std::runtime_error(ss.str());
+    throw std::runtime_error("Unable to find " + ui_filename);
   }
 };
 
