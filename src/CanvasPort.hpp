@@ -90,7 +90,7 @@ public:
   }
 
   PortType                  type() const { return _type; }
-  PortID                    id() const { return _id; }
+  const PortID&             id() const { return _id; }
   const std::string&        name() const { return _name; }
   const std::string&        human_name() const { return _human_name; }
   const std::optional<int>& order() const { return _order; }

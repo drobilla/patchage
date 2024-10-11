@@ -52,7 +52,7 @@ public:
   CanvasPort* get_port(const PortID& id);
 
   SignalDirection    type() const { return _type; }
-  ClientID           id() const { return _id; }
+  const ClientID&    id() const { return _id; }
   const std::string& name() const { return _name; }
 
 protected:
