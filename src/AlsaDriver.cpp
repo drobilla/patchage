@@ -392,16 +392,16 @@ AlsaDriver::disconnect(const PortID& tail_id, const PortID& head_id)
 bool
 AlsaDriver::create_refresh_port()
 {
-  snd_seq_port_info_t* port_info = nullptr;
-  snd_seq_port_info_alloca(&port_info);
-  snd_seq_port_info_set_name(port_info, "System Announcement Receiver");
-  snd_seq_port_info_set_type(port_info, SND_SEQ_PORT_TYPE_APPLICATION);
-  snd_seq_port_info_set_capability(port_info,
+  snd_seq_port_info_t* info = nullptr;
+  snd_seq_port_info_alloca(&info);
+  snd_seq_port_info_set_name(info, "System Announcement Receiver");
+  snd_seq_port_info_set_type(info, SND_SEQ_PORT_TYPE_APPLICATION);
+  snd_seq_port_info_set_capability(info,
                                    SND_SEQ_PORT_CAP_WRITE |
                                      SND_SEQ_PORT_CAP_SUBS_WRITE |
                                      SND_SEQ_PORT_CAP_NO_EXPORT);
 
-  int ret = snd_seq_create_port(_seq, port_info);
+  int ret = snd_seq_create_port(_seq, info);
   if (ret) {
     _log.error(
       fmt::format("[ALSA] Error creating port ({})", snd_strerror(ret)));
@@ -410,7 +410,7 @@ AlsaDriver::create_refresh_port()
 
   // Subscribe the port to the system announcer
   ret = snd_seq_connect_from(_seq,
-                             snd_seq_port_info_get_port(port_info),
+                             snd_seq_port_info_get_port(info),
                              SND_SEQ_CLIENT_SYSTEM,
                              SND_SEQ_PORT_SYSTEM_ANNOUNCE);
   if (ret) {

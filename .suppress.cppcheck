@@ -2,4 +2,3 @@ constParameterCallback
 constVariablePointer
 missingReturn
 normalCheckLevelMaxBranches
-shadowFunction
