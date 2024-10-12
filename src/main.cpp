@@ -146,7 +146,6 @@ main(int argc, char** argv)
     patchage::Patchage patchage(options);
     Gtk::Main::run(*patchage.window());
     patchage.save();
-
   } catch (std::exception& e) {
     std::cerr << "patchage: error: " << e.what() << "\n";
     return 1;
