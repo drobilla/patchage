@@ -36,7 +36,7 @@ done
 chmod -R 755 $bundle/Contents/lib/*
 
 # Copy libraries depended on by the executable to bundle
-libs="`otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//'`"
+libs="$(otool -L $exe | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//')"
 for l in $libs; do
 	cp $l $bundle/Contents/lib/;
 done
@@ -48,7 +48,7 @@ while true; do
 
 	# Copy all libraries this library depends on to bundle
 	for l in $(find $bundle -name '*.dylib' -or -name '*.so'); do
-		reclibs="`otool -L $l | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//'`"
+		reclibs="$(otool -L $l | grep '\.dylib\|\.so' | grep '/User\|/usr/local' | sed 's/(.*//')"
 		for rl in $reclibs; do
 			cp $rl $bundle/Contents/lib/;
 		done
@@ -68,15 +68,15 @@ echo "Bundled libraries:"
 echo "$libs"
 
 for l in $libs; do
-	lname=`echo $l | sed 's/.*\///'`
+	lname=$(echo $l | sed 's/.*\///')
 	lid="@executable_path/lib/$lname"
 	lpath="$bundle/Contents/lib/$lname"
 	install_name_tool -id $lid $lpath
 	install_name_tool -change $l $lid $exe
-	for j in `find $bundle -name '*.so' -or -name '*.dylib'`; do
+	for j in $(find $bundle -name '*.so' -or -name '*.dylib'); do
 		install_name_tool -change $l $lid $j
 	done;
 done
 
 echo "External library references:"
-otool -L $exe `find $bundle -name '*.so' -or -name '*.dylib'` | grep -v ':' | grep -v '@executable_path' | sort | uniq
+otool -L $exe $(find $bundle -name '*.so' -or -name '*.dylib') | grep -v ':' | grep -v '@executable_path' | sort | uniq
