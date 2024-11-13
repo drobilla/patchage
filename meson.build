@@ -26,10 +26,68 @@ version_suffix = '@0@-@1@'.format(meson.project_name(), major_version)
 # Required tools
 cpp = meson.get_compiler('cpp')
 
-# Set global warning suppressions
-subdir('meson/suppressions')
-add_project_arguments(cpp_suppressions, language: ['cpp'])
+# Configure fmt to be header-only with no compiled library
 add_project_arguments(['-DFMT_HEADER_ONLY'], language: ['cpp'])
+
+# Set global warning suppressions
+warning_level = get_option('warning_level')
+cpp_suppressions = []
+if get_option('warning_level') == 'everything'
+  if cpp.get_id() == 'clang'
+    cpp_suppressions += [
+      '-Wno-alloca',
+      '-Wno-c++20-compat',
+      '-Wno-c++98-compat',
+      '-Wno-c++98-compat-pedantic',
+      '-Wno-cast-function-type-strict',
+      '-Wno-cast-qual',
+      '-Wno-double-promotion',
+      '-Wno-float-conversion',
+      '-Wno-float-equal',
+      '-Wno-implicit-float-conversion',
+      '-Wno-padded',
+      '-Wno-pedantic',
+      '-Wno-shorten-64-to-32',
+      '-Wno-sign-conversion',
+      '-Wno-switch-default',
+      '-Wno-unsafe-buffer-usage',
+      '-Wno-weak-vtables',
+    ]
+
+    if host_machine.system() == 'darwin'
+      cpp_suppressions += [
+        '-Wno-documentation', # JACK
+        '-Wno-documentation-deprecated-sync', # JACK
+        '-Wno-documentation-unknown-command', # JACK
+        '-Wno-reserved-id-macro', # JACK
+      ]
+    endif
+
+  elif cpp.get_id() == 'gcc'
+    cpp_suppressions += [
+      '-Wno-abi-tag',
+      '-Wno-alloca',
+      '-Wno-conditionally-supported',
+      '-Wno-conversion',
+      '-Wno-effc++',
+      '-Wno-float-equal',
+      '-Wno-inline',
+      '-Wno-null-dereference',
+      '-Wno-padded',
+      '-Wno-pedantic',
+      '-Wno-stack-protector',
+      '-Wno-strict-overflow',
+      '-Wno-suggest-attribute=const',
+      '-Wno-suggest-attribute=noreturn',
+      '-Wno-suggest-attribute=pure',
+      '-Wno-suggest-final-methods',
+      '-Wno-suggest-final-types',
+      '-Wno-switch-default',
+    ]
+  endif
+endif
+
+cpp_suppressions = cpp.get_supported_arguments(cpp_suppressions)
 
 ##########################
 # Platform Configuration #
