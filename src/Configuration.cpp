@@ -252,7 +252,8 @@ Configuration::load()
         }
       }
       if (!found) {
-        std::cerr << "error: color for unknown port type `" << type_name << "'\n";
+        std::cerr << "error: color for unknown port type `" << type_name
+                  << "'\n";
       }
     } else if (key == "module_position") {
       Coord       loc;
