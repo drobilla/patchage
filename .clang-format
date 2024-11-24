@@ -4,7 +4,7 @@
 ---
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
-AlignEscapedNewlinesLeft: true
+AlignEscapedNewlines: Left
 BasedOnStyle: Mozilla
 BraceWrapping:
   AfterNamespace: false
