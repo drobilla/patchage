@@ -24,7 +24,6 @@
 #include "event_to_string.hpp"
 #include "handle_event.hpp"
 #include "i18n.hpp"
-#include "patchage_config.h" // IWYU pragma: keep
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS

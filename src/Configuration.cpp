@@ -17,8 +17,6 @@
 #include <utility>
 #include <vector>
 
-// IWYU pragma: no_include <algorithm>
-
 namespace patchage {
 namespace {
 

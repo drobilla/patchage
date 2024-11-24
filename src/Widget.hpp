@@ -5,7 +5,7 @@
 #define PATCHAGE_WIDGET_HPP
 
 #include <glibmm/refptr.h>
-#include <gtkmm/builder.h> // IWYU pragma: keep
+#include <gtkmm/builder.h>
 
 #include <string>
 
