@@ -75,9 +75,9 @@ print_usage()
   std::cout << "Usage: patchage [OPTION]...\n";
   std::cout << "Visually connect JACK and ALSA Audio and MIDI ports.\n\n";
   std::cout << "Options:\n";
-  std::cout << "  -h, --help     Display this help and exit.\n";
-  std::cout << "  -A, --no-alsa  Do not automatically attach to ALSA.\n";
-  std::cout << "  -J, --no-jack  Do not automatically attack to JACK.\n";
+  std::cout << "  -h, --help     Display this help and exit\n";
+  std::cout << "  -A, --no-alsa  Do not automatically attach to ALSA\n";
+  std::cout << "  -J, --no-jack  Do not automatically attack to JACK\n";
 }
 
 void
