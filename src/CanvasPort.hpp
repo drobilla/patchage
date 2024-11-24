@@ -10,7 +10,7 @@
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
-#include "ganv/Port.hpp"
+#include <ganv/Port.hpp>
 PATCHAGE_RESTORE_WARNINGS
 
 #include <gdk/gdk.h>

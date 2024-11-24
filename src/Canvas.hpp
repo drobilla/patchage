@@ -10,8 +10,8 @@
 #include "warnings.hpp"
 
 PATCHAGE_DISABLE_GANV_WARNINGS
-#include "ganv/Canvas.hpp"
-#include "ganv/types.h"
+#include <ganv/Canvas.hpp>
+#include <ganv/types.h>
 PATCHAGE_RESTORE_WARNINGS
 
 #include <gdk/gdk.h>
