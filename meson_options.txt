@@ -16,11 +16,5 @@ option('jack_dbus', type: 'feature', yield: true,
 option('lint', type: 'boolean', value: false, yield: true,
        description: 'Run code quality checks')
 
-option('strict', type: 'boolean', value: false, yield: true,
-       description: 'Enable ultra-strict warnings')
-
-option('tests', type: 'feature', yield: true,
-       description: 'Build tests')
-
 option('title', type: 'string', value: 'Patchage',
        description: 'Project title')
