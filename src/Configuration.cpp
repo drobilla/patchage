@@ -293,6 +293,8 @@ Configuration::load()
   file.close();
 }
 
+namespace {
+
 inline void
 write_module_position(std::ofstream&     os,
                       const std::string& name,
@@ -302,6 +304,8 @@ write_module_position(std::ofstream&     os,
   os << "module_position \"" << name << "\""
      << " " << type << " " << loc.x << " " << loc.y << "\n";
 }
+
+} // namespace
 
 void
 Configuration::save()
