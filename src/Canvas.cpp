@@ -146,8 +146,8 @@ Canvas::create_port(Configuration&  conf,
     Coord loc;
     if (!conf.get_module_location(client_name, module_type, loc)) {
       // No position saved, come up with a pseudo-random one
-      loc.x = static_cast<double>(20 + _rng() % 640);
-      loc.y = static_cast<double>(20 + _rng() % 480);
+      loc.x = static_cast<double>(20 + (_rng() % 640));
+      loc.y = static_cast<double>(20 + (_rng() % 480));
 
       conf.set_module_location(client_name, module_type, loc);
     }

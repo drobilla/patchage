@@ -76,7 +76,7 @@ TextViewLog::min_height() const
   int line_height = 0;
   _text_view->get_line_yrange(buffer->begin(), y, line_height);
 
-  return line_height + 2 * _text_view->get_pixels_inside_wrap();
+  return line_height + (2 * _text_view->get_pixels_inside_wrap());
 }
 
 } // namespace patchage
