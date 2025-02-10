@@ -29,6 +29,7 @@ PATCHAGE_RESTORE_WARNINGS
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <variant>
 
