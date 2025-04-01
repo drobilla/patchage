@@ -3,7 +3,6 @@
 
 #include <dlfcn.h>
 
-#include <climits>
 #include <cstdlib>
 #include <string>
 
