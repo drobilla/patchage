@@ -40,7 +40,6 @@ PATCHAGE_RESTORE_WARNINGS
 #include <sigc++/signal.h>
 
 #include <cassert>
-#include <functional>
 #include <optional>
 #include <set>
 #include <string>

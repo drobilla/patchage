@@ -24,8 +24,6 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <cassert>
 #include <cstdint>
-#include <functional>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <set>

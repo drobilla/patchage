@@ -10,7 +10,6 @@
 #include "make_alsa_driver.hpp"
 #include "make_jack_driver.hpp"
 
-#include <functional>
 #include <utility>
 #include <variant>
 

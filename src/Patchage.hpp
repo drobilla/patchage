@@ -4,14 +4,9 @@
 #ifndef PATCHAGE_PATCHAGE_HPP
 #define PATCHAGE_PATCHAGE_HPP
 
-#include <gdk/gdk.h>
-#include <glibmm/refptr.h>
-#include <gtkmm/treemodel.h>
-#include <gtkmm/treemodelcolumn.h>
-#include <gtkmm/widget.h>
-
 #include "Action.hpp"
 #include "ActionSink.hpp"
+#include "Canvas.hpp"
 #include "Configuration.hpp"
 #include "Drivers.hpp"
 #include "Event.hpp"
@@ -21,6 +16,12 @@
 #include "Setting.hpp"
 #include "TextViewLog.hpp"
 #include "Widget.hpp"
+
+#include <gdk/gdk.h>
+#include <glibmm/refptr.h>
+#include <gtkmm/treemodel.h>
+#include <gtkmm/treemodelcolumn.h>
+#include <gtkmm/widget.h>
 
 #include <cstdint>
 #include <memory>
@@ -56,7 +57,6 @@ namespace patchage {
 
 enum class PortType;
 
-class Canvas;
 class ILog;
 class Legend;
 

@@ -31,7 +31,6 @@ PATCHAGE_RESTORE_WARNINGS
 
 #include <cstdint>
 #include <cstring>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>

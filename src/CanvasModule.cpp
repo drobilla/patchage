@@ -21,12 +21,10 @@ PATCHAGE_RESTORE_WARNINGS
 #include <gtkmm/menu.h>
 #include <gtkmm/menu_elems.h>
 #include <gtkmm/menuitem.h>
-#include <gtkmm/menushell.h>
 #include <sigc++/functors/mem_fun.h>
 #include <sigc++/signal.h>
 
 #include <cassert>
-#include <functional>
 #include <memory>
 #include <utility>
 #include <variant>
