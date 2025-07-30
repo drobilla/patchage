@@ -1,9 +1,10 @@
 patchage (1.0.11) stable; urgency=medium
 
+  * Avoid over-use of yielding meson options
   * Convert man page to mdoc
   * Explicitly disable sprung layout menu item by default
 
- -- David Robillard <d@drobilla.net>  Mon, 11 Dec 2023 17:26:40 +0000
+ -- David Robillard <d@drobilla.net>  Wed, 30 Jul 2025 22:21:23 +0000
 
 patchage (1.0.10) stable; urgency=medium
 

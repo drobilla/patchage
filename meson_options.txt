@@ -1,19 +1,19 @@
-# Copyright 2022-2023 David Robillard <d@drobilla.net>
+# Copyright 2022-2025 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
-option('alsa', type: 'feature', yield: true,
+option('alsa', type: 'feature',
        description: 'Build ALSA sequencer support')
 
-option('checks', type: 'feature', value: 'enabled', yield: true,
+option('checks', type: 'feature', value: 'enabled',
        description: 'Check for platform-specific features')
 
-option('jack', type: 'feature', yield: true,
+option('jack', type: 'feature',
        description: 'Build JACK audio and MIDI support')
 
-option('jack_dbus', type: 'feature', yield: true,
+option('jack_dbus', type: 'feature',
        description: 'Use JACK via D-Bus')
 
-option('lint', type: 'boolean', value: false, yield: true,
+option('lint', type: 'boolean', value: false,
        description: 'Run code quality checks')
 
 option('title', type: 'string', value: 'Patchage',
