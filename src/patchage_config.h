@@ -38,7 +38,7 @@
 // Define version unconditionally so a warning will catch a mismatch
 #define PATCHAGE_VERSION "1.0.11"
 
-#if !defined(PATCHAGE_NO_DEFAULT_CONFIG)
+#ifndef PATCHAGE_NO_DEFAULT_CONFIG
 
 // Classic UNIX: dladdr()
 #  ifndef HAVE_DLADDR
@@ -97,7 +97,7 @@
 #  define USE_JACK_METADATA 0
 #endif
 
-#if !defined(PATCHAGE_USE_LIGHT_THEME)
+#ifndef PATCHAGE_USE_LIGHT_THEME
 #  define PATCHAGE_USE_LIGHT_THEME 0
 #endif
 

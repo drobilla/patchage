@@ -4,7 +4,7 @@
 #ifndef PATCHAGE_WARNINGS_HPP
 #define PATCHAGE_WARNINGS_HPP
 
-#if defined(__clang__)
+#ifdef __clang__
 
 #  define PATCHAGE_DISABLE_FMT_WARNINGS                                     \
     _Pragma("clang diagnostic push")                                        \
@@ -36,7 +36,7 @@
 
 #endif
 
-#if defined(__GNUC__)
+#ifdef __GNUC__
 #  define PATCHAGE_UNREACHABLE() __builtin_unreachable()
 #else
 #  define PATCHAGE_UNREACHABLE()
