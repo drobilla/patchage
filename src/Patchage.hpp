@@ -6,7 +6,6 @@
 
 #include "Action.hpp"
 #include "ActionSink.hpp"
-#include "Canvas.hpp"
 #include "Configuration.hpp"
 #include "Drivers.hpp"
 #include "Event.hpp"
@@ -57,6 +56,7 @@ namespace patchage {
 
 enum class PortType;
 
+class Canvas;
 class ILog;
 class Legend;
 
