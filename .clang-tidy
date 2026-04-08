@@ -1,4 +1,4 @@
-# Copyright 2020-2024 David Robillard <d@drobilla.net>
+# Copyright 2020-2026 David Robillard <d@drobilla.net>
 # SPDX-License-Identifier: 0BSD OR GPL-3.0-or-later
 
 Checks: >
@@ -21,6 +21,7 @@ Checks: >
   -cppcoreguidelines-macro-usage,
   -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-reinterpret-cast,
@@ -35,6 +36,9 @@ Checks: >
   -llvmlibc-*,
   -misc-const-correctness,
   -misc-include-cleaner,
+  -misc-multiple-inheritance,
+  -misc-override-with-different-visibility,
+  -misc-use-internal-linkage,
   -modernize-use-nodiscard,
   -modernize-use-scoped-lock,
   -modernize-use-trailing-return-type,
@@ -42,6 +46,7 @@ Checks: >
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-implicit-bool-conversion,
+  -readability-redundant-parentheses,
 CheckOptions:
   - key:   hicpp-uppercase-literal-suffix.NewSuffixes
     value: 'L;U;UL;ULL'
